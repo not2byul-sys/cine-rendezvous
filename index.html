@@ -2488,7 +2488,7 @@ Object.assign(A,{
  clubpost:()=>{const f=($('clbf').value||'').trim(),t=($('clbt').value||'').trim();if(!f||!t){toast('제목과 한줄평을 적어주세요');return}const a=store.get('aic.clubnotes')||[];a.unshift({n:window.MYNAME||'나',f,t});store.set('aic.clubnotes',a.slice(0,30));PANELS.club();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+f+'」 좋죠! 저도 한마디 하고 싶네요',5)}
 });
 /* 아지트 연속 상영: 입장 시 현재 시간에 맞춘 영상 루프. 로비에서는 디코딩을 쉬고 재입장 때 시간을 맞춘다. */
-/* 필름 진열장: media/film01.mp4 ~ film12.mp4 (title은 라벨·안내에 표시) */const CLUBFILMS=Array.from({length:12},(_,i)=>({src:'media/film'+String(i+1).padStart(2,'0')+'.mp4',title:'필름 '+String(i+1).padStart(2,'0')}));let CLUBPICK=null;
+/* 필름 진열장: media/film01.mp4 ~ film20.mp4 (title은 라벨·안내에 표시) */const CLUBFILMS=Array.from({length:20},(_,i)=>({src:'media/film'+String(i+1).padStart(2,'0')+'.mp4',title:'필름 '+String(i+1).padStart(2,'0')}));let CLUBPICK=null;
 async function clubPick(i){const f=CLUBFILMS[i];if(!f)return;try{const r=await fetch(f.src,{method:'HEAD',cache:'no-store'});if(!r.ok)throw 0}catch(e){toast('「'+f.title+'」 필름은 아직 준비 중이에요');return}CLUBPICK=f.src;window.__clubWantSound=1;window.__clubMutedByUser=false;CLUBI=0;clubVid(true);toast('「'+f.title+'」 상영을 시작해요')}
 /* 아지트 상영: media/club1.mp4 ~ club5.mp4 를 차례로 반복 재생 */const CLUBLIST=['media/club1.mp4','media/club2.mp4','media/club3.mp4','media/club4.mp4','media/club5.mp4'];let CLUBI=0;const CLUB_DEF=CLUBLIST[0];
 if(store.get('aic.clubfilmRevision')!==5){store.set('aic.clubfilm',null);store.set('aic.clubfilmRevision',5)}
@@ -2612,8 +2612,8 @@ trapShow();
  const BL=4.4+CBD-.2,beam=new THREE.Mesh(new THREE.ConeGeometry(1.1,BL,32,1,true),new THREE.MeshBasicMaterial({color:0xe1ccb0,transparent:true,opacity:.025,depthWrite:false,side:THREE.DoubleSide}));beam.rotation.x=Math.PI/2;beam.position.set(0,1.95,-BL/2-.5);g.add(beam)}
  /* 소파 3개(가죽) + 커피테이블 */sofa3(X-3,Z-.6,Math.PI/2,0x683c28,0,'B');sofa3(X+3,Z-.6,-Math.PI/2,0x683c28,0,'B');sofa3(X,Z-3.2,0,0x666343,0,'B');
  bb(1.6,.08,1,0x3a2416,0,.45,-.6);bb(1.4,.4,.8,0x4a2c1c,0,.22,-.6);[[-.4,-.75],[.3,-.5]].forEach(([x,z])=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(.2,.2,.04,20),mat(0x2a2a2a));r.position.set(X+x,.51,Z+z);S.add(r)});bb(.3,.08,.22,0xb3202e,.3,.53,-.85);bb(.28,.06,.2,0x1f4e79,.32,.6,-.85);
- /* 필름 진열장(11/9): 속이 빈 원목 장 + 3단에 필름 12개(통·케이스) 진열 → 클릭하면 아지트 스크린에서 재생 */{const x=-CBW+.3;bb(.05,2.6,3.6,0x24160d,-CBW+.06,1.3,1.6);[-.18,3.38].forEach(z=>bb(.5,2.6,.04,0x3a2416,x,1.3,z));bb(.5,.05,3.6,0x3a2416,x,2.6,1.6);bb(.5,.6,3.6,0x3a2416,x,.3,1.6);for(let r=0;r<5;r++)bb(.46,.04,3.5,0x2a180e,x,.2+r*.55,1.6);
-  CLUBFILMS.forEach((f,i)=>{const r=3-Math.floor(i/4),k=i%4,y0=.2+r*.55+.02,z=.25+(3-k)*.9,pal=[['#b3202e','#f3ecdc'],['#1f4e79','#efe2c0'],['#e9c46a','#3a2416'],['#2f5a3a','#f3ead8'],['#5b2417','#f6ecd0'],['#d9d4c8','#2a1a10']][(i*5+r)%6];
+ /* 필름 진열장(11/9): 속이 빈 원목 장 + 4단에 필름 20개(통·케이스) 진열 → 클릭하면 아지트 스크린에서 재생 */{const x=-CBW+.3;bb(.05,3.15,3.6,0x24160d,-CBW+.06,1.575,1.6);[-.18,3.38].forEach(z=>bb(.5,3.15,.04,0x3a2416,x,1.575,z));bb(.5,.05,3.6,0x3a2416,x,3.15,1.6);bb(.5,.6,3.6,0x3a2416,x,.3,1.6);for(let r=0;r<6;r++)bb(.46,.04,3.5,0x2a180e,x,.2+r*.55,1.6);
+  CLUBFILMS.forEach((f,i)=>{const r=4-Math.floor(i/5),k=i%5,y0=.2+r*.55+.02,z=.2+(4-k)*.7,pal=[['#b3202e','#f3ecdc'],['#1f4e79','#efe2c0'],['#e9c46a','#3a2416'],['#2f5a3a','#f3ead8'],['#5b2417','#f6ecd0'],['#d9d4c8','#2a1a10']][(i*5+r)%6];
    const lab=art(160,160,(c,W,H)=>{c.fillStyle=pal[0];c.fillRect(0,0,W,H);c.strokeStyle=pal[1];c.lineWidth=4;c.strokeRect(10,10,W-20,H-20);c.fillStyle=pal[1];c.textAlign='center';c.textBaseline='middle';c.font='bold 15px serif';c.fillText('FILM',W/2,44);c.font='bold 40px serif';c.fillText(String(i+1).padStart(2,'0'),W/2,84);c.font='13px sans-serif';c.fillText(f.title.slice(0,10),W/2,124)});
    const lm=new THREE.MeshLambertMaterial({map:lab}),tin=mat(0x8d897b);let hw,hh;
    if(i%3!==1){/* 필름 통(원형) — 세워서 라벨이 정면 */const R=.19,c=new THREE.Mesh(new THREE.CylinderGeometry(R,R,.07,28),tin);c.rotation.z=Math.PI/2;c.position.set(X+x+.08,y0+R,Z+z);c.rotation.y=(k%2?.06:-.06);S.add(c);const fc=new THREE.Mesh(new THREE.CircleGeometry(R*.82,28),lm);fc.rotation.y=Math.PI/2;fc.position.set(X+x+.135,y0+R,Z+z);S.add(fc);
@@ -2656,9 +2656,9 @@ trapShow();
  bb(1.65,.1,1.0,0x624027,0,1.04,4.4);bb(1.65,.08,1.0,0x624027,0,.18,4.4);[-1,1].forEach(x=>[-1,1].forEach(z=>bb(.09,1.02,.09,0x392619,x*.72,.53,4.4+z*.4)));for(let k=0;k<5;k++)cyl(.30,.065,0x898377,X-.36,.25+k*.07,Z+4.4);bb(.42,.45,.5,0x89613b,.42,.45,4.4);
 
  /* Vintage library: cabinet mouldings, book spines, records and film tins. */
- {const x=-CBW+.61;for(let r=0;r<5;r++){bb(.08,.07,3.65,0x765134,x,.20+r*.55,1.6);}
+ {const x=-CBW+.61;for(let r=0;r<6;r++){bb(.08,.07,3.65,0x765134,x,.20+r*.55,1.6);}
  for(let k=0;k<4;k++){bb(.10,.58,.80,0x4b3020,x,.34,.27+k*.88);const knob=new THREE.Mesh(new THREE.SphereGeometry(.035,10,8),mat(0xa77e40));knob.position.set(X+x+.07,.41,Z+.27+k*.88);S.add(knob)}
- for(let k=0;k<5;k++){const tin=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.065,28),mat(0x8d897b));tin.position.set(X-CBW+.27,2.67+k*.067,Z+.5);S.add(tin)}
+ for(let k=0;k<5;k++){const tin=new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.065,28),mat(0x8d897b));tin.position.set(X-CBW+.27,3.22+k*.067,Z+.5);S.add(tin)}
  
  }
  /* Tailored cushions, table edging, lamp pleats and cart wheels. */

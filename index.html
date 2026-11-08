@@ -1952,7 +1952,12 @@ function paintSeats(){CFG.HALLS.forEach(h=>{const H=HALLN[h.id],c=new THREE.Colo
 function hideSit(){selSeat=null;$('sitbox').hidden=true;paintSeats()}
 function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){say(me,'이미 앉은 자리예요');return}selSeat=sp;paintSeats();const b=$('sitbox');b.hidden=false;b.innerHTML=`<span>${hallCfg(hid).name} · ${sp.label} 좌석</span><button class="p" data-a="sit">앉기</button><button data-a="sitx">취소</button>`}
 /* ---------- input ---------- */
-const rc=new THREE.Raycaster(),mv=new THREE.Vector2();let pd;
+const rc=new THREE.Raycaster(),mv=new THREE.Vector2();
+/* 마우스 호버: 누를 수 있는 것(사람·사물·좌석) 위에서는 손 모양 커서 */
+{const hr=new THREE.Raycaster(),hv=new THREE.Vector2();let hq=0,hx=0,hy=0;
+ addEventListener('pointermove',e=>{if(e.pointerType!=='mouse'||!me)return;hx=e.clientX;hy=e.clientY;if(hq)return;hq=requestAnimationFrame(()=>{hq=0;const cv=R.domElement;if(document.elementFromPoint(hx,hy)!==cv){cv.style.cursor='';return}
+  hv.set(hx/innerWidth*2-1,-hy/innerHeight*2+1);hr.setFromCamera(hv,C);const az=curZone(me),objs=[...INTER,...spotMeshes,...CFG.HALLS.filter(h=>'H'+h.id===az).flatMap(h=>[HALLN[h.id].IC,HALLN[h.id].IB])].filter(o=>{let p=o;while(p){if(p.visible===false)return false;p=p.parent}return true});
+  const h=hr.intersectObjects(objs,false)[0];cv.style.cursor=h&&h.distance<40?'pointer':''})},{passive:true})}let pd;
 R.domElement.addEventListener('pointerdown',e=>pd={x:e.clientX,y:e.clientY,t:performance.now()});
 R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>8||performance.now()-pd.t>500)return;
  mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(mv,C);

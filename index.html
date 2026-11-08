@@ -426,6 +426,9 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 #pn:not(.leg) .qz button.qo{background:#fffaf0!important;color:var(--ik)!important;border:1px solid var(--ln)!important;border-radius:2px!important}
 #pn:not(.leg) .qz button.qo.ok{background:#3f7a52!important;color:#fff!important}#pn:not(.leg) .qz button.qo.no{background:var(--ik)!important;color:var(--sf)!important}
 #pn:not(.leg) .aq{background:#fffaf0!important;border:1px solid var(--ln)!important;border-radius:2px!important;color:var(--ik)}
+#pn:not(.leg) .pin>h3{color:var(--ik)!important;font-family:'Noto Serif KR',serif!important;font-weight:600!important;font-size:17px!important;line-height:1.55!important;text-align:center}
+#pn:not(.leg) .pin button[data-a=oq]{width:44px!important;height:34px!important;padding:0!important;display:inline-flex!important;align-items:center;justify-content:center;line-height:1!important}#pn:not(.leg) .pin button[data-a=oq] svg{display:block}
+#pn,#ad,#toast,.bar{word-break:keep-all;overflow-wrap:break-word}#ad .ab.nt .nt-s{text-wrap:pretty}
 /* 안내 팝업(notice)도 같은 규칙 */
 #ad.ntw{background:rgba(26,11,16,.8)!important}#ad .ab.nt{background:#f6e7cc!important;color:#5d211c!important;border:2px solid #983e49!important;border-radius:0!important;padding:10px!important;box-shadow:0 4px 8px rgba(93,33,28,.14)!important;outline:.7px solid #983e49;outline-offset:-10px}
 #ad .ab.nt .nt-t{font:700 25px/1.5 'Noto Serif KR',serif!important;color:#5d211c!important;padding:24px 28px 10px;border-bottom:1px solid #983e49;margin:0 28px}
@@ -1631,7 +1634,13 @@ const _mS=shMark();[[7.15,0],[8.45,0]].forEach(([z,a])=>{vArm(-1.45,z,Math.PI/2+
    x+=bw_;bi++}FT.needsUpdate=true};
  const FM=new THREE.MeshBasicMaterial({map:FT,transparent:true,alphaTest:.5});const fp=new THREE.Mesh(new THREE.PlaneGeometry(80,8.0),FM);fp.position.set(0,4.0-.1,LD+14.05);fp.rotation.y=Math.PI;S.add(fp);
  B(300,.1,40,0x3a3a38,0,-.25,LD+34);
- window.__facade=day=>{const n=day<.45;if(n!==lastN){lastN=n;drawF(n)}const k=Math.max(.2,Math.min(1,(day-.1)*1.6));FM.color.setRGB(k,k*.98,k*.95);if(window.__sidewin)window.__sidewin();LAMPS.forEach(l=>l.material.color.setHex(n?0xffd890:0xd8ccb0))};window.__facade(typeof DAYF==='number'?DAYF:1);
+ window.__facade=day=>{const n=day<.45;if(n!==lastN){lastN=n;drawF(n)}const k=Math.max(.2,Math.min(1,(day-.1)*1.6));FM.color.setRGB(k,k*.98,k*.95);if(window.__sidewin)window.__sidewin();LAMPS.forEach(l=>l.material.color.setHex(n?0xffd890:0xd8ccb0));if(window.__outNight)window.__outNight(n,k)};
+ /* 밤 거리(11/9): 바깥 물체는 밤에 어둡게(재질 복제 후 색 낮춤) + 가로등 아래 빛 웅덩이 · 등 후광 · 창문 불빛 반사 */
+ {const POOLT=art(128,128,(c,w,h)=>{const g=c.createRadialGradient(64,64,0,64,64,64);g.addColorStop(0,'rgba(255,214,150,.85)');g.addColorStop(.45,'rgba(255,190,120,.32)');g.addColorStop(1,'rgba(255,170,90,0)');c.fillStyle=g;c.fillRect(0,0,w,h)});let POOLS=null;
+  window.__outNight=(n,k)=>{const f=n?.34:1;S.children.forEach(o=>{if(o.isLight||o.isSprite||o.position.z<LD+.6||o.userData.pool)return;o.traverse(m=>{if(!m.isMesh||!m.material||m.userData.pool)return;const ms=Array.isArray(m.material)?m.material:[m.material];if(ms.some(q=>q.isMeshBasicMaterial))return;if(!m.userData.nm){m.material=Array.isArray(m.material)?m.material.map(q=>q.clone()):m.material.clone();m.userData.nm=(Array.isArray(m.material)?m.material:[m.material]).map(q=>q.color?q.color.clone():null)}(Array.isArray(m.material)?m.material:[m.material]).forEach((q,i)=>{const c0=m.userData.nm[i];if(c0&&q.color)q.color.copy(c0).multiplyScalar(f)})})});
+   if(!POOLS){POOLS=[];LAMPS.forEach(l=>{const p=l.getWorldPosition(new THREE.Vector3());const pl=new THREE.Mesh(new THREE.PlaneGeometry(6,6),new THREE.MeshBasicMaterial({map:POOLT,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));pl.rotation.x=-Math.PI/2;pl.position.set(p.x,-.17,p.z);pl.userData.pool=1;S.add(pl);const hl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffcf88,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false}));hl.position.copy(p);hl.scale.setScalar(2.6);hl.userData.pool=1;S.add(hl);POOLS.push(pl,hl)})}
+   POOLS.forEach(o=>{o.visible=n;if(o.material)o.material.opacity=o.isSprite?.75:.9});FM.color.setRGB(n?.42:k,n?.4:k*.98,n?.46:k*.95)}}
+ window.__facade(typeof DAYF==='number'?DAYF:1);setTimeout(()=>window.__facade(typeof DAYF==='number'?DAYF:1),1500);
  /* 클래식 자동차 · 행인 */
  const CARS=[],PEDS=[];
  const vcar=(col,z,dir,x)=>{const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=dir>0?0:Math.PI;S.add(g);const bm=new THREE.MeshPhongMaterial({color:col,shininess:80,specular:0x555555}),ch=new THREE.MeshPhongMaterial({color:0xd8dadc,shininess:100,specular:0xffffff}),dk=new THREE.MeshPhongMaterial({color:0x1f262c,shininess:90,specular:0x888888});
@@ -2216,7 +2225,7 @@ function opanel(v){$('pn').dataset.k=v;const pb=document.querySelector('#pn .pbo
  if(v==='vendor')h+='<h3 style="margin:8px 0 18px">저한테 물품을 구매하면 좋은 정보를 드릴게요.</h3>';
  else h+=`<p class="sub">메뉴를 담고 「광고 보고 간식 받기」 → 광고를 끝까지 보면 직원이 만들어 카운터에 내줘요 (중간에 닫으면 지급 안 됨) · 두 손에 2개까지, 그 이상은 쟁반 (최대 ${MAXH}개)</p>`;
  if(room<=0)h+='<p>🖐 손이 가득 찼어요. 먼저 들고 있는 걸 먹어주세요.</p>';
- h+='<div class="og">';MENU[v].forEach(k=>{const q=ORD.q[k]||0;h+=`<div class="rw"><div class="m"><b>${IT[k][0]} ${IT[k][1]}</b></div><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'}>−</button><b style="min-width:24px;text-align:center;display:inline-block">${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${tot>=room?'disabled':''}>+</button></div>`});h+='</div>';
+ h+='<div class="og">';MENU[v].forEach(k=>{const q=ORD.q[k]||0;h+=`<div class="rw"><div class="m"><b>${IT[k][0]} ${IT[k][1]}</b></div><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><b style="min-width:24px;text-align:center;display:inline-block">${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${tot>=room?'disabled':''} aria-label="더하기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button></div>`});h+='</div>';
  if(v!=='vendor')h+=`<p class="sub" style="margin-top:8px">담은 메뉴 ${tot}개</p>`;
  h+=`<button class="p" data-a="obuy" ${tot?'':'disabled'} style="width:100%">${v==='vendor'?'광고보고 간식구매':'📺 광고 보고 간식 받기'}</button>`;
  panel(h);const nb=document.querySelector('#pn .pbox');if(nb)nb.scrollTop=st}

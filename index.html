@@ -374,6 +374,19 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 .jt2-ck input:checked::after{content:'';width:7px;height:3.5px;border:solid var(--jt-ink);border-width:0 0 1.6px 1.6px;transform:translateY(-1px) rotate(-45deg)}
 .jt2-go{position:relative;width:100%;border:0;border-radius:0;background:var(--jt-ink);color:#e8bfc2;font:500 15.7px/1.5 'Noto Sans KR',sans-serif;padding:7.3px 14.7px;cursor:pointer}
 .jt2-go:hover{filter:brightness(1.25)}
+
+/* 영화클럽 초대장 v2 — Figma jzgUUNCrSDmACH3dWpoxgT 63:1007 */
+#pn[data-k=invite] .pbox.pbox{background:#5d211c!important;background-image:none!important;border:0!important;width:min(92vw,560px)!important;padding:30px 28px 26px!important}
+#pn[data-k=invite] h3{display:none}
+.iv2{position:relative;width:100%;aspect-ratio:696/756;container-type:inline-size;filter:drop-shadow(0 4px 4px rgba(50,19,15,.14));animation:iv2in .7s cubic-bezier(.2,.75,.2,1) both}
+.iv2-l{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.iv2-card{position:absolute;left:6.9%;top:9.52%;width:86.2%;height:77.8%;background:#f0ece5;box-shadow:0 2px 2.5px rgba(50,19,15,.14);display:flex;flex-direction:column;align-items:center;gap:4.9cqw;padding-top:7.5cqw;box-sizing:border-box;color:#5d211c;text-align:center}
+.iv2-brand{font:700 2.7cqw/1 'Libre Bodoni','Noto Serif KR',Georgia,serif;letter-spacing:.06em;transform:scaleY(1.15)}
+.iv2-title{font:400 11.2cqw/1 'Yellowtail',cursive}
+.iv2-msg{font:400 3.16cqw/1.5 'Noto Sans KR',sans-serif;display:flex;flex-direction:column;gap:.6cqw}.iv2-msg p{margin:0}
+.iv2-foot{margin:22px 0 4px;text-align:center;color:#f6e7cc;font:400 15px/1 'Noto Sans KR',sans-serif;letter-spacing:.24em}
+#pn[data-k=invite] .iv-ok{background:#f6e7cc!important;color:#5d211c!important}
+@keyframes iv2in{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -2364,61 +2377,15 @@ PANELS.vchoice=()=>openPanel('vend','coffee');
 Object.assign(A,{vcoffee:()=>openPanel('vend','coffee'),vquiz:()=>{if(hasInv()){closePanel();toast('이미 영화클럽 회원이에요. 책장 뒤 비밀문으로 내려가 보세요');return}window.QSRC='vend';openPanel('quiz')}});
 PANELS.books=()=>{const q=t=>'https://search.kyobobook.co.kr/search?keyword='+encodeURIComponent(t);panel(`<h3>영화 책꽂이</h3><p class="sub">영화를 더 깊이 즐기게 해 줄 스테디셀러예요. 누르면 구매 페이지로 이동해요</p>${FILMBOOKS.slice(0,6).map(([t,a,d])=>`<a class="rw bk" href="${q(t+' '+a.split(' · ')[0])}" target="_blank" rel="noopener"><div class="m"><b>${t}</b><i>${a} · ${d}</i></div><span class="bk-go">구매하기</span></a>`).join('')}`)};
 Object.assign(PANELS,{
- invite(){panel(`<h3>영화클럽 초대장</h3>
-<div class="iv" role="img" aria-label="크림색 종이 카드와 직물지 봉투, 시네마 클럽 실링이 있는 초대장">
- <div class="iv-ground"></div>
- <svg class="iv-svg iv-back" viewBox="0 0 792 714" aria-hidden="true">
-  <defs>
-   <linearGradient id="ivenvback" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#dfd5be"/><stop offset="1" stop-color="#c7b99c"/></linearGradient>
-   <filter id="ivgrain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="5"/><feColorMatrix values="0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .5 -.16"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-   <pattern id="ivliner" width="26" height="26" patternUnits="userSpaceOnUse"><rect width="26" height="26" fill="#5a1520"/><path d="M13 2L24 13L13 24L2 13Z" fill="none" stroke="#c9a65c" stroke-opacity=".55" stroke-width=".8"/><circle cx="13" cy="13" r="1.6" fill="#d9b86e" fill-opacity=".7"/><circle cx="0" cy="0" r="1" fill="#d9b86e" fill-opacity=".5"/><circle cx="26" cy="26" r="1" fill="#d9b86e" fill-opacity=".5"/></pattern>
-   <pattern id="ivweaveback" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 .4H4 M.6 0V4" stroke="#fff9e9" stroke-opacity=".18" stroke-width=".6"/><path d="M0 2.5H4 M2.6 0V4" stroke="#766548" stroke-opacity=".09" stroke-width=".4"/></pattern>
-  </defs>
-  <path d="M28 336L95 286L696 280L765 336V678Q765 694 749 694H44Q28 694 28 678Z" fill="url(#ivenvback)"/>
-  <path d="M29 337L96 289L396 510L695 283L764 337L396 567Z" fill="#dbd0b8"/>
-  <path d="M28 336L95 286L696 280L765 336V678Q765 694 749 694H44Q28 694 28 678Z" fill="url(#ivweaveback)"/>
-  <path d="M46 334L101 296L690 291L747 334L396 548Z" fill="url(#ivliner)"/>
-  <path d="M46 334L101 296L690 291L747 334" fill="none" stroke="#c9a65c" stroke-opacity=".6" stroke-width="1.2"/>
-  <path d="M28 336L95 286L696 280L765 336V678Q765 694 749 694H44Q28 694 28 678Z" fill="#000" filter="url(#ivgrain)" opacity=".5" style="mix-blend-mode:multiply"/>
- </svg>
- <div class="iv-cardw"><div class="iv-card">
-  <div class="iv-kicker">YOU ARE INVITED</div>
-  <div class="iv-title">Cine Club</div>
-  <div class="iv-rule">✦</div>
-  <p class="iv-recipient">${esc(window.MYNAME||'영화애호가')} 님을</p>
-  <p class="iv-message">영화클럽 아지트에 초대합니다.</p>
-  <p class="iv-signature">— 알프레도 할아버지</p>
- </div></div>
- <svg class="iv-svg iv-front" viewBox="0 0 792 714" aria-hidden="true">
-  <defs>
-   <linearGradient id="ivleft" x1="0" y1="0" x2="1" y2=".7"><stop stop-color="#ede7d9"/><stop offset="1" stop-color="#dbd0b9"/></linearGradient>
-   <linearGradient id="ivright" x1="1" y1="0" x2="0" y2=".8"><stop stop-color="#e6decd"/><stop offset="1" stop-color="#d2c4a9"/></linearGradient>
-   <linearGradient id="ivbottom" x1="0" y1="0" x2=".2" y2="1"><stop stop-color="#ece5d5"/><stop offset="1" stop-color="#d9cdb5"/></linearGradient>
-   <pattern id="ivweavefront" width="4" height="4" patternUnits="userSpaceOnUse"><path d="M0 .5H4 M.6 0V4" stroke="#fffcf1" stroke-opacity=".25" stroke-width=".6"/><path d="M0 2.6H4 M2.6 0V4" stroke="#827055" stroke-opacity=".10" stroke-width=".45"/></pattern>
-   <filter id="ivgrain2" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="3" seed="8"/><feColorMatrix values="0 0 0 0 .35 0 0 0 0 .27 0 0 0 0 .17 0 0 0 .5 -.16"/><feComposite in2="SourceGraphic" operator="in"/></filter>
-   <radialGradient id="ivlight" cx=".2" cy=".05" r="1"><stop offset="0" stop-color="#fffaf0" stop-opacity=".22"/><stop offset=".6" stop-color="#fffaf0" stop-opacity="0"/><stop offset="1" stop-color="#3a2410" stop-opacity=".12"/></radialGradient>
-   <clipPath id="ivfrontclip"><path d="M28 331L396 553L765 331V678Q765 694 749 694H44Q28 694 28 678Z"/></clipPath>
-  </defs>
-  <path d="M28 331L405 555L28 686Z" fill="url(#ivleft)"/>
-  <path d="M765 331L387 555L765 686Z" fill="url(#ivright)"/>
-  <path d="M30 688L385 526Q396 520 408 526L763 688Q758 694 749 694H44Q34 694 30 688Z" fill="rgba(107,84,51,.15)" transform="translate(0 -2)"/>
-  <path d="M29 688L386 534Q396 529 406 534L764 688Q758 694 749 694H44Q34 694 29 688Z" fill="url(#ivbottom)"/>
-  <g clip-path="url(#ivfrontclip)"><rect x="28" y="331" width="738" height="364" fill="url(#ivweavefront)"/><rect x="28" y="331" width="738" height="364" fill="#000" filter="url(#ivgrain2)" opacity=".55" style="mix-blend-mode:multiply"/><path d="M28 331L396 553L765 331L765 345L396 567L28 345Z" fill="rgba(70,48,22,.10)"/><rect x="28" y="331" width="738" height="364" fill="url(#ivlight)"/></g>
-  <path d="M29 332L395 553L764 332" fill="none" stroke="#fffdf0" stroke-opacity=".7" stroke-width="2"/>
-  <path d="M31 688L386 534Q396 529 406 534L762 688" fill="none" stroke="#b8a88a" stroke-opacity=".35" stroke-width="1.3"/>
-  <path d="M33 690L387 537Q396 532 405 537L759 690" fill="none" stroke="#fff8e7" stroke-opacity=".48" stroke-width="1.1"/>
- </svg>
- <div class="iv-seal" aria-hidden="true"><svg viewBox="0 0 120 120">
-  <defs>
-   <radialGradient id="wx" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="#b8343a"/><stop offset=".45" stop-color="#8a1c24"/><stop offset=".85" stop-color="#5e0f17"/><stop offset="1" stop-color="#4a0a12"/></radialGradient>
-   <filter id="wxl" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="7" result="n"/><feGaussianBlur in="SourceAlpha" stdDeviation="2.6" result="b"/><feComposite in="b" in2="n" operator="arithmetic" k1="0" k2="1" k3=".35" k4="0" result="bump"/><feSpecularLighting in="bump" surfaceScale="5" specularConstant=".9" specularExponent="22" lighting-color="#ffd9c8" result="sp"><fePointLight x="20" y="10" z="70"/></feSpecularLighting><feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/><feDiffuseLighting in="bump" surfaceScale="4" diffuseConstant="1" lighting-color="#fff" result="df"><feDistantLight azimuth="225" elevation="52"/></feDiffuseLighting><feComposite in="SourceGraphic" in2="df" operator="arithmetic" k1="1.15" k2="0" k3="0" k4="0" result="lit"/><feComposite in="lit" in2="SourceAlpha" operator="in" result="lit2"/><feComposite in="sp2" in2="lit2" operator="arithmetic" k1="0" k2=".55" k3="1" k4="0"/></filter>
-   <filter id="wxd" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur in="SourceAlpha" stdDeviation=".9" result="a"/><feOffset in="a" dx="1.2" dy="1.4" result="hi"/><feFlood flood-color="#e7808a" flood-opacity=".55"/><feComposite in2="hi" operator="in" result="hic"/><feOffset in="a" dx="-1.1" dy="-1.3" result="sh"/><feFlood flood-color="#2a0307" flood-opacity=".85"/><feComposite in2="sh" operator="in" result="shc"/><feMerge><feMergeNode in="hic"/><feMergeNode in="shc"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-  </defs>
-  <path filter="url(#wxl)" fill="url(#wx)" d="M60 6c9 0 13 4 20 5s14 2 17 8 1 11 6 17 9 11 8 19-6 11-6 18 4 13-1 19-12 6-17 11-8 12-17 13-12-4-19-4-14 6-21 1-5-11-11-16-14-6-17-13 2-12 0-19-8-11-5-19 10-9 13-15 2-12 9-16 13-3 19-6 6-8 12-8z"/>
-  <circle cx="60" cy="60" r="33" fill="#7a1820" opacity=".55"/>
-  <g filter="url(#wxd)"><circle cx="60" cy="60" r="34" fill="none" stroke="#6c141c" stroke-width="2.4"/><circle cx="60" cy="60" r="29.5" fill="none" stroke="#6c141c" stroke-width=".9" stroke-dasharray="1.4 2.2"/><text x="60" y="73" text-anchor="middle" font-family="Yellowtail,cursive" font-size="38" fill="#741820">CC</text></g>
- </svg></div>
+ invite(){panel(`<div class="iv2">
+ <svg class="iv2-l" viewBox="0 0 696 756" aria-hidden="true"><path d="M0 250Q0 222 24 206L310 14Q348-8 386 14L672 206Q696 222 696 250V756H0Z" fill="#d3c3a9"/></svg>
+ <div class="iv2-card"><div class="iv2-brand">CINÉ RENDEZ-VOUS</div><div class="iv2-title">Cine Club</div><div class="iv2-msg"><p>${esc(window.MYNAME||'영화애호가')} 님을</p><p>영화클럽 아지트에 초대합니다.</p></div></div>
+ <svg class="iv2-l iv2-top" viewBox="0 0 696 756" aria-hidden="true"><defs><filter id="iv2s" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#32130f" flood-opacity=".18"/></filter><radialGradient id="iv2w" cx=".38" cy=".32" r=".75"><stop offset="0" stop-color="#7e2a2c"/><stop offset=".7" stop-color="#5d1d1f"/><stop offset="1" stop-color="#4a1416"/></radialGradient></defs>
+  <path d="M0 312Q0 290 26 296L348 522L0 756Z" fill="#e5d3b5" filter="url(#iv2s)"/><path d="M696 312Q696 290 670 296L348 522L696 756Z" fill="#e5d3b5" filter="url(#iv2s)"/>
+  <path d="M0 756L348 520L696 756Z" fill="#e8d8bb" filter="url(#iv2s)"/>
+  <g transform="translate(348 543)" filter="url(#iv2s)"><path d="M0-58C10-58 14-48 24-48S40-54 46-44 44-28 52-20 62-8 58 2 46 14 48 24 44 42 34 46 20 46 12 54 2 62-8 58-18 48-28 50-44 50-48 40-46 26-54 18-62 8-58-2-48-10-50-20-48-36-40-44-24-46-16-54-8-58 0-58Z" fill="url(#iv2w)" stroke="#9c4a48" stroke-width="2.4"/></g></svg>
 </div>
+<div class="iv2-foot">CINÉ RENDEZ-VOUS</div>
 <button class="p iv-ok" data-a="invaccept">초대 수락하기</button>`)},
  quiz(){if(hasInv()){if(BUFF)sayB(BUFF,'오, 우리 클럽 식구 왔구먼!',5);const em=store.get('aic.contest');
    if(em){panel(`<h3>알프레도 할아버지</h3><p class="sub">반가워요, ${esc(window.MYNAME||'회원')} 님!</p><p style="line-height:1.6">12월 10일 영화 퀴즈 대회 참가 신청이 되어 있어요.<br>대회 전에 <b>${esc(em)}</b> 로 연락드릴게요. 그때까지 영화 많이 봐 둬요!</p>`);return}

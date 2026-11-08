@@ -2,7 +2,7 @@
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="referrer" content="strict-origin-when-cross-origin"><title>AI CINEMA</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
 /* 초대장 전용 웹폰트(외부 차단 환경에서도 보이도록 내장) */
@@ -356,6 +356,24 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 #pn[data-k=vendor] .og .rw .m b{white-space:normal}
 #pn[data-k=vendor] .og button{width:44px;min-width:44px;padding:0;height:34px}
 #pn[data-k=vendor] .pbox>button.p{width:100%}
+
+/* 입장 티켓 v2 — Figma jzgUUNCrSDmACH3dWpoxgT 1:35 */
+.jt.jt2{--jt-ink:#5d211c;--jt-paper:#e8bfc2;display:flex;flex-direction:column;align-items:center;width:440px;height:262px;box-sizing:border-box;padding:32px 39px;background:var(--jt-paper);color:var(--jt-ink);overflow:visible;
+ clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
+ -webkit-mask:radial-gradient(circle 17px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 17px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat;mask:radial-gradient(circle 17px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 17px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat}
+.jt2-f1,.jt2-f2{position:absolute;pointer-events:none;border:solid var(--jt-ink)}
+.jt2-f1{left:26px;top:17px;right:26px;bottom:17px;border-width:1.47px}.jt2-f2{left:30px;top:22px;right:30px;bottom:22px;border-width:.63px}
+.jt2-face{position:relative;width:100%;display:flex;flex-direction:column;align-items:center;gap:6px;padding:7px 0}
+.jt2 .jt-q{font:700 18.9px/1.5 'Noto Serif KR',serif;color:var(--jt-ink);padding:0;margin:0;white-space:nowrap}
+.jt2-field{width:304px;border-bottom:1.05px solid var(--jt-ink);padding:12.5px 0 10.5px}
+.jt2 .jt-in{height:auto;font:700 24.1px/1.5 'Noto Serif KR',serif;color:var(--jt-ink);text-align:center;width:100%}
+.jt2 .jt-in::placeholder{color:var(--jt-ink);opacity:.45}
+.jt2-opts{display:flex;gap:20px;padding:12px 0}
+.jt2-ck{display:flex;align-items:center;gap:4.2px;font:400 14.7px/1.5 'Noto Sans KR',sans-serif;color:var(--jt-ink);cursor:pointer;user-select:none}
+.jt2-ck input{appearance:none;-webkit-appearance:none;width:14.7px;height:14.7px;margin:0;border:1.31px solid var(--jt-ink);background:transparent;display:grid;place-content:center;cursor:pointer}
+.jt2-ck input:checked::after{content:'';width:7px;height:3.5px;border:solid var(--jt-ink);border-width:0 0 1.6px 1.6px;transform:translateY(-1px) rotate(-45deg)}
+.jt2-go{position:relative;width:100%;border:0;border-radius:0;background:var(--jt-ink);color:#e8bfc2;font:500 15.7px/1.5 'Noto Sans KR',sans-serif;padding:7.3px 14.7px;cursor:pointer}
+.jt2-go:hover{filter:brightness(1.25)}
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -366,7 +384,7 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 <div id="sitbox" hidden></div><div id="fade"></div>
 <div id="ctl" hidden style="display:none!important"><span class="cr" id="cr"></span><button id="snd">🔇 소리</button><button id="full">⛶ 크게 보기</button><button id="ext">↗</button><button id="stand">일어나기</button></div>
 <div id="toast" hidden></div><div id="pn" hidden></div><div id="ad" hidden></div><div id="punch" hidden></div>
-<div id="join"><div class="jt-wrap" id="jtw"><div class="jt" id="tk"><div class="jt-main"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt-inw"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt-lw"><div class="jt-line"></div></div><label class="jt-save"><input type="checkbox" id="nsave">닉네임 저장</label><button id="go" class="jt-go">입장하기</button></div><i class="jt-dash"></i><div class="jt-stub"><span id="no">1/500</span></div><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div>
+<div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt2-opts"><label class="jt2-ck"><input type="checkbox" id="nsave"><span>저장</span></label><label class="jt2-ck"><input type="checkbox" id="nrand"><span>랜덤</span></label></div></div><button id="go" class="jt2-go">입장하기</button><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="cloud-config.js"></script>
 <script src="cloud-media.js"></script>
@@ -1706,7 +1724,7 @@ function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(
  }catch(e){}}
 let PUNCHING=false;
 function jag(n,a,b){const pts=[];for(let i=0;i<n;i++){const t=i/n*Math.PI*2,r=a+Math.random()*(b-a);pts.push(`${(50+Math.cos(t)*r).toFixed(1)}% ${(50+Math.sin(t)*r).toFixed(1)}%`)}return`polygon(${pts.join(',')})`}
-function punchJoin(done){const w=$('tk'),wr=$('jtw'),S0=26,x=w.offsetWidth,y=w.offsetHeight/2;
+function punchJoin(done){const w=$('tk'),wr=$('jtw'),S0=24,q=w.querySelector('.jt-q'),rg=document.createRange();rg.selectNodeContents(q);const qr=rg.getBoundingClientRect(),wb=w.getBoundingClientRect(),sc=wb.width/w.offsetWidth,x=(qr.right-wb.left)/sc+S0/2+10,y=(qr.top+qr.height/2-wb.top)/sc;
  /* Right edge midpoint: the inside half of the punch is visible. */
  const el=(clip,css,out)=>{const e=document.createElement('i');e.style.cssText=`position:absolute;left:${x-S0/2}px;top:${y-S0/2}px;width:${S0}px;height:${S0}px;pointer-events:none;z-index:3;clip-path:${clip};-webkit-clip-path:${clip};${css}`;(out?wr:w).appendChild(e);return e};
  const ring=el(jag(24,41,50),'background:rgba(255,248,240,.6);transform:scale(0)'),hole=el(jag(24,32,43),'background:#2a1418;box-shadow:inset 0 3px 6px #000c;transform:scale(0)'),disc=el('none','border-radius:50%;background:var(--jt-paper);opacity:0',1);
@@ -1721,7 +1739,10 @@ function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.M
  if(PUNCHING)return;PUNCHING=true;$('nick').blur();punchJoin(()=>enterNow(nm))}
 function enterNow(nm){
  try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0x9c7a5c,{me:1,ch:'ME'});{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();}
-function fitJoin(){const k=Math.max(.6,Math.min(1.35,(innerWidth-32)/350,(innerHeight-40)/208));$('jtw').style.transform=`scale(${k})`}fitJoin();addEventListener('resize',fitJoin);
+/* 랜덤: 고전·명작 영화 제목 중 하나를 닉네임으로 */const RAND_FILMS=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
+function randNick(){let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===$('nick').value&&RAND_FILMS.length>1);$('nick').value=n}
+$('nrand').addEventListener('change',e=>{if(e.target.checked)randNick()});$('nick').addEventListener('input',()=>{if($('nrand').checked)$('nrand').checked=false});
+function fitJoin(){const k=Math.max(.6,Math.min(1.35,(innerWidth-32)/440,(innerHeight-40)/262));$('jtw').style.transform=`scale(${k})`}fitJoin();addEventListener('resize',fitJoin);
 function startAuto(){let nm=null;try{nm=localStorage.getItem('aic.nick')}catch(e){}$('nick').value=nm||'';$('nsave').checked=!!nm;$('join').hidden=false;setTimeout(()=>{try{$('nick').focus()}catch(e){}},400)}
 $('go').onclick=()=>enterAs($('nick').value);$('nick').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)enterAs($('nick').value)});
 /* 상영관이 가득 차면 다음 채널로 나눠서 입장(채널별 좌석 새로 배정) */var HCH={};function hallChan(hid){const H=HALLN[hid];if(!H)return;HCH[hid]=HCH[hid]||1;if(H.seats.every(q=>q.taken)){HCH[hid]++;H.seats.forEach(q=>{const c=q.taken;if(c&&c!==me){q.taken=null;if(c.userData){c.visible=false;c.userData.seat=null}}});toast(`${hallCfg(hid).name}이 가득 차서 채널 ${HCH[hid]}로 입장했어요`);paintSeats()}}
@@ -2603,7 +2624,7 @@ trapShow();
  /* 클럽 회원 NPC 5명: 소파에 앉아 영화 이야기 */const CL=[['세실리아',0,{ch:'A05'}],['토토',0,{ch:'A08'}],['이자벨',0,{ch:'A03'}],['매튜',0,{ch:'A10'}],['마커스 교수',0,{}]];
  const sps=SPOTS.filter(q=>q.zone==='B');CL.forEach(([nm,col,o],i)=>{const c=mk(nm,col,LOOK[nm]||o);c.userData.npc=true;CLUBN.push(c);CLUBG.push(c);HSET.add(c);c.visible=false;const sp=sps[[0,2,3,5,7][i]];if(sp){sp.taken=c;setTimeout(()=>{sp.taken=null;sit(c,sp)},0)}})}
 const CLUB_LINES=['「화양연화」는 복도 장면만으로 완벽해요','흑백영화는 빛이 주인공이에요','열린 결말이 더 오래 남지 않아요?','오늘은 누벨바그 얘기해볼까요?','롱테이크 좋아하는 사람 손! 🙋','영화음악만 들어도 장면이 떠올라요','이번 주 토론 주제, 인생 엔딩 장면이에요','극장에서 본 영화는 기억이 달라요','감독판이 더 좋았던 영화 있어요?','한줄평 보드에 한마디 남겨줘요 📌','자막 없이 보면 표정이 더 보여요','재개봉하면 꼭 다시 보고 싶은 영화는?'];
-function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+3+i*3.2;if(nw>u.nt){u.nt=nw+11+Math.random()*6;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
+function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+6+i*6.4;if(nw>u.nt){u.nt=nw+22+Math.random()*12;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
 /* ===== 관리자 · 배치 편집 (탑뷰 드래그 · 회전 · 복제 · 삭제 · 저장) ===== */
 var LAYED=false;const LAYK='aic.layout';let LSEL=null,LDRAG=null,LSNAP=null,LHLP=[],LDN=0;
 const LQ=new THREE.Quaternion(),LYA=new THREE.Vector3(0,1,0),lray=new THREE.Raycaster(),lv2=new THREE.Vector2(),LDEL={userData:{},position:new THREE.Vector3()};lray.layers.enable(2);

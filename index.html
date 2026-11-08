@@ -1786,7 +1786,7 @@ getvend:async d=>{closePanel();const ok=await AdService.show({kind:'vend',label:
  enter:d=>enterHall(d.id),sit:()=>{if(!selSeat||!me)return;const sp=selSeat;hideSit();walkToSpot(me,sp)},sitx:hideSit,tix:()=>PANELS.tix(),bag:()=>PANELS.bag(),tt:()=>PANELS.tt(),chan:()=>PANELS.chan(),chsel:()=>toast('채널 이동은 서버 연동 후 지원돼요')};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a&&A[a.dataset.a])A[a.dataset.a](a.dataset)});
 /* ---------- 관리자: 상영 시간표 관리 (비밀번호 1234 · 목업) ---------- */
-let ADM=false,ADMD=null;const ADMPW='1234',PAL=['#9fd8c9','#e8a0c4','#9aa8e0','#f2c14e'];
+let ADM=false,ADMD=null;const ADMPW='0722',PAL=['#9fd8c9','#e8a0c4','#9aa8e0','#f2c14e'];
 const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const toLocalInput=sec=>{const d=new Date(sec*1000);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())};
 const mmss=sec=>Math.floor(sec/60)+':'+pad(Math.round(sec%60)%60);
@@ -2448,7 +2448,7 @@ function ytLayerPos(){if(!YTL||!window.CLUBSCR)return;const m=CLUBSCR;m.updateMa
 function clubVid(active=false){if(!window.CLUBSCR)return;const src=clubUrl();
  {const yurl=ytId(src)?src:(CLVFAILED&&CLVSRC===src?CLUB_YT:null);if(yurl){ytLayer(active,yurl);if(ytId(src))return}else if(YTL)ytLayer(false)}
  if(!CLV||src!==CLVSRC){if(!active)return;if(CLV){CLV.pause();CLV.removeAttribute('src');CLV.load()}if(CLVTEX)CLVTEX.dispose();
-  CLVSRC=src;CLVFAILED=false;CLVACTIVE=false;CLV=document.createElement('video');CLV.loop=true;CLV.muted=true;CLV.volume=.15;CLV.autoplay=true;CLV.playsInline=true;CLV.preload='auto';CLV.setAttribute('playsinline','');if(/^https?:/i.test(src))CLV.crossOrigin='anonymous';
+  CLVSRC=src;CLVFAILED=false;CLVACTIVE=false;CLV=document.createElement('video');CLV.loop=true;CLV.muted=true;CLV.volume=.75;CLV.autoplay=true;CLV.playsInline=true;CLV.preload='auto';CLV.setAttribute('playsinline','');if(/^https?:/i.test(src))CLV.crossOrigin='anonymous';
   if(!CLUBSCR.userData.m0)CLUBSCR.userData.m0=CLUBSCR.material;
   CLVTEX=new THREE.VideoTexture(CLV);CLVTEX.minFilter=THREE.LinearFilter;CLVTEX.magFilter=THREE.LinearFilter;CLVTEX.generateMipmaps=false;CLVTEX.encoding=R.outputEncoding;/* 렌더러와 동일한 변환을 사용해 원본 영상의 밝기를 보존 */
   if(CLUBSCR.userData.videoMaterial)CLUBSCR.userData.videoMaterial.dispose();CLUBSCR.userData.videoMaterial=new THREE.MeshBasicMaterial({map:CLVTEX,toneMapped:false});
@@ -2460,7 +2460,10 @@ function clubVid(active=false){if(!window.CLUBSCR)return;const src=clubUrl();
  if(active&&Date.now()>CLVSYNC){CLVSYNC=Date.now()+5000;clubSync()}
 }
 function clubVidPos(){ytLayerPos()}
-function clubPlay(){if(YTL){const id=ytId(YTLSRC.replace('/embed/','/watch?v='))||ytId(clubUrl())||ytId(CLUB_YT);window.open('https://www.youtube.com/watch?v='+id,'_blank');return}if(!CLV||CLVFAILED){toast('아지트 영상을 불러오지 못했어요');return}CLV.muted=!CLV.muted;clubStart();toast(CLV.muted?'아지트 영상 소리를 껐어요':'아지트 영상 소리를 켰어요')}
+/* 아지트: 첫 터치 때 영상 소리 켜기(브라우저 자동재생 정책상 처음엔 음소거) + 조명 어둡게 */
+addEventListener('pointerdown',()=>{if(me&&curZone(me)==='B'&&CLV&&!CLVFAILED&&CLV.muted&&!window.__clubMutedByUser){CLV.muted=false;CLV.volume=.75;window.__clubUnmuteT=Date.now();const r=CLV.play();if(r&&r.catch)r.catch(()=>{})}},true);
+function clubDim(){if(!me||curZone(me)!=='B')return;HEMI.intensity=.12;if(typeof dl!=='undefined')dl.intensity=.03;CLUBG.forEach(o=>{if(o.isLight&&o.userData.i!=null)o.intensity=o.userData.i*.4})}
+function clubPlay(){if(YTL){const id=ytId(YTLSRC.replace('/embed/','/watch?v='))||ytId(clubUrl())||ytId(CLUB_YT);window.open('https://www.youtube.com/watch?v='+id,'_blank');return}if(!CLV||CLVFAILED){toast('아지트 영상을 불러오지 못했어요');return}if(Date.now()-(window.__clubUnmuteT||0)<1500){toast('아지트 영상 소리를 켰어요');return}CLV.muted=!CLV.muted;window.__clubMutedByUser=CLV.muted;clubStart();toast(CLV.muted?'아지트 영상 소리를 껐어요':'아지트 영상 소리를 켰어요')}
 Object.assign(A,{clubsave:async()=>{if(!ADM)return;const file=$('ad_clubfile')?.files[0];let value=($('ad_club').value||'').trim();try{
  if(file){if(!window.CinemaCloud?.enabled){toast('영상 저장소를 연결하면 새 영상을 올릴 수 있어요');return}const movie=await window.CinemaCloud.upload(file,n=>{const btn=document.querySelector('[data-a="clubsave"]');if(btn)btn.textContent='영상 업로드 '+n+'%'});value=movie.src}
  if(!/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(value)){toast('MP4 또는 WebM 영상 주소를 입력해 주세요');return}
@@ -2600,7 +2603,7 @@ trapShow();
  /* 클럽 회원 NPC 5명: 소파에 앉아 영화 이야기 */const CL=[['세실리아',0,{ch:'A05'}],['토토',0,{ch:'A08'}],['이자벨',0,{ch:'A03'}],['매튜',0,{ch:'A10'}],['마커스 교수',0,{}]];
  const sps=SPOTS.filter(q=>q.zone==='B');CL.forEach(([nm,col,o],i)=>{const c=mk(nm,col,LOOK[nm]||o);c.userData.npc=true;CLUBN.push(c);CLUBG.push(c);HSET.add(c);c.visible=false;const sp=sps[[0,2,3,5,7][i]];if(sp){sp.taken=c;setTimeout(()=>{sp.taken=null;sit(c,sp)},0)}})}
 const CLUB_LINES=['「화양연화」는 복도 장면만으로 완벽해요','흑백영화는 빛이 주인공이에요','열린 결말이 더 오래 남지 않아요?','오늘은 누벨바그 얘기해볼까요?','롱테이크 좋아하는 사람 손! 🙋','영화음악만 들어도 장면이 떠올라요','이번 주 토론 주제, 인생 엔딩 장면이에요','극장에서 본 영화는 기억이 달라요','감독판이 더 좋았던 영화 있어요?','한줄평 보드에 한마디 남겨줘요 📌','자막 없이 보면 표정이 더 보여요','재개봉하면 꼭 다시 보고 싶은 영화는?'];
-function clubTick(t){const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+3+i*3.2;if(nw>u.nt){u.nt=nw+11+Math.random()*6;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
+function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+3+i*3.2;if(nw>u.nt){u.nt=nw+11+Math.random()*6;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
 /* ===== 관리자 · 배치 편집 (탑뷰 드래그 · 회전 · 복제 · 삭제 · 저장) ===== */
 var LAYED=false;const LAYK='aic.layout';let LSEL=null,LDRAG=null,LSNAP=null,LHLP=[],LDN=0;
 const LQ=new THREE.Quaternion(),LYA=new THREE.Vector3(0,1,0),lray=new THREE.Raycaster(),lv2=new THREE.Vector2(),LDEL={userData:{},position:new THREE.Vector3()};lray.layers.enable(2);

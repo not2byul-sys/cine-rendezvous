@@ -2692,10 +2692,10 @@ S.children.forEach(root=>{if(HSET.has(root)||root===me)return;root.traverse(o=>{
 /* Club-only warm, dimmed atmosphere. */
 CLUBG.forEach(o=>{if(o.isLight){o.color.setHex(0xffd9b3);o.intensity*=.85;if(o.userData.i!=null)o.userData.i*=.85}});
 /* Soft lighting: gentler local peaks and broader, restrained highlights. */
-const SOFT_MATERIALS=new WeakSet();
+const SOFT_MATERIALS=new Set();/* WeakSet은 객체가 아닌 값에서 오류가 나므로 Set 사용 */
 function softenSurface(m){if(!m||typeof m!=='object'||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
 function softenObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(softenSurface);if(o.isSprite&&o.material&&o.material.map===haloTex){o.material.opacity*=.78;o.scale.multiplyScalar(1.10)}})}
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
-Object.values(HALLN).forEach(h=>h.pli*=.82);softenObject(S);Object.values(TM).forEach(softenSurface);
+Object.values(HALLN).forEach(h=>h.pli*=.82);try{softenObject(S);Object.values(TM).forEach(softenSurface)}catch(e){console.warn('soften skipped',e)}
 window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF(){return BUFF},sit,standUp,get SPOTS(){return SPOTS},trapShow:a=>trapShow(a),INTER,get NPCS(){return NPCS},showSpace,get space(){return space},pickSeat,get sel(){return selSeat},get yaw(){return camYaw},set yaw(v){camYaw=v},get me(){return me},upd,walkTo,API,AdService,CFG,openPanel,A,scrAt,listS,curS,HALLN,STAFF,move,zoneOf,hasPass,refTK,paintSeats,PANELS,curZone,get curSp(){return curSp},HNPC,LAYI,layGet,HALLN,txT,txCatalog};
 </script></body></html>

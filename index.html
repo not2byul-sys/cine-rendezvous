@@ -1191,7 +1191,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
 }
 /* 공간 전환: 로비 ↔ 상영관 (한 번에 한 공간만 렌더) */
 let space=-1,LSAVE=null,snapCam=false,HLF=1;
-const LOBBY_HEMI=.545,LOBBY_DL=.180474008;/* 로비 조명: 처음 값 */const HDIM=.4,HEMI=S.children.find(o=>o.isHemisphereLight);
+const LOBBY_HEMI=.64,LOBBY_DL=.180474008;/* 로비 조명: 처음 값 */const HDIM=.4,HEMI=S.children.find(o=>o.isHemisphereLight);
 function showSpace(k){document.body.classList.toggle('inhall',typeof k==='number'&&k>0);if(k===space)return;const first=space<0;space=k;
  if(k>0&&typeof k==='number'){if(BGM.ctx&&BGM.g){const at=BGM.ctx.currentTime;BGM.g.gain.cancelScheduledValues(at);BGM.g.gain.setValueAtTime(0,at)}}else if(!first)BGM.vol();
  CFG.HALLS.forEach(h=>{const on=h.id===k;HALLG[h.id].forEach(o=>{if(o.isLight)o.intensity=on?HALLN[h.id].pli*HDIM:0;else o.visible=on})});
@@ -1200,6 +1200,7 @@ function showSpace(k){document.body.classList.toggle('inhall',typeof k==='number
  else if(k===0&&LSAVE){LSAVE.forEach(([o,v,i])=>{if(o.isLight)o.intensity=i;else o.visible=v});LSAVE=null}
  if(!first){const f=$('fade');f.style.transition='none';f.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity .7s';f.style.opacity=0}));snapCam=true}}
 CFG.HALLS.forEach(buildHall);showSpace(0);
+/* 로비 보조 조명(11/9): 따뜻한 점광원 6개 — 1층 좌우·입구·2층 복도 */[[-5.2,4.6,4],[5.2,4.6,4],[-5.2,4.6,12],[5.2,4.6,12],[0,4.4,17.5],[0,8.6,-1.8]].forEach(([x,y,z])=>{const l=new THREE.PointLight(0xffd9ad,.42,13,1.6);l.position.set(x,y,z);S.add(l)});
 /* ---------- 1F lobby (Figma 13-10 도면 + 실사 톤: 버터옐로·핑크·세이지·버건디) ---------- */
 const openPanel=(k,a)=>{const pn=$('pn');if(pn)pn.dataset.k=k;return PANELS[k]&&PANELS[k](a)};
 /* 소품 */

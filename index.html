@@ -2693,7 +2693,7 @@ S.children.forEach(root=>{if(HSET.has(root)||root===me)return;root.traverse(o=>{
 CLUBG.forEach(o=>{if(o.isLight){o.color.setHex(0xffd9b3);o.intensity*=.85;if(o.userData.i!=null)o.userData.i*=.85}});
 /* Soft lighting: gentler local peaks and broader, restrained highlights. */
 const SOFT_MATERIALS=new WeakSet();
-function softenSurface(m){if(!m||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
+function softenSurface(m){if(!m||typeof m!=='object'||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
 function softenObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(softenSurface);if(o.isSprite&&o.material&&o.material.map===haloTex){o.material.opacity*=.78;o.scale.multiplyScalar(1.10)}})}
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
 Object.values(HALLN).forEach(h=>h.pli*=.82);softenObject(S);Object.values(TM).forEach(softenSurface);

@@ -390,19 +390,19 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 @keyframes iv2in{from{transform:translateY(18px);opacity:0}to{transform:none;opacity:1}}
 
 .tc3{--c:#e8a0c4;--sc:#e8a0c4;--ink:#5d211c;position:relative;display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px;aspect-ratio:420/250;margin:0 auto;box-sizing:border-box;padding:4.8% 8.1% 5.7%;border:0;border-radius:0;background:var(--c)!important;color:var(--ink)!important;font-family:'Noto Sans KR',sans-serif;line-height:normal;text-align:center;cursor:default;container-type:inline-size;
- clip-path:polygon(4.3% 0,95.7% 0,100% 7.2%,100% 92.8%,95.7% 100%,4.3% 100%,0 92.8%,0 7.2%);
- -webkit-mask:radial-gradient(circle 16px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 16px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat;mask:radial-gradient(circle 16px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 16px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat}
+ clip-path:polygon(4.76% 0,95.24% 0,100% 8%,100% 92%,95.24% 100%,4.76% 100%,0 92%,0 8%);
+ -webkit-mask:radial-gradient(ellipse 4.3% 8% at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(ellipse 4.3% 8% at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat;mask:radial-gradient(ellipse 4.3% 8% at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(ellipse 4.3% 8% at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat}
 button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1% 5.7%!important}button.tc3:hover{transform:translateY(-2px);filter:brightness(1.04)}
 .tc3-f1,.tc3-f2{position:absolute;pointer-events:none;border:solid var(--ink)}.tc3-f1{left:5.95%;right:5.95%;top:6.6%;bottom:6.2%;border-width:1.4px}.tc3-f2{left:6.9%;right:6.9%;top:8.6%;bottom:8.2%;border-width:.6px}
 .tc3-face{flex:1;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.7cqw;position:relative}
-.tc3-brand{font:700 2.9cqw/1 'Libre Bodoni','Noto Serif KR',Georgia,serif;letter-spacing:.04em;transform:scaleY(1.15)}
-.tc3-hn{font:400 3.33cqw/1.5 'Noto Sans KR',sans-serif;letter-spacing:.27cqw}
+.tc3-brand{height:5.71cqw;display:flex;align-items:center;font:700 2.86cqw/1 'Cinzel','Libre Bodoni',Georgia,serif;letter-spacing:.06em}
+.tc3-hn{font:400 3.33cqw/1.5 'Noto Sans KR',sans-serif;letter-spacing:.27cqw;color:var(--ink)}
 .tc3-ti{font:700 6.43cqw/1.5 'Noto Serif KR',serif;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tc3-stub{position:relative;width:100%;height:8.57cqw;display:flex;align-items:center;justify-content:space-between;padding:0 3.33cqw;box-sizing:border-box;background:var(--ink);color:var(--sc)}
 .tc3-no{font:700 4.05cqw/1.5 'Cinzel',Georgia,serif}.tc3-act{font:600 3.33cqw/1 'Noto Sans KR',sans-serif}
 .tc3.ex{opacity:.55}
-.tc3-hole{position:absolute;left:69.5%;top:23.8%;width:9.76%;aspect-ratio:1;border-radius:50%;background:#f6e7cc;box-shadow:inset 0 2px 4px rgba(60,20,10,.35),0 0 0 1px rgba(93,33,28,.25)}
-.tkw.tkw3{position:relative;width:min(92vw,420px)!important}.tkw3 .hole,.tkw3 .pc{left:69.5%;right:auto;top:23.8%;width:9.76%;height:auto;aspect-ratio:1;margin:0;clip-path:none}.tkw3 .hole{background:#f6e7cc;box-shadow:inset 0 2px 4px rgba(60,20,10,.35)}.tkw3 .pc{background:var(--paper);border:1px solid rgba(93,33,28,.35)}
+.tc3-hole{position:absolute;left:69.52%;top:23.79%;width:9.76%;aspect-ratio:1;border-radius:50%;background:#f6e7cc;box-shadow:0 0 0 1px #d8b98c}
+.tkw.tkw3{position:relative;width:min(92vw,420px)!important}.tkw3 .hole,.tkw3 .pc{left:69.52%;right:auto;top:23.79%;width:9.76%;height:auto;aspect-ratio:1;margin:0;clip-path:none}.tkw3 .hole{background:#f6e7cc;box-shadow:0 0 0 1px #d8b98c}.tkw3 .pc{background:var(--paper);border:1px solid rgba(93,33,28,.35)}
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -1794,7 +1794,7 @@ function toast(t,ms=2600){t=noEmo(t);const e=$('toast');e.textContent=t;e.hidden
 function panel(html){html=html.replace(/<h3>([^<]*)<\/h3>/,(m,t)=>'<h3>'+t.replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u,'')+'</h3>');html=html.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<').replace(/(placeholder|title)="([^"]*)"/g,(m,a,v)=>a+'="'+v.replace(EMO,'')+'"');const p=$('pn');p.hidden=false;p.innerHTML='<div class="pbox"><button class="x" data-a="close">✕</button>'+html+'</div>';p.onclick=e=>{if(e.target===p)closePanel()}}
 const closePanel=()=>{$('pn').hidden=true;$('pn').innerHTML=''};
 /* 내 티켓 카드 = 피그마 7:30 「Punch ticket」(400px · 관별 색 · 좌우 반원 노치 · 점선 꼬리표 세로 번호) — 카드 자체가 입장 버튼 *//* 상영관 티켓 v3 — Figma jzgUUNCrSDmACH3dWpoxgT 3:38 (관별 종이색 · 이중 테두리 · 번호 스텁) */
-const TCPAL={1:['#e8a0c4','#e8a0c4'],2:['#8fdcb9','#72daab']};
+const TCPAL={1:['#e8a0c4','#e8a0c4'],2:['#9fe5ba','#72daab']};
 const tcNo=n=>String(n||'').replace(/\D/g,'').padStart(6,'0').slice(-6);
 function tc3({tag='div',attrs='',hall=1,hn,title,no,act,punched=false,cls=''}){const [paper,stubc]=TCPAL[hall]||TCPAL[1];return `<${tag} class="tc3 ${cls}" style="--c:${paper};--sc:${stubc}"${attrs}><i class="tc3-f1"></i><i class="tc3-f2"></i><div class="tc3-face"><div class="tc3-brand">CINÉ RENDEZ-VOUS</div><div class="tc3-hn">★ ${hn} ★</div><div class="tc3-ti">${esc(title)}</div></div><div class="tc3-stub"><span class="tc3-no">${no}</span><span class="tc3-act">${act}</span></div>${punched?'<i class="tc3-hole"></i>':''}</${tag}>`}
 const tcHTML=(t,b=1)=>{const now=nowS(),can=t.end>now,on=b&&can;return `<div class="tcw">${tc3({tag:on?'button':'div',attrs:on?` data-a="enter" data-id="${t.id}"`:'',hall:t.hall,hn:t.hn,title:t.title,no:tcNo(t.no),act:can?(b?'입장하기':'자유석'):'기간 만료',punched:t.punched,cls:can?'':'ex'})}</div>`};

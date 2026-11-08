@@ -2429,13 +2429,13 @@ Object.assign(A,{
  clubpost:()=>{const f=($('clbf').value||'').trim(),t=($('clbt').value||'').trim();if(!f||!t){toast('제목과 한줄평을 적어주세요');return}const a=store.get('aic.clubnotes')||[];a.unshift({n:window.MYNAME||'나',f,t});store.set('aic.clubnotes',a.slice(0,30));PANELS.club();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+f+'」 좋죠! 저도 한마디 하고 싶네요',5)}
 });
 /* 아지트 연속 상영: 입장 시 현재 시간에 맞춘 영상 루프. 로비에서는 디코딩을 쉬고 재입장 때 시간을 맞춘다. */
-const CLUB_DEF='media/club-loop.mp4';
+/* 아지트 상영: media/club1.mp4 ~ club5.mp4 를 차례로 반복 재생 */const CLUBLIST=['media/club1.mp4','media/club2.mp4','media/club3.mp4','media/club4.mp4','media/club5.mp4'];let CLUBI=0;const CLUB_DEF=CLUBLIST[0];
 if(store.get('aic.clubfilmRevision')!==5){store.set('aic.clubfilm',null);store.set('aic.clubfilmRevision',5)}
 function clubUrl(){const shared=window.CinemaCloud?.enabled&&store.get(SCHEDK)?.club;return shared||store.get('aic.clubfilm')||window.CINEMA_CLOUD?.clubVideoUrl||window.CINEMA_CLUB_PREVIEW||CLUB_DEF}
 function clubDisplayUrl(){const value=clubUrl();return value.startsWith('data:')?'':value}
 function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
 let CLV=null,CLVSRC='',CLVTEX=null,CLVACTIVE=false,CLVFAILED=false,CLVRETRY=0,CLVSYNC=0;
-function clubSync(force=false){if(!CLV||!Number.isFinite(CLV.duration)||CLV.duration<=0)return;const target=(Date.now()/1000)%CLV.duration,d=Math.abs(CLV.currentTime-target),drift=Math.min(d,CLV.duration-d);if(force||drift>1.2){try{CLV.currentTime=Math.min(target,CLV.duration-.04)}catch(_){}}}
+function clubSync(force=false){if(CLUBLIST.includes(CLVSRC))return;if(!CLV||!Number.isFinite(CLV.duration)||CLV.duration<=0)return;const target=(Date.now()/1000)%CLV.duration,d=Math.abs(CLV.currentTime-target),drift=Math.min(d,CLV.duration-d);if(force||drift>1.2){try{CLV.currentTime=Math.min(target,CLV.duration-.04)}catch(_){}}}
 function clubStart(){if(!CLV||!CLVACTIVE||CLVFAILED)return;clubSync(true);const result=CLV.play();if(result&&result.catch)result.catch(()=>{})}
 /* 유튜브 링크이거나 mp4 파일을 못 불러오면: 유튜브 영상을 스크린 자리에 겹쳐 음소거 자동재생(캔버스에 스크린 모양 구멍) */
 const CLUB_YT='https://www.youtube.com/watch?v=s01M3YGI8MY&list=PL28d5JImIlH4P1M7ooOiKTrPjlw-JLety&index=2';
@@ -2453,7 +2453,7 @@ function clubVid(active=false){if(!window.CLUBSCR)return;const src=clubUrl();
   CLVTEX=new THREE.VideoTexture(CLV);CLVTEX.minFilter=THREE.LinearFilter;CLVTEX.magFilter=THREE.LinearFilter;CLVTEX.generateMipmaps=false;CLVTEX.encoding=R.outputEncoding;/* 렌더러와 동일한 변환을 사용해 원본 영상의 밝기를 보존 */
   if(CLUBSCR.userData.videoMaterial)CLUBSCR.userData.videoMaterial.dispose();CLUBSCR.userData.videoMaterial=new THREE.MeshBasicMaterial({map:CLVTEX,toneMapped:false});
   CLV.addEventListener('loadedmetadata',()=>{const a=CLV.videoWidth/CLV.videoHeight;if(Number.isFinite(a)&&a>0){CLUBSCR.scale.x=Math.min(1,a/(4.6/2.6));CLUBSCR.scale.y=Math.min(1,(4.6/2.6)/a)}clubStart()});CLV.addEventListener('loadeddata',()=>{if(!CLVFAILED)CLUBSCR.material=CLUBSCR.userData.videoMaterial});
-  CLV.addEventListener('error',()=>{CLVFAILED=true;CLUBSCR.scale.x=CLUBSCR.scale.y=1;CLUBSCR.material=CLUBSCR.userData.m0});CLV.src=src;
+  CLV.loop=!CLUBLIST.includes(src);CLV.addEventListener('ended',()=>{if(!CLUBLIST.includes(CLVSRC))return;CLUBI=(CLUBI+1)%CLUBLIST.length;CLV.src=CLUBLIST[CLUBI];const r=CLV.play();if(r&&r.catch)r.catch(()=>{})});CLV.addEventListener('error',()=>{if(CLUBLIST.includes(CLVSRC)&&CLUBI<CLUBLIST.length-1&&CLV.currentSrc&&!CLV.currentSrc.endsWith(CLUBLIST[0])){CLUBI=0;CLV.src=CLUBLIST[0];return}CLVFAILED=true;CLUBSCR.scale.x=CLUBSCR.scale.y=1;CLUBSCR.material=CLUBSCR.userData.m0});CLV.src=src;
  }
  if(active!==CLVACTIVE){CLVACTIVE=active;if(active)clubStart();else{CLV.pause();CLV.muted=true}}
  if(active&&!CLVFAILED&&Date.now()>CLVRETRY){CLVRETRY=Date.now()+2000;if(CLV.paused)clubStart()}

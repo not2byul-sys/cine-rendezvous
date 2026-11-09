@@ -2226,6 +2226,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  if(!cine&&inH)h+=`<button data-a="exithall" data-k="${zc[1]}">나가기</button>`;
  if(zc==='B'&&!sp)h+=`<button data-a="goup">로비로 올라가기</button>`;if(zc==='B')h+=`<button data-a="clubstop">${CLUBSTOP?'영상 재생':'영상 멈추기'}</button>`;
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');if(cine)h=h+`<button class="fx sep" data-a="screq">${tbIco('screq')}<span>내 영화 상영 신청하기</span></button>`;const hc=!!h;if(!cine)h+=['tix:티켓','bag:가방','tt:상영작'].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
+ h+=`<button class="fx mp-nav-button" data-a="mpchat" aria-label="대화"><svg class="lucide" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 12.5 3H13a8.5 8.5 0 0 1 8 8v.5Z"/></svg><span>대화</span></button>`;
  const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none'}
 function toLobby(){const u=me.userData;u.path=[];u.spot=null;u.after=null;me.position.set(0,0,9.5);u.lvl=0;me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;snapCam=true;closePanel()}
 function exitHall(k){if(!me)return;closePanel();const e=EXIT[k];walkTo(me,e.x,e.z+(k===1?1.6:.8),k===1?'L0':'L1')}
@@ -2363,14 +2364,45 @@ const Multiplayer=(()=>{
  const peers=new Map();let socket=null,myId=null,nick='',lastSend=0,lastState=null,retry=0,closing=false;
  const els={};
  function endpoint(){let raw=String(window.VINTAGE_MULTIPLAYER_URL||'').trim();if(!raw)return '';try{const u=new URL(raw);if(u.protocol!=='https:'&&u.hostname!=='localhost')return '';u.protocol=u.protocol==='https:'?'wss:':'ws:';u.pathname='/room';u.search='';u.hash='';return u.href}catch{return ''}}
- function makeUI(){if(els.box)return;const css=document.createElement('style');css.textContent=`#mpbar{position:fixed;top:12px;right:12px;z-index:8;display:flex;gap:6px;align-items:center;font:12px system-ui;color:#fff}#mpbar button{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}#mpchat{position:fixed;right:12px;bottom:82px;width:min(330px,calc(100vw - 24px));height:260px;z-index:12;display:none;flex-direction:column;border:1px solid #a88776;background:rgba(33,20,23,.96);border-radius:12px;color:#fff;font:13px system-ui;box-shadow:0 8px 20px #0008}#mpchat.open{display:flex}#mphead{padding:9px 12px;font-weight:700;border-bottom:1px solid #735a57}#mplogs{flex:1;overflow-y:auto;overflow-wrap:anywhere;padding:9px 12px;line-height:1.5}#mpform{display:flex;gap:6px;padding:8px}#mpinput{flex:1;min-width:0;border-radius:6px;padding:8px;background:#f6efe5;color:#25171c}#mpsend{background:#d5b18c;color:#281c18;border:0;border-radius:6px;padding:8px}#mpbar[hidden],#mpchat[hidden]{display:none!important}`;document.head.appendChild(css);
- const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="mpstatus" type="button">● 접속 준비</button><button id="mpopen" type="button">대화</button>';document.body.appendChild(b);
- const c=document.createElement('div');c.id='mpchat';c.innerHTML='<div id="mphead">같은 공간의 관객 <button type="button" id="mpclose" style="float:right;background:none;color:#fff;border:0">닫기</button></div><div id="mplogs" role="log" aria-live="polite"></div><form id="mpform"><input id="mpinput" maxlength="120" placeholder="메시지 (120자 이내)" autocomplete="off" aria-label="대화 입력"><button id="mpsend" type="submit">보내기</button></form>';document.body.appendChild(c);els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.logs=document.getElementById('mplogs');els.input=document.getElementById('mpinput');
- document.getElementById('mpopen').onclick=()=>c.classList.toggle('open');document.getElementById('mpclose').onclick=()=>c.classList.remove('open');els.status.onclick=()=>{if(!endpoint())alert('multiplayer-config.js에 Cloudflare Worker 주소를 입력하세요.');else if(!socket||socket.readyState!==1)connect()};
- document.getElementById('mpform').onsubmit=e=>{e.preventDefault();const text=els.input.value.trim().slice(0,120);if(text&&socket?.readyState===1){socket.send(JSON.stringify({t:'chat',text}));els.input.value=''}};
+ /* VINTAGE_BOTTOM_CHAT_PATCH_1: bottom navigation chat + 3D speech bubbles */
+ function makeUI(){
+  if(els.box)return;
+  const style=document.createElement('style');
+  style.textContent=`
+   #mpbar{position:fixed;top:12px;right:12px;z-index:8;display:flex;align-items:center;font:12px system-ui;color:#fff}
+   #mpstatus{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}
+   #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 93px);width:min(680px,calc(100vw - 24px));z-index:16;display:none;background:rgba(35,24,25,.94);border:1px solid rgba(255,246,236,.32);border-radius:16px;box-shadow:0 12px 28px #0008;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+   #mpchat.open{display:block}#mpform{display:flex;align-items:center;gap:8px;padding:9px}
+   #mpinput{flex:1;min-width:0;height:42px;box-sizing:border-box;padding:0 14px;border-radius:10px;border:1px solid #d3b9ac;background:#fff8ed;color:#402D36;font:500 15px 'Noto Sans KR',sans-serif;outline:none}
+   #mpinput:focus{border-color:#bd7d89}#mpsend{min-height:42px;padding:0 16px;border:0;border-radius:10px;background:#F2D9DB;color:#402D36;font:700 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+   #mpstatus[data-offline="1"]{color:#ffd3cf}#act .mp-nav-button{color:#fff!important}
+   @media(max-width:600px){#mpchat{bottom:calc(env(safe-area-inset-bottom,0px) + 88px);width:calc(100vw - 20px)}#mpinput{font-size:16px}}
+  `;
+  document.head.appendChild(style);
+  const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="mpstatus" type="button">● 접속 준비</button>';document.body.appendChild(b);
+  const c=document.createElement('div');c.id='mpchat';c.setAttribute('aria-label','대화 입력창');c.innerHTML='<form id="mpform"><input id="mpinput" maxlength="50" placeholder="대화를 입력하세요 (50자 이내)" autocomplete="off" aria-label="대화 입력"><button id="mpsend" type="submit">보내기</button></form>';document.body.appendChild(c);
+  els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.input=document.getElementById('mpinput');
+  document.addEventListener('click',e=>{const btn=e.target.closest('[data-a="mpchat"]');if(!btn)return;e.preventDefault();c.classList.toggle('open');if(c.classList.contains('open'))els.input.focus()});
+  els.status.onclick=()=>{if(!endpoint())alert('멀티플레이 Worker 연결 주소를 확인해 주세요.');else if(!socket||socket.readyState!==1)connect()};
+  document.getElementById('mpform').onsubmit=e=>{e.preventDefault();const msg=els.input.value.trim().slice(0,50);if(!msg)return;if(socket?.readyState!==1){setStatus('● 연결 끊김');connect();return}socket.send(JSON.stringify({t:'chat',text:msg}));els.input.value='';els.input.blur();c.classList.remove('open')};
  }
- function setStatus(message){if(els.status)els.status.textContent=message}
- function log(name,message){if(!els.logs)return;const row=document.createElement('div');const bold=document.createElement('strong');bold.textContent=name+': ';row.appendChild(bold);row.appendChild(document.createTextNode(message));els.logs.appendChild(row);while(els.logs.childNodes.length>40)els.logs.firstChild.remove();els.logs.scrollTop=els.logs.scrollHeight}
+ function setStatus(message){if(els.status){els.status.textContent=message;els.status.dataset.offline=/끊김|오류|설정/.test(message)?'1':'0'}}
+ function showBubble(avatar,message){
+  if(!avatar)return;
+  const text=String(message||'').trim().slice(0,50);if(!text)return;
+  const c=document.createElement('canvas'),ctx=c.getContext('2d'),fs=28,lh=39,maxW=380;
+  ctx.font='600 '+fs+'px sans-serif';const lines=[];let row='';
+  for(const ch of text){if(ctx.measureText(row+ch).width>maxW&&row){lines.push(row);row=ch}else row+=ch}
+  if(row)lines.push(row);if(lines.length>2)lines.splice(1,lines.length-1,lines.slice(1).join(''));
+  const w=Math.min(440,Math.ceil(Math.max(...lines.map(v=>ctx.measureText(v).width)))+44),h=lines.length*lh+30;c.width=w;c.height=h;
+  ctx.font='600 '+fs+'px sans-serif';ctx.fillStyle='#F2D9DB';ctx.beginPath();if(ctx.roundRect)ctx.roundRect(0,0,w,h,22);else ctx.rect(0,0,w,h);ctx.fill();ctx.fillStyle='#402D36';ctx.textBaseline='middle';
+  lines.forEach((v,i)=>ctx.fillText(v,22,15+lh*(i+.5),w-44));
+  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));sprite.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1);sprite.position.y=3.42+sprite.scale.y/2;sprite.renderOrder=12;
+  const u=avatar.userData;if(u.mpBubble){avatar.remove(u.mpBubble);u.mpBubble.material.map.dispose();u.mpBubble.material.dispose()}
+  avatar.add(sprite);u.mpBubble=sprite;
+  const token=u.mpBubbleToken=(u.mpBubbleToken||0)+1;
+  setTimeout(()=>{if(u.mpBubbleToken!==token)return;avatar.remove(sprite);sprite.material.map.dispose();sprite.material.dispose();u.mpBubble=null},5000);
+ }
  function dispose(id){const p=peers.get(id);if(!p)return;S.remove(p.avatar);if(p.hit){const i=AVATAR_HITS.indexOf(p.hit);if(i>=0)AVATAR_HITS.splice(i,1)}if(typeof LSAVE!=='undefined'&&LSAVE){for(let i=LSAVE.length-1;i>=0;i--)if(LSAVE[i][0]===p.avatar)LSAVE.splice(i,1)}peers.delete(id)}
  function upsert(data){if(!data||!data.id||data.id===myId)return;const id=String(data.id);let p=peers.get(id);if(!p){const name=String(data.name||'관객').slice(0,14);const a=mk(name,0x7794a8,{ch:'ME'});a.userData.remote=1;const hit=AVATAR_HITS.find(h=>h.userData.giftAvatar===a);if(hit){const i=AVATAR_HITS.indexOf(hit);if(i>=0)AVATAR_HITS.splice(i,1)}p={avatar:a,hit,target:new THREE.Vector3(),r:0,zone:'L0'};peers.set(id,p)}
  const x=+data.x,y=+data.y,z=+data.z,r=+data.r;
@@ -2385,13 +2417,13 @@ const Multiplayer=(()=>{
   if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);setStatus('● '+(peers.size+1)+'명 접속');sendMove(true)}
   if(d.t==='peer'){upsert(d.peer);setStatus('● '+(peers.size+1)+'명 접속')}
   if(d.t==='leave'){dispose(d.id);setStatus('● '+(peers.size+1)+'명 접속')}
-  if(d.t==='chat'&&d.zone===curZone(me))log(d.name||'관객',d.text||'')
+  if(d.t==='chat'&&me&&d.zone===curZone(me)){const target=d.id===myId?me:peers.get(String(d.id))?.avatar;if(target)showBubble(target,d.text||'')}
  };
  socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);setStatus('● 연결 끊김');if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
  socket.onerror=()=>setStatus('● 접속 오류');
  }
  function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
- function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint()){setStatus('● 멀티 연결 설정');log('안내','멀티플레이 서버 배포 후 multiplayer-config.js에 주소를 입력하세요.');return}connect()}
+ function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint()){setStatus('● 멀티 연결 설정');return}connect()}
  function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;if(!same)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
  addEventListener('pagehide',()=>{closing=true;try{socket?.close(1000,'leaving')}catch{}});
  return {start,tick};

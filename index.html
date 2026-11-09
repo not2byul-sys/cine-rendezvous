@@ -590,10 +590,10 @@ var WTEX={};function wallTex(k,aspect){const key=k+'_'+aspect.toFixed(3);if(WTEX
 try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.posters');localStorage.setItem('aic.wallrev','13')}}catch(e){}
 
 let seatedHall=0;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?80:64):(C.aspect<1?70:56);C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
-S.add(new THREE.HemisphereLight(0xffe4bc,0x9a7a5e,.74));
-const dl=new THREE.DirectionalLight(0xffeccc,.26);dl.position.set(-8,20,14);S.add(dl);
+S.add(new THREE.HemisphereLight(0xffddb4,0x9a7459,.74));
+const dl=new THREE.DirectionalLight(0xffe6bd,.26);dl.position.set(-8,20,14);S.add(dl);
 const PL=(c,i,x,y,z,d=26)=>{const l=new THREE.PointLight(c,i*.55,d);l.position.set(x,y,z);S.add(l);return l};
-PL(0xffdca8,1.0,0,7.2,7.5,26);PL(0xffd9a8,.6,-5,3.5,4.5,14);PL(0xffd9a8,.6,5,3.5,4.5,14);PL(0xffe0b0,.45,-6,4,11.5,12);PL(0xffd0a0,.5,6.5,4,14.7,12);PL(0xffe0b0,.45,-6,4,15.5,12);PL(0xffd9a0,.55,0,6.6,-1,12);PL(0xffd9a0,.35,0,6.6,-3.2,10);
+PL(0xffd6a0,1.0,0,7.2,7.5,26);PL(0xffd9a8,.6,-5,3.5,4.5,14);PL(0xffd9a8,.6,5,3.5,4.5,14);PL(0xffe0b0,.45,-6,4,11.5,12);PL(0xffd0a0,.5,6.5,4,14.7,12);PL(0xffe0b0,.45,-6,4,15.5,12);PL(0xffd9a0,.55,0,6.6,-1,12);PL(0xffd9a0,.35,0,6.6,-3.2,10);
 function boxUV(g,w,h,d,t){const uv=g.attributes.uv,D=[[d,h],[d,h],[w,d],[w,d],[w,h],[w,h]];for(let f=0;f<6;f++){const [a,b]=D[f],sw=b>a*1.6;for(let k=0;k<4;k++){const i=f*4+k,u=uv.getX(i),v=uv.getY(i);sw?uv.setXY(i,v*b/t,u*a/t):uv.setXY(i,u*a/t,v*b/t)}}uv.needsUpdate=true}
 const B=(w,h,d,c,x,y,z,p=S)=>{const g=new THREE.BoxGeometry(w,h,d),mt=mat(c);if(mt.userData.tile)boxUV(g,w,h,d,mt.userData.tile);const m=new THREE.Mesh(g,mt);m.position.set(x,y,z);p.add(m);return m};
 function tag(t,bg,fg,fs,k=1,dt=false){const c=document.createElement('canvas'),x=c.getContext('2d'),f=`${bg.startsWith('rgba(255,255,255')?500:600} ${fs}px sans-serif`;x.font=f;const w=Math.ceil(x.measureText(t).width)+28,h=fs+20;c.width=w;c.height=h;x.font=f;x.fillStyle=bg;x.beginPath();x.roundRect?x.roundRect(0,0,w,h,h/2):x.rect(0,0,w,h);x.fill();x.fillStyle=fg;x.textBaseline='middle';x.fillText(t,14,h/2+1);
@@ -2269,13 +2269,13 @@ function opanel(v){$('pn').dataset.k=v;const pb=document.querySelector('#pn .pbo
   /* 팝업 없이: 준비 중이면 짧은 알림, 나왔으면 바로 받아서 손에 듦 */closePanel();if(ORD.st==='prep')toast('간식을 준비하고 있어요');else A.oget();return}
  if(!ORD||ORD.v!==v)ORD={v,q:{},ad:false,st:'compose'};
  const tot=Object.values(ORD.q).reduce((a,b)=>a+b,0),room=MAXH-HELD.length;
- let h=`<h3>${VEN[v].name} · 주문</h3>`;
- if(v==='vendor')h+='<p class="sub" style="margin:8px 0 18px">1931년 영화 《시티 라이트》의 꽃 파는 소녀. 장미를 골라 영화관의 등장인물에게 선물하세요.</p>';
+ let h=`<h3>${v==='vendor'?'꽃 파는 소녀':VEN[v].name+' · 주문'}</h3>`;
+ if(v==='vendor')h+='<p class="sub" style="margin:8px 0 18px">저는 1931년 영화 《시티 라이트》의 꽃 파는 소녀예요. 사람들에게 장미를 선물하세요. 꽃을 사시면 좋은 정보를 드릴게요.</p>';
 
  if(room<=0)h+='<p>🖐 손이 가득 찼어요. 먼저 들고 있는 걸 먹어주세요.</p>';
  h+='<div class="og">';MENU[v].forEach(k=>{const q=ORD.q[k]||0;h+=`<div class="rw"><div class="m"><b>${IT[k][0]} ${IT[k][1]}</b></div><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><b style="min-width:24px;text-align:center;display:inline-block">${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${tot>=room?'disabled':''} aria-label="더하기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button></div>`});h+='</div>';
  if(v!=='vendor')h+=`<p class="sub" style="margin-top:8px">담은 메뉴 ${tot}개</p>`;
- h+=`<button class="p" data-a="obuy" ${tot?'':'disabled'} style="width:100%">${v==='vendor'?'📺 광고 보고 꽃 받기':'📺 광고 보고 간식 받기'}</button>`;
+ h+=`<button class="p" data-a="obuy" ${tot?'':'disabled'} style="width:100%">${v==='vendor'?'5초간 광고보고 꽃 구매하기':'📺 광고 보고 간식 받기'}</button>`;
  panel(h);const nb=document.querySelector('#pn .pbox');if(nb)nb.scrollTop=st}
 /* 먹기: 카메라 쪽으로 돌아서서 손에 든 간식을 입으로 가져가는 동작을 반복, 다 먹을 때까지 계속 → 빈 용기는 「버리기」로 휴지통에 */
 let EAT=null;const eatLeft=it=>it.left==null?1:it.left;

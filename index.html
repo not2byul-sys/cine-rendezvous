@@ -467,6 +467,7 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 <div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt2-opts"><label class="jt2-ck"><input type="checkbox" id="nsave"><span>저장</span></label><label class="jt2-ck"><input type="checkbox" id="nrand"><span>랜덤</span></label></div></div><button id="go" class="jt2-go">입장하기</button><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="cloud-config.js"></script>
+<script src="multiplayer-config.js"></script>
 <script src="cloud-media.js"></script>
 <script src="club-preview.js"></script>
 <script id="config">
@@ -1843,7 +1844,7 @@ function punchJoin(done){const w=$('tk'),wr=$('jtw'),S0=24,q=w.querySelector('.j
 function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.MYNAME=nm;try{BGM.start();BGM.btn()}catch(e){}if(!nm){toast('좋아하는 영화 제목을 적어주세요 🎬');$('nick').focus();return}
  if(PUNCHING)return;PUNCHING=true;$('nick').blur();punchJoin(()=>enterNow(nm))}
 function enterNow(nm){
- try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0x9c7a5c,{me:1,ch:'ME'});{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();}
+ try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0x9c7a5c,{me:1,ch:'ME'});{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();Multiplayer.start(nm);}
 /* 랜덤: 고전·명작 영화 제목 중 하나를 닉네임으로 */const RAND_FILMS=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
 function randNick(){let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===$('nick').value&&RAND_FILMS.length>1);$('nick').value=n}
 $('nrand').addEventListener('change',e=>{if(e.target.checked)randNick()});$('nick').addEventListener('input',()=>{if($('nrand').checked)$('nrand').checked=false});
@@ -2348,6 +2349,45 @@ Object.assign(A,{
 });
 window.ORDAPI={get HELD(){return HELD},get ORD(){return ORD},get SLOW(){return SLOW},holdAdd,startSlow};
 
+/* ===== Vintage Cinema · optional realtime multiplayer (preview) ===== */
+const Multiplayer=(()=>{
+ const peers=new Map();let socket=null,myId=null,nick='',lastSend=0,lastState=null,retry=0,closing=false;
+ const els={};
+ function endpoint(){let raw=String(window.VINTAGE_MULTIPLAYER_URL||'').trim();if(!raw)return '';try{const u=new URL(raw);if(u.protocol!=='https:'&&u.hostname!=='localhost')return '';u.protocol=u.protocol==='https:'?'wss:':'ws:';u.pathname='/room';u.search='';u.hash='';return u.href}catch{return ''}}
+ function makeUI(){if(els.box)return;const css=document.createElement('style');css.textContent=`#mpbar{position:fixed;top:12px;right:12px;z-index:8;display:flex;gap:6px;align-items:center;font:12px system-ui;color:#fff}#mpbar button{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}#mpchat{position:fixed;right:12px;bottom:82px;width:min(330px,calc(100vw - 24px));height:260px;z-index:12;display:none;flex-direction:column;border:1px solid #a88776;background:rgba(33,20,23,.96);border-radius:12px;color:#fff;font:13px system-ui;box-shadow:0 8px 20px #0008}#mpchat.open{display:flex}#mphead{padding:9px 12px;font-weight:700;border-bottom:1px solid #735a57}#mplogs{flex:1;overflow-y:auto;overflow-wrap:anywhere;padding:9px 12px;line-height:1.5}#mpform{display:flex;gap:6px;padding:8px}#mpinput{flex:1;min-width:0;border-radius:6px;padding:8px;background:#f6efe5;color:#25171c}#mpsend{background:#d5b18c;color:#281c18;border:0;border-radius:6px;padding:8px}#mpbar[hidden],#mpchat[hidden]{display:none!important}`;document.head.appendChild(css);
+ const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="mpstatus" type="button">● 접속 준비</button><button id="mpopen" type="button">대화</button>';document.body.appendChild(b);
+ const c=document.createElement('div');c.id='mpchat';c.innerHTML='<div id="mphead">같은 공간의 관객 <button type="button" id="mpclose" style="float:right;background:none;color:#fff;border:0">닫기</button></div><div id="mplogs" role="log" aria-live="polite"></div><form id="mpform"><input id="mpinput" maxlength="120" placeholder="메시지 (120자 이내)" autocomplete="off" aria-label="대화 입력"><button id="mpsend" type="submit">보내기</button></form>';document.body.appendChild(c);els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.logs=document.getElementById('mplogs');els.input=document.getElementById('mpinput');
+ document.getElementById('mpopen').onclick=()=>c.classList.toggle('open');document.getElementById('mpclose').onclick=()=>c.classList.remove('open');els.status.onclick=()=>{if(!endpoint())alert('multiplayer-config.js에 Cloudflare Worker 주소를 입력하세요.');else if(!socket||socket.readyState!==1)connect()};
+ document.getElementById('mpform').onsubmit=e=>{e.preventDefault();const text=els.input.value.trim().slice(0,120);if(text&&socket?.readyState===1){socket.send(JSON.stringify({t:'chat',text}));els.input.value=''}};
+ }
+ function setStatus(message){if(els.status)els.status.textContent=message}
+ function log(name,message){if(!els.logs)return;const row=document.createElement('div');const bold=document.createElement('strong');bold.textContent=name+': ';row.appendChild(bold);row.appendChild(document.createTextNode(message));els.logs.appendChild(row);while(els.logs.childNodes.length>40)els.logs.firstChild.remove();els.logs.scrollTop=els.logs.scrollHeight}
+ function dispose(id){const p=peers.get(id);if(!p)return;S.remove(p.avatar);if(p.hit){const i=AVATAR_HITS.indexOf(p.hit);if(i>=0)AVATAR_HITS.splice(i,1)}if(typeof LSAVE!=='undefined'&&LSAVE){for(let i=LSAVE.length-1;i>=0;i--)if(LSAVE[i][0]===p.avatar)LSAVE.splice(i,1)}peers.delete(id)}
+ function upsert(data){if(!data||!data.id||data.id===myId)return;const id=String(data.id);let p=peers.get(id);if(!p){const name=String(data.name||'관객').slice(0,14);const a=mk(name,0x7794a8,{ch:'ME'});a.userData.remote=1;const hit=AVATAR_HITS.find(h=>h.userData.giftAvatar===a);if(hit){const i=AVATAR_HITS.indexOf(hit);if(i>=0)AVATAR_HITS.splice(i,1)}p={avatar:a,hit,target:new THREE.Vector3(),r:0,zone:'L0'};peers.set(id,p)}
+ const x=+data.x,y=+data.y,z=+data.z,r=+data.r;
+ if(![x,y,z,r].every(Number.isFinite))return;p.target.set(x,y,z);p.r=r;p.zone=String(data.zone||'L0');p.avatar.userData.lvl=p.zone==='L1'?1:0;
+ if(!p.init){p.avatar.position.copy(p.target);p.avatar.rotation.y=p.r;p.init=true}
+ }
+ function connect(){const url=endpoint();if(!url||!me||closing)return;if(socket&&(socket.readyState===0||socket.readyState===1))return;
+ try{socket=new WebSocket(url)}catch{setStatus('● 연결 오류');return}
+ setStatus('● 연결 중');
+ socket.onopen=()=>{retry=0;lastState=null;setStatus('● 동기화 중');socket.send(JSON.stringify({t:'join',name:nick}));sendMove(true)};
+ socket.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch{return}
+  if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);setStatus('● '+(peers.size+1)+'명 접속');sendMove(true)}
+  if(d.t==='peer'){upsert(d.peer);setStatus('● '+(peers.size+1)+'명 접속')}
+  if(d.t==='leave'){dispose(d.id);setStatus('● '+(peers.size+1)+'명 접속')}
+  if(d.t==='chat'&&d.zone===curZone(me))log(d.name||'관객',d.text||'')
+ };
+ socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);setStatus('● 연결 끊김');if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
+ socket.onerror=()=>setStatus('● 접속 오류');
+ }
+ function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
+ function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint()){setStatus('● 멀티 연결 설정');log('안내','멀티플레이 서버 배포 후 multiplayer-config.js에 주소를 입력하세요.');return}connect()}
+ function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;if(!same)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
+ addEventListener('pagehide',()=>{closing=true;try{socket?.close(1000,'leaving')}catch{}});
+ return {start,tick};
+})();
+
 /* ---------- loop ---------- */
 const clk=new THREE.Clock(),look=new THREE.Vector3(0,1,18),cp=new THREE.Vector3(),lk=new THREE.Vector3();let ac=0,CLOST=0;
 function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러보기',L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉으면 바로 상영',H2:'의자를 눌러 앉으면 바로 상영',B:'영화클럽 아지트 · 보드를 눌러 한줄평 남기기'})[z]||''}
@@ -2412,7 +2452,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
  popG.rotation.y+=dt*.5;/* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
  if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space);HLF+=((on?1:0)-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.055+.40*HLF;H.pl.intensity=H.pli*(.08+.56*HLF);dl.intensity=.016+.136*HLF}else{dl.intensity=LOBBY_DL;HLF=1}
-popAnim(dt,t);emgAnim(t);if(me){const z_=curZone(me);showSpace(z_==='B'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=LAYED||C.position.distanceTo(g.position)>4});
+popAnim(dt,t);emgAnim(t);Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=LAYED||C.position.distanceTo(g.position)>4});
  if(Math.floor(t)!==Math.floor(t-dt)&&Math.floor(t)%2===0)drawScreens();
  NPCS.forEach(c=>{if(!c.userData.static)upd(c,dt,t)});buffTick(dt);if(typeof doorTick==="function"&&TRAP&&TRAP.userData.leaf)doorTick(dt);if(typeof vendTick==="function"&&typeof VENDS!=="undefined"&&VENDS&&typeof CFG!=="undefined"&&me){if(!VENDS.length&&!window.__vi){window.__vi=1;vendInit()}vendTick(dt)}if(typeof CLUBN!=='undefined'){if(me&&curZone(me)==='B')CLUBN.forEach(c=>upd(c,dt,t));clubTick(t)}if(me)upd(me,dt,t);Object.values(VSTAFF).forEach(c=>{if(!c.userData.trayVendor)upd(c,dt,t)});orderTick(dt,t);
  R.render(S,C);place()})();

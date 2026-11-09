@@ -411,14 +411,6 @@ const hallSC=h=>({id:'H'+h.id,hall:h,film:nowFilm(h),start:nowS(),end:dayEnd()})
 /* ---------- API mock (서버 연동 시 이 모듈만 교체) ----------
    ⚠ 실제 운영: 보상 지급(티켓·간식)과 티켓 검증은 서버에서 처리. 광고 승인 신호를 받은 뒤 서버에 1회성 지급 요청 → 서버가 중복·조작을 검증 */
 const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};
-/* ===== 사이트 설정 파일(site-config.json): GitHub 저장소에 올린 관리자 설정을 모든 방문자의 기본값으로 적용 =====
-   관리 → 「설정 내보내기」로 받은 site-config.json 을 index.html 과 같은 폴더에 올리면 됩니다.
-   파일의 rev 가 바뀌었을 때만 덮어쓰므로, 새 파일을 올리면 모든 방문자에게 다시 적용됩니다. */
-const SITE_KEYS=['aic.clubfilmRevision','aic.sched','aic.layout','aic.txt','aic.posters','aic.filmInfo','aic.theme','aic.clubfilm','aic.ad','aic.durs'];
-(function loadSiteConfig(){if(location.protocol==='file:')return;try{const x=new XMLHttpRequest();x.open('GET','site-config.json?t='+Date.now(),false);x.send();if(x.status!==200)return;const c=JSON.parse(x.responseText);if(!c||!c.rev||!c.data)return;
- if(localStorage.getItem('aic.siteRev')===String(c.rev))return;SITE_KEYS.forEach(k=>{if(k in c.data){if(c.data[k]==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(c.data[k]))}});localStorage.setItem('aic.siteRev',String(c.rev))}catch(e){}})();
-function siteExport(){const data={};SITE_KEYS.forEach(k=>{const v=store.get(k);if(v!=null)data[k]=v});const rev=new Date().toISOString();const blob=new Blob([JSON.stringify({rev,note:'AI CINEMA 관리자 설정 · GitHub 저장소의 index.html 옆에 올리세요',data},null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='site-config.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
-function siteImport(file){const r=new FileReader();r.onload=()=>{try{const c=JSON.parse(r.result);if(!c.data)throw 0;SITE_KEYS.forEach(k=>{if(k in c.data)localStorage.setItem(k,JSON.stringify(c.data[k]))});if(c.rev)localStorage.setItem('aic.siteRev',String(c.rev));location.reload()}catch(e){alert('설정 파일을 읽지 못했어요')}};r.readAsText(file)}
 const DURS=store.get('aic.durs')||{},SCHEDK='aic.sched';
 function applySched(){const sv=store.get(SCHEDK);CFG.HALLS.forEach(h=>{if(!h._def)h._def={films:h.films.map(f=>({...f})),anchor:h.anchor,gap:CFG.GAP};const x=sv&&sv[h.id];if(x&&x.films&&x.films.length){h.films=x.films.map(f=>({...f}));h.anchor=x.anchor||undefined}else{h.films=h._def.films.map(f=>({...f}));h.anchor=h._def.anchor}
   h.films.forEach(f=>{if(f.auto&&DURS[f.id])f.dur=DURS[f.id]})});CFG.GAP=sv&&sv.gap!=null?sv.gap:CFG.HALLS[0]._def.gap}
@@ -1839,7 +1831,7 @@ PANELS.adset=()=>{if(!ADM){PANELS.admlogin();return}const a=CFG.AD,u=a.units||{}
 PANELS.adfilmInfo=()=>{if(!ADM){PANELS.admlogin();return}let html='<h3>상영정보 편집</h3><p class="sub">각 작품의 안내판 정보를 편집합니다. 저장하면 두 관의 안내판에 바로 반영됩니다.</p>';CFG.HALLS.forEach(h=>{html+='<h3>'+esc(h.name)+'</h3>';h.films.forEach((f,i)=>{const info=filmBoardInfo(h,f),id='fi_'+h.id+'_'+i;html+='<div class="adh"><b>'+esc(f.title)+'</b>';[['title','영화 제목'],['credit','감독·제작 정보'],['duration','상영시간'],['syn','영화 소개'],['notice','관람 안내']].forEach(([k,label])=>{html+='<label style="display:block;margin-top:10px">'+label+'</label><textarea style="width:100%;box-sizing:border-box" id="'+id+'_'+k+'" rows="'+(k==='syn'?3:1)+'">'+esc(info[k])+'</textarea>'});html+='</div>'})});panel(html+'<button class="p" data-a="saveFilmInfo" style="width:100%">상영정보 저장</button>')};
 Object.assign(A,{adfilmInfo:()=>PANELS.adfilmInfo(),saveFilmInfo:()=>{if(!ADM)return;const data=store.get(FILM_INFO_KEY)||{};CFG.HALLS.forEach(h=>h.films.forEach((f,i)=>{const info={};['title','credit','duration','syn','notice'].forEach(k=>info[k]=($('fi_'+h.id+'_'+i+'_'+k).value||'').trim());data[filmInfoId(h,f)]=info}));store.set(FILM_INFO_KEY,data);boardDraw();toast('상영정보를 저장했어요')}});
 PANELS.adm=()=>{if(!ADM){PANELS.admlogin();return}if(!ADMD)admInit();const _pb=document.querySelector('#pn .pbox'),_st=_pb?_pb.scrollTop:0;
- let h=`<div class="admtab"><button class="p">상영작 관리</button><button data-a="txopen" data-t="txt">문구 편집</button><button data-a="layopen">배치 편집</button><button data-a="adset">광고 설정</button><button data-a="admposter">포스터</button><button data-a="adfilmInfo">상영정보 편집</button><button data-a="cloudsettings">영상 저장소</button><button data-a="admtest">상태 테스트</button><button data-a="siteexp">설정 내보내기</button><button data-a="siteimp">설정 가져오기</button></div>`;
+ let h=`<div class="admtab"><button class="p">상영작 관리</button><button data-a="txopen" data-t="txt">문구 편집</button><button data-a="layopen">배치 편집</button><button data-a="adset">광고 설정</button><button data-a="admposter">포스터</button><button data-a="adfilmInfo">상영정보 편집</button><button data-a="cloudsettings">영상 저장소</button><button data-a="admtest">상태 테스트</button></div>`;
  CFG.HALLS.forEach(hl=>{const D=ADMD[hl.id];
   h+=`<div class="adh"><div style="font-weight:700;margin-bottom:4px">${hl.name} · ${hl.genre}</div>`;
   D.films.forEach((f,i)=>{h+=`<div class="rw"><div class="m"><b>${i?'':'▶ '}${esc(f.title)}</b><i>${f.src?(f.cloud?'공유 영상':f.local?'이 브라우저의 파일':'링크'):'YouTube'} · ${mmss(f.dur)}</i></div><button data-a="admv" data-h="${hl.id}" data-i="${i}" ${i?'':'disabled'}>↑</button><button data-a="addel" data-h="${hl.id}" data-i="${i}">삭제</button></div>`});
@@ -1848,7 +1840,7 @@ PANELS.adm=()=>{if(!ADM){PANELS.admlogin();return}if(!ADMD)admInit();const _pb=d
  h+=`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="p" data-a="adsave">저장 및 적용</button><button data-a="adreset">기본값으로</button><button data-a="adout">나가기</button></div>`;
  panel(h);const _nb=document.querySelector('#pn .pbox');if(_nb)_nb.scrollTop=_st};
 PANELS.cloudsettings=()=>{if(!ADM){PANELS.admlogin();return}panel('<h3>영상 저장소</h3><label>저장소 주소</label><input id="cloud_base" type="url" value="'+esc(window.CinemaCloud?.apiBase||'')+'" placeholder="https://cinema-media.계정.workers.dev"><label>저장소 관리자 키</label><input id="cloud_token" type="password" autocomplete="off" placeholder="서버에 설정한 관리자 키"><p class="sub">관리자 키는 이 탭을 닫거나 관리자에서 나가면 지워집니다.</p><button class="p" data-a="cloudconnect">연결 확인</button><button data-a="adm">돌아가기</button>')};
-Object.assign(A,{cloudsettings:()=>PANELS.cloudsettings(),siteexp:()=>{if(!ADM)return;siteExport();toast('site-config.json 을 받았어요. GitHub 저장소에 올리면 모든 방문자에게 적용돼요')},siteimp:()=>{if(!ADM)return;const i=document.createElement('input');i.type='file';i.accept='application/json,.json';i.onchange=()=>{if(i.files[0])siteImport(i.files[0])};i.click()},cloudconnect:async()=>{if(!ADM)return;try{await window.CinemaCloud.connect($('cloud_base').value.trim(),$('cloud_token').value);toast('영상 저장소를 연결했어요');PANELS.adm()}catch(e){toast(e.message)}}});
+Object.assign(A,{cloudsettings:()=>PANELS.cloudsettings(),cloudconnect:async()=>{if(!ADM)return;try{await window.CinemaCloud.connect($('cloud_base').value.trim(),$('cloud_token').value);toast('영상 저장소를 연결했어요');PANELS.adm()}catch(e){toast(e.message)}}});
 Object.assign(A,{
  adm:()=>PANELS.adm(),
  admlogin:()=>{const el=$('ad_pw');if(el&&el.value===ADMPW){ADM=true;admInit();PANELS.adm()}else{toast('비밀번호가 달라요');if(el){el.value='';el.focus()}}},
@@ -2437,16 +2429,7 @@ function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\
 let CLV=null,CLVSRC='',CLVTEX=null,CLVACTIVE=false,CLVFAILED=false,CLVRETRY=0,CLVSYNC=0;
 function clubSync(force=false){if(!CLV||!Number.isFinite(CLV.duration)||CLV.duration<=0)return;const target=(Date.now()/1000)%CLV.duration,d=Math.abs(CLV.currentTime-target),drift=Math.min(d,CLV.duration-d);if(force||drift>1.2){try{CLV.currentTime=Math.min(target,CLV.duration-.04)}catch(_){}}}
 function clubStart(){if(!CLV||!CLVACTIVE||CLVFAILED)return;clubSync(true);const result=CLV.play();if(result&&result.catch)result.catch(()=>{})}
-/* 유튜브 링크이거나 mp4 파일을 못 불러오면: 유튜브 영상을 스크린 자리에 겹쳐 음소거 자동재생(캔버스에 스크린 모양 구멍) */
-const CLUB_YT='https://www.youtube.com/watch?v=s01M3YGI8MY&list=PL28d5JImIlH4P1M7ooOiKTrPjlw-JLety&index=2';
-let YTL=null,YTLSRC='';function ytLayer(on,url){if(!on){if(YTL){YTL.remove();YTL=null;YTLSRC='';if(CLUBSCR.userData.m0&&CLUBSCR.material===CLUBSCR.userData.hole)CLUBSCR.material=CLUBSCR.userData.m0}return}
- const id=ytId(url),lm=String(url).match(/list=([\w-]+)/);if(!id)return;if(!CLUBSCR.userData.m0)CLUBSCR.userData.m0=CLUBSCR.material;if(!CLUBSCR.userData.hole)CLUBSCR.userData.hole=new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:0,blending:THREE.NoBlending});CLUBSCR.material=CLUBSCR.userData.hole;CLUBSCR.scale.x=CLUBSCR.scale.y=1;
- if(!YTL){YTL=document.createElement('div');YTL.id='clubyt';YTL.style.cssText='position:fixed;z-index:0;pointer-events:none;overflow:hidden;background:#000';const cv=document.querySelector('canvas');document.body.insertBefore(YTL,cv&&cv.parentNode===document.body?cv:document.body.firstChild)}
- const src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&playsinline=1&rel=0&modestbranding=1${lm?'&list='+lm[1]:''}`;if(YTLSRC!==src){YTLSRC=src;YTL.innerHTML=`<iframe src="${src}" allow="autoplay; encrypted-media" style="width:100%;height:100%;border:0;display:block"></iframe>`}}
-function ytLayerPos(){if(!YTL||!window.CLUBSCR)return;const m=CLUBSCR;m.updateMatrixWorld();const v=[[-.5,.5],[.5,.5],[-.5,-.5],[.5,-.5]].map(([a,b])=>new THREE.Vector3(a*4.6,b*2.6,0).applyMatrix4(m.matrixWorld).project(C));if(v.some(p=>p.z>1)){YTL.style.display='none';return}
- const xs=v.map(p=>(p.x+1)/2*innerWidth),ys=v.map(p=>(1-p.y)/2*innerHeight),l=Math.min(...xs),t=Math.min(...ys);YTL.style.display='block';YTL.style.left=l+'px';YTL.style.top=t+'px';YTL.style.width=(Math.max(...xs)-l)+'px';YTL.style.height=(Math.max(...ys)-t)+'px'}
 function clubVid(active=false){if(!window.CLUBSCR)return;const src=clubUrl();
- {const yurl=ytId(src)?src:(CLVFAILED&&CLVSRC===src?CLUB_YT:null);if(yurl){ytLayer(active,yurl);if(ytId(src))return}else if(YTL)ytLayer(false)}
  if(!CLV||src!==CLVSRC){if(!active)return;if(CLV){CLV.pause();CLV.removeAttribute('src');CLV.load()}if(CLVTEX)CLVTEX.dispose();
   CLVSRC=src;CLVFAILED=false;CLVACTIVE=false;CLV=document.createElement('video');CLV.loop=true;CLV.muted=true;CLV.volume=.15;CLV.autoplay=true;CLV.playsInline=true;CLV.preload='auto';CLV.setAttribute('playsinline','');if(/^https?:/i.test(src))CLV.crossOrigin='anonymous';
   if(!CLUBSCR.userData.m0)CLUBSCR.userData.m0=CLUBSCR.material;
@@ -2459,8 +2442,8 @@ function clubVid(active=false){if(!window.CLUBSCR)return;const src=clubUrl();
  if(active&&!CLVFAILED&&Date.now()>CLVRETRY){CLVRETRY=Date.now()+2000;if(CLV.paused)clubStart()}
  if(active&&Date.now()>CLVSYNC){CLVSYNC=Date.now()+5000;clubSync()}
 }
-function clubVidPos(){ytLayerPos()}
-function clubPlay(){if(YTL){const id=ytId(YTLSRC.replace('/embed/','/watch?v='))||ytId(clubUrl())||ytId(CLUB_YT);window.open('https://www.youtube.com/watch?v='+id,'_blank');return}if(!CLV||CLVFAILED){toast('아지트 영상을 불러오지 못했어요');return}CLV.muted=!CLV.muted;clubStart();toast(CLV.muted?'아지트 영상 소리를 껐어요':'아지트 영상 소리를 켰어요')}
+function clubVidPos(){}
+function clubPlay(){if(!CLV||CLVFAILED){toast('아지트 영상을 불러오지 못했어요');return}CLV.muted=!CLV.muted;clubStart();toast(CLV.muted?'아지트 영상 소리를 껐어요':'아지트 영상 소리를 켰어요')}
 Object.assign(A,{clubsave:async()=>{if(!ADM)return;const file=$('ad_clubfile')?.files[0];let value=($('ad_club').value||'').trim();try{
  if(file){if(!window.CinemaCloud?.enabled){toast('영상 저장소를 연결하면 새 영상을 올릴 수 있어요');return}const movie=await window.CinemaCloud.upload(file,n=>{const btn=document.querySelector('[data-a="clubsave"]');if(btn)btn.textContent='영상 업로드 '+n+'%'});value=movie.src}
  if(!/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(value)){toast('MP4 또는 WebM 영상 주소를 입력해 주세요');return}
@@ -2600,7 +2583,7 @@ trapShow();
  /* 클럽 회원 NPC 5명: 소파에 앉아 영화 이야기 */const CL=[['세실리아',0,{ch:'A05'}],['토토',0,{ch:'A08'}],['이자벨',0,{ch:'A03'}],['매튜',0,{ch:'A10'}],['마커스 교수',0,{}]];
  const sps=SPOTS.filter(q=>q.zone==='B');CL.forEach(([nm,col,o],i)=>{const c=mk(nm,col,LOOK[nm]||o);c.userData.npc=true;CLUBN.push(c);CLUBG.push(c);HSET.add(c);c.visible=false;const sp=sps[[0,2,3,5,7][i]];if(sp){sp.taken=c;setTimeout(()=>{sp.taken=null;sit(c,sp)},0)}})}
 const CLUB_LINES=['「화양연화」는 복도 장면만으로 완벽해요','흑백영화는 빛이 주인공이에요','열린 결말이 더 오래 남지 않아요?','오늘은 누벨바그 얘기해볼까요?','롱테이크 좋아하는 사람 손! 🙋','영화음악만 들어도 장면이 떠올라요','이번 주 토론 주제, 인생 엔딩 장면이에요','극장에서 본 영화는 기억이 달라요','감독판이 더 좋았던 영화 있어요?','한줄평 보드에 한마디 남겨줘요 📌','자막 없이 보면 표정이 더 보여요','재개봉하면 꼭 다시 보고 싶은 영화는?'];
-function clubTick(t){const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+3+i*3.2;if(nw>u.nt){u.nt=nw+11+Math.random()*6;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
+function clubTick(t){const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B'));if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+3+i*3.2;if(nw>u.nt){u.nt=nw+11+Math.random()*6;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
 /* ===== 관리자 · 배치 편집 (탑뷰 드래그 · 회전 · 복제 · 삭제 · 저장) ===== */
 var LAYED=false;const LAYK='aic.layout';let LSEL=null,LDRAG=null,LSNAP=null,LHLP=[],LDN=0;
 const LQ=new THREE.Quaternion(),LYA=new THREE.Vector3(0,1,0),lray=new THREE.Raycaster(),lv2=new THREE.Vector2(),LDEL={userData:{},position:new THREE.Vector3()};lray.layers.enable(2);
@@ -2701,10 +2684,10 @@ S.children.forEach(root=>{if(HSET.has(root)||root===me)return;root.traverse(o=>{
 /* Club-only warm, dimmed atmosphere. */
 CLUBG.forEach(o=>{if(o.isLight){o.color.setHex(0xffd9b3);o.intensity*=.85;if(o.userData.i!=null)o.userData.i*=.85}});
 /* Soft lighting: gentler local peaks and broader, restrained highlights. */
-const SOFT_MATERIALS=new Set();/* WeakSet은 객체가 아닌 값에서 오류가 나므로 Set 사용 */
-function softenSurface(m){if(!m||typeof m!=='object'||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
+const SOFT_MATERIALS=new WeakSet();
+function softenSurface(m){if(!m||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
 function softenObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(softenSurface);if(o.isSprite&&o.material&&o.material.map===haloTex){o.material.opacity*=.78;o.scale.multiplyScalar(1.10)}})}
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
-Object.values(HALLN).forEach(h=>h.pli*=.82);try{softenObject(S);Object.values(TM).forEach(softenSurface)}catch(e){console.warn('soften skipped',e)}
+Object.values(HALLN).forEach(h=>h.pli*=.82);softenObject(S);Object.values(TM).forEach(softenSurface);
 window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF(){return BUFF},sit,standUp,get SPOTS(){return SPOTS},trapShow:a=>trapShow(a),INTER,get NPCS(){return NPCS},showSpace,get space(){return space},pickSeat,get sel(){return selSeat},get yaw(){return camYaw},set yaw(v){camYaw=v},get me(){return me},upd,walkTo,API,AdService,CFG,openPanel,A,scrAt,listS,curS,HALLN,STAFF,move,zoneOf,hasPass,refTK,paintSeats,PANELS,curZone,get curSp(){return curSp},HNPC,LAYI,layGet,HALLN,txT,txCatalog};
 </script></body></html>

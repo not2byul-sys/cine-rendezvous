@@ -108,6 +108,21 @@ test('ordinary movement preserves camera heading, while a space transition align
   assert(source.includes('window.__lzn!==zn&&!s)alignSpaceCamera(me)'));
 });
 
+test('interaction routing goes around a table and every segment stays outside furniture', () => {
+  const ctx = { Math, bounds: () => [-6, 6, -6, 6], zoneOf: () => 'L0', blocked: (x, z) => x > -1 && x < 1 && z > -1.5 && z < 1.5 };
+  vm.createContext(ctx); vm.runInContext(section('function furnitureRoute(', 'function walkTo('), ctx);
+  const c = actor(); c.position.x = -4; const path = ctx.furnitureRoute(c, 4, 0, 'L0');
+  assert(path && path.length > 1); let previous = c.position;
+  for (const point of path) { for (let k = 1; k <= 100; k++) assert(!ctx.blocked(previous.x + (point.x - previous.x) * k / 100, previous.z + (point.z - previous.z) * k / 100)); previous = point; }
+  assert.equal(path.at(-1).x, 4); assert.equal(path.at(-1).z, 0);
+});
+
+test('an unreachable interaction returns no route instead of walking through a wall', () => {
+  const ctx = { Math, bounds: () => [-3, 3, -3, 3], zoneOf: () => 'L0', blocked: (x, z) => Math.abs(x) < .5 };
+  vm.createContext(ctx); vm.runInContext(section('function furnitureRoute(', 'function walkTo('), ctx);
+  const c = actor(); c.position.x = -2; assert.equal(ctx.furnitureRoute(c, 2, 0, 'L0'), null);
+});
+
 function doorContext() {
   let invitation = false, entered = 0;
   const ctx = { Math, INTER: [], OBS: null, LW: 10, LD: 20,

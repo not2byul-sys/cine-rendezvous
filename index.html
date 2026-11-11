@@ -661,7 +661,7 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 </head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
-<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="lobmute" id="lobbyMute" title="로비 음소거" aria-label="로비 음소거">음소거</button><button data-a="adm">관리</button><button data-a="cstand" id="cx" title="그만보기" aria-label="그만보기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt"></b><button id="cyt" title="유튜브에서 보기" aria-label="유튜브에서 보기"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg></button></div>
+<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="adm">관리</button><button data-a="cstand" id="cx" title="그만보기" aria-label="그만보기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt"></b><button id="cyt" title="유튜브에서 보기" aria-label="유튜브에서 보기"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17"/><path d="m10 15 5-3-5-3z"/></svg></button></div>
 <div class="hint" id="hint"></div>
 <div class="bar"><div id="act"></div><input id="msg" placeholder="채팅 입력" maxlength="40" hidden><button id="send" hidden>전송</button><button id="hi" hidden></button><button id="clap" hidden></button></div>
 <div id="aud" aria-hidden="true"><canvas></canvas></div><div id="cine" hidden><div id="yt"></div><video id="vf" hidden playsinline muted></video><div id="cmsg" hidden></div><div id="shield"></div><button class="p" id="watch" hidden>영화 보기</button></div>
@@ -1157,7 +1157,7 @@ const LOOK={
  '앙투안 두아넬':{hair:LK_D,hs:'short',coat:0x6a6e72,open:0,pants:0x4a4a52,kid:1}};
 /* NPC 터치 시 자기소개: 출연 영화 · 연도 · 맡은 역할(1인칭) */
 /* NPC 자기소개 말풍선(HTML): 머리 위에 따라붙고 「영화 상세정보」 버튼 → 새 창 */
-let NPCB=null;function npcCard(g,name){if(NPCB){NPCB.remove();NPCB=null}const info=CHARINFO[name];if(info)sayB(g,'“'+info.slice(0,46)+'”',5)}
+let NPCB=null;function npcCard(g,name){if(NPCB){NPCB.remove();NPCB=null}const info=CHARINFO[name];if(info)sayB(g,'“'+info+'”',8)}
 function npcCardTick(){if(!NPCB||NPCB.hidden)return;const g=NPCB._g;if(!g||performance.now()>NPCB._t||!g.visible){NPCB.hidden=true;return}const v=new THREE.Vector3(0,2.42,0);g.localToWorld(v);v.project(C);if(v.z>1){NPCB.style.display='none';return}NPCB.style.display='block';const hw=NPCB.offsetWidth/2,x=(v.x+1)/2*innerWidth,y=(1-v.y)/2*innerHeight;NPCB.style.left=x+'px';NPCB.style.top=y+'px'}
 (function npcLoop(){try{npcCardTick()}catch(e){}requestAnimationFrame(npcLoop)})();
 const CHARINFO={
@@ -1501,7 +1501,7 @@ const _lB=layBeg();/* 02 매표소: 둥근 마호가니 유리 부스 (TICKETS �
 
  hitbox(cx+.7,1.5,cz,1.8,3,3.2,{fn:()=>openPanel('booth'),pt:{x:-5.3,z:cz,zone:'L0'}})}
 /* Staff sits behind a small internal desk on a tall wooden chair. */
-const stT=mk('미시즈 퍼재컬리',SGD,{staff:true,ch:'S01'});VSTAFF.ticket=stT;stT.userData.counterStaff=true;stT.userData.static=1;
+const stT=mk('미시즈 퍼재컬리',SGD,{staff:true,ch:'S01'});stT.userData.counterStaff=true;stT.userData.static=1;
 {const x=-6.99,z=11.20,wood=new THREE.MeshPhongMaterial({color:0x493023,shininess:35});
  const seat=new THREE.Mesh(new THREE.CylinderGeometry(.23,.23,.055,32),wood);seat.position.set(x,1.105,z);S.add(seat);
  [-1,1].forEach(a=>[-1,1].forEach(b=>{const leg=new THREE.Mesh(new THREE.CylinderGeometry(.022,.03,1.04,12),wood);leg.position.set(x+a*.15,.56,z+b*.15);S.add(leg)}));
@@ -2078,7 +2078,7 @@ COLS.forEach((c,i)=>{const d=document.createElement('i');d.style.background='#'+
 const D=new Date();$('dt').innerHTML=D.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric',year:'numeric'})+'<br>'+D.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}).toLowerCase().replace(' ','');
 let VISITS=0;try{VISITS=+localStorage.getItem('aic.visits')||0}catch(e){}$('no').textContent=(NPCS.length+1)+'/'+CFG.CHANNELS[0].cap;$('no').title='입장 인원 / 서버 정원';
 $('nick').value='';
-function beep(){if(CINEMA_FX.muted)return;try{const a=new(window.AudioContext||window.webkitAudioContext)(),T=a.currentTime+.2;
+function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),T=a.currentTime+.2;
  // Layered, dry paper fibres: a short puncture followed by a soft rustle.
  const paper=(duration,freq,volume,delay,decay)=>{const count=Math.ceil(a.sampleRate*duration),buffer=a.createBuffer(1,count,a.sampleRate),data=buffer.getChannelData(0);let smooth=0;for(let i=0;i<count;i++){smooth=.55*smooth+.45*(Math.random()*2-1);const attack=Math.min(1,i/(a.sampleRate*.002));data[i]=smooth*attack*Math.pow(1-i/count,decay)*( .7+.3*Math.sin(i*.031))}const src=a.createBufferSource(),hi=a.createBiquadFilter(),lo=a.createBiquadFilter(),gain=a.createGain();src.buffer=buffer;hi.type='highpass';hi.frequency.value=500;lo.type='lowpass';lo.frequency.value=freq;gain.gain.value=volume;src.connect(hi);hi.connect(lo);lo.connect(gain);gain.connect(a.destination);src.start(T+delay)};
  paper(.045,4200,.65,0,3);paper(.115,2900,.36,.018,2.5);paper(.075,3600,.14,.11,2);setTimeout(()=>a.close(),750)
@@ -2096,7 +2096,7 @@ function punchJoin(done){const w=$('tk'),wr=$('jtw'),S0=24,q=w.querySelector('.j
   bits.forEach(b=>b.animate([{opacity:1,transform:'none'},{opacity:0,transform:`translate(${Math.random()*90-45}px,${60+Math.random()*90}px) rotate(${Math.random()*420}deg)`}],{duration:650+Math.random()*450,easing:'ease-in',fill:'forwards'}));
   setTimeout(()=>w.animate([{transform:'none',opacity:1},{transform:'translateY(-70px) rotate(3deg)',opacity:0}],{duration:480,easing:'ease-in',fill:'forwards'}),950)}catch(e){}
  beep();setTimeout(done,1400)}
-function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.MYNAME=nm;try{BGM.start();BGM.btn();CINEMA_FX.init()}catch(e){}if(!nm){toast('좋아하는 영화 제목을 적어주세요 🎬');$('nick').focus();return}
+function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.MYNAME=nm;try{BGM.start();BGM.btn()}catch(e){}if(!nm){toast('좋아하는 영화 제목을 적어주세요 🎬');$('nick').focus();return}
  if(PUNCHING)return;PUNCHING=true;$('nick').blur();punchJoin(()=>enterNow(nm))}
 /* QA05: 50 independent 1970s avatar styles (10 coat palettes × 5 hair/hat sets).
    Keep the look stable within one browser tab and never affect guest NPC looks. */
@@ -2110,13 +2110,11 @@ const USER_LOOK50=Array.from({length:50},(_,i)=>{
    pants:[0x493e32,0x353a3c,0x5b4e42,0x454038,0x3b3835][p%5],
    ...(hats[f]?{hat:hats[f],hatc:c}:{}),...(p%4===0?{scarf:0xe3c19e}:{})};
 });
-/* QA07: A visitor looks identical on their own device and every peer's device.
-   Both renderers resolve one of the 50 designs from the same public nickname. */
-function qaUserLook(name){const value=String(name||'관객').normalize('NFC').trim();let hash=2166136261;
- for(const ch of value)hash=Math.imul(hash^ch.codePointAt(0),16777619);
- return USER_LOOK50[(hash>>>0)%USER_LOOK50.length];}
+function qaUserLook(){let n=-1;try{const raw=sessionStorage.getItem('cine.avatar50');n=raw===null?-1:Number(raw)}catch(e){}
+ if(!Number.isInteger(n)||n<0||n>=50){n=Math.floor(Math.random()*50);try{sessionStorage.setItem('cine.avatar50',String(n))}catch(e){}}
+ return USER_LOOK50[n];}
 function enterNow(nm){
- try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0x9c7a5c,{...qaUserLook(nm),me:1,ch:'ME'});{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();Multiplayer.start(nm);}
+ try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0x9c7a5c,{...qaUserLook(),me:1,ch:'ME'});{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();Multiplayer.start(nm);}
 /* 랜덤: 고전·명작 영화 제목 중 하나를 닉네임으로 */const RAND_FILMS=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
 function randNick(){let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===$('nick').value&&RAND_FILMS.length>1);$('nick').value=n}
 $('nrand').addEventListener('change',e=>{if(e.target.checked)randNick()});$('nick').addEventListener('input',()=>{if($('nrand').checked)$('nrand').checked=false});
@@ -2142,40 +2140,9 @@ const BGM={on:store.get('aic.bgm')!==0,ctx:null,g:null,t:0,bar:0,timer:null,
   for(let k=0;k<4;k++){this.ride(t+k*B,k%2?.018:.012);if(k%2)this.ride(t+k*B+SW,.008)}
   if(Math.random()<.7){const pool=ch.slice(2).map(n=>n+12);let bt=Math.random()<.5?0:.66;for(let q=0;q<3;q++){if(Math.random()<.65)this.note(pool[(Math.random()*pool.length)|0],t+(q+bt)*B,B*.8,.03);bt=Math.random()<.5?0:.66}}
   this.t+=4*B;this.bar++}},
- vol(){if(!this.ctx)return;const sp=me&&me.userData.seat,cine=sp&&sp.kind==='cine',z=me?curZone(me):'L0',target=!this.on||CINEMA_FX.muted||cine||z==='B'||z[0]==='H'||(typeof space==='number'&&space>0)?0:.22;/* 지하 아지트(B)에서는 로비 음악 끔 */if(z==='B'||z[0]==='H'||(typeof space==='number'&&space>0)){this.g.gain.cancelScheduledValues(this.ctx.currentTime);this.g.gain.setValueAtTime(0,this.ctx.currentTime)}else this.g.gain.setTargetAtTime(target,this.ctx.currentTime,.8)},
+ vol(){if(!this.ctx)return;const sp=me&&me.userData.seat,cine=sp&&sp.kind==='cine',z=me?curZone(me):'L0',target=!this.on||cine||z==='B'||z[0]==='H'||(typeof space==='number'&&space>0)?0:.22;/* 지하 아지트(B)에서는 로비 음악 끔 */if(z==='B'||z[0]==='H'||(typeof space==='number'&&space>0)){this.g.gain.cancelScheduledValues(this.ctx.currentTime);this.g.gain.setValueAtTime(0,this.ctx.currentTime)}else this.g.gain.setTargetAtTime(target,this.ctx.currentTime,.8)},
  start(){this.init();if(!this.ctx)return;if(this.ctx.state==='suspended')this.ctx.resume();if(!this.timer)this.timer=setInterval(()=>{this.sched();this.vol()},400);this.sched();this.vol()},
  btn(){const b=$('bgmb');if(b){b.innerHTML=lucide(this.on?'music':'musicoff',18);b.title=this.on?'배경음악 끄기':'배경음악 켜기';b.classList.toggle('off',!this.on)}}};
-/* CINEMA_QA07_20261111: shared lobby SFX and mute. */
-const CINEMA_FX={
- muted:store.get('aic.lobbyMuted')===1,ctx:null,
- init(){if(this.ctx)return this.ctx;try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;this.ctx=new AC();return this.ctx}catch(e){return null}},
- play(kind){if(this.muted)return;const c=this.init();if(!c)return;
-  try{if(c.state==='suspended')c.resume().catch(()=>{});
-   const seq=kind==='shelf'?[[0,1.48,290,.075],[.18,.94,440,.044]]:
-    kind==='prep'?[[0,.12,1550,.09],[.35,.23,760,.065],[.73,.14,1800,.075],[1.18,.31,520,.045],[1.71,.18,1250,.07],[2.12,.13,2150,.05]]:
-    [[0,.42,350,.075],[.52,.36,600,.07],[.96,.16,1450,.075]];
-   seq.forEach(([delay,duration,freq,vol])=>{
-    const count=Math.max(64,Math.ceil(c.sampleRate*duration)),buffer=c.createBuffer(1,count,c.sampleRate),ch=buffer.getChannelData(0);
-    let prev=0;for(let i=0;i<count;i++){prev=prev*.68+(Math.random()*2-1)*.32;ch[i]=prev*Math.pow(1-i/count,kind==='shelf'?1.0:2.2)*(kind==='shelf'?.7+.3*Math.sin(i*.014):1)}
-    const src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=buffer;
-    filter.type='bandpass';filter.frequency.value=freq;filter.Q.value=kind==='shelf'?.7:1.5;
-    gain.gain.value=vol;src.connect(filter);filter.connect(gain);gain.connect(c.destination);src.start(c.currentTime+delay);
-   });
-   if(kind==='drawer'){const osc=c.createOscillator(),g=c.createGain(),t=c.currentTime+.18;osc.type='triangle';osc.frequency.setValueAtTime(950,t);osc.frequency.exponentialRampToValueAtTime(420,t+.13);g.gain.setValueAtTime(.065,t);g.gain.exponentialRampToValueAtTime(.0001,t+.16);osc.connect(g);g.connect(c.destination);osc.start(t);osc.stop(t+.17)}
-  }catch(e){console.warn('Lobby sound unavailable',e)}
- },
- speakFrench(){if(this.muted||!('speechSynthesis' in window))return;
-  try{window.speechSynthesis.cancel();const t=new SpeechSynthesisUtterance('Voici votre billet, s’il vous plaît.');t.lang='fr-FR';t.rate=.9;t.volume=.85;
-   const voice=window.speechSynthesis.getVoices().find(v=>/^fr[-_]/i.test(v.lang));if(voice)t.voice=voice;window.speechSynthesis.speak(t)}catch(e){}
- },
- toggle(){this.muted=!this.muted;store.set('aic.lobbyMuted',this.muted?1:0);
-  if(this.muted&&'speechSynthesis' in window)try{window.speechSynthesis.cancel()}catch(e){}
-  BGM.vol();this.updateButton();
- },
- updateButton(){const b=$('lobbyMute');if(b){b.textContent=this.muted?'소리 켜기':'음소거';b.title=this.muted?'로비 소리 켜기':'로비 전체 음소거';b.setAttribute('aria-pressed',this.muted?'true':'false')}}
-};
-Object.assign(A,{lobmute:()=>CINEMA_FX.toggle()});
-CINEMA_FX.updateButton();
 /* 이모지 최소화: 화면 문구에서 그림문자 제거 */const EMO=/[\u{1F000}-\u{1FAFF}\u{2600}-\u{2604}\u{2606}-\u{2714}\u{2716}-\u{27BF}\u{2B50}\u{2B06}\u{1F1E6}-\u{1F1FF}][️‍\u{1F3FB}-\u{1F3FF}]*(?:‍[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]️?)*\s?/gu,noEmo=t=>String(t).replace(EMO,'').replace(/\s{2,}/g,' ').trim();
 function toast(t,ms=2600){t=noEmo(t);const e=$('toast');e.textContent=t;e.hidden=false;e.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>{e.style.opacity=0;setTimeout(()=>e.hidden=true,300)},ms)}
 const PORN='<svg class="porn" viewBox="0 0 190 22" aria-hidden="true" fill="none" stroke="#983e49" stroke-width="1.3" stroke-linecap="round"><path d="M95 11c-6-9-16-9-17-1 0 5 6 6 8 2M95 11c6-9 16-9 17-1 0 5-6 6-8 2M78 10c-10-5-22 5-34 2-6-1-9-5-14-5-6 0-8 4-6 7 2 2 6 1 6-2M112 10c10-5 22 5 34 2 6-1 9-5 14-5 6 0 8 4 6 7-2 2-6 1-6-2"/><circle cx="95" cy="15" r="2.2"/><circle cx="66" cy="10" r="1.6"/><circle cx="124" cy="10" r="1.6"/></svg>';
@@ -2327,7 +2294,7 @@ function buildICS(hid){const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//VINTA
 const fdt=t=>{const d=new Date(t*1000);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+hhmm(t)};
 function buildCSV(){return'﻿관,장르,작품,시작,종료\r\n'+allS(0).map(s=>[s.hall.name,s.hall.genre,'"'+s.film.title+'"',fdt(s.start),fdt(s.end)].join(',')).join('\r\n')}
 /* ---------- punch / entry ---------- */
-function showPunch(tk){return new Promise(res=>{const p=$('punch');CINEMA_FX.play('drawer');CINEMA_FX.speakFrench();if(VSTAFF.ticket)sayB(VSTAFF.ticket,'“Voici votre billet, s’il vous plaît.”',5);p.hidden=false;p.innerHTML=`<div class="tkw tkw3" id="ptk" style="--paper:${(TCPAL[tk.hall]||TCPAL[1])[0]}">${tc3({hall:tk.hall,hn:tk.hn,title:tk.title,no:tcNo(tk.no),act:'입장'})}<i class="hole"></i><i class="pc"></i></div>`;
+function showPunch(tk){return new Promise(res=>{const p=$('punch');p.hidden=false;p.innerHTML=`<div class="tkw tkw3" id="ptk" style="--paper:${(TCPAL[tk.hall]||TCPAL[1])[0]}">${tc3({hall:tk.hall,hn:tk.hn,title:tk.title,no:tcNo(tk.no),act:'입장'})}<i class="hole"></i><i class="pc"></i></div>`;
  setTimeout(()=>{$('ptk').classList.add('go');beep()},200);setTimeout(()=>{p.hidden=true;p.innerHTML='';res()},1900)})}
 let ENTER_TK=null;
 function enterHall(id){refTK();closePanel();if(!me)return;const tk=TK.find(k=>k.id===id),t=nowS();if(tk&&HALLN[tk.hall])hallChan(tk.hall);
@@ -2355,14 +2322,7 @@ R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-
  const az=curZone(me),objs=[...AVATAR_HITS.filter(h=>h.userData.giftAvatar!==me&&h.userData.giftAvatar.visible&&curZone(h.userData.giftAvatar)===az),...INTER,...spotMeshes,...floors.filter(f=>!f.userData.zone||f.userData.zone[0]!=='H'||f.userData.zone===az),...CFG.HALLS.filter(h=>'H'+h.id===az).flatMap(h=>[HALLN[h.id].IC,HALLN[h.id].IB])];
  const hs=rc.intersectObjects(objs.filter(o=>!(o.userData.exitH&&C.position.z>-.7)),false);if(!hs.length)return;if(!$('sitbox').hidden&&!(hs[0].object.isInstancedMesh))hideSit();const h=hs[0],o=h.object,ud=o.userData;
  const ah=hs.find(q=>q.object.userData.giftAvatar&&q.distance<=h.distance+.65);if(ah){selectAvatar(ah.object.userData.giftAvatar);return}
- if(ud.act){if(ud.act.avatar){selectAvatar(ud.act.avatar);return}
-  const pt=ud.act.pt;
-  /* Walk up to lobby fixtures instead of activating them from across the room. */
-  if(pt&&pt.zone==='L0'&&az==='L0'&&Math.hypot(me.position.x-pt.x,me.position.z-pt.z)>1.45){
-   walkTo(me,pt.x,pt.z,pt.zone,{avoidFurniture:true,after:ud.act.fn});return;
-  }
-  if(ud.act.now||!pt){ud.act.fn();return}
-  walkTo(me,pt.x,pt.z,pt.zone,{avoidFurniture:true,after:ud.act.fn});return}
+ if(ud.act){if(ud.act.avatar){selectAvatar(ud.act.avatar);return}if(ud.act.now){ud.act.fn();return}walkTo(me,ud.act.pt.x,ud.act.pt.z,ud.act.pt.zone,{after:ud.act.fn});return}
  if(o.isInstancedMesh){pickSeat(ud.hall,HALLN[ud.hall].seats[h.instanceId]);return}
  if(ud.spot){const sp=ud.spot;if(sp.kind==='cine'){pickSeat(sp.hall,sp);return}if(me.userData.seat===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}if(curZone(me)!==sp.zone)return;if(me.userData.seat)standUp(me,true);if(Math.hypot(me.position.x-sp.x,me.position.z-sp.z)<=2.2){NEARSP=null;sit(me,sp);hudUpd();return}me.userData.pendingSeat=sp;NEARSP=sp;let px=sp.x+Math.sin(sp.rot)*.95,pz=sp.z+Math.cos(sp.rot)*.95;{const L=sp.zone==='L1'?1:0;if(blocked(px,pz,L)){let best=null;for(const r of [1.0,1.25,1.5])for(let k=0;k<16;k++){const a=k/16*Math.PI*2,x=sp.x+Math.sin(a)*r,z=sp.z+Math.cos(a)*r;if(!blocked(x,z,L)&&zoneOf(x,z,L)===sp.zone){const dd=Math.abs(Math.atan2(Math.sin(a-sp.rot),Math.cos(a-sp.rot)));if(!best||dd+r*.3<best[2])best=[x,z,dd+r*.3]}}if(best){px=best[0];pz=best[1]}}}walkTo(me,px,pz,sp.zone,{after:()=>{me.userData.pendingSeat=null;NEARSP=null;sit(me,sp);hudUpd()}});me.userData.pendingSeat=sp;return}
 if(me.userData.seat&&floors.includes(o)){standUp(me,true);me.userData.path=[];NEARSP=null;hudUpd();return}
@@ -2576,7 +2536,7 @@ function actorFrontPoint(target){const u=target.userData,zone=curZone(target),r=
   if(zoneOf(x,z,u.lvl)===zone&&!blocked(x,z,u.lvl))return {x,z,zone}}
  return null}
 function showActorMenu(target){let el=$('actorMenu');if(!el){el=document.createElement('div');el.id='actorMenu';el.setAttribute('role','menu');document.body.appendChild(el)}
- el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');el.innerHTML='<button role="menuitem" data-a="actorTalk">말걸기</button>'+(HELD.length?'<button role="menuitem" data-a="actorGift">선물주기</button>':'');actorMenuTick()}
+ el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');el.innerHTML='<b>'+esc(target.userData.displayName)+'</b><button role="menuitem" data-a="actorTalk">말걸기</button>'+(HELD.length?'<button role="menuitem" data-a="actorGift">선물주기</button>':'');actorMenuTick()}
 function selectAvatar(target){if(!me||!target||target===me||!target.visible)return;if(curZone(target)!==curZone(me)){toast('같은 공간의 아바타를 선택해 주세요');return}
  dismissActor();const u=target.userData,session={target,phase:'approach',saved:{path:[...(u.path||[])],spot:u.spot,after:u.after,roamActive:u.roamActive}};ACTOR_SESSION=session;
  u.interactionPause=true;u.path=[];u.spot=null;u.after=null;u.roamActive=false;u.walkVel=0;
@@ -2595,20 +2555,6 @@ function actorMenuTick(){const session=ACTOR_SESSION;if(!session)return;const ta
  if(session.phase==='chat'&&!$('mpchat')?.classList.contains('open')){dismissActor();return}
  const el=$('actorMenu');if(!el)return;const p=target.position.clone();p.y+=2.5*target.scale.y;p.project(C);el.hidden=p.z< -1||p.z>1;
  el.style.left=Math.max(92,Math.min(innerWidth-92,(p.x+1)*innerWidth/2))+'px';el.style.top=Math.max(65,Math.min(innerHeight-170,(1-p.y)*innerHeight/2-12))+'px'}
-/* QA07 NPC replies are local; guest questions are never broadcast as public chat. */
-function qaNpcRespond(actor,question){if(!actor||actor.userData.remote)return false;
- const who=String(actor.userData.displayName||'관객'),q=String(question||'').trim();
- let reply='';
- if(/무지개|팝콘/.test(q))reply='무지개 팝콘을 선물해 보세요. 특별한 일이 생길 거예요.';
- else if(/초대장|비밀|아지트|책장/.test(q))reply='비밀 클럽 입구는 책장 뒤에 있어요. 초대장을 챙기세요.';
- else if(/상영|영화|추천|극장/.test(q))reply='오늘의 상영표를 확인해 보세요. 좋은 영화는 기다림도 즐겁죠.';
- else if(/이름|누구|소개/.test(q))reply=CHARINFO[who]||'저는 '+who+'예요. 이 극장에서 영화를 기다리고 있어요.';
- else if(/고마|감사/.test(q))reply='천만에요. 즐거운 관람 되세요.';
- else if(/안녕|반가|bonjour|hello/i.test(q))reply='반가워요. 오늘 이 오래된 극장에서 만나게 되었네요.';
- else if(/어디|길|가는/.test(q))reply='바닥이나 시설을 누르면 그곳으로 걸어갈 수 있어요.';
- else reply=CHARINFO[who]||'저도 그 이야기가 궁금해요. 영화에 대해 더 물어봐 주세요.';
- sayB(actor,'“'+reply.slice(0,46)+'”',5);return true;
-}
 function actorTalk(){const session=ACTOR_SESSION;if(!session)return;const target=session.target,el=$('actorMenu');if(el)el.remove();session.phase='chat';if(!target.userData.remote)npcCard(target,target.userData.displayName);Multiplayer.openChat()}
 function actorGift(){if(!ACTOR_SESSION)return;ACTOR_SESSION.phase='panel';const el=$('actorMenu');if(el)el.remove();giftMenu()}
 function openGift(target){selectAvatar(target)}
@@ -2755,8 +2701,8 @@ Object.assign(A,{
   catch(error){toast('광고를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.');}
   finally{resumeFlowerWalk();}
   if(!ok){ORD={v,q:q0,ad:false,st:'compose'};if(v!=='vendor')counterShow([]);hudUpd();notice(v==='vendor'?'꽃가게':'매점','광고를 끝까지 보지 않아 주문이 취소됐어요',[['광고 다시 보기',()=>A.obuy()],['닫기',null]]);return}
-  if(v==='vendor'){const nm_=[...new Set(items)].map(k=>IT[k][1]+(items.filter(x=>x===k).length>1?' '+items.filter(x=>x===k).length+'개':'')).join(', ');items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();if(sf)say(sf,'“알프레도 할아버지가 비밀 클럽을 알고 있어요.”',7);notice('꽃 파는 소녀',nm_+objectParticle(nm_)+' 받았어요.<br>알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.',[['확인',null]]);return}
-  /* 점원이 뒤돌아 간식을 만들어 손에 들고 와 매대에 내려놓음 → 완료 팝업 */Object.assign(ORD,{ad:true,st:'prep',items,readyAt:nowS()+4.2,notify:1});CINEMA_FX.play('prep');notice(String(VEN[v].name).replace(EMO,'').trim(),'주문이 완료되었어요.<br>준비되면 알려드릴게요.',[['확인',null]]);if(sf){say(sf,'바로 만들어 드릴게요!');setTimeout(()=>{if(ORD&&ORD.st==='prep')setCarry(sf,items.slice(0,2).map(k=>({k})))},1300)}hudUpd()},
+  if(v==='vendor'){const nm_=[...new Set(items)].map(k=>IT[k][1]+(items.filter(x=>x===k).length>1?' '+items.filter(x=>x===k).length+'개':'')).join(', ');items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();if(sf)say(sf,'알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.',7);notice('꽃 파는 소녀',nm_+objectParticle(nm_)+' 받았어요.<br>알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.',[['확인',null]]);return}
+  /* 점원이 뒤돌아 간식을 만들어 손에 들고 와 매대에 내려놓음 → 완료 팝업 */Object.assign(ORD,{ad:true,st:'prep',items,readyAt:nowS()+4.2,notify:1});notice(String(VEN[v].name).replace(EMO,'').trim(),'주문이 완료되었어요.<br>준비되면 알려드릴게요.',[['확인',null]]);if(sf){say(sf,'바로 만들어 드릴게요!');setTimeout(()=>{if(ORD&&ORD.st==='prep')setCarry(sf,items.slice(0,2).map(k=>({k})))},1300)}hudUpd()},
  oad:async()=>{if(!ORD)return;const v=ORD.v;closePanel();const ok=await AdService.show({kind:'order',label:VEN[v].name+' 주문'});if(!ok){toast('광고를 끝까지 보면 주문할 수 있어요');opanel(v);return}ORD.ad=true;opanel(v);toast('「✅ 주문하기」 버튼이 활성화됐어요')},
  oplace:()=>{if(!ORD||!ORD.ad)return;const items=[];Object.entries(ORD.q).forEach(([k,q])=>{for(let i=0;i<q;i++)items.push(k)});if(!items.length)return;
   Object.assign(ORD,{st:'prep',items,readyAt:nowS()+3+1.2*items.length});const sf=VSTAFF[ORD.v];if(sf){sf.userData.r0=sf.rotation.y;say(sf,'주문 받았어요! 바로 준비할게요 😊')}closePanel();hudUpd()},
@@ -2830,16 +2776,13 @@ const Multiplayer=(()=>{
   document.getElementById('mpform').onsubmit=e=>{
    e.preventDefault();
    const msg=els.input.value.trim().slice(0,50);if(!msg)return;
-   const toNpc=!!(ACTOR_SESSION?.phase==='chat'&&!ACTOR_SESSION.target.userData.remote);
    let sent=false;
-   if(!toNpc&&socket&&socket.readyState===WebSocket.OPEN){
+   if(socket&&socket.readyState===WebSocket.OPEN){
     try{socket.send(JSON.stringify({t:'chat',text:msg}));sent=true}catch{setStatus('● 연결 끊김')}
    }
    // Local feedback always appears, regardless of multiplayer connection state.
    if(me)showBubble(me,msg);
-   const npcTarget=ACTOR_SESSION?.phase==='chat'&&!ACTOR_SESSION.target.userData.remote?ACTOR_SESSION.target:null;
    closeChat(true);
-   if(npcTarget){qaNpcRespond(npcTarget,msg);return;}
    if(!sent){
     if(endpoint())connect();
     if(!alreadyWarnedLocal){alreadyWarnedLocal=true;toast('현재 말풍선은 내 화면에만 표시됩니다. 멀티플레이 연결을 확인해 주세요.')}
@@ -2864,7 +2807,7 @@ const Multiplayer=(()=>{
   },5000);
  }
  function dispose(id){const p=peers.get(id);if(!p)return;S.remove(p.avatar);if(p.hit){const i=AVATAR_HITS.indexOf(p.hit);if(i>=0)AVATAR_HITS.splice(i,1)}if(typeof LSAVE!=='undefined'&&LSAVE){for(let i=LSAVE.length-1;i>=0;i--)if(LSAVE[i][0]===p.avatar)LSAVE.splice(i,1)}peers.delete(id)}
- function upsert(data){if(!data||!data.id||data.id===myId)return;const id=String(data.id);let p=peers.get(id);if(!p){const name=String(data.name||'관객').slice(0,14);const a=mk(name,0x7794a8,{...qaUserLook(name),ch:'ME'});a.userData.remote=1;const hit=AVATAR_HITS.find(h=>h.userData.giftAvatar===a);/* Keep remote avatar hit area for tapping, approaching, and gifting UI. */p={avatar:a,hit,target:new THREE.Vector3(),r:0,zone:'L0'};peers.set(id,p)}
+ function upsert(data){if(!data||!data.id||data.id===myId)return;const id=String(data.id);let p=peers.get(id);if(!p){const name=String(data.name||'관객').slice(0,14);const a=mk(name,0x7794a8,{ch:'ME'});a.userData.remote=1;const hit=AVATAR_HITS.find(h=>h.userData.giftAvatar===a);/* Keep remote avatar hit area for tapping, approaching, and gifting UI. */p={avatar:a,hit,target:new THREE.Vector3(),r:0,zone:'L0'};peers.set(id,p)}
  const x=+data.x,y=+data.y,z=+data.z,r=+data.r;
  if(![x,y,z,r].every(Number.isFinite))return;p.target.set(x,y,z);p.r=r;p.zone=String(data.zone||'L0');p.avatar.userData.lvl=p.zone==='L1'?1:0;
  if(!p.init){p.avatar.position.copy(p.target);p.avatar.rotation.y=p.r;p.init=true}
@@ -3312,7 +3255,7 @@ function vendTick(dt){if(!VENDS||!VENDS.length)return;const t=performance.now()/
 /* QA06: sliding shelf, closed club door, then invitation-gated entry. */
 var DOOR_T=-1;var SHELF_REVEALED=false,SHELF_T=0;
 function doorPlace(){if(typeof TRAP==='undefined'||!TRAP.userData.hb||!window.SHELF)return;const z=Math.max(2.6,Math.min(LD-1.2,SHELF.g.position.z));TRAP.position.z=TRAP.z=z;TRAP.userData.hb.position.z=z;TRAP.userData.hb.userData.act.pt.z=z}
-function trapShow(reveal=false){doorPlace();if(reveal&&!SHELF_REVEALED)CINEMA_FX.play('shelf');if(reveal)SHELF_REVEALED=true;TRAP.visible=SHELF_REVEALED;const hb=TRAP.userData.hb,k=INTER.indexOf(hb);if(SHELF_REVEALED&&k<0)INTER.push(hb);if(!SHELF_REVEALED&&k>=0)INTER.splice(k,1);doorPose(SHELF_T)}
+function trapShow(reveal=false){doorPlace();if(reveal)SHELF_REVEALED=true;TRAP.visible=SHELF_REVEALED;const hb=TRAP.userData.hb,k=INTER.indexOf(hb);if(SHELF_REVEALED&&k<0)INTER.push(hb);if(!SHELF_REVEALED&&k>=0)INTER.splice(k,1);doorPose(SHELF_T)}
 function doorPose(q){if(!window.SHELF)return;const e=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2,s=SHELF;s.sl.position.x=-s.SL*e;s.hb.position.z=s.g.position.z+s.SL*e;s.hb.userData.act.pt.z=s.hb.position.z;const k=INTER.indexOf(s.hb);if(q>=1&&k>=0)INTER.splice(k,1);if(q<1&&k<0)INTER.push(s.hb);if(q===0||q===1)OBS=null}
 function clubDoorPose(q){TRAP.userData.leaf.rotation.y=-q*1.75;TRAP.userData.hl.material.opacity=.55*q}
 function openClubDoor(){if(!hasInv()){toast('초대장이 있어야 들어갈 수 있어요. 알프레도 할아버지와 대화해 보세요');return}if(DOOR_T<0)DOOR_T=0}

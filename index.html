@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="referrer" content="strict-origin-when-cross-origin"><title>오래된 극장에서 만나요.</title>
+<meta name="referrer" content="strict-origin-when-cross-origin"><title>오래된 극장에서 만나요</title>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@700&family=Cinzel:wght@700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
 <style>
@@ -2649,8 +2649,8 @@ Object.assign(A,{wcstart:()=>{wcNew();PANELS.wcplay()},wcpick:d=>{if(!WC)return;
    panel(`<h3>나의 1위</h3><div class="wcwin"><span>CHAMPION</span><b>${WCF[w][0]}</b><i>${WCF[w][1]}</i></div><button class="p" data-a="wcrank" style="width:100%">클럽 랭킹 보기</button><button data-a="wcstart" style="width:100%;margin-top:8px">다시 하기</button>`);return}
   WC.round=WC.next;WC.next=[];WC.k=0}PANELS.wcplay()},wcrank:()=>PANELS.wcup()});
 
-/* 필름 한 편 상영 종료 → 카운트다운 화면 + 투표 안내 */function clubFilmEnd(){const f=CLUBFILMS[window.CLUBPICKI]||{title:'필름'};CLUBSTOP=true;ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;hudUpd();if(!(me&&curZone(me)==='B'))return;
- notice('상영 종료','「'+esc(f.title)+'」 상영이 끝났어요.<br>전체 작품을 감상하고 싶으시면 투표해 주세요.',[['투표하기',()=>openPanel('filmvote')],['닫기',null]])}
+/* 필름 한 편 상영 종료: 투표 팝업 제거 */
+function clubFilmEnd(){CLUBSTOP=true;ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;hudUpd()}
 /* ===== 아지트 레코드 플레이어: WebAudio 합성 음악(LP 3장) — 아지트 밖으로 나가면 정지 ===== */
 const RECS=[{t:'Nuit Blanche',s:'재즈 피아노 발라드',bpm:68,bar:4,sty:'jazz',ch:[[50,53,57,60],[55,59,62,65],[48,52,55,59],[45,49,52,55]],sc:[60,62,64,65,67,69,71,72,74]},
  {t:'Bossa de Cinéma',s:'보사노바',bpm:118,bar:4,sty:'bossa',ch:[[57,60,64,67],[50,54,57,60],[55,59,62,66],[48,52,55,59]],sc:[64,66,67,69,71,72,74,76]},
@@ -2677,12 +2677,8 @@ PANELS.recruit=()=>panel(`<h3>상영작 모집</h3><p class="sub recruit-intro">
 Object.assign(A,{recruit:()=>{closePanel();openPanel('recruit')},recmail:()=>{const u=($('rc_u').value||'').trim(),t=($('rc_t').value||'').trim(),e=($('rc_e').value||'').trim();if(!t){toast('작품 제목을 입력해 주세요');return}if(!/^https?:\/\/\S+/.test(u)){toast('작품 링크를 입력해 주세요');return}if(!e||!$('rc_e').checkValidity()){toast('올바른 연락 이메일을 입력해 주세요');return}
  const body=`[빈티지 시네마 2관 상영작 지원]\n\n작품 제목: ${t}\n작품 링크: ${u}\n연락 이메일: ${e}\n닉네임: ${window.MYNAME||'-'}\n`;location.href='mailto:not2@naver.com?subject='+encodeURIComponent('[빈티지 시네마] 2관 상영작 지원')+'&body='+encodeURIComponent(body);closePanel();toast('메일 앱에서 보내기를 누르면 지원이 완료돼요')}});
 PANELS.records=()=>panel(`<h3>레코드 플레이어</h3><p class="sub">LP를 골라 아지트에 음악을 틀어요. 음악을 틀면 스크린 소리는 꺼져요.</p>`+RECS.map((r,i)=>`<div class="rw"><div class="m"><b>${r.t}</b><i>${r.s}</i></div>${REC.on===i?`<button data-a="recstop">정지</button>`:`<button data-a="recplay" data-i="${i}">재생</button>`}</div>`).join(''));
-/* ===== 상영 투표: 필름 20편 중 상영관에서 보고 싶은 작품 1편에 투표(서버 연동 전: 이 브라우저에 저장) ===== */
-const VOTEK='aic.filmvote',VBASE=FILMTITLES.map((t,i)=>3+((i*37+11)%23));
-PANELS.filmvote=()=>{const my=store.get(VOTEK),voted=my!=null,cnt=VBASE.map((v,i)=>v+(my===i?1:0)),tot=cnt.reduce((x,y)=>x+y,0);
- panel(`<h3>상영 투표</h3><p class="sub">상영관에서 제대로 보고 싶은 작품에 투표해 주세요. 가장 많은 표를 받은 작품이 상영관에 걸려요.</p><div class="poll">`+FILMTITLES.map((t,i)=>{const pc=Math.round(cnt[i]/tot*100);return `<button class="po${voted?' done':''}${my===i?' mine':''}" data-a="vote" data-i="${i}" ${voted?'disabled':''}>${voted?`<i class="pb" style="width:${pc}%"></i>`:''}<span class="pt">${t}${my===i?'<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>':''}</span>${voted?`<span class="pp">${pc}%</span>`:''}</button>`}).join('')+`</div><p class="pfoot">${tot.toLocaleString()}표${voted?' · <span class="plk" data-a="vote" data-i="-1">투표 취소</span>':''}</p><p class="sub" style="font-size:12.5px!important;opacity:.65">투표 결과는 서버 연동 전까지 이 브라우저에만 저장돼요.</p>`)};
-Object.assign(A,{recplay:d=>{REC.play(+d.i);PANELS.records();toast('「'+RECS[+d.i].t+'」를 틀었어요')},recstop:()=>{REC.stop();PANELS.records();toast('음악을 멈췄어요')},
- vote:d=>{const i=+d.i;if(i<0){store.set(VOTEK,null);toast('투표를 취소했어요')}else{store.set(VOTEK,i);toast('「'+FILMTITLES[i]+'」에 투표했어요')}PANELS.filmvote()}});
+/* 레코드 플레이어의 재생 및 정지 핸들러는 보존 */
+Object.assign(A,{recplay:d=>{REC.play(+d.i);PANELS.records();toast('「'+RECS[+d.i].t+'」를 틀었어요')},recstop:()=>{REC.stop();PANELS.records();toast('음악을 멈췄어요')}});
 
 /* 필름 20칸 채우기: media/filmNN.mp4 중 있는 파일 + 없으면 club1~5 를 순서대로 중복 배정 */
 async function filmPool(){if(FILMPOOL)return FILMPOOL;const ok=async u=>{try{const r=await fetch(u,{method:'HEAD',cache:'no-store'});return r.ok}catch(e){return false}};const has=await Promise.all(CLUBFILMS.map(f=>ok(f.src)));const own=CLUBFILMS.filter((f,i)=>has[i]).map(f=>f.src),pool=own.length?own:CLUBLIST.slice();FILMPOOL=CLUBFILMS.map((f,i)=>has[i]?f.src:pool[i%pool.length]);return FILMPOOL}
@@ -3011,14 +3007,7 @@ trapShow();
    /* LP 상자 */{const cr=new THREE.Group();cr.position.set(X+xc-.1,.82,Z+zc+.5);S.add(cr);Bm(.34,.2,.34,0x8a5a34,0,.1,0,cr);const SL=['#b3202e','#1f4e79','#e9c46a','#2f5a3a','#5b2417','#d9d4c8'];for(let k=0;k<6;k++){const t=art(64,64,(c,w,h)=>{c.fillStyle=SL[k];c.fillRect(0,0,w,h);c.fillStyle='rgba(255,255,255,.75)';c.beginPath();c.arc(32,32,14+k%3*4,0,7);c.fill();c.fillStyle=SL[(k+3)%6];c.fillRect(0,46,64,6)});const sv=new THREE.Mesh(new THREE.BoxGeometry(.31,.31,.008),[mat(0x222222),mat(0x222222),mat(0x222222),mat(0x222222),new THREE.MeshLambertMaterial({map:t}),mat(0x222222)]);sv.position.set(0,.2,-.13+k*.05);sv.rotation.x=-.12+k*.03;cr.add(sv)}}
    const hb=hitbox(X+xc,1.0,Z+zc,.9,1.2,2.2,{fn:()=>openPanel('records'),pt:{x:X+CBW-1.5,z:Z+zc,zone:'B'}});
    {const l=new THREE.PointLight(0xffd29a,.4,2.6,2);l.position.set(X+xc-.6,1.6,Z+zc);l.userData.i=.4;S.add(l)}}
-  /* 상영 투표함: 필름 진열장 옆(왼쪽 벽 z 4.6) — 황동 투표함 + 안내판 + 상위 3편 표시판 */
-  {const zc=4.6,xw=-CBW+.04;const g=new THREE.Group();g.position.set(X+xw+.45,0,Z+zc);S.add(g);Bm(.5,.95,.6,0x4a2c1c,0,.475,0,g);Bm(.56,.04,.66,0x2a1810,0,.97,0,g);[.2,.6].forEach(y=>Bm(.02,.03,.62,BRS,.26,y,0,g));
-   const bx=Bm(.36,.32,.42,new THREE.MeshPhongMaterial({color:0x8a1f2b,shininess:70}),0,1.15,0,g);Bm(.38,.03,.44,BRS,0,1.32,0,g);Bm(.02,.012,.22,0x111111,0,1.336,0,g);Bm(.38,.03,.44,BRS,0,.99,0,g);
-   for(let k=0;k<3;k++){const card=Bm(.002,.09,.06,0xf3ecdc,.04*(k-1),1.38+k*.01,-.02+k*.03,g);card.rotation.x=.3*(k-1)}
-   const sg=art(512,320,(c,w,h)=>{c.fillStyle='#1e2a24';c.fillRect(0,0,w,h);c.strokeStyle='#c9a24a';c.lineWidth=10;c.strokeRect(5,5,w-10,h-10);c.strokeStyle='rgba(201,162,74,.5)';c.lineWidth=2;c.strokeRect(20,20,w-40,h-40);c.fillStyle='#e9c46a';c.textAlign='center';c.font='bold 22px serif';c.fillText('— VOTE —',w/2,62);c.fillStyle='#f3ead0';c.font='bold 36px "Noto Serif KR",serif';c.fillText('이 영화를 상영관에서',w/2,124);c.fillText('보고 싶어요',w/2,172);c.font='19px "Noto Sans KR",sans-serif';c.fillStyle='#d8ccb0';c.fillText('필름 진열장의 작품 중 한 편에 투표하면',w/2,226);c.fillText('가장 많은 표를 받은 작품이 상영관에 걸려요',w/2,256);c.fillStyle='#e9c46a';c.font='bold 17px sans-serif';c.fillText('투표함을 눌러 투표하기',w/2,292)});
-   const bd=new THREE.Group();bd.position.set(X+xw+.03,2.05,Z+zc);bd.rotation.y=Math.PI/2;S.add(bd);Bm(1.36,.88,.04,0x5a3622,0,0,-.01,bd);plane(1.28,.8,sg,0,0,.02,0,bd);
-   [-.5,0,.5].forEach(o=>{const b_=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),new THREE.MeshBasicMaterial({color:0xffe2a6}));b_.position.set(o,.5,.03);bd.add(b_)});halo(X+xw+.25,2.55,Z+zc,0xffd49a,1.4,.35);{const l=new THREE.PointLight(0xffd8a0,.45,3,2);l.position.set(X+xw+.7,2.6,Z+zc);l.userData.i=.45;S.add(l)}
-   hitbox(X+xw+.45,1.2,Z+zc,.8,2.4,1.4,{fn:()=>openPanel('filmvote'),pt:{x:X-CBW+1.5,z:Z+zc,zone:'B'}})}
+
  }
  /* 영화 월드컵 랭킹 보드: 오른쪽 벽 z 2.0 (바 카트 위) */
  {const x=CBW-.05,zc=2.0,cv=document.createElement('canvas');cv.width=768;cv.height=560;const tex=new THREE.CanvasTexture(cv);

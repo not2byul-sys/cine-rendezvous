@@ -38,7 +38,7 @@ test('50 complete looks remain distinct and the same nickname is stable across i
 test('self and peer builders receive matching full appearance without the shared ME preset', () => {
   const ctx = lookContext(), built = [], nodes = new Map([['nsave', { checked: false }], ['join', {}]]);
   function vector() { return { x: 0, y: 0, z: 0, set(x, y, z) { Object.assign(this, { x, y, z }); }, copy(p) { Object.assign(this, { x: p.x, y: p.y, z: p.z }); } }; }
-  Object.assign(ctx, { window: {}, VISITS: 1, localStorage: { setItem() {}, removeItem() {} }, $: id => nodes.get(id),
+  Object.assign(ctx, { window: {}, VISITS: 1, readSharedClubNote: () => null, localStorage: { setItem() {}, removeItem() {} }, $: id => nodes.get(id),
     mk(name, color, options) { const c = { userData: {}, position: vector(), rotation: { y: 0 } }; built.push({ name, color, options, c }); return c; },
     spw: () => ({ x: 0, z: 10, r: Math.PI }), updChip() {}, Multiplayer: { start() {} }, myId: 'self', peers: new Map(), AVATAR_HITS: [], THREE: { Vector3: class { constructor() { Object.assign(this, vector()); } } } });
   vm.runInContext(part('function enterNow(nm)', '/* 랜덤:') + part('function upsert(data)', 'function connect()'), ctx);

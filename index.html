@@ -2382,20 +2382,47 @@ const Multiplayer=(()=>{
   style.textContent=`
    #mpbar{position:fixed;top:12px;right:12px;z-index:8;display:flex;align-items:center;font:12px system-ui;color:#fff}
    #mpstatus{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}
-   #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 93px);width:min(680px,calc(100vw - 24px));z-index:16;display:none;background:rgba(35,24,25,.94);border:1px solid rgba(255,246,236,.32);border-radius:16px;box-shadow:0 12px 28px #0008;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
-   #mpchat.open{display:block}#mpform{display:flex;align-items:center;gap:8px;padding:9px}
-   #mpinput{flex:1;min-width:0;height:42px;box-sizing:border-box;padding:0 14px;border-radius:10px;border:1px solid #d3b9ac;background:#fff8ed;color:#402D36;font:500 15px 'Noto Sans KR',sans-serif;outline:none}
-   #mpinput:focus{border-color:#bd7d89}#mpsend{min-height:42px;padding:0 16px;border:0;border-radius:10px;background:#F2D9DB;color:#402D36;font:700 14px 'Noto Sans KR',sans-serif;cursor:pointer}
+   /* VINTAGE_FIGMA_CHAT_114_2346_2368_V1: precise Figma 540x54 white pill */
+   #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 93px);width:540px;max-width:calc(100vw - 24px);height:54px;box-sizing:border-box;z-index:36;display:none;background:#fff;border:1px solid #5D211C;border-radius:100px;box-shadow:0 4px 4px rgba(0,0,0,.25);overflow:hidden}
+   #mpchat.open{display:block}
+   #mpform{display:flex;align-items:center;gap:0;width:100%;height:100%;box-sizing:border-box;margin:0;padding:12px 16px;background:transparent}
+   #mpinput{flex:1;min-width:0;display:block;height:28px;line-height:20px;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#000;font-family:'Roboto','Noto Sans KR',sans-serif;font-size:19px;font-weight:400;letter-spacing:0;outline:none;box-shadow:none}
+   #mpinput::placeholder{color:#8E8E93;opacity:1}
+   #mpinput:focus{outline:none;box-shadow:none;border:0}
+   #mpclose{display:flex;flex:0 0 28px;justify-content:center;align-items:center;width:28px;height:28px;padding:0;margin:0;background:transparent;border:0;border-radius:50%;cursor:pointer;touch-action:manipulation}
+   #mpclose img{display:block;width:28px;height:28px;pointer-events:none}
+   #mpclose:focus-visible{outline:2px solid #5D211C;outline-offset:2px}
    #mpstatus[data-offline="1"]{color:#ffd3cf}#act .mp-nav-button{color:#fff!important}
-   @media(max-width:600px){#mpchat{bottom:calc(env(safe-area-inset-bottom,0px) + 88px);width:calc(100vw - 20px)}#mpinput{font-size:16px}}
+   @media(max-width:600px){#mpchat{bottom:calc(env(safe-area-inset-bottom,0px) + 88px)}#mpinput{font-size:19px}}
   `;
   document.head.appendChild(style);
   const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="mpstatus" type="button">● 접속 준비</button>';document.body.appendChild(b);
-  const c=document.createElement('div');c.id='mpchat';c.setAttribute('aria-label','대화 입력창');c.innerHTML='<form id="mpform"><input id="mpinput" maxlength="50" placeholder="대화를 입력하세요 (50자 이내)" autocomplete="off" aria-label="대화 입력"><button id="mpsend" type="submit">보내기</button></form>';document.body.appendChild(c);
+  const c=document.createElement('div');c.id='mpchat';c.setAttribute('aria-label','대화 입력창');
+  c.innerHTML='<form id="mpform" autocomplete="off"><input id="mpinput" type="text" maxlength="50" placeholder="입력하세요" autocomplete="off" aria-label="대화를 입력하세요 (50자 이내)"><button id="mpclose" type="button" aria-label="입력 내용 지우고 닫기"><img src="chat_assets/chat-close.svg" width="28" height="28" alt=""></button></form>';
+  document.body.appendChild(c);
   els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.input=document.getElementById('mpinput');
-  document.addEventListener('click',e=>{const btn=e.target.closest('[data-a="mpchat"]');if(!btn)return;e.preventDefault();c.classList.toggle('open');if(c.classList.contains('open'))els.input.focus()});
+  function closeChat(clearDraft){if(clearDraft)els.input.value='';c.classList.remove('open');els.input.blur()}
+  document.getElementById('mpclose').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeChat(true)});
+  document.addEventListener('click',e=>{
+   const btn=e.target.closest('[data-a="mpchat"]');if(!btn)return;
+   e.preventDefault();
+   if(c.classList.contains('open'))closeChat(false);
+   else{c.classList.add('open');try{els.input.focus({preventScroll:true})}catch{els.input.focus()}}
+  });
+  document.addEventListener('pointerdown',e=>{
+   if(!c.classList.contains('open')||c.contains(e.target)||e.target.closest('[data-a="mpchat"]'))return;
+   closeChat(false);
+  },true);
+  els.input.addEventListener('keydown',e=>{
+   if(e.key==='Escape'){e.preventDefault();closeChat(false);return}
+   if(e.key==='Enter'){
+    if(e.isComposing||e.keyCode===229){e.preventDefault();return}
+    e.preventDefault();
+    document.getElementById('mpform').requestSubmit();
+   }
+  });
   els.status.onclick=()=>{if(!endpoint())alert('멀티플레이 Worker 연결 주소를 확인해 주세요.');else if(!socket||socket.readyState!==1)connect()};
-  document.getElementById('mpform').onsubmit=e=>{e.preventDefault();const msg=els.input.value.trim().slice(0,50);if(!msg)return;if(socket?.readyState!==1){setStatus('● 연결 끊김');connect();return}socket.send(JSON.stringify({t:'chat',text:msg}));els.input.value='';els.input.blur();c.classList.remove('open')};
+  document.getElementById('mpform').onsubmit=e=>{e.preventDefault();const msg=els.input.value.trim().slice(0,50);if(!msg)return;if(socket?.readyState!==1){setStatus('● 연결 끊김');connect();return}socket.send(JSON.stringify({t:'chat',text:msg}));closeChat(true)};
  }
  function setStatus(message){if(els.status){els.status.textContent=message;els.status.dataset.offline=/끊김|오류|설정/.test(message)?'1':'0'}}
  function showBubble(avatar,message){

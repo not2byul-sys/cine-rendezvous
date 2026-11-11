@@ -1908,11 +1908,19 @@ function segHit(p,q,x0,x1,z0,z1){for(let i=1;i<40;i++){const t=i/40,x=p.x+(q.x-p
 function detour(p,q){const out=[];if(Math.abs(p.x-q.x)<.05&&Math.abs(Math.abs(p.x)-STX)<.3)return out;const SS=[[ST.x2,ST.x3]];if(p.x>q.x)SS.reverse();for(const [a,b] of SS){if(segHit(p,q,a-.35,b+.35,ST.z0-.1,ST.z1+.35)){const zf=ST.z1+.7,m=(a+b)/2,pe=p.x<m?a-.4:b+.4,qe=q.x<m?a-.4:b+.4;out.push({x:pe,z:zf});if(qe!==pe)out.push({x:qe,z:zf})}}return out}
 let TK=API.tickets().filter(t=>t.hall in HL&&!CLOSEDH.has(t.hall));const refTK=()=>{TK=API.tickets().filter(t=>t.hall in HL&&!CLOSEDH.has(t.hall))};
 const hasPass=hid=>{const t=nowS();return TK.some(k=>k.hall===hid&&k.punched&&k.end>t)};
+/* QA06: route interactions around furniture instead of stalling at a table. */
+function furnitureRoute(c,x,z,zone){const step=.28,level=c.userData.lvl,start={x:c.position.x,z:c.position.z},goal={x,z},free=(x,z)=>{const b=bounds(zone,x,z);return !!b&&zoneOf(x,z,level)===zone&&x>=b[0]&&x<=b[1]&&z>=b[2]&&z<=b[3]&&!blocked(x,z,level)},clear=(a,b)=>{const n=Math.max(1,Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.1));for(let k=1;k<=n;k++){const t=k/n;if(!free(a.x+(b.x-a.x)*t,a.z+(b.z-a.z)*t))return false}return true};
+ if(!free(x,z))return null;if(clear(start,goal))return [goal];
+ const key=(i,j)=>i+','+j,point=(i,j)=>({x:start.x+i*step,z:start.z+j*step}),nodes=new Map(),open=[],heapPush=n=>{open.push(n);let i=open.length-1;while(i){const p=(i-1)>>1;if(open[p].f<=n.f)break;open[i]=open[p];i=p}open[i]=n},heapPop=()=>{const first=open[0],last=open.pop();if(open.length){let i=0;while(i*2+1<open.length){let k=i*2+1;if(k+1<open.length&&open[k+1].f<open[k].f)k++;if(open[k].f>=last.f)break;open[i]=open[k];i=k}open[i]=last}return first};
+ const root={i:0,j:0,p:start,g:0,f:Math.hypot(x-start.x,z-start.z),parent:null};nodes.set('0,0',root);heapPush(root);let end=null,visited=0;
+ while(open.length&&visited++<12000){const n=heapPop();if(n.closed)continue;n.closed=true;if(Math.hypot(n.p.x-x,n.p.z-z)<step*1.6&&clear(n.p,goal)){end=n;break}
+  for(const [di,dj] of [[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const i=n.i+di,j=n.j+dj,p=point(i,j);if(!free(p.x,p.z)||!clear(n.p,p))continue;const k=key(i,j),old=nodes.get(k),g=n.g+step*Math.hypot(di,dj);if(old&&old.g<=g)continue;const next={i,j,p,g,f:g+Math.hypot(x-p.x,z-p.z),parent:n};nodes.set(k,next);heapPush(next)}}
+ if(!end)return null;const path=[goal];for(let n=end;n.parent;n=n.parent)path.unshift(n.p);const out=[];let anchor=start;while(path.length){let k=path.length-1;while(k>0&&!clear(anchor,path[k]))k--;anchor=path[k];out.push(anchor);path.splice(0,k+1)}return out}
 function walkTo(c,x,z,zone,opt={}){if(c===me){releaseSeatCamera();c.userData.pendingSeat=null;}const u=c.userData;if(u.seat)standUp(c,true);let tz=zone||curZone(c);
  if(c===me&&HZ[tz]&&curZone(c)!==tz&&!hasPass(HZ[tz])){const hid=HZ[tz],cont={x,z,zone,opt};opt={after:()=>requestEntry(hid,cont)};const g_=GATE[hid];x=g_.x;z=g_.z;tz=g_.zone}
  const onSt=inStair(c.position.x,c.position.z)&&c.position.y>.05;
  if(onSt){const sx=STX,up=tz==='L1',lead=up?{x:sx,z:ST.z0-.5}:{x:sx,z:ST.z1+.9};u.path=[lead,...route(up?'L1':'L0',tz,lead.x,lead.z,x,z)]}
- else u.path=route(curZone(c),tz,c.position.x,c.position.z,x,z);u.after=opt.after||null;u.spot=opt.spot||null}
+ else u.path=route(curZone(c),tz,c.position.x,c.position.z,x,z);if(c===me&&opt.avoidFurniture&&curZone(c)===tz)u.path=furnitureRoute(c,x,z,tz)||[];u.after=opt.after||null;u.spot=opt.spot||null}
 function walkToSpot(c,sp){if(sp.taken&&sp.taken!==c){if(c===me)say(c,'이미 앉은 자리예요');return}walkTo(c,sp.x,sp.z,sp.zone,{spot:sp})}
 function bounds(zn,x,z){let b=ZB[zn];if(!b)return null;let [x0,x1,z0,z1]=b;const hid=zn[0]==='H'?+zn[1]:0;
  if(zn==='L0')z0=Math.abs(x)<1.3?BF-.3:(Math.abs(x)<ST.x2-.25||x<0)?BF+.25:ST.z1-.1;if(zn==='L1'){if(Math.abs(x)<1.5)z0=LB-.05;if(Math.abs(x)>ST.x2-.05)z1=ST.z0+.3;const xe=ST.x2-.4;if(z>BF+.05){x0=Math.max(x0,-xe);x1=Math.min(x1,xe);z1=BW-.3}else if(Math.abs(x)<xe)z1=BW-.3;if(x<-xe)z1=Math.min(z1,BF-.35)}
@@ -2539,7 +2547,7 @@ function selectAvatar(target){if(!me||!target||target===me||!target.visible)retu
   if(u.trayVendor){session.phase='panel';VSTAFF.vendor=target;opanel('vendor')}
   else if(u.buff){session.phase='panel';openPanel('quiz')}
   else{session.phase='menu';showActorMenu(target)}hudUpd()};
- if(Math.hypot(me.position.x-point.x,me.position.z-point.z)>.25)walkTo(me,point.x,point.z,point.zone,{after:session.finish});else session.finish()}
+ if(Math.hypot(me.position.x-point.x,me.position.z-point.z)>.25)walkTo(me,point.x,point.z,point.zone,{avoidFurniture:true,after:session.finish});else session.finish()}
 function actorMenuTick(){const session=ACTOR_SESSION;if(!session)return;const target=session.target;
  if(!me||!target.visible||curZone(target)!==curZone(me)){dismissActor();return}
  if(session.phase==='approach'&&!me.userData.path.length){if(Math.hypot(me.position.x-target.position.x,me.position.z-target.position.z)<=2.3)session.finish();else{toast('앞으로 갈 길을 찾지 못했어요. 가까운 바닥을 눌러 이동해 주세요');dismissActor()}return}
@@ -3035,8 +3043,8 @@ Object.assign(A,{
   if(ok){if(BUFF)sayB(BUFF,'허허, 맞았네! 자네를 우리 클럽에 초대하지',6);setTimeout(()=>{if(QUIZ_ROUND===round&&!$('pn').hidden&&$('pn').dataset.k==='quiz')openPanel('invite')},900)}
   else{if(BUFF)sayB(BUFF,'아깝구먼. 조금 더 쉬운 걸로 다시 해보게',5);toast('정답은 「'+q[1][q[2]]+'」예요');const box=$('pn').querySelector('.qz');if(box)box.insertAdjacentHTML('afterend','<button class="p" data-a="quizretry">다시 풀기</button>')}},
  quizretry:()=>openPanel('quiz'),
- invaccept:()=>{store.set('aic.club',1);closePanel();dismissActor();trapShow(true);if(me){if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x+.8,TRAP.z,'L0',{after:()=>{me.rotation.y=-Math.PI/2;toast('책장 뒤 비밀문에 도착했어요. 문을 눌러 들어가세요');hudUpd()}});hudUpd()}toast('책장 뒤에 비밀문이 있어요. 문 앞까지 안내할게요');if(BUFF)sayB(BUFF,'저 책장 뒤 비밀문으로 가보게나',6)},
- godown:()=>{closePanel();if(!me||curZone(me)==='B')return;if(!hasInv()){notice('비밀 영화클럽','초대장이 있어야 들어갈 수 있어요.<br>알프레도 할아버지와 대화해 보세요.',[['확인',null]]);return}if(DOOR_T>=0)return;dismissActor();if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x,TRAP.z,'L0',{after:()=>openClubDoor()})},
+ invaccept:()=>{store.set('aic.club',1);closePanel();dismissActor();trapShow(true);if(me){if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x+.8,TRAP.z,'L0',{avoidFurniture:true,after:()=>{me.rotation.y=-Math.PI/2;toast('책장 뒤 비밀문에 도착했어요. 문을 눌러 들어가세요');hudUpd()}});hudUpd()}toast('책장 뒤에 비밀문이 있어요. 문 앞까지 안내할게요');if(BUFF)sayB(BUFF,'저 책장 뒤 비밀문으로 가보게나',6)},
+ godown:()=>{closePanel();if(!me||curZone(me)==='B')return;if(!hasInv()){notice('비밀 영화클럽','초대장이 있어야 들어갈 수 있어요.<br>알프레도 할아버지와 대화해 보세요.',[['확인',null]]);return}if(DOOR_T>=0)return;dismissActor();if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x,TRAP.z,'L0',{avoidFurniture:true,after:()=>openClubDoor()})},
  clubstop:()=>{CLUBSTOP=!CLUBSTOP;if(CLUBSTOP){clubVid(false);ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;toast('영상을 멈췄어요')}else{CLVACTIVE=false;clubVid(true);if(CLV&&!CLVFAILED&&CLV.readyState>=2&&CLUBSCR.userData.videoMaterial){CLUBSCR.material=CLUBSCR.userData.videoMaterial;const a=CLV.videoWidth/CLV.videoHeight;if(a>0){CLUBSCR.scale.x=Math.min(1,a/(4.6/2.6));CLUBSCR.scale.y=Math.min(1,(4.6/2.6)/a)}}toast('영상을 다시 틀었어요')}hudUpd()},
  goup:()=>{if(!me)return;walkTo(me,BCX+CBW-1.0,BCZ+CBD-.25-9*.36-.6,'B',{after:()=>clubExit()})},
  clubpost:()=>{const f=($('clbf').value||'').trim(),t=($('clbt').value||'').trim();if(!f||!t){toast('제목과 한줄평을 적어주세요');return}const a=store.get('aic.clubnotes')||[];a.unshift({n:window.MYNAME||'나',f,t});store.set('aic.clubnotes',a.slice(0,30));PANELS.club();if(window.__drawClubBoard)window.__drawClubBoard();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+f+'」 좋죠! 저도 한마디 하고 싶네요',5)}

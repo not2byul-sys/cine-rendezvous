@@ -1144,13 +1144,31 @@ const LOOK={
  '앙투안 두아넬':{hair:LK_D,hs:'short',coat:0x6a6e72,open:0,pants:0x4a4a52,kid:1}};
 /* NPC 터치 시 자기소개: 출연 영화 · 연도 · 맡은 역할(1인칭) */
 /* NPC 자기소개 말풍선(HTML): 머리 위에 따라붙고 「영화 상세정보」 버튼 → 새 창 */
-let NPCB=null;function npcCard(g,name){if(NPCB){NPCB.remove();NPCB=null}const info=CHARINFO[name];if(name==='마커스 교수'){sayB(g,'나는 아무것도 안하고 있었어요',10);return}if(info)sayB(g,'나는 '+name+'. '+info,10)}
+const VC_MOVIE_LOVER_LINES={
+ '토토':['영사실 불빛이 켜지면 아직도 심장이 뛰어요.','영화는 언제나 저를 더 넓은 세상으로 데려가요.','알프레도 아저씨가 알려 준 영화의 마법을 기억해요.'],
+ '세실리아':['힘든 날엔 늘 영화관에 갔어요.','같은 영화를 열 번 보아도 매번 다른 위로가 있어요.','언젠가는 영화 속 인물이 저에게 말을 걸어 주겠죠.'],
+ '앨런 펠릭스':['보가트의 영화는 언제나 제 마음을 훔쳐요.','〈카사블랑카〉를 보고 또 봐도 질리지 않아요.','필름이 돌아가는 소리를 들으면 하루가 행복해져요.'],
+ '셜록 주니어 영사기사':['영사기 불빛 속에는 다른 세상이 있어요.','꿈이라면 스크린 안으로 들어갈 수 있겠죠.','무성영화에도 끝없는 이야기가 숨어 있어요.']};
+
+/* QA04: 터치 대사는 대화형 자기소개. 마커스 혼잣말은 여기서 사용하지 않음. */
+let NPCB=null;function npcCard(g,name){
+ if(name==='마커스 교수'){
+  sayB(g,'“저는 《레이디킬러》(1955)의 마커스 교수입니다. 음악가인 척했지만, 실은 다른 계획을 꾸미고 있었지요.”',10);
+  return;
+ }
+ if(NPCB){NPCB.remove();NPCB=null}
+ const lines=VC_MOVIE_LOVER_LINES[name];
+ if(lines){const i=(g.userData.vcLine||0)%lines.length;g.userData.vcLine=i+1;sayB(g,'“'+(i===0?'저는 '+name+'예요. ':'')+lines[i]+'”',6);return}
+ const info=CHARINFO[name];if(info)sayB(g,'“'+info+'”',10)
+}
 function npcCardTick(){if(!NPCB||NPCB.hidden)return;const g=NPCB._g;if(!g||performance.now()>NPCB._t||!g.visible){NPCB.hidden=true;return}const v=new THREE.Vector3(0,2.42,0);g.localToWorld(v);v.project(C);if(v.z>1){NPCB.style.display='none';return}NPCB.style.display='block';const hw=NPCB.offsetWidth/2,x=(v.x+1)/2*innerWidth,y=(1-v.y)/2*innerHeight;NPCB.style.left=x+'px';NPCB.style.top=y+'px'}
 (function npcLoop(){try{npcCardTick()}catch(e){}requestAnimationFrame(npcLoop)})();
 const CHARINFO={
  '마커스 교수':'〈레이디킬러〉(1955)의 마커스 교수예요. 알렉 기네스가 연기했죠. 음악가 행세로 하숙집에 모였지만, 실은 엉뚱한 계획을 꾸미고 있었답니다.',
  '세실리아':'〈카이로의 붉은 장미〉(1985)의 세실리아예요. 대공황 시절 고단한 하루를 영화관에서 견뎠죠. 어느 날 스크린 속 주인공이 저를 보고 걸어 나왔어요.',
  '토토':'〈시네마 천국〉(1988)의 토토예요. 시칠리아 작은 마을 극장의 영사실을 드나들며 알프레도 할아버지에게 영화를 배웠어요.',
+ '앨런 펠릭스':'〈카사블랑카여 다시 한번〉(1972)의 앨런 펠릭스예요. 영화평론을 쓰고 보가트를 사랑하죠.',
+ '셜록 주니어 영사기사':'〈셜록 주니어〉(1924)의 영사기사예요. 극장에서 일하며 스크린 속 세상을 꿈꾸고 있죠.',
  '이자벨':'〈몽상가들〉(2003)의 이자벨. 1968년 파리 시네마테크 맨 앞줄이 제 자리였어요. 영화 장면 맞히기 게임이라면 자신 있죠.',
  '매튜':'〈몽상가들〉(2003)의 매튜예요. 파리에 유학 온 미국 학생인데, 시네마테크에서 이자벨과 테오를 만났어요.',
  '프레더 프레데르센':'〈메트로폴리스〉(1927)의 프레더. 지상 낙원에 살던 도시 지배자의 아들이었지만, 지하 노동자들의 세계를 보고 말았어요. 무성영화라 내 목소리는 처음 들으실 거예요.',
@@ -1277,7 +1295,7 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
  if(o.bag==='hand'){const hb=new THREE.Group();hb.position.set(0,-.58,.02);arms[0].add(hb);add(new THREE.BoxGeometry(.2,.16,.08),M(0x8a5226),0,0,0,hb);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,0,.04,.045,hb);const hd_=add(new THREE.TorusGeometry(.06,.012,6,12,Math.PI),M(0x6e3e1a),0,.08,0,hb)}
  if(o.tote){const tb=new THREE.Group();tb.position.set(0,-.62,.02);arms[0].add(tb);add(new THREE.BoxGeometry(.22,.24,.04),M(0xf3ecdc),0,0,0,tb);add(new THREE.BoxGeometry(.1,.08,.01),M(0xb3202e),0,-.02,.025,tb);add(new THREE.TorusGeometry(.07,.01,6,12,Math.PI),M(0xd9cdb0),0,.12,0,tb)}
  if(o.paper||o.flyer){const pp=new THREE.Group();pp.position.set(0,-.5,.08);arms[0].add(pp);const tx=(art(48,64,(c,W,H)=>{c.fillStyle='#f3ecdc';c.fillRect(0,0,W,H);c.fillStyle='#5a4a3a';if(o.paper){for(let y=8;y<H-4;y+=6)c.fillRect(5,y,W-10,2)}else{c.fillStyle='#8a4a2a';c.fillRect(6,8,W-12,30);c.fillStyle='#5a4a3a';c.fillRect(6,44,W-12,3);c.fillRect(6,50,W-20,3)}}));const pl=add(new THREE.PlaneGeometry(.2,.27),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}),0,0,0,pp);pl.rotation.y=.4}
- if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;g.add(sh);const t=tag(name,'rgba(42,20,28,.88)','#fff',24,.62);t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.32:o.hat||o.hs==='curly'?2.2:2.1;g.add(t)}
+ if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;g.add(sh);const avCol=new THREE.Color(coat),avHex='#'+avCol.getHexString();const avFg=(avCol.r*.2126+avCol.g*.7152+avCol.b*.0722)>.54?'#2a1418':'#fff';const t=tag(name,o.me?'rgba(42,20,28,.88)':avHex,o.me?'#fff':avFg,24,.62);t.userData.nameplateOutfitColor=avHex;t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.32:o.hat||o.hs==='curly'?2.2:2.1;g.add(t)}
  g.scale.setScalar((o.kid?.7:.82)*AVS*.9);g.userData={base:(o.kid?.7/.82:1)*.9,path:[],after:null,spot:null,seat:null,b:null,bt:0,hop:0,wait:2+Math.random()*4,lvl:0,tgY:0,legs,arms,seatedLegs,head:headGroup};(o.parent||S).add(g);
  if(o.bw){/* 무성영화 주인공: 흑백 */n.traverse(q=>{if(q.isMesh&&q.material&&q.material.color){const ms=Array.isArray(q.material)?q.material:[q.material];q.material=ms.map(m=>{const c=m.clone(),l=c.color.r*.3+c.color.g*.59+c.color.b*.11;c.color.setRGB(Math.min(1,l*1.035+.008),l,Math.max(0,l*.94));if(c.emissive){const e=c.emissive,le=e.r*.3+e.g*.59+e.b*.11;e.setRGB(le*1.035,le,le*.94)}return c});if(q.material.length===1)q.material=q.material[0]}})}
  if(!o.notag&&!o.me&&CHARINFO[name]){const hb=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.4,1.1),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.15;g.add(hb);hb.userData.act={now:1,fn:()=>{if(!me)return;const talk=()=>{g.rotation.y=Math.atan2(me.position.x-g.position.x,me.position.z-g.position.z);me.rotation.y=Math.atan2(g.position.x-me.position.x,g.position.z-me.position.z);npcCard(g,name)};const dx=me.position.x-g.position.x,dz=me.position.z-g.position.z,d=Math.hypot(dx,dz),zn=curZone(g);
@@ -1327,7 +1345,7 @@ function audienceTick(t){
  a.screenLight.intensity=.85+(a.reduced?0:Math.sin(t*.6)*.035);a.renderer.render(a.scene,a.camera);a.last=t;
 }
 
-function say(c,t,raw){if(!raw)t=txT(t);t=noEmo(t);const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(String(t).slice(0,50));s.position.y=2.6+s.scale.y/2;c.add(s);u.b=s;u.bt=5;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},5000)}
+function say(c,t,raw){if(!raw)t=txT(t);t=noEmo(t);const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(String(t));s.position.y=2.6+s.scale.y/2;c.add(s);u.b=s;u.bt=5;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},5000)}
 const POST=h=>art(200,300,(x,w,hh)=>{x.fillStyle=`hsl(${h.hue},45%,72%)`;x.fillRect(0,0,w,hh);x.fillStyle=`hsl(${h.hue},40%,45%)`;x.beginPath();x.arc(100,105,48,0,7);x.fill();x.fillStyle='#3a1f33';x.textAlign='center';x.font='bold 20px sans-serif';x.fillText(h.name+' · '+h.genre,100,200);x.font='15px sans-serif';x.fillText('NOW / NEXT',100,232)});
 const HALLG={},HSET=new Set(),CLUBG=[];
 function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,base=H_BASE[id],zn='H'+id,hx=HX,n0=S.children.length,HH=17.5,PINK=WD,BUT=PLC,WOOD=WD,CARP=0x8a1e2a,GLOW=0xfff0c8;
@@ -1978,23 +1996,23 @@ const NPCS=[],NPCF={};
 function bubble(t){
  const fs=24,lh=fs+8,maxW=fs*13,c=document.createElement('canvas'),x=c.getContext('2d'),f=`400 ${fs}px "Noto Sans KR",sans-serif`;
  x.font=f;const lines=[];let cur='';
- for(const ch of String(t||'').slice(0,50)){
+ for(const ch of String(t||'')){
+  if(ch==='\n'){lines.push(cur);cur='';continue}
   const tt=cur+ch;
   if(x.measureText(tt).width>maxW&&cur){
-   if(lines.length===1){cur=cur.slice(0,-1)+'…';break}
    const sp=cur.lastIndexOf(' ');
    if(sp>3){lines.push(cur.slice(0,sp));cur=cur.slice(sp+1)+ch}
    else{lines.push(cur);cur=ch}
   }else cur=tt
  }
- if(cur)lines.push(cur);
- const w=Math.ceil(Math.max(...lines.map(l=>x.measureText(l).width),60))+36,h=lines.length*lh+24;
+ if(cur||!lines.length)lines.push(cur);
+ const w=Math.ceil(Math.max(...lines.map(l=>x.measureText(l).width),60))+36,h=Math.max(1,lines.length)*lh+24;
  c.width=w;c.height=h;x.font=f;x.fillStyle='#FFFFFF';x.beginPath();x.roundRect?x.roundRect(0,0,w,h,18):x.rect(0,0,w,h);x.fill();
  x.fillStyle='#2a1418';x.textBaseline='middle';lines.forEach((l,i)=>x.fillText(l,18,12+lh*i+lh/2));
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));
  s.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1);s.renderOrder=11;return s
 }
-function sayB(c,t,dur=5){dur=Math.min(dur,5);const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(noEmo(txT(t)));s.position.y=2.6+s.scale.y/2;c.add(s);u.b=s;u.bt=dur;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},dur*1000+400)}
+function sayB(c,t,dur=5){dur=Math.max(1,Math.min(dur,12));const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(noEmo(txT(t)));s.position.y=2.6+s.scale.y/2;c.add(s);u.b=s;u.bt=dur;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},dur*1000+400)}
 const TRIVIA=['최초의 유료 영화 상영은 1895년 파리, 뤼미에르 형제였어요','「열차의 도착」을 보고 관객이 놀라 피했다는 전설, 들어봤어요?','유성영화 시대는 1927년 「재즈 싱어」로 열렸죠','「오즈의 마법사」에서 흑백이 컬러로 바뀌는 순간, 기억나요?','「시민 케인」의 마지막 말 \'로즈버드\'… 뭔지 아세요?','히치콕 감독은 자기 영화에 늘 잠깐씩 얼굴을 비췄어요. 찾아보는 재미가 있죠','칸 최고상은 황금종려상, 베를린은 황금곰상, 베니스는 황금사자상!','「기생충」은 아카데미 작품상을 받은 첫 비영어 영화예요','필름 영화는 1초에 24프레임으로 돌아가요','누벨바그 하면 고다르와 트뤼포죠. 「네 멋대로 해라」 봤어요?','부산국제영화제는 1996년에 처음 열렸어요','「하녀」(1960), 김기영 감독의 걸작이에요. 지금 봐도 서늘하죠','「8월의 크리스마스」(1998), 한국 멜로의 교과서 같은 작품이에요','시네마스코프 와이드스크린은 1953년 「성의」로 처음 선보였어요','팝콘이 극장 간식이 된 건 대공황 시절부터래요 🍿','아카데미 시상식은 1929년에 처음 열렸어요','「메트로폴리스」(1927)는 SF 영화의 출발점 같은 작품이에요','「라라랜드」 오프닝은 실제 고속도로 램프에서 찍었어요','「시네마 천국」 마지막 키스 장면 몽타주… 볼 때마다 울컥해요','이런 단관 극장, 요즘은 정말 귀하답니다','질문! 극장에서 처음 본 영화가 뭐였어요?','질문! 인생 영화를 딱 한 편만 꼽는다면?','질문! 엔딩 크레딧은 끝까지 보는 편이에요?','질문! 팝콘파예요, 나초파예요?','질문! 혼자 보는 영화, 좋아해요?','질문! 흑백 영화도 즐겨 보나요?'].sort(()=>Math.random()-.5);
 const BUFF=mk('알프레도 할아버지',0x5b3a2a,{ch:'C01',critic:true,coat:0x776653,pat:['hound',0x776653,0x635644],vest:0x665e4b,shirt:0xe6dcc7,tie:null,pants:0x4a4540,hat:'beret',hatc:0x4b443d,scarf:0x754b43,camera:false,bag:null,glasses:0x594b38,stache:null,hair:0xb2aaa0,hs:'short'});BUFF.userData.buff=1;NPCS.push(BUFF);
 {const sp=SPOTS.filter(q=>q.kind==='sofa'&&q.zone==='L0'&&!q.taken&&q.x>-7&&q.z<9).sort((a,b)=>a.x-b.x)[0];if(sp){sp.taken=BUFF;BUFF.userData.home=sp;setTimeout(()=>{sp.taken=null;sit(BUFF,sp)},0)}}
@@ -3338,7 +3356,30 @@ trapShow();
  /* 클럽 회원 NPC 5명: 소파에 앉아 영화 이야기 */const CL=[['세실리아',0,{ch:'A05'}],['토토',0,{ch:'A08'}],['이자벨',0,{ch:'A03'}],['매튜',0,{ch:'A10'}],['마커스 교수',0,{}]];
  const sps=SPOTS.filter(q=>q.zone==='B');CL.forEach(([nm,col,o],i)=>{const c=mk(nm,col,LOOK[nm]||o);c.userData.npc=true;CLUBN.push(c);CLUBG.push(c);HSET.add(c);c.visible=false;const sp=sps[[0,2,3,5,7][i]];if(sp){sp.taken=c;setTimeout(()=>{sp.taken=null;sit(c,sp)},0)}})}
 const CLUB_LINES=['「화양연화」는 복도 장면만으로 완벽해요','흑백영화는 빛이 주인공이에요','열린 결말이 더 오래 남지 않아요?','오늘은 누벨바그 얘기해볼까요?','롱테이크 좋아하는 사람 손! 🙋','영화음악만 들어도 장면이 떠올라요','이번 주 토론 주제, 인생 엔딩 장면이에요','극장에서 본 영화는 기억이 달라요','감독판이 더 좋았던 영화 있어요?','한줄평 보드에 한마디 남겨줘요 📌','자막 없이 보면 표정이 더 보여요','재개봉하면 꼭 다시 보고 싶은 영화는?'];
-function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B')&&!CLUBSTOP);clubHover();if(REC.on>=0&&!(me&&curZone(me)==='B'))REC.stop();if(window.RECPL){RECPL.arm.rotation.y+=((REC.on>=0?-.18:.35)-RECPL.arm.rotation.y)*.08;if(REC.on>=0)RECPL.plat.rotation.y-=.058}if(window.CLUBREELS&&me&&curZone(me)==='B'&&!CLUBSTOP)CLUBREELS.forEach((r,i)=>r.rotation.z-=(i?.9:1.3)*.016);ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+6+i*6.4;if(nw>u.nt){u.nt=nw+22+Math.random()*12;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,u.displayName==='마커스 교수'?'나는 아무것도 안하고 있었어요':CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
+function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B')&&!CLUBSTOP);clubHover();if(REC.on>=0&&!(me&&curZone(me)==='B'))REC.stop();if(window.RECPL){RECPL.arm.rotation.y+=((REC.on>=0?-.18:.35)-RECPL.arm.rotation.y)*.08;if(REC.on>=0)RECPL.plat.rotation.y-=.058}if(window.CLUBREELS&&me&&curZone(me)==='B'&&!CLUBSTOP)CLUBREELS.forEach((r,i)=>r.rotation.z-=(i?.9:1.3)*.016);ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;
+ const marcus=CLUBN.find(c=>c.userData.displayName==='마커스 교수');
+ if(marcus&&marcus.visible&&marcus.userData&&!marcus.userData.giftEating){
+  const mu=marcus.userData;
+  if(!mu.marcusNext)mu.marcusNext=nw+13;
+  if(nw>mu.marcusNext&&!mu.path?.length){
+   mu.marcusNext=nw+27+Math.random()*14;
+   if(mu.seat)standUp(marcus,true);
+   const p=mu.marcusCorner?{x:BCX-6.7,z:BCZ-4.8}:{x:BCX+6.8,z:BCZ+4.5};
+   mu.marcusCorner=!mu.marcusCorner;
+   walkTo(marcus,p.x,p.z,'B');
+   mu.marcusSearchUntil=nw+12;
+   mu.marcusMutterAt=nw+6;mu.marcusMuttered=false;
+  }
+  if(mu.marcusSearchUntil>nw){
+   if(mu.head){mu.head.rotation.y=Math.sin(nw*2.2)*.48;mu.head.rotation.x=.18+Math.sin(nw*1.1)*.13}
+   if(mu.arms)mu.arms.forEach((arm,i)=>{arm.rotation.x=.26+Math.sin(nw*3.2+i*1.7)*.12;arm.rotation.z=(i?1:-1)*(.2+Math.sin(nw*2+i)*.12)});
+   if(!mu.marcusMuttered&&nw>mu.marcusMutterAt&&!(mu.giftPauseUntil>nw)&&!(mu.storyUntil>nw)){mu.marcusMuttered=true;sayB(marcus,'나는 아무것도 안하고 있었어요',5)}
+  }else{
+   if(mu.head){mu.head.rotation.x*=.82;mu.head.rotation.y*=.82}
+   if(mu.arms)mu.arms.forEach((arm,i)=>{arm.rotation.x*=.82;arm.rotation.z=(i?1:-1)*.1+(arm.rotation.z-(i?1:-1)*.1)*.82});
+  }
+ }
+ CLUBN.forEach((c,i)=>{if(c.userData.displayName==='마커스 교수')return;const u=c.userData;if(u.nt==null)u.nt=nw+6+i*6.4;if(nw>u.nt){u.nt=nw+22+Math.random()*12;if(!u.giftEating&&!(u.storyUntil>nw))sayB(c,CLUB_LINES[Math.random()*CLUB_LINES.length|0],6)}})}
 /* ===== 관리자 · 배치 편집 (탑뷰 드래그 · 회전 · 복제 · 삭제 · 저장) ===== */
 var LAYED=false;const LAYK='aic.layout';let LSEL=null,LDRAG=null,LSNAP=null,LHLP=[],LDN=0;
 const LQ=new THREE.Quaternion(),LYA=new THREE.Vector3(0,1,0),lray=new THREE.Raycaster(),lv2=new THREE.Vector2(),LDEL={userData:{},position:new THREE.Vector3()};lray.layers.enable(2);

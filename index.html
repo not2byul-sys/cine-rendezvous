@@ -650,6 +650,25 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 #pn .club-quote{font-size:22px;line-height:1.5;white-space:pre-wrap;margin:16px 0}
 #pn .club-bubble{overflow-wrap:anywhere}
 </style>
+
+<style id="qa06-archive">
+#pn .archive-card button{margin-top:8px;font-size:12px;padding:7px 10px}
+#pn .history-figure{display:block;max-width:100%;max-height:42vh;width:auto;height:auto;margin:12px auto;object-fit:contain;filter:grayscale(1) sepia(.2)}
+#pn .history-copyright{font-size:12px;opacity:.75;line-height:1.5}
+#pn .history-list{display:flex;gap:8px;flex-wrap:wrap}
+#pn .history-list button{font-size:13px}
+body.cinepostcard-open #pn{z-index:75}
+#pn .archive-intro{font:13px/1.65 'Noto Sans KR',sans-serif;color:#785d4c;margin:4px 0 14px}
+#pn .archive-postcard{background:#f5e4c3;border:1px solid #bb936f;box-shadow:inset 0 0 0 7px #efe1c3,0 8px 28px #28161030;padding:30px 20px;margin:12px 0 17px;min-height:170px;overflow-wrap:anywhere}
+#pn .archive-postcard .kicker{display:block;text-transform:uppercase;letter-spacing:.12em;font:12px Georgia,serif;color:#996343;border-bottom:1px solid #bb936f;padding-bottom:13px}
+#pn .archive-postcard strong{display:block;margin:14px 0 10px;font:700 21px/1.4 'Noto Serif KR',serif;color:#563629}
+#pn .archive-postcard p{white-space:pre-wrap;line-height:1.8;color:#4b382e}
+#pn .archive-postcard small{display:block;text-align:right;color:#9d7560;margin-top:20px;font:italic 12px Georgia,serif}
+#pn .archive-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+#pn .archive-actions button{flex:1;min-width:140px}
+#pn .archive-url-fallback{width:100%;min-height:78px;resize:vertical;box-sizing:border-box;background:#f8edd7;color:#5c342c;margin-top:10px;padding:10px;font-size:13px}
+#pn .archive-source{display:inline-block;margin-top:10px;text-decoration:underline;text-underline-offset:3px;font-size:13px}
+</style>
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -2120,7 +2139,7 @@ const PORN='<svg class="porn" viewBox="0 0 190 22" aria-hidden="true" fill="none
 let PLEG=0;/* 관리자 메뉴는 기존 UI 유지 */
 function panel(html){html=html.replace(/<h3>([^<]*)<\/h3>/,(m,t)=>'<h3>'+t.replace(/^[\p{Extended_Pictographic}\uFE0F\u200D\s]+/u,'')+'</h3>');html=html.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<').replace(/(placeholder|title)="([^"]*)"/g,(m,a,v)=>a+'="'+v.replace(EMO,'')+'"');const p=$('pn');p.hidden=false;p.classList.toggle('leg',!!PLEG);if(PLEG){p.innerHTML='<div class="pbox"><button class="x" data-a="close">✕</button>'+html+'</div>';p.onclick=e=>{if(e.target===p)closePanel()};return}/* 피그마 패널 가이드: 이중 레터프레스 테두리 + 장식 헤더(오너먼트·제목·괘선) */let ttl='';html=html.replace(/^\s*<h3>([^<]*)<\/h3>/,(m,t)=>{ttl=t;return ''});
  p.innerHTML='<div class="pbox"><div class="pin"><div class="phd">'+PORN+'<h3>'+ttl+'</h3><i class="prule"></i><button class="x" data-a="close" aria-label="닫기"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>'+html+'</div></div>';p.onclick=e=>{if(e.target===p)closePanel()}}
-const closePanel=()=>{$('pn').hidden=true;$('pn').innerHTML=''};
+const closePanel=()=>{$('pn').hidden=true;$('pn').innerHTML='';document.body.classList.remove('cinepostcard-open')};
 /* 내 티켓 카드 = 피그마 7:30 「Punch ticket」(400px · 관별 색 · 좌우 반원 노치 · 점선 꼬리표 세로 번호) — 카드 자체가 입장 버튼 *//* 상영관 티켓 v3 — Figma jzgUUNCrSDmACH3dWpoxgT 3:38 (관별 종이색 · 이중 테두리 · 번호 스텁) */
 const TCPAL={1:['#e8a0c4','#e8a0c4'],2:['#9fe5ba','#72daab']};
 const tcNo=n=>String(n||'').replace(/\D/g,'').padStart(6,'0').slice(-6);
@@ -2873,17 +2892,49 @@ PANELS.vchoice=()=>openPanel('vend','coffee');
 Object.assign(A,{vcoffee:()=>openPanel('vend','coffee'),vquiz:()=>{if(hasInv()){closePanel();toast('이미 영화클럽 회원이에요. 책장 뒤 비밀문으로 내려가 보세요');return}window.QSRC='vend';openPanel('quiz')}});
 PANELS.books=()=>{const q=t=>'https://search.kyobobook.co.kr/search?keyword='+encodeURIComponent(t);panel(`<h3>영화 책꽂이</h3><p class="sub">영화를 더 깊이 즐기게 해 줄 스테디셀러예요. 누르면 구매 페이지로 이동해요</p>${FILMBOOKS.slice(0,6).map(([t,a,d])=>`<a class="rw bk" href="${q(t+' '+a.split(' · ')[0])}" target="_blank" rel="noopener"><div class="m"><b>${t}</b><i>${a} · ${d}</i></div><span class="bk-go">구매하기</span></a>`).join('')}`)};
 /* AGITE_20261110 panels: notes, digital archive, history */
-const AGITE_QUOTES_KEY='aic.agite.quotes.20261110';
+const AGITE_QUOTES_KEY='aic.agite.quotes.20261110', AGITE_ARCHIVE_KEY='aic.agite.archive.20261110';
 const agiteNotes=k=>{try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}};
 const agiteSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v.slice(-100)));return true}catch(e){toast('저장 공간이 부족해요');return false}};
 PANELS.clubquote=()=>{const a=agiteNotes(AGITE_QUOTES_KEY);
  panel(`<h3>오늘은 영화 속 명대사를 적어줘</h3><div class="agite-quote-zoom"><span>CINÉ-CLUB · QUOTES</span><strong>오늘은 영화 속<br>명대사를 적어줘</strong><p>당신의 마음에 남은 한 문장을 남겨주세요.</p></div><p class="sub">아래 명대사 카드를 클릭하면 내용을 크게 볼 수 있어요.</p>
  <div class="archive-list">${a.slice(-12).reverse().map((e,i)=>`<button class="archive-card" data-a="agitequoteshow" data-i="${a.length-1-i}"><b>${esc(e.f||'영화 한 장면')}</b><p>${esc(e.t||'')}</p></button>`).join('')||'<p class="sub">아직 남겨진 명대사가 없어요.</p>'}</div>
  <div class="archive-form"><input id="aqfilm" maxlength="75" placeholder="영화 제목"><textarea id="aqtext" maxlength="400" placeholder="마음에 남은 대사를 적어주세요" aria-label="명대사"></textarea><button class="p" data-a="agitequotesave">명대사 남기기</button></div>`)};
+/* QA06 portable postcards: local wall + shareable, user-initiated link. This is NOT a cross-user realtime feed. */
+const AGITE_POSTCARD_PARAM='cinepostcard';
+const agiteArchiveClean=e=>({n:String(e?.n||'익명의 영화광').slice(0,40),f:String(e?.f||'영화 한 편').slice(0,75),t:String(e?.t||'').slice(0,600)});
+const agiteArchiveToken=e=>{const v=JSON.stringify({v:1,...agiteArchiveClean(e)});const arr=new TextEncoder().encode(v);if(arr.length>2200)throw Error('엽서가 너무 길어요');let raw='';for(const n of arr)raw+=String.fromCharCode(n);return btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
+const agiteArchiveLink=e=>{const url=new URL(window.location.href);url.searchParams.set(AGITE_POSTCARD_PARAM,agiteArchiveToken(e));url.hash='';return url.toString()};
+const agiteArchiveFromURL=()=>{try{const p=new URLSearchParams(window.location.search).get(AGITE_POSTCARD_PARAM);if(!p||p.length>3200||!/^[\w-]+$/.test(p))return null;const b=atob(p.replace(/-/g,'+').replace(/_/g,'/'));const arr=Uint8Array.from(b,c=>c.charCodeAt(0));const value=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(arr));if(value.v!==1||typeof value.t!=='string'||!value.t.trim())return null;return agiteArchiveClean(value)}catch(e){return null}};
+const agiteRenderArchiveWall=()=>{const tex=window.__agiteArchiveBoardTexture;if(!tex?.image)return;const cv=tex.image,c=cv.getContext('2d'),a=agiteNotes(AGITE_ARCHIVE_KEY).slice(-2).reverse();const w=cv.width,h=cv.height;
+ c.fillStyle='#42382d';c.fillRect(0,0,w,h);c.fillStyle='#b28b61';c.fillRect(13,13,w-26,h-26);c.fillStyle='#20392f';c.fillRect(21,21,w-42,h-42);c.strokeStyle='#e4c99b';c.lineWidth=2;c.strokeRect(30,30,w-60,h-60);
+ c.textAlign='center';c.fillStyle='#ebd5aa';c.font='bold 32px Georgia,serif';c.fillText('CINÉ-CLUB',w/2,69);c.font='bold 23px serif';c.fillText('나의 영화 아카이브',w/2,108);
+ c.fillStyle='#f0e0c7';c.font='14px sans-serif';if(!a.length){c.fillText('첫 번째 영화 엽서를 남겨주세요',w/2,183);c.fillText('ARCHIVE & POSTCARDS',w/2,240)}else a.forEach((e,i)=>{const y=135+i*77;c.fillStyle='#f1e1c0';c.fillRect(49,y,402,65);c.fillStyle='#49382e';c.font='bold 16px sans-serif';c.fillText((e.f||'영화 한 편').slice(0,24),w/2,y+25);c.font='13px sans-serif';c.fillText((e.t||'').replace(/\s+/g,' ').slice(0,40),w/2,y+47)});
+ tex.needsUpdate=true};
+PANELS.cinearchive=()=>{const a=agiteNotes(AGITE_ARCHIVE_KEY);agiteRenderArchiveWall();
+ panel(`<h3>시네클럽 디지털 아카이브</h3><p class="archive-intro">영화 단상과 엽서를 남겨 보세요. 이 벽에는 내 브라우저에 저장한 기록이 표시됩니다. <b>엽서 링크를 공유하면 다른 사람도 열어보고 자신의 벽에 보관할 수 있습니다.</b> 실시간 공동 게시판은 아직 연결되지 않았어요.</p>
+ <div class="archive-list">${a.slice(-25).reverse().map((e,i)=>`<div class="archive-card"><b>${esc(e.n||'익명의 영화광')} · ${esc(e.f||'한 편의 영화')}</b><p>${esc(e.t||'')}</p><button data-a="agitearchiveshare" data-i="${a.length-1-i}">엽서 링크 공유</button></div>`).join('')||'<p class="sub">첫 번째 엽서를 남겨주세요.</p>'}</div>
+ <div class="archive-form"><input id="archivename" maxlength="40" placeholder="닉네임"><input id="archivefilm" maxlength="75" placeholder="영화 제목"><textarea id="archivetext" maxlength="600" placeholder="영화 단상 또는 엽서를 적어주세요" aria-label="영화 단상"></textarea><button class="p" data-a="agitearchivesave">엽서 남기기</button></div>`) };
+PANELS.cinepostcard=()=>{const e=agiteArchiveFromURL();if(!e){toast('공유 링크의 엽서를 읽을 수 없어요');return}document.body.classList.add('cinepostcard-open');
+ panel(`<h3>시네클럽에서 도착한 엽서</h3><div class="archive-postcard"><span class="kicker">CINÉ RENDEZ-VOUS · POSTCARD</span><strong>${esc(e.f)}</strong><p>${esc(e.t)}</p><small>FROM ${esc(e.n)}</small></div><p class="archive-intro">받은 엽서는 다른 사람이 공개한 링크에서 읽었습니다. 아래 버튼을 누르면 내 브라우저의 아카이브 벽에만 저장됩니다.</p><div class="archive-actions"><button class="p" data-a="agitearchiveimport">내 아카이브 벽에 보관</button><button data-a="agitearchiveview">영화관으로 돌아가기</button></div>`) };
+PANELS.cinehistory=(i=0)=>{const all=window.CINE_HISTORY||[];const h=all[i]||all[0];if(!h)return;
+ panel(`<h3>${esc(h.title)}</h3><img class="history-figure" src="${h.url}" alt="${esc(h.title)}" loading="lazy" referrerpolicy="no-referrer"><p>${esc(h.sub)}</p><p class="history-copyright">${esc(h.credit)}</p><a class="archive-source" href="${h.source}" target="_blank" rel="noopener noreferrer">원본 자료·라이선스 확인</a><div class="history-list">${all.map((v,j)=>`<button data-a="agitehistory" data-i="${j}">${esc(v.title)}</button>`).join('')}</div>`)};
+
 Object.assign(A,{
  agitequotesave:()=>{const f=$('aqfilm')?.value?.trim(),t=$('aqtext')?.value?.trim();if(!t){toast('명대사를 입력해 주세요');return}const a=agiteNotes(AGITE_QUOTES_KEY);a.push({f,t,ts:Date.now()});if(agiteSave(AGITE_QUOTES_KEY,a))PANELS.clubquote()},
  agitequoteshow:d=>{const a=agiteNotes(AGITE_QUOTES_KEY),q=a[+d.i];if(!q)return;panel(`<h3>${esc(q.f||'영화 속 명대사')}</h3><div class="club-quote">“${esc(q.t)}”</div><button class="p" data-a="agitequoteback">목록으로</button>`)},
- agitequoteback:()=>PANELS.clubquote()
+ agitequoteback:()=>PANELS.clubquote(),
+ agitearchivesave:()=>{const n=$('archivename')?.value?.trim(),f=$('archivefilm')?.value?.trim(),t=$('archivetext')?.value?.trim();if(!t){toast('영화 이야기를 입력해 주세요');return}const a=agiteNotes(AGITE_ARCHIVE_KEY);a.push({n,f,t,ts:Date.now()});if(agiteSave(AGITE_ARCHIVE_KEY,a)){agiteRenderArchiveWall();PANELS.cinearchive()}},
+ agitearchiveshare:async d=>{const e=agiteNotes(AGITE_ARCHIVE_KEY)[+d.i];if(!e)return;let url;try{url=agiteArchiveLink(e)}catch(err){toast('공유 링크를 만들 수 없어요');return}try{
+   if(navigator.share){await navigator.share({title:'씨네 랑데부 · 영화 엽서',text:`${e.f||'영화 한 편'} · ${e.n||'익명의 영화광'}`,url});return}
+   if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(url);toast('엽서 링크를 복사했어요');return}
+ }catch(err){if(err?.name==='AbortError')return}
+ panel(`<h3>영화 엽서 공유</h3><p class="sub">아래 주소를 복사해 공유해 주세요.</p><textarea readonly class="archive-url-fallback" aria-label="영화 엽서 공유 링크">${esc(url)}</textarea>`)
+ },
+ agitearchiveimport:()=>{const e=agiteArchiveFromURL();if(!e){toast('공유 엽서를 찾을 수 없어요');return}const a=agiteNotes(AGITE_ARCHIVE_KEY);if(!a.some(x=>x.n===e.n&&x.f===e.f&&x.t===e.t)){
+ a.push({...e,ts:Date.now(),imported:true});if(!agiteSave(AGITE_ARCHIVE_KEY,a))return}
+ agiteRenderArchiveWall();PANELS.cinearchive();toast('내 아카이브 벽에 엽서를 보관했어요')},
+ agitearchiveview:()=>closePanel(),
+ agitehistory:d=>PANELS.cinehistory(+d.i)
 });
 
 Object.assign(PANELS,{
@@ -3294,6 +3345,14 @@ trapShow();
    const gr=Cyl(.07,.09,.3,mat(0x2a2a2a),X+cx+.1,1.21,Z+cz-.1,14);Cyl(.09,.04,.14,GLS,X+cx+.1,1.43,Z+cz-.1,14);
    const dome=new THREE.Mesh(new THREE.SphereGeometry(.2,18,10,0,Math.PI*2,0,Math.PI/2),GLS);dome.position.set(X+cx+.75,1.08,Z+cz);S.add(dome);Cyl(.22,.22,.02,mat(0xf3ecdc),X+cx+.75,1.07,Z+cz,20);[[-.06,0],[.07,.04]].forEach(([dx,dz])=>{const ck=Bm(.09,.06,.09,mat(0xe9a8b4),X+cx+.75+dx,1.11,Z+cz+dz)});
    for(let k=0;k<4;k++)Cyl(.045,.035,.07,mat(0xf6ecd0),X+cx+.4,1.09+k*.072,Z+cz-.2,12);
+   /* QA06 polish for the existing espresso machine: brass pressure dial, steam wand, visible cup tray. */
+   {const mx=X+cx-.6,mz=Z+cz-.08,metal=new THREE.MeshPhongMaterial({color:0xe4d0af,shininess:65,specular:0xf8e6cd});
+    const dial=new THREE.Mesh(new THREE.CylinderGeometry(.074,.074,.018,20),metal);dial.rotation.x=Math.PI/2;dial.position.set(mx+.12,1.36,mz+.222);S.add(dial);
+    const tick=new THREE.Mesh(new THREE.BoxGeometry(.012,.039,.006),mat(0x4a281e));tick.position.set(mx+.12,1.37,mz+.236);S.add(tick);
+    const wand=new THREE.Mesh(new THREE.CylinderGeometry(.012,.016,.24,10),metal);wand.position.set(mx-.24,1.10,mz+.25);wand.rotation.z=-.25;S.add(wand);
+    const tray=Bm(.43,.025,.21,mat(0x39332c),mx,1.055,mz+.28);
+    for(const xx of [-.10,.11]){const cup=Cyl(.063,.052,.07,mat(0xf1e4cd),mx+xx,1.10,mz+.29,12);const coffee=Cyl(.049,.049,.006,mat(0x503021),mx+xx,1.139,mz+.29,12)}
+   }
    for(let k=0;k<6;k++){Cyl(.06,.06,.18,mat([0x8a5a34,0xc9a24a,0x5a3622][k%3]),X+cx-1.1+k*.42,1.82,Z+wz+.18,12);Cyl(.05,.04,.08,mat(0xf6ecd0),X+cx-1.1+k*.42+.12,2.32,Z+wz+.18,12)}}
   /* 와인 바(뒤 오른쪽) */{const cx=6,cz=-6.4,wz=bar(cx,cz,-1,'WINE BAR',['레드 · 화이트 와인','치즈 플레이트'],0x6a0f1e,'cbwine');
    {const nx=X+cx,ny=3.05,nz=Z+wz+.065;
@@ -3378,6 +3437,79 @@ trapShow();
   const l=new THREE.PointLight(0xffd39d,.48,2.9,2);l.position.set(X+CBW-1.7,2.85,Z+2.4);l.userData.i=.48;S.add(l);
   hitbox(X+CBW-.5,2.55,Z+2.4,.84,2.2,1.8,{now:1,fn:()=>PANELS.wcup(),pt:{x:X+CBW-2,z:Z+2.4,zone:'B'}})
  }
+/* AGITE_20261110_ROOM: archive, vintagized walls, leather sofa, photographs */
+ /* Cafe sign removed, café counter/espresso machine remain interactive. */
+  /* QA06 textured period plaster, dark pine and faded burgundy (non-collision wall facings). */
+  {const plasterTx=(base,dust,seed)=>{const t=art(256,256,(c,w,h)=>{c.fillStyle=base;c.fillRect(0,0,w,h);let v=seed>>>0;const rand=()=>{v=(Math.imul(v,1664525)+1013904223)>>>0;return v/4294967296};
+    for(let i=0;i<4500;i++){const x=rand()*w,y=rand()*h,r=.35+rand()*1.4;c.fillStyle=dust;c.globalAlpha=.045+rand()*.12;c.fillRect(x,y,r*2,r)}c.globalAlpha=1;
+    for(let i=0;i<26;i++){c.strokeStyle='rgba(237,218,180,.035)';c.beginPath();c.moveTo(rand()*w,0);c.bezierCurveTo(rand()*w,rand()*h,rand()*w,rand()*h,rand()*w,h);c.stroke()}});t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(4,1.25);return t};
+   const green=plasterTx('#354b40','#b3ba99',465),burgundy=plasterTx('#613438','#d4b3a1',917);
+   const plaster=(tex,x,z,w,rot)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,3.2),new THREE.MeshLambertMaterial({map:tex,side:THREE.DoubleSide}));m.position.set(X+x,3.98,Z+z);m.rotation.y=rot;S.add(m)};
+   plaster(green,0,-CBD+.034,2*CBW,0);plaster(burgundy,0,CBD-.034,2*CBW,Math.PI);plaster(green,-CBW+.034,0,2*CBD,Math.PI/2);plaster(burgundy,CBW-.034,0,2*CBD,-Math.PI/2);
+   for(const y of [2.4,5.55]){bb(2*CBW-.18,.045,.055,0x98724e,0,y,-CBD+.065);bb(2*CBW-.18,.045,.055,0x98724e,0,y,CBD-.065);
+    bb(.055,.045,2*CBD-.18,0x98724e,-CBW+.065,y,0);bb(.055,.045,2*CBD-.18,0x98724e,CBW-.065,y,0)}
+  }
+  /* Herringbone hardwood topcoat: visual layer above the original solid, collidable wooden floor. */
+  {const cv=art(512,512,(c,w,h)=>{c.fillStyle='#6c492f';c.fillRect(0,0,w,h);const co=['#8b6040','#795238','#aa774a','#6a4933','#946a49'];
+    for(let y=-1;y<18;y++)for(let x=-1;x<18;x++){c.save();c.translate(x*32+16,y*32+16);c.rotate((x+y)&1?Math.PI/4:-Math.PI/4);c.fillStyle=co[((x+29)*7+(y+29)*3)%co.length];c.fillRect(-24,-9,48,18);c.strokeStyle='rgba(42,23,13,.5)';c.lineWidth=1.1;c.strokeRect(-24,-9,48,18);
+      c.strokeStyle='rgba(240,205,154,.16)';for(const gy of [-4,2]){c.beginPath();c.moveTo(-21,gy);c.lineTo(20,gy);c.stroke()}c.restore()}});cv.wrapS=cv.wrapT=THREE.RepeatWrapping;cv.repeat.set(4,3);
+   const f=new THREE.Mesh(new THREE.PlaneGeometry(2*CBW-.15,2*CBD-.15),new THREE.MeshLambertMaterial({map:cv,transparent:true,opacity:.92,depthWrite:false}));f.rotation.x=-Math.PI/2;f.position.set(X,.018,Z);S.add(f)}
+ /* Leather sofa: added toward left wall, away from interactive counter */
+ {const leather=new THREE.MeshPhongMaterial({color:0x5b2c31,shininess:25,specular:0x6b453e}),wood=mat(0x39241a);
+  const sofa=new THREE.Group();sofa.position.set(X-6.6,0,Z+1.9);sofa.rotation.y=Math.PI/2;S.add(sofa);
+  for(const [w,h,d,x,y,z] of [[2.2,.28,.76,0,.46,0],[2.2,.68,.20,0,.74,-.38],[.25,.53,.79,-1.04,.52,0],[.25,.53,.79,1.04,.52,0]]){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),leather);m.position.set(x,y,z);sofa.add(m)}
+  [-.5,0,.5].forEach(x=>{const k=new THREE.Mesh(new THREE.BoxGeometry(.64,.16,.68),leather);k.position.set(x,.63,.02);sofa.add(k)});
+  [-.85,.85].forEach(x=>[-.24,.24].forEach(z=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.10,.23,.10),wood);m.position.set(x,.12,z);sofa.add(m)}))}
+ /* Archive shelf with vintage illustrated issues, personal notes, and numbered ephemera. */
+ {const brow=mat(0x694731),gold=mat(0xb79165);for(let k=0;k<4;k++)bb(3.6,.08,.33,0x6a4430,(-3.2),1.3+k*.64,CBD-.27);
+  const colors=[0x8b5f58,0x374940,0x9b8c6e,0x6b4449,0x8b7a61];
+  for(let k=0;k<17;k++){const x=-4.75+(k%8)*.39,y=1.5+Math.floor(k/8)*.64;
+   const m=new THREE.Mesh(new THREE.BoxGeometry(.30,.42,.10),mat(colors[k%colors.length]));m.position.set(X+x,y,Z+CBD-.31);S.add(m);
+   const txt=art(90,122,(c,w,h)=>{c.fillStyle=['#e2ceb0','#ddd4c2','#d7b0aa'][k%3];c.fillRect(0,0,w,h);c.fillStyle='#47372d';c.textAlign='center';c.font='bold 14px serif';c.fillText('CAHIERS',w/2,28);c.font='bold 9px serif';c.fillText('DU CINÉMA',w/2,44);c.font='13px serif';c.fillText('VOL. '+String(1951+k),w/2,98)});
+   const cover=new THREE.Mesh(new THREE.PlaneGeometry(.265,.39),new THREE.MeshBasicMaterial({map:txt,side:THREE.DoubleSide}));cover.position.set(X+x,y,Z+CBD-.249);S.add(cover);
+  }
+  for(let k=0;k<5;k++){const note=art(140,100,(c,w,h)=>{c.fillStyle='#efe0b8';c.fillRect(0,0,w,h);c.fillStyle='#604638';c.textAlign='center';c.font='italic 14px serif';c.fillText(['un film à revoir','la mémoire','pour toujours','les images','le cinéma'][k],w/2,48)});plane(.44,.32,note,X-4.9+k*.43,3.80,Z+CBD-.025,Math.PI)}
+ }
+ /* QA06: three new original film-history homage prints, varied brass and dark-wood frames on the side wall. */
+ {const tix=[
+  {a:'LE VOYAGE',b:'DANS LA LUNE',foot:'1902 · MÉLIÈS',bg:'#2c3b3d',ink:'#e9d5a5',kind:0,w:.79,h:1.05,z:-3.35},
+  {a:'THE GENERAL',b:'SILENT CINEMA',foot:'1926 · KEATON',bg:'#794445',ink:'#e3c9b1',kind:1,w:.68,h:.94,z:-1.65},
+  {a:'CINÉ-CLUB',b:'SOIRÉE',foot:'ARCHIVE · 1962',bg:'#a69576',ink:'#243c36',kind:2,w:.89,h:1.20,z:.42}
+ ];tix.forEach((p,i)=>{const tex=art(280,390,(c,w,h)=>{c.fillStyle=p.bg;c.fillRect(0,0,w,h);c.strokeStyle=p.ink;c.lineWidth=5;c.strokeRect(17,17,w-34,h-34);
+   c.textAlign='center';c.fillStyle=p.ink;c.font='bold 28px Georgia,serif';c.fillText(p.a,w/2,64);c.font='18px Georgia,serif';c.fillText(p.b,w/2,91);
+   c.strokeStyle=p.ink;c.lineWidth=4;
+   if(p.kind===0){c.beginPath();c.arc(140,208,72,0,Math.PI*2);c.stroke();c.beginPath();c.arc(111,189,7,0,7);c.arc(165,189,7,0,7);c.stroke();c.beginPath();c.moveTo(109,226);c.quadraticCurveTo(144,251,175,221);c.stroke();c.beginPath();c.moveTo(150,218);c.lineTo(220,159);c.stroke()}
+   if(p.kind===1){for(const [x,y,r] of [[105,193,53],[186,240,39]]){c.beginPath();c.arc(x,y,r,0,7);c.stroke();for(let k=0;k<9;k++){const a=k*2*Math.PI/9;c.beginPath();c.moveTo(x+Math.cos(a)*r*.6,y+Math.sin(a)*r*.6);c.lineTo(x+Math.cos(a)*r*1.19,y+Math.sin(a)*r*1.19);c.stroke()}}}
+   if(p.kind===2){c.beginPath();c.arc(140,205,74,0,7);c.stroke();for(let k=0;k<7;k++){const a=k*Math.PI*2/7;c.beginPath();c.arc(140+52*Math.cos(a),205+52*Math.sin(a),6,0,7);c.fill()}c.fillRect(135,140,10,130)}
+   c.font='bold 16px Georgia,serif';c.fillText(p.foot,w/2,h-42)});
+   const y=3.58+(i===1?-.22:0),x=X-CBW+.077,z=Z+p.z;
+   const wood=new THREE.Mesh(new THREE.BoxGeometry(.044,p.h+.13,p.w+.13),mat(i%2?0x3a2925:0x997047));wood.position.set(x-.018,y,z);S.add(wood);
+   plane(p.w,p.h,tex,x+.013,y,z,Math.PI/2);
+  })}
+ /* Historical film photographs: real public-domain or Commons-licensed archive image URLs. The frames are clickable. */
+  {const historical=[
+  {title:'1895 · 시네마토그래프',sub:'뤼미에르 형제가 사용한 초기 시네마토그래프의 시제품 기록 사진. 1895년 12월 28일 파리의 상업적 공개 상영은 영화사의 중요한 전환점이었습니다.',url:'https://commons.wikimedia.org/wiki/Special:FilePath/Cin%C3%A9matographe_Lumi%C3%A8re_prototype.png',credit:'Louis Lumière · 1895 · Wikimedia Commons · Public Domain',source:'https://commons.wikimedia.org/wiki/File:Cin%C3%A9matographe_Lumi%C3%A8re_prototype.png'},
+  {title:'1902 · 달세계 여행',sub:'조르주 멜리에스 《달세계 여행》(1902)의 실제 필름 스틸. 기록 매체였던 영화가 무대 마술과 특수효과를 만나 환상적인 이야기로 확장한 사례입니다.',url:'https://commons.wikimedia.org/wiki/Special:FilePath/Voyage_dans_la_lune_(1902)_still03.jpg',credit:'Georges Méliès · 1902 · Wikimedia Commons · Public Domain',source:'https://commons.wikimedia.org/wiki/File:Voyage_dans_la_lune_(1902)_still03.jpg'},
+  {title:'1927 · 유성영화의 전환',sub:'《재즈 싱어》(1927)의 실제 홍보 사진. 동기화된 노래와 대사 장면을 통해 할리우드 유성영화 전환을 가속했습니다. 영화 전체가 대사로 이루어진 작품은 아닙니다.',url:'https://commons.wikimedia.org/wiki/Special:FilePath/Thejazzsinger-marycongratulatesjack-1927.jpg',credit:'Warner Bros. publicity photograph · 1927 · Wikimedia Commons · Public Domain (US)',source:'https://commons.wikimedia.org/wiki/File:Thejazzsinger-marycongratulatesjack-1927.jpg'}
+  ];window.CINE_HISTORY=historical;
+   for(let k=0;k<historical.length;k++){const h=historical[k],xs=[-5.85,-3.05,4.35][k],ww=[1.08,1.46,1.27][k],hh=[.86,1.08,.95][k];
+    const fr=art(400,350,(c,w,l)=>{c.fillStyle='#34291f';c.fillRect(0,0,w,l);c.fillStyle='#9d774d';c.fillRect(9,9,w-18,l-18);c.fillStyle='#e3d8c1';c.fillRect(24,24,w-48,l-48);c.fillStyle='#342b26';c.font='bold 22px Georgia,serif';c.textAlign='center';c.fillText(['LUMIÈRE','MÉLIÈS','TALKIES'][k],w/2,147);c.font='16px Georgia,serif';c.fillText(['1895','1902','1927'][k],w/2,195)});
+    const m=plane(ww,hh,fr,X+xs,3.46,Z+CBD-.062,Math.PI);
+    const picCanvas=document.createElement('canvas');picCanvas.width=400;picCanvas.height=320;const pc=picCanvas.getContext('2d');
+    const photo=plane(ww*.80,hh*.73,fr,X+xs,3.46,Z+CBD-.087,Math.PI),im=new Image();im.crossOrigin='anonymous';
+    im.onload=()=>{try{pc.fillStyle='#2b2926';pc.fillRect(0,0,400,320);pc.filter='grayscale(100%) contrast(105%) sepia(20%)';const r=Math.min(380/im.width,300/im.height),dw=im.width*r,dh=im.height*r;pc.drawImage(im,(400-dw)/2,(320-dh)/2,dw,dh);pc.filter='none';const tx=new THREE.CanvasTexture(picCanvas);photo.material=new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide});}catch(err){console.info('Archive photo frame uses fallback:',h.title)}};
+    im.onerror=()=>console.info('Archive photo remote image unavailable:',h.title);
+    im.src=h.url;
+    m.userData.act={fn:()=>openPanel('cinehistory',k),pt:{x:X+xs,z:Z+CBD-1.4,zone:'B'}};INTER.push(m);
+   }
+  }
+ /* QA06 interactive archive wall: locally saved postcard previews, no fake multi-user synchronization. */
+ {const tx=art(500,320,(c,w,h)=>{c.fillStyle='#20392f';c.fillRect(0,0,w,h)});window.__agiteArchiveBoardTexture=tx;agiteRenderArchiveWall();
+  const m=plane(2.65,1.65,tx,X+2.1,3.3,Z+CBD-.055,Math.PI);
+  m.userData.act={fn:()=>openPanel('cinearchive'),pt:{x:X+2.1,z:Z+CBD-1.5,zone:'B'}};INTER.push(m)
+ }
+ /* Show the existing espresso machine front and prominently mark it; don't duplicate geometry. */
+ /* Window-safe historical images load in 2D detail panels, not Three.js textures. */
  /* ===== 램프 3종(11/9): 티파니 스테인드글라스 · 그린 뱅커 · 브론즈 플로어 ===== */
  {const BR=new THREE.MeshPhongMaterial({color:0x5a4220,shininess:50,specular:0x6a5a30}),GD=new THREE.MeshPhongMaterial({color:0xd4aa48,shininess:110,specular:0xffe6a0});
   const lt=(x,y,z,col,i,d)=>{const l=new THREE.PointLight(col,i,d,2);l.position.set(x,y,z);l.userData.i=i;S.add(l);halo(x,y,z,col,.9,.45)};
@@ -3534,6 +3666,7 @@ function softenSurface(m){if(!m||typeof m!=='object'||SOFT_MATERIALS.has(m))retu
 function softenObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(softenSurface);if(o.isSprite&&o.material&&o.material.map===haloTex){o.material.opacity*=.78;o.scale.multiplyScalar(1.10)}})}
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
 Object.values(HALLN).forEach(h=>h.pli*=.82);try{softenObject(S);Object.values(TM).forEach(softenSurface)}catch(e){console.warn('soften skipped',e)}
+if(agiteArchiveFromURL())window.setTimeout(()=>openPanel('cinepostcard'),1750);
 window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF(){return BUFF},sit,standUp,get SPOTS(){return SPOTS},trapShow:a=>trapShow(a),INTER,get NPCS(){return NPCS},showSpace,get space(){return space},pickSeat,get sel(){return selSeat},get yaw(){return camYaw},set yaw(v){camYaw=v},get me(){return me},upd,walkTo,API,AdService,CFG,openPanel,A,scrAt,listS,curS,HALLN,STAFF,move,zoneOf,hasPass,refTK,paintSeats,PANELS,curZone,get curSp(){return curSp},HNPC,LAYI,layGet,HALLN,txT,txCatalog};
 </script>
 <!-- CINEMA_FINAL_REVIEW_20261109: source audit, runtime QA required -->

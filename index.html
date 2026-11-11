@@ -1794,7 +1794,7 @@ function clsPoster(i,W=300,H=440){const [t,bg,fg,kind,tag_]=VPOST[i%VPOST.length
  /* CINE_QA_BATCH04_20261111: clock tap opens the existing admin password prompt. */
     const clockHit=new THREE.Mesh(new THREE.CircleGeometry(.62,32),new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));
     clockHit.position.z=.165;
-    clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X,z:Z,zone:'L0'}};
+    clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X+3.6,z:Z,zone:'L0'}};
     g.add(clockHit);INTER.push(clockHit);
     layEnd(m_,'clock','벽시계',0,{wall:'x',lo:BF+.8,hi:LD-.8});window.__clockG=g}
 /* 현관 발판(코이어 매트 · 버건디 테두리 · AI CINEMA) */

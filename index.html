@@ -1909,7 +1909,7 @@ const PANELS={
  hallbuy(hid){if(CLOSEDH.has(hid)){PANELS.closedh(hid);return}const hl=hallCfg(hid),sc=hallSC(hl);SC[sc.id]=sc;const own=TK.some(k=>k.hall===hid);panel(`<h3>🎫 ${hl.name} 티켓</h3><p class="sub">티켓을 누르면 광고 후 발권돼요 · 자유석</p>${bkHTML(hl,sc)}`)},
   tt(){let h='<h3>🎞 상영작 안내</h3><p class="sub">상영 시간이 따로 없어요 · 티켓을 받고 상영관 좌석에 앉으면 처음부터 바로 시작돼요</p>';
   CFG.HALLS.forEach(hl=>{if(CLOSEDH.has(hl.id)){h+=`<div class="hall">${hl.name}</div><div class="rw"><div class="m"><b>준비 중입니다</b><i>상영작을 모집하고 있어요</i></div><button data-a="recruit">상영작 모집</button></div>`;return}h+=`<div class="hall">${hl.name} · ${hl.genre}</div>`;hl.films.forEach((f,i)=>{h+=`<div class="rw"><div class="m"><b>${f.title}</b><i>러닝타임 ${Math.round(f.dur/60)}분</i></div></div>`})});
-  h+='<div style="padding-top:12px;display:flex"><button data-a="adm" style="margin-left:auto">상영작 관리</button></div>';panel(h)},
+  panel(h)},
  posters(hid){const hs=hid?[hallCfg(hid)]:CFG.HALLS,t=nowS();let h='<h3>🎞 영화 홍보물</h3><p class="sub">지금 상영작과 다음 작품 정보</p>';
   hs.forEach(hl=>{const l=listS(hl,t,2);h+=`<div class="hall">${hl.name} · ${hl.genre}</div>`;l.forEach((s,i)=>{h+=`<div class="rw"><div class="m"><b>${i?'다음':'지금'} · ${s.film.title}</b><i>${s.film.syn}</i><br><i>${s.film.credit}</i></div></div>`})});panel(h)},
  dist(md){panel(`<h3>영화 상영 신청</h3><label>유튜브 주소</label><input id="df_u" type="url" placeholder="https://www.youtube.com/watch?v=..."><label>연락 이메일</label><input id="df_e" type="email"><button class="p" data-a="reqmail" style="margin-top:12px">신청하기</button>`)},

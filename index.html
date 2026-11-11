@@ -359,7 +359,7 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 #pn[data-k=vendor] .pbox>button.p{width:100%}
 
 /* 입장 티켓 v2 — Figma jzgUUNCrSDmACH3dWpoxgT 1:35 */
-.jt.jt2{--jt-ink:#5d211c;--jt-paper:#e8bfc2;display:flex;flex-direction:column;align-items:center;width:440px;height:262px;box-sizing:border-box;padding:32px 39px;background:var(--jt-paper);color:var(--jt-ink);overflow:visible;
+.jt.jt2{--jt-ink:#5d211c;--jt-paper:#e8bfc2;display:flex;flex-direction:column;align-items:center;width:440px;height:296px;box-sizing:border-box;padding:32px 39px;background:var(--jt-paper);color:var(--jt-ink);overflow:visible;
  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
  -webkit-mask:radial-gradient(circle 17px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 17px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat;mask:radial-gradient(circle 17px at 0 50%,#0000 97%,#000) left/51% 100% no-repeat,radial-gradient(circle 17px at 100% 50%,#0000 97%,#000) right/51% 100% no-repeat}
 .jt2-f1,.jt2-f2{position:absolute;pointer-events:none;border:solid var(--jt-ink)}
@@ -454,6 +454,17 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 #ad .ab.nt button{margin:0 28px 8px!important;width:calc(100% - 56px)!important;border-radius:2px!important;font:600 16px/1.5 'Noto Sans KR',sans-serif!important;padding:12px!important}
 #ad .ab.nt button.p{background:#5d211c!important;color:#f6e7cc!important;border:1px solid #983e49!important}#ad .ab.nt button:not(.p){background:#e8bfc2!important;color:#5d211c!important;border:1px solid #983e49!important}#ad .ab.nt button:last-child{margin-bottom:28px!important}
 @media(max-width:600px){#pn:not(.leg) .pin{padding:18px 16px 20px}#pn:not(.leg) .phd h3{font-size:21px!important}#pn:not(.leg) .phd .x{top:0}}
+
+/* QA P0 / mobile modal and ticket guards (qa-remediation-20261111) */
+@media (max-width:600px){
+ #pn{height:100dvh;min-height:100dvh;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);overflow:hidden}
+ #pn .pbox,#pn:not(.leg) .pbox{max-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 12px)!important;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+ #pn .pbox::-webkit-scrollbar{display:none}
+ .tcw .tc3,.tkw.tkw3{width:min(70vw,420px)!important;max-width:420px!important}
+ #pn:not(.leg) .pin{font-size:17px;line-height:1.5}
+ #pn .pbox .sub{font-size:14px!important;line-height:1.5}
+ #pn button:not(.tc3):not(.x),#pn input,#pn select,#pn textarea{font-size:16px!important}
+}
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -483,7 +494,7 @@ const CONFIG={
  AD:{provider:'gpt',test:true,fallback:true,seconds:5,client:'',units:{ticket:'',order:'',vend:''}},/* provider: gpt(Google Ad Manager 웹 보상형) · h5(AdSense H5 보상형) · mock(예시). test=true면 구글 공식 테스트 광고 */
  CHANNELS:[{id:'CH01',cap:500},{id:'CH02',cap:500},{id:'CH03',cap:500},{id:'CH04',cap:500},{id:'CH05',cap:500}],
  HALLS:[
-  {id:1,name:'1관',genre:'고전영화',hue:28,films:[{id:'r4_aMhM6w74',title:'앨리스의 저녁',credit:'Psyche_26 · 테스트 영상',dur:300,auto:true,color:'#9fd8c9',syn:'앨리스의 저녁 · 테스트 상영 (러닝타임은 영상에서 자동 감지 · 관리자에서 수정 가능)'}]},
+  {id:1,name:'1관',genre:'고전영화',hue:28,films:[{id:'YTK21v_oEgk',title:'앨리스의 저녁',credit:'Psyche_26 · 테스트 영상',dur:300,auto:true,color:'#9fd8c9',syn:'앨리스의 저녁 · 테스트 상영 (러닝타임은 영상에서 자동 감지 · 관리자에서 수정 가능)'}]},
   {id:2,name:'2관',genre:'AI영화',hue:300,films:[{id:'r4_aMhM6w74',title:'앨리스의 저녁 (테스트)',credit:'Psyche_26 · 테스트 영상',dur:300,auto:true,color:'#e8a0c4',syn:'테스트 영상 · 관리자에서 작품을 교체할 수 있어요'}]},
  ]
 };
@@ -1848,7 +1859,7 @@ function enterNow(nm){
 /* 랜덤: 고전·명작 영화 제목 중 하나를 닉네임으로 */const RAND_FILMS=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
 function randNick(){let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===$('nick').value&&RAND_FILMS.length>1);$('nick').value=n}
 $('nrand').addEventListener('change',e=>{if(e.target.checked)randNick()});$('nick').addEventListener('input',()=>{if($('nrand').checked)$('nrand').checked=false});
-function fitJoin(){const k=Math.max(.6,Math.min(1.35,(innerWidth-32)/440,(innerHeight-40)/262));$('jtw').style.transform=`scale(${k})`}fitJoin();addEventListener('resize',fitJoin);
+function fitJoin(){const mobile=innerWidth<=600;const w=mobile?innerWidth*.70:innerWidth-32;const h=innerHeight-40;const k=Math.min(1.35,w/440,h/296);$('jtw').style.transform=`scale(${Math.max(.1,k)})`}fitJoin();addEventListener('resize',fitJoin);
 function startAuto(){let nm=null;try{nm=localStorage.getItem('aic.nick')}catch(e){}$('nick').value=nm||'';$('nsave').checked=!!nm;$('join').hidden=false;setTimeout(()=>{try{$('nick').focus()}catch(e){}},400)}
 $('go').onclick=()=>enterAs($('nick').value);$('nick').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)enterAs($('nick').value)});
 /* 상영관이 가득 차면 다음 채널로 나눠서 입장(채널별 좌석 새로 배정) */var HCH={};function hallChan(hid){const H=HALLN[hid];if(!H)return;HCH[hid]=HCH[hid]||1;if(H.seats.every(q=>q.taken)){HCH[hid]++;H.seats.forEach(q=>{const c=q.taken;if(c&&c!==me){q.taken=null;if(c.userData){c.visible=false;c.userData.seat=null}}});toast(`${hallCfg(hid).name}이 가득 차서 채널 ${HCH[hid]}로 입장했어요`);paintSeats()}}

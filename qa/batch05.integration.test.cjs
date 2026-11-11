@@ -16,7 +16,7 @@ function chatContext() {
   const doc = { activeElement: null, documentElement: { style: { setProperty: (k, v) => properties.set(k, v) } } };
   class Element {
     constructor() {
-      this.listeners = new Map(); this.value = ''; this.children = [];
+      this.listeners = new Map(); this.value = ''; this.children = []; this.style = {}; this.dataset = {};
       const classes = new Set();
       this.classList = { add: x => classes.add(x), remove: x => classes.delete(x), contains: x => classes.has(x) };
     }
@@ -33,7 +33,7 @@ function chatContext() {
   }
   Object.assign(doc, { head: new Element(), body: new Element(), createElement: () => new Element(), getElementById: id => nodes.get(id), addEventListener() {} });
   const legacy = new Element(); legacy.id = 'msg';
-  const ctx = { document: doc, window: { innerHeight: 800, visualViewport: { height: 450, offsetTop: 0 } }, $: id => nodes.get(id), els: {}, K: { w: 1 }, endpoint: () => '', Math };
+  const ctx = { document: doc, window: { innerHeight: 800, visualViewport: { height: 450, offsetTop: 0 } }, $: id => nodes.get(id), els: {}, CinemaAudio: { updateButton() {}, setMuted() {} }, K: { w: 1 }, endpoint: () => '', Math };
   vm.createContext(ctx);
   vm.runInContext(segment('function qaKeyboardInset()', 'if(window.visualViewport)') + segment('function makeUI(){', 'function setStatus('), ctx);
   ctx.makeUI();

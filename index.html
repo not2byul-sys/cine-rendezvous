@@ -669,6 +669,13 @@ body.cinepostcard-open #pn{z-index:75}
 #pn .archive-url-fallback{width:100%;min-height:78px;resize:vertical;box-sizing:border-box;background:#f8edd7;color:#5c342c;margin-top:10px;padding:10px;font-size:13px}
 #pn .archive-source{display:inline-block;margin-top:10px;text-decoration:underline;text-underline-offset:3px;font-size:13px}
 </style>
+
+<style id="qa07-screen">
+#pn .bk-go {display:inline-flex;align-items:center;justify-content:center;background:#e9b7c8!important;color:#5d211c!important;border:1px solid #9f4b64!important;border-radius:999px;min-width:76px;text-align:center;font-weight:700;min-height:36px;box-sizing:border-box;font-size:13px}
+#pn .bk:hover .bk-go,#pn .bk:focus-visible .bk-go,#pn.leg .bk-go{background:#e9b7c8!important;color:#5d211c!important}
+#pn .bk:hover .bk-go,#pn .bk:focus-visible .bk-go{background:#db91ad!important;color:#4d1923!important}
+#agite-film-title{pointer-events:none;position:fixed;z-index:8;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);font:600 12px/1.2 'Noto Sans KR',sans-serif;letter-spacing:.04em;background:rgba(20,12,13,.78);color:#f6e7d7;padding:6px 12px;border:1px solid rgba(218,180,145,.48);border-radius:4px;max-width:70vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:none}
+</style>
 </style></head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -2890,7 +2897,7 @@ Object.assign(A,{screq:()=>openPanel('dist','req'),reqmail:()=>{const u=($('df_u
  location.href='mailto:not2@naver.com?subject='+encodeURIComponent('[빈티지 시네마] 영화 상영 신청')+'&body='+encodeURIComponent(body);closePanel()}});
 PANELS.vchoice=()=>openPanel('vend','coffee');
 Object.assign(A,{vcoffee:()=>openPanel('vend','coffee'),vquiz:()=>{if(hasInv()){closePanel();toast('이미 영화클럽 회원이에요. 책장 뒤 비밀문으로 내려가 보세요');return}window.QSRC='vend';openPanel('quiz')}});
-PANELS.books=()=>{const q=t=>'https://search.kyobobook.co.kr/search?keyword='+encodeURIComponent(t);panel(`<h3>영화 책꽂이</h3><p class="sub">영화를 더 깊이 즐기게 해 줄 스테디셀러예요. 누르면 구매 페이지로 이동해요</p>${FILMBOOKS.slice(0,6).map(([t,a,d])=>`<a class="rw bk" href="${q(t+' '+a.split(' · ')[0])}" target="_blank" rel="noopener"><div class="m"><b>${t}</b><i>${a} · ${d}</i></div><span class="bk-go">구매하기</span></a>`).join('')}`)};
+PANELS.books=()=>{const q=t=>'https://search.kyobobook.co.kr/search?keyword='+encodeURIComponent(t);panel(`<h3>영화 책꽂이</h3><p class="sub">영화를 더 깊이 즐기게 해 줄 스테디셀러예요. 누르면 구매 페이지로 이동해요</p>${FILMBOOKS.slice(0,6).map(([t,a,d])=>`<a class="rw bk" href="${q(t+' '+a.split(' · ')[0])}" target="_blank" rel="noopener"><div class="m"><b>${t}</b><i>${a} · ${d}</i></div><span class="bk-go" aria-hidden="true">구매하기</span></a>`).join('')}`)};
 /* AGITE_20261110 panels: notes, digital archive, history */
 const AGITE_QUOTES_KEY='aic.agite.quotes.20261110', AGITE_ARCHIVE_KEY='aic.agite.archive.20261110';
 const agiteNotes=k=>{try{const a=JSON.parse(localStorage.getItem(k)||'[]');return Array.isArray(a)?a:[]}catch(e){return []}};
@@ -2974,14 +2981,14 @@ Object.assign(A,{
  quizretry:async()=>{closePanel();const ok=await AdService.show({kind:'quiz',label:'영화퀴즈 재도전'});if(!ok){toast('광고를 끝까지 보면 다시 풀 수 있어요');return}const r=store.get('aic.quizr')||{},k=dayKey();store.set('aic.quizr',{[k]:(r[k]||0)+1});store.set('aic.quiz','');openPanel('quiz')},
  invaccept:()=>{store.set('aic.club',1);closePanel();trapShow(true);if(me){/* 문이 열리면 자동으로 일어나 문 앞까지 걸어가 멈춤 */setTimeout(()=>{if(!me)return;if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x+.55,TRAP.z,'L0',{after:()=>{me.rotation.y=-Math.PI/2;camYaw=camYawS=-Math.PI/2;hudUpd()}});hudUpd()},1600)}toast('로비 왼쪽 벽에 비밀 문이 열려요… 문을 눌러 내려가세요');if(BUFF)sayB(BUFF,'저 책장 쪽을 한번 보게나',6)},
  godown:()=>{closePanel();if(!hasInv()||!me)return;if(curZone(me)==='B')return;if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x,TRAP.z,'L0',{after:()=>clubEnter()})},
- clubstop:()=>{CLUBSTOP=!CLUBSTOP;if(CLUBSTOP){clubVid(false);ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;toast('영상을 멈췄어요')}else{CLVACTIVE=false;clubVid(true);if(CLV&&!CLVFAILED&&CLV.readyState>=2&&CLUBSCR.userData.videoMaterial){CLUBSCR.material=CLUBSCR.userData.videoMaterial;const a=CLV.videoWidth/CLV.videoHeight;if(a>0){CLUBSCR.scale.x=Math.min(1,a/(4.6/2.6));CLUBSCR.scale.y=Math.min(1,(4.6/2.6)/a)}}toast('영상을 다시 틀었어요')}hudUpd()},
+ clubstop:()=>{CLUBSTOP=!CLUBSTOP;if(CLUBSTOP){clubVid(false);ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;toast('영상을 멈췄어요')}else{CLVACTIVE=false;clubVid(true);if(CLV&&!CLVFAILED&&CLV.readyState>=2&&CLUBSCR.userData.videoMaterial){CLUBSCR.material=CLUBSCR.userData.videoMaterial;const a=CLV.videoWidth/CLV.videoHeight;if(a>0){CLUBSCR.scale.set(1,1,1)}}toast('영상을 다시 틀었어요')}hudUpd()},
  goup:()=>{if(!me)return;walkTo(me,BCX+CBW-1.0,BCZ+CBD-.25-9*.36-.6,'B',{after:()=>clubExit()})},
  clubpost:()=>{const f=($('clbf').value||'').trim(),t=($('clbt').value||'').trim();if(!f||!t){toast('제목과 한줄평을 적어주세요');return}const a=store.get('aic.clubnotes')||[];a.unshift({n:window.MYNAME||'나',f,t});store.set('aic.clubnotes',a.slice(0,30));PANELS.club();if(window.__drawClubBoard)window.__drawClubBoard();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+f+'」 좋죠! 저도 한마디 하고 싶네요',5)}
 });
 /* 아지트 연속 상영: 입장 시 현재 시간에 맞춘 영상 루프. 로비에서는 디코딩을 쉬고 재입장 때 시간을 맞춘다. */
 /* 최종 실사 필름 진열장: 실제 등록된 13개 파일과 1:1 연결 */
 const FILMTITLES=["상영영화 1", "상영영화 2", "상영영화 3", "상영영화 4", "상영영화 5", "Grok 필름 1", "Grok 필름 2", "Grok 필름 3", "Grok 필름 4", "Grok 필름 5", "Grok 필름 6", "Grok 필름 7", "Grok 필름 8"];
-const CLUBFILMS=[{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA1.mp4","title":"상영영화 1"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA2.mp4","title":"상영영화 2"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA3.mp4","title":"상영영화 3"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA4.mp4","title":"상영영화 4"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA5.mp4","title":"상영영화 5"},{"src":"media/grok-video-019f935b-f86f-78c1-9a64-660917dea94b.mp4","title":"Grok 필름 1"},{"src":"media/grok-video-019f935b-f8ab-7990-8c3c-7ad3dc695d3c.mp4","title":"Grok 필름 2"},{"src":"media/grok-video-019f935b-f8b8-7c22-9665-9c06e9ee774b.mp4","title":"Grok 필름 3"},{"src":"media/grok-video-019f9af4-76d5-7b90-83c1-3a9973427768.mp4","title":"Grok 필름 4"},{"src":"media/grok-video-019f9e78-d703-73a3-8274-30c8ac13cc57.mp4","title":"Grok 필름 5"},{"src":"media/grok-video-019f9e78-f482-7570-a0cd-d80ad0a1265a.mp4","title":"Grok 필름 6"},{"src":"media/grok-video-419c3406-bb6e-4237-99d6-0d6fb0e78361.mp4","title":"Grok 필름 7"},{"src":"media/grok-video-75d1608b-5dac-4b06-ba28-4d5164bc3ae0.mp4","title":"Grok 필름 8"}];let CLUBPICK=null;
+const CLUBFILMS=[{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA1.mp4","title":"사라진 오후의 극장"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA2.mp4","title":"세 번째 필름"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA3.mp4","title":"창가의 마지막 편지"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA4.mp4","title":"고요한 객석"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA5.mp4","title":"사라진 자막"},{"src":"media/grok-video-019f935b-f86f-78c1-9a64-660917dea94b.mp4","title":"빙글빙글 회전하는 밤"},{"src":"media/grok-video-019f935b-f8ab-7990-8c3c-7ad3dc695d3c.mp4","title":"기억의 복도"},{"src":"media/grok-video-019f935b-f8b8-7c22-9665-9c06e9ee774b.mp4","title":"우연히 마주친 여름"},{"src":"media/grok-video-019f9af4-76d5-7b90-83c1-3a9973427768.mp4","title":"어느 관객의 꿈"},{"src":"media/grok-video-019f9e78-d703-73a3-8274-30c8ac13cc57.mp4","title":"필름에 묻은 햇살"},{"src":"media/grok-video-019f9e78-f482-7570-a0cd-d80ad0a1265a.mp4","title":"느린 장면의 끝"},{"src":"media/grok-video-419c3406-bb6e-4237-99d6-0d6fb0e78361.mp4","title":"낡은 의자의 비밀"},{"src":"media/grok-video-75d1608b-5dac-4b06-ba28-4d5164bc3ae0.mp4","title":"영사실에 남은 노래"}];let CLUBPICK=null;
 let CLUBSTOP=false,FILMPOOL=null;
 /* ===== 영화 월드컵(16강) + 클럽 회원 랭킹 보드 ===== */
 const WCF=[['화양연화','2000 · 왕가위'],['중경삼림','1994 · 왕가위'],['시네마 천국','1988 · 주세페 토르나토레'],['8월의 크리스마스','1998 · 허진호'],['아멜리에','2001 · 장피에르 주네'],['올드보이','2003 · 박찬욱'],['카사블랑카','1942 · 마이클 커티즈'],['로마의 휴일','1953 · 윌리엄 와일러'],['이터널 선샤인','2004 · 미셸 공드리'],['비포 선라이즈','1995 · 리처드 링클레이터'],['기생충','2019 · 봉준호'],['라라랜드','2016 · 데이미언 셔젤'],['센과 치히로의 행방불명','2001 · 미야자키 하야오'],['쇼생크 탈출','1994 · 프랭크 다라본트'],['현기증','1958 · 앨프리드 히치콕'],['400번의 구타','1959 · 프랑수아 트뤼포']];
@@ -3080,7 +3087,7 @@ if(store.get('aic.clubfilmRevision')!==5){store.set('aic.clubfilm',null);store.s
 function clubUrl(){return CLUBQUEUE[CLUBI%CLUBQUEUE.length]||CLUB_DEF}
 function clubDisplayUrl(){const value=clubUrl();return value.startsWith('data:')?'':value}
 function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
-let CLV=null,CLVSRC='',CLVTEX=null,CLVACTIVE=false,CLVFAILED=false,CLVRETRY=0,CLVSYNC=0;
+const CLUBVIDEO_CANVAS=document.createElement('canvas');CLUBVIDEO_CANVAS.width=innerWidth<700?480:800;CLUBVIDEO_CANVAS.height=innerWidth<700?270:450;let CLV=null,CLVSRC='',CLVTEX=null,CLVACTIVE=false,CLVFAILED=false,CLVRETRY=0,CLVSYNC=0;
 function clubSync(force=false){/* Local films advance naturally; do not seek by wall clock. */}
 function clubStart(){if(!CLV||!CLVACTIVE||CLVFAILED)return;clubSync(true);const result=CLV.play();if(result&&result.catch)result.catch(()=>{})}
 /* 유튜브 링크이거나 mp4 파일을 못 불러오면: 유튜브 영상을 스크린 자리에 겹쳐 음소거 자동재생(캔버스에 스크린 모양 구멍) */
@@ -3088,8 +3095,11 @@ const CLUB_YT='https://www.youtube.com/watch?v=s01M3YGI8MY&list=PL28d5JImIlH4P1M
 let YTL=null,YTLSRC='';function ytLayer(on,url){if(YTL){YTL.remove();YTL=null;YTLSRC=''}}
 function ytLayerPos(){if(!YTL||!window.CLUBSCR)return;const m=CLUBSCR;m.updateMatrixWorld();const v=[[-.5,.5],[.5,.5],[-.5,-.5],[.5,-.5]].map(([a,b])=>new THREE.Vector3(a*5.52,b*3.12,0).applyMatrix4(m.matrixWorld).project(C));if(v.some(p=>p.z>1)){YTL.style.display='none';return}
  const xs=v.map(p=>(p.x+1)/2*innerWidth),ys=v.map(p=>(1-p.y)/2*innerHeight),l=Math.min(...xs),t=Math.min(...ys);YTL.style.display='block';YTL.style.left=l+'px';YTL.style.top=t+'px';YTL.style.width=(Math.max(...xs)-l)+'px';YTL.style.height=(Math.max(...ys)-t)+'px'}
-function clubVid(active=false){
+const agiteTitle=document.createElement('div');agiteTitle.id='agite-film-title';agiteTitle.setAttribute('aria-live','off');document.body.appendChild(agiteTitle);window.__clubFilmTitleEl=agiteTitle;
+function clubUpdateTitle(){if(!window.__clubFilmTitleEl)return;const src=clubUrl();const found=CLUBFILMS.find(f=>f.src===src||src.endsWith(f.src));const label=found?.title||`시네클럽 상영작 ${CLUBI+1}`;window.__clubFilmTitleEl.textContent=`CINÉ-CLUB · ${label} (임시 제목)`;window.__clubFilmTitleEl.title=label}
+function clubVid(active=false){if(window.__clubFilmTitleEl)window.__clubFilmTitleEl.style.display=active?'block':'none';
   if(!window.CLUBSCR)return;
+  clubUpdateTitle()
   if(active&&!window.__clubPoolInit){
    window.__clubPoolInit=true;
    filmPool().then(pool=>{
@@ -3103,22 +3113,22 @@ function clubVid(active=false){
   if(!CLV||src!==CLVSRC){if(!active)return;if(CLV){CLV.pause();CLV.removeAttribute('src');CLV.load()}if(CLVTEX)CLVTEX.dispose();
   CLVSRC=src;CLVFAILED=false;CLVACTIVE=false;CLV=document.createElement('video');CLV.loop=true;CLV.muted=!(window.__clubWantSound&&!window.__clubMutedByUser);CLV.volume=.75;CLV.autoplay=true;CLV.playsInline=true;CLV.preload='auto';CLV.setAttribute('playsinline','');if(/^https?:/i.test(src))CLV.crossOrigin='anonymous';
   if(!CLUBSCR.userData.m0)CLUBSCR.userData.m0=CLUBSCR.material;
-  CLVTEX=new THREE.VideoTexture(CLV);CLVTEX.minFilter=THREE.LinearFilter;CLVTEX.magFilter=THREE.LinearFilter;CLVTEX.generateMipmaps=false;CLVTEX.encoding=R.outputEncoding;/* 렌더러와 동일한 변환을 사용해 원본 영상의 밝기를 보존 */
+  CLVTEX=new THREE.CanvasTexture(CLUBVIDEO_CANVAS);CLVTEX.minFilter=THREE.LinearFilter;CLVTEX.magFilter=THREE.LinearFilter;CLVTEX.generateMipmaps=false;CLVTEX.encoding=R.outputEncoding;/* 렌더러와 동일한 변환을 사용해 원본 영상의 밝기를 보존 */
   if(CLUBSCR.userData.videoMaterial)CLUBSCR.userData.videoMaterial.dispose();CLUBSCR.userData.videoMaterial=new THREE.MeshBasicMaterial({map:CLVTEX,toneMapped:false});
-  CLV.addEventListener('loadedmetadata',()=>{const a=CLV.videoWidth/CLV.videoHeight;if(Number.isFinite(a)&&a>0){CLUBSCR.scale.x=Math.min(1,a/(4.6/2.6));CLUBSCR.scale.y=Math.min(1,(4.6/2.6)/a)}clubStart()});CLV.addEventListener('loadeddata',()=>{if(!CLVFAILED)CLUBSCR.material=CLUBSCR.userData.videoMaterial});
+  CLV.addEventListener('loadedmetadata',()=>{const a=CLV.videoWidth/CLV.videoHeight;if(Number.isFinite(a)&&a>0){CLUBSCR.scale.set(1,1,1)}clubStart()});CLV.addEventListener('loadeddata',()=>{if(!CLVFAILED)CLUBSCR.material=CLUBSCR.userData.videoMaterial});
   CLV.loop=false;
    let errorSkips=0;
    CLV.addEventListener('loadeddata',()=>{errorSkips=0});
    CLV.addEventListener('ended',()=>{
     CLUBI=(CLUBI+1)%CLUBQUEUE.length;
-    CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
+    clubUpdateTitle();CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
     const r=CLV.play();if(r&&r.catch)r.catch(()=>{});
    });
    CLV.addEventListener('error',()=>{
     console.warn('재생할 수 없는 필름:',CLVSRC);
     if(++errorSkips<CLUBQUEUE.length){
      CLUBI=(CLUBI+1)%CLUBQUEUE.length;
-     CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
+     clubUpdateTitle();CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
      const r=CLV.play();if(r&&r.catch)r.catch(()=>{});
     }else{
      CLVFAILED=true;CLUBSCR.material=CLUBSCR.userData.m0;
@@ -3131,7 +3141,14 @@ function clubVid(active=false){
  if(active&&!CLVFAILED&&Date.now()>CLVRETRY){CLVRETRY=Date.now()+2000;if(CLV.paused)clubStart()}
  if(active&&Date.now()>CLVSYNC){CLVSYNC=Date.now()+5000;clubSync()}
 }
-function clubVidPos(){ytLayerPos()}
+function clubContainRect(vw,vh,cw,ch){if(!(vw>0&&vh>0&&cw>0&&ch>0))return null;const ratio=Math.min(cw/vw,ch/vh);const w=vw*ratio,h=vh*ratio;return{x:(cw-w)/2,y:(ch-h)/2,w,h}}
+let AGITE_FRAME_TS=0;function clubVidPos(){ytLayerPos();if(performance.now()-AGITE_FRAME_TS<90)return;AGITE_FRAME_TS=performance.now();
+ if(CLV&&!CLVFAILED&&CLV.readyState>=2&&CLV.videoWidth&&CLV.videoHeight){
+  const c=CLUBVIDEO_CANVAS,ctx=c.getContext('2d'),rect=clubContainRect(CLV.videoWidth,CLV.videoHeight,c.width,c.height);
+  if(!rect)return;ctx.fillStyle='#080706';ctx.fillRect(0,0,c.width,c.height);
+  try{ctx.drawImage(CLV,rect.x,rect.y,rect.w,rect.h);if(CLVTEX)CLVTEX.needsUpdate=true}catch(e){}
+ }
+}
 /* 아지트: 첫 터치 때 영상 소리 켜기(브라우저 자동재생 정책상 처음엔 음소거) + 조명 어둡게 */
 addEventListener('pointerdown',()=>{if(me&&curZone(me)==='B'&&CLV&&!CLVFAILED&&CLV.muted&&!window.__clubMutedByUser){CLV.muted=false;CLV.volume=.75;window.__clubUnmuteT=Date.now();const r=CLV.play();if(r&&r.catch)r.catch(()=>{})}},true);
 function clubDim(){if(!me||curZone(me)!=='B')return;HEMI.intensity=.12;if(typeof dl!=='undefined')dl.intensity=.03;CLUBG.forEach(o=>{if(o.isLight&&o.userData.i!=null)o.intensity=o.userData.i*.4})}

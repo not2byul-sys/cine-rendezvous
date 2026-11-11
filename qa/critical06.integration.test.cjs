@@ -23,7 +23,7 @@ function actorContext() {
     openPanel: name => { nodes.get('pn').hidden = false; calls.push(['panel', name]); },
     opanel: name => { nodes.get('pn').hidden = false; calls.push(['purchase', name]); },
     walkTo(c, x, z, zone, opt) { c.userData.path = [{ x, z }]; c.userData.after = opt.after; calls.push(['walk', x, z, zone]); },
-    document: { addEventListener() {}, body: { appendChild: el => nodes.set(el.id, el) }, createElement() { return { style: {}, setAttribute() {}, remove() { nodes.delete(this.id); } }; } }
+    document: { addEventListener() {}, body: { appendChild: el => nodes.set(el.id, el) }, createElement() { return { style: {}, setAttribute(k,v) { this[k]=v; }, remove() { nodes.delete(this.id); } }; } }
   };
   vm.createContext(ctx); vm.runInContext(section('let ACTOR_SESSION=null;', 'function giftMenu()'), ctx);
   function arrive() { const p = me.userData.path.at(-1); me.position.x = p.x; me.position.z = p.z; me.userData.path = []; const f = me.userData.after; me.userData.after = null; f(); }
@@ -56,7 +56,7 @@ test('a new selection cancels the previous approach and its stale completion cal
   assert.equal(a.userData.interactionPause, false);
   assert.equal(b.userData.interactionPause, true);
   assert.equal(nodes.has('actorMenu'), false);
-  arrive(); assert(nodes.get('actorMenu').innerHTML.includes('B'));
+  arrive(); assert.equal(nodes.get('actorMenu')['aria-label'], 'B 선택 메뉴'); assert(!nodes.get('actorMenu').innerHTML.includes('<b>'));
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {
@@ -125,7 +125,7 @@ test('an unreachable interaction returns no route instead of walking through a w
 
 function doorContext() {
   let invitation = false, entered = 0;
-  const ctx = { Math, INTER: [], OBS: null, LW: 10, LD: 20,
+  const ctx = { Math, CinemaAudio: { effect() {} }, INTER: [], OBS: null, LW: 10, LD: 20,
     hasInv: () => invitation, toast() {}, clubEnter: () => entered++,
     SHELF: { g: { position: { z: 6 } }, sl: { position: { x: 0 } }, SL: 2.75, hb: { position: { z: 6 }, userData: { act: { pt: {} } } } },
     TRAP: { position: {}, userData: { hb: { position: {}, userData: { act: { pt: {} } } }, leaf: { rotation: { y: 0 } }, hl: { material: { opacity: 0 } } } }

@@ -14,7 +14,7 @@ test('QA16 lobby plays a calm classical schedule and is 5% darker', () => {
   assert(source.includes('o.intensity*=.95'));
 });
 test('QA16 chat send button uses the shadcn icon button shape', () => {
-  assert(/#mpsend\{[^}]*width:36px;height:36px[^}]*border-radius:6px/.test(source));
+  assert(/#mpsend\{[^}]*width:36px;height:36px[^}]*border-radius:50%/.test(source));
   assert(source.includes('#mpsend:disabled{opacity:.5;pointer-events:none'));
   assert(source.includes('lucide-arrow-up'));
 });
@@ -31,14 +31,14 @@ test('QA16 club: brick walls, no quote board, no chalkboards, world cup trophy o
   assert(source.includes("openPanel('wcup')"));
 });
 test('QA16 shop purchase completes immediately with a pickup button above the nav', () => {
-  assert(source.includes("'구매가 완료되었어요. 받아가주세요.'"));
-  assert(source.includes("g.id='qa16get'"));
+  assert(source.includes("toast('구매가 완료되었어요. 받아가주세요.')"));
+  assert(source.includes("mkB('qa16get'"));
   assert(source.includes('A.oget()'));
-  assert(source.includes('#qa16get{position:fixed'));
+  assert(source.includes('#qa17cta{position:fixed'));
 });
 test('QA16 ticket checker guidance and silent punch', () => {
-  assert(source.includes('QA16: 티켓 없이 검표원 선택 시 구매 안내'));
-  assert(source.includes('티켓 구매하기'));
+  assert(source.includes('QA16·17: 티켓 없이 검표원 선택 시 말풍선 안내'));
+  assert(source.includes('매표소 가기'));
   const punch = source.slice(source.indexOf('function showPunch('), source.indexOf('function showPunch(') + 400);
   assert(!punch.includes('Voici votre billet'));
 });

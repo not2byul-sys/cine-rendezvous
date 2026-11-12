@@ -146,16 +146,15 @@ test('preparation sound starts once per order and is stopped when preparation fi
   audio.prep(null); assert(nodes.filter(n => n.kind === 'buffer' || n.kind === 'oscillator').every(n => n.stopped));
 });
 test('saved mute preference and the accessible lobby button remain in sync', () => {
-  const { audio, muteButton, nodes, ctx } = audioContext(true); audio.updateButton(); assert.equal(muteButton['aria-pressed'], 'true'); assert.equal(muteButton['aria-label'], '로비 소리 켜기'); assert.equal(muteButton.hidden, false);
+  const { audio, muteButton, nodes, ctx } = audioContext(true); audio.updateButton(); assert.equal(muteButton['aria-pressed'], 'true'); assert.equal(muteButton['aria-label'], '소리 켜기'); assert.equal(muteButton.hidden, false);
   audio.effect('punch'); assert.equal(nodes.length, 0); audio.setMuted(false); assert.equal(muteButton['aria-pressed'], 'false');
   ctx.curZone = () => 'H1'; audio.updateButton(); assert.equal(muteButton.hidden, true);
 });
-test('ticket delivery sequences drawer, punch and French speech on the ticket clerk', async () => {
-  const calls = [], tasks = [], p = { hidden: true, innerHTML: '' }, ticket = { classList: { add() {} } }, clerk = avatar('매표원');
-  const ctx = { CinemaAudio: { effect: k => calls.push(k), speak: (text, lang) => calls.push([text, lang]) }, stT: clerk, sayB: (c, text) => calls.push([c, text]), setTimeout: (f, delay) => tasks.push({ f, delay }), $: id => id === 'punch' ? p : ticket, TCPAL: { 1: ['pink'] }, tc3: () => '', tcNo: () => '', beep: () => calls.push('punch') };
+test('ticket delivery plays only the punch sound, without drawer or speech (QA17)', async () => {
+  const calls = [], tasks = [], p = { hidden: true, innerHTML: '' }, ticket = { classList: { add() {} } };
+  const ctx = { CinemaAudio: { effect: k => calls.push(k), speak: (text, lang) => calls.push([text, lang]) }, sayB: (c, text) => calls.push([c, text]), setTimeout: (f, delay) => tasks.push({ f, delay }), $: id => id === 'punch' ? p : { querySelector: () => ticket }, TCPAL: { 1: ['pink'] }, tc3: () => '', tcNo: () => '', qa13Punch: () => { calls.push('punch'); return { x: 0, y: 0 }; }, API: { tickets: () => [] }, store: { set() {} } };
   vm.createContext(ctx); vm.runInContext(part('function showPunch(', 'let ENTER_TK='), ctx); const pending = ctx.showPunch({ hall: 1 });
-  assert.equal(calls[0], 'register'); tasks.find(t => t.delay === 200).f(); assert(calls.includes('punch')); tasks.find(t => t.delay === 1050).f();
-  assert(calls.some(x => Array.isArray(x) && x[0] === clerk)); assert(calls.some(x => Array.isArray(x) && x[1] === 'fr-FR'));
+  assert(!calls.includes('register')); tasks.find(t => t.delay === 200).f(); assert.deepEqual(calls, ['punch']);
   tasks.find(t => t.delay === 1900).f(); await pending; assert.equal(p.hidden, true);
 });
 test('flower clue is visibly quoted and the tooltip contains action buttons without a nickname heading', () => {

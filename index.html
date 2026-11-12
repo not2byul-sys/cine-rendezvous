@@ -663,7 +663,19 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 .qa-sit-icon { display:block; width:20px; height:20px; margin:0 auto 4px; }
 #ctitle #cyt { align-items:center; gap:4px; }
 #ctitle #qa-yt-label { font-size:12px; white-space:nowrap; max-width:110px; overflow:hidden; text-overflow:ellipsis; }
-</style><meta name="cinema-build" content="qa08-recovery-20261112">
+
+/* QA09 club writing and reading views. */
+#pn textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:90px;padding:12px;background:#fffaf2;border:1px solid #b3957d;border-radius:6px;color:#45251d;font:inherit}
+#pn .quote-entry{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;margin-top:12px;text-align:left;white-space:normal}
+#pn .quote-entry>span:first-child{display:block;overflow-wrap:anywhere;white-space:pre-wrap;font-family:'Noto Serif KR',serif}
+#pn .club-quote-full{font-family:'Noto Serif KR',serif;font-size:clamp(21px,5vw,32px);line-height:1.8;white-space:pre-wrap;overflow-wrap:anywhere;margin:24px 0;padding:12px}
+#pn .club-postcard{background:#f8ecd2;border:1px solid #b19278;padding:clamp(16px,4vw,32px);margin:16px 0}
+#pn .club-postcard p,#pn .cnote p{white-space:pre-wrap;overflow-wrap:anywhere}
+#pn .club-postcard h4{font-family:'Noto Serif KR',serif;font-size:24px;margin:0 0 20px}
+#pn .club-postcard small{display:block;text-align:right;margin-top:22px}
+#pn .club-postcard+button{margin-top:12px}
+#pn .club-archive{margin:16px 0;text-align:center}#pn .club-archive img{display:block;max-width:100%;max-height:50dvh;width:auto;height:auto;object-fit:contain;margin:auto;background:#e8dcc9}#pn .club-archive figcaption{font-size:12px;line-height:1.5;margin-top:10px}
+</style><meta name="cinema-build" content="qa09-completion-20261112">
 </head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -676,10 +688,7 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 <div id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div><div id="pn" hidden></div><div id="ad" hidden></div><div id="punch" hidden></div>
 <div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt2-opts"><label class="jt2-ck"><input type="checkbox" id="nsave"><span>저장</span></label><label class="jt2-ck"><input type="checkbox" id="nrand"><span>랜덤</span></label></div><button id="go" class="jt2-go">입장하기</button></div><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="cloud-config.js"></script>
 <script src="multiplayer-config.js"></script>
-<script src="cloud-media.js"></script>
-<script src="club-preview.js"></script>
 <script id="config">
 /* =====================================================
    설정 블록 — 상영작/광고/채널은 이 블록만 고치고 재배포하세요.
@@ -787,7 +796,7 @@ const AdService={busy:false,
    const draw=()=>{const q=Math.min(1,Math.max(0,1-n/T));el.querySelectorAll('.rv').forEach(r=>{r.style.opacity=(.08+.92*q).toFixed(2);r.style.clipPath=`inset(${((1-q)*100).toFixed(0)}% 0 0 0)`;r.style.transform=`scale(${(.7+.3*q).toFixed(2)})`});el.querySelectorAll('.mks').forEach(m=>m.classList.toggle('dn',q>=1));
     $('adbt').outerHTML=n>0?`<div class="adt" id="adbt">${n}초 후 보상 받기</div>`:`<button class="p" id="adbt">${rw} 받으러 가기</button>`;
     const b=n<=0&&$('adbt');if(b)b.onclick=()=>{el.hidden=true;res(true)};const x=$('adx');if(x)x.onclick=()=>{clearInterval(iv);el.hidden=true;res(n<=0)}};
-   let iv;draw();iv=setInterval(()=>{n--;if(n<=0){clearInterval(iv);if(o.kind==='order'&&!el.hidden){el.hidden=true;res(true);return}}if(!el.hidden)draw()},1000)})}},
+   let iv;draw();iv=setInterval(()=>{n--;if(n<=0){clearInterval(iv);if(!el.hidden){el.hidden=true;res(true);return}}if(!el.hidden)draw()},1000)})}},
   /* Google Ad Manager 웹 보상형(GPT): rewardedSlotReady → 확인 → makeRewardedVisible → rewardedSlotGranted 일 때만 보상 → rewardedSlotClosed 정리 */
   gpt:{cur:null,load(){return this._l||(this._l=new Promise((ok,no)=>{window.googletag=window.googletag||{cmd:[]};const sc=document.createElement('script');sc.async=true;sc.src='https://securepubads.g.doubleclick.net/tag/js/gpt.js';sc.onload=ok;sc.onerror=no;document.head.appendChild(sc);
     googletag.cmd.push(()=>{const pa=googletag.pubads(),me_=this,on=(t,f)=>pa.addEventListener(t,e=>{const c=me_.cur;if(c&&e.slot===c.slot)f(c,e)});
@@ -1556,6 +1565,8 @@ const stT=mk('미시즈 퍼재컬리',SGD,{staff:true,ch:'S01'});stT.userData.co
   const hs=bb(.06,.24,.06,PM,-.19,.02,.04,ph);bb(.05,.02,.04,BRS,0,.2,.06,ph);const cd=new THREE.Mesh(new THREE.TorusGeometry(.04,.008,6,12,Math.PI*3),PM);cd.position.set(-.19,-.18,.04);ph.add(cd);
   bb(.6,.03,.22,mat(0x5b3422),0,.95,-W/2+.14);const bk=bb(.2,.04,.15,mat(0x2f4b6a),.12,.985,-W/2+.14)}
  hitbox(x,1.2,z,1.0,2.4,1.0,{now:1,fn:()=>openPanel('dist'),pt:{x:x+1.1,z:z-.3,zone:'L0'}});layEnd(_lP,'phonetbl','배급문의 공중전화 박스',0)}
+/* QA09: a leaflet table beside the ticket booth, included in furniture navigation. */
+{const m_=layBeg(),x=-6.6,z=14.5;const top=new THREE.Mesh(new THREE.CylinderGeometry(.34,.34,.055,24),mat(0x5b3422));top.position.set(x,.73,z);S.add(top);B(.07,.7,.07,BR,x,.35,z);B(.5,.035,.5,WD2,x,.025,z);const leaflet=plane(.26,.34,wallTex('13',.5),x,.765,z,0);leaflet.rotation.x=-Math.PI/2;hitbox(x,.6,z,.72,1.1,.72,{fn:()=>openPanel('tt'),pt:{x:x+1,z,zone:'L0'}});layEnd(m_,'ticket-side-table','매표소 옆 소형 테이블',0)}
 /* 03 매점: 마호가니 유리 진열 카운터 + 뒷벽 선반(사탕병·병음료) + 아이스크림 쿨러 + 자판기·팝콘 기계 */
 const FOODS=[['hotdog','🌭','핫도그'],['nacho','🧀','나초'],['pretzel','🥨','프레첼'],['churro','🍩','츄러스'],['ice','🍦','아이스크림'],['candy','🍭','막대사탕']];
 const FL=[['캐러멜',0xe6a43c],['치즈',0xf2c230],['딸기',0xe07a9a],['말차',0x7fae5a],['초코',0x6b3a20],['오리지널',0xf3e6c4]];
@@ -1783,7 +1794,7 @@ function clsPoster(i,W=300,H=440){const [t,bg,fg,kind,tag_]=VPOST[i%VPOST.length
  /* CINE_QA_BATCH04_20261111: clock tap opens the existing admin password prompt. */
     const clockHit=new THREE.Mesh(new THREE.CircleGeometry(.62,32),new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));
     clockHit.position.z=.165;
-    clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X,z:Z,zone:'L0'}};
+    clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X+3.6,z:Z,zone:'L0'}};
     g.add(clockHit);INTER.push(clockHit);
     layEnd(m_,'clock','벽시계',0,{wall:'x',lo:BF+.8,hi:LD-.8});window.__clockG=g}
 /* 현관 발판(코이어 매트 · 버건디 테두리 · AI CINEMA) */
@@ -2136,7 +2147,7 @@ const USER_LOOK50=Array.from({length:50},(_,i)=>{
 function qaGuestName(name){return String(name||'관객').replace(/\s+/g,' ').trim().slice(0,14).normalize('NFC')}
 function qaUserLook(name='관객'){const identity=qaGuestName(name),avatarId=hash('cine-guest-v1:'+identity)%USER_LOOK50.length;return {...USER_LOOK50[avatarId],avatarId}}
 function enterNow(nm){
- try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0,{...qaUserLook(nm),me:1});me.userData.avatarId=qaUserLook(nm).avatarId;{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();Multiplayer.start(nm);}
+ try{if($('nsave').checked)localStorage.setItem('aic.nick',nm);else localStorage.removeItem('aic.nick');localStorage.setItem('aic.visits',VISITS+1)}catch(e){}me=mk(nm,0,{...qaUserLook(nm),me:1});me.userData.avatarId=qaUserLook(nm).avatarId;{const P_=spw();me.position.set(P_.x,0,P_.z);me.rotation.y=P_.r;camYaw=camYawS=P_.r;snapCam=true}$('join').hidden=true;updChip();Multiplayer.start(nm);const shared=readSharedClubNote();if(shared)setTimeout(()=>showClubPostcard(shared,true),900);}
 /* 랜덤: 고전·명작 영화 제목 중 하나를 닉네임으로 */const RAND_FILMS=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
 function randNick(){let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===$('nick').value&&RAND_FILMS.length>1);$('nick').value=n}
 $('nrand').addEventListener('change',e=>{if(e.target.checked)randNick()});$('nick').addEventListener('input',()=>{if($('nrand').checked)$('nrand').checked=false});
@@ -3066,7 +3077,7 @@ Object.assign(PANELS,{
 <p class="iv2-cap">초대장을 수락하고 책장 뒤 비밀문을 열어보세요</p>`)},
  quiz(){const vm=window.QSRC==='vend';window.QSRC=null;const round=nextQuiz(),q=round.q,label={high:'상',medium:'중',low:'하'}[round.level];
   panel('<h3>'+(vm?'COFFEE 자판기':'알프레도 할아버지')+'</h3><div class="aq"><p class="aq-hint">난이도 '+label+' · '+round.attempt+'번째 도전</p><p class="aq-say">'+(vm?'컵 대신 쪽지 한 장이 나왔다.':'허허, 영화 퀴즈 하나 풀어보겠나?')+'<br><b>'+esc(q[0])+'</b></p><p class="aq-hint">맞히면 비밀 영화클럽 초대장을 드려요.</p></div><div class="qz">'+q[1].map((o,i)=>'<button class="qo'+(ADM&&i===q[2]?' adm-ans':'')+'" data-a="quizans" data-i="'+i+'">'+esc(o)+'</button>').join('')+'</div>');if(BUFF)sayB(BUFF,'천천히 생각해 보게나',5)},
- club(){const N=(store.get('aic.clubnotes')||[]).concat(CLUBSEED);panel(`<h3>한줄평 보드</h3><p class="sub">영화 이야기를 나눠요</p><div class="cform"><input id="clbf" placeholder="영화 제목" maxlength="20"><input id="clbt" placeholder="한줄평 (40자)" maxlength="40"><button class="p" data-a="clubpost">올리기</button></div>${N.map(n=>`<div class="cnote"><b>「${esc(n.f)}」</b><small>${esc(n.n)}</small><p>${esc(n.t)}</p></div>`).join('')}`)}
+ club(){const N=clubNotes();panel(`<h3>영화 단상·엽서</h3><p class="sub">기억하고 싶은 영화 이야기를 남겨요. 이 브라우저에 보관하고 링크로 나눌 수 있어요.</p><div class="cform"><input id="clbf" aria-label="영화 제목" placeholder="영화 제목" maxlength="40"><textarea id="clbt" aria-label="영화 단상" placeholder="영화 단상 (300자)" maxlength="300" rows="3"></textarea><button class="p" data-a="clubpost">보드에 붙이기</button></div>${N.map((n,i)=>`<div class="cnote"><b>「${esc(n.f)}」</b><small>${esc(n.n)}</small><p>${esc(n.t)}</p><button data-a="clubview" data-i="${i}">엽서 크게 보기</button></div>`).join('')}`)}
 });
 /* 클럽 회원 전용: 퀴즈 대회 예선 테스트 10문제 → 12월 10일 대회 안내 + 이메일 남기기(현재는 이 브라우저에만 저장) */
 const CONTEST=[['「시네마 천국」을 연출한 감독은?',['페데리코 펠리니','주세페 토르나토레','로베르토 베니니','비토리오 데 시카'],1],['「대부」(1972)에서 비토 콜레오네를 연기한 배우는?',['알 파치노','로버트 드 니로','말론 브란도','제임스 칸'],2],['「올드보이」(2003)가 칸 영화제에서 받은 상은?',['황금종려상','심사위원대상','감독상','각본상'],1],['「타이타닉」(1997)을 연출한 감독은?',['스티븐 스필버그','리들리 스콧','제임스 캐머런','로버트 저메키스'],2],['영화 「카사블랑카」의 배경 도시가 있는 나라는?',['이집트','튀니지','알제리','모로코'],3],['「화양연화」를 연출한 감독은?',['왕가위','허우샤오시엔','장예모','이안'],0],['「쇼생크 탈출」의 원작 소설을 쓴 작가는?',['스티븐 킹','존 그리샴','마이클 크라이튼','톰 클랜시'],0],['아카데미 11개 부문 수상작이 아닌 것은?',['「벤허」','「타이타닉」','「반지의 제왕: 왕의 귀환」','「바람과 함께 사라지다」'],3],['「8월의 크리스마스」에서 한석규가 연기한 정원의 직업은?',['우체부','사진관 주인','택시 기사','교사'],1],['「기생충」을 연출한 감독은?',['박찬욱','이창동','봉준호','김지운'],2]];
@@ -3087,7 +3098,29 @@ Object.assign(A,{
  godown:()=>{closePanel();if(!me||curZone(me)==='B')return;if(!hasInv()){notice('비밀 영화클럽','초대장이 있어야 들어갈 수 있어요.<br>알프레도 할아버지와 대화해 보세요.',[['확인',null]]);return}if(DOOR_T>=0)return;dismissActor();if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x,TRAP.z,'L0',{avoidFurniture:true,after:()=>openClubDoor()})},
  clubstop:()=>{CLUBSTOP=!CLUBSTOP;if(CLUBSTOP){clubVid(false);ytLayer(false);if(CLUBSCR.userData.m0)CLUBSCR.material=CLUBSCR.userData.m0;CLUBSCR.scale.x=CLUBSCR.scale.y=1;toast('영상을 멈췄어요')}else{CLVACTIVE=false;clubVid(true);if(CLV&&!CLVFAILED&&CLV.readyState>=2&&CLUBSCR.userData.videoMaterial){CLUBSCR.material=CLUBSCR.userData.videoMaterial;const a=CLV.videoWidth/CLV.videoHeight;if(a>0){CLUBSCR.scale.x=Math.min(1,a/(4.6/2.6));CLUBSCR.scale.y=Math.min(1,(4.6/2.6)/a)}}toast('영상을 다시 틀었어요')}hudUpd()},
  goup:()=>{if(!me)return;walkTo(me,BCX+CBW-1.0,BCZ+CBD-.25-9*.36-.6,'B',{after:()=>clubExit()})},
- clubpost:()=>{const f=($('clbf').value||'').trim(),t=($('clbt').value||'').trim();if(!f||!t){toast('제목과 한줄평을 적어주세요');return}const a=store.get('aic.clubnotes')||[];a.unshift({n:window.MYNAME||'나',f,t});store.set('aic.clubnotes',a.slice(0,30));PANELS.club();if(window.__drawClubBoard)window.__drawClubBoard();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+f+'」 좋죠! 저도 한마디 하고 싶네요',5)}
+ clubpost:()=>{const n=cleanClubNote({n:window.MYNAME||'나',f:$('clbf').value,t:$('clbt').value});if(!n){toast('제목과 영화 단상을 적어주세요');return}const a=clubNotes(false);a.unshift(n);store.set('aic.clubnotes',a.slice(0,30));PANELS.club();if(window.__drawClubBoard)window.__drawClubBoard();toast('보드에 붙였어요');const m=CLUBN[Math.random()*CLUBN.length|0];if(m)sayB(m,'「'+n.f+'」 좋죠! 저도 한마디 하고 싶네요',5)}
+});
+/* QA09: full text postcards validate link payloads and never auto-save shared input. */
+function cleanClubNote(value){if(!value||typeof value!=='object'||typeof value.f!=='string'||typeof value.t!=='string')return null;const f=value.f.trim().slice(0,40),t=value.t.trim().slice(0,300),n=typeof value.n==='string'?value.n.trim().slice(0,14):'관객';return f&&t?{n:n||'관객',f,t}:null}
+function clubNotes(seed=true){const saved=store.get('aic.clubnotes'),a=(Array.isArray(saved)?saved:[]).map(cleanClubNote).filter(Boolean).slice(0,30);return seed?a.concat(CLUBSEED):a}
+function readSharedClubNote(){try{const raw=new URL(location.href).searchParams.get('postcard');return raw&&raw.length<=2048?cleanClubNote(JSON.parse(raw)):null}catch{return null}}
+function clubPostcardUrl(note){const value=cleanClubNote(note);if(!value)return null;const u=new URL(location.href);u.search='';u.hash='';u.searchParams.set('postcard',JSON.stringify(value));return u.href}
+let OPEN_POSTCARD=null;
+function showClubPostcard(note,shared=false){const n=cleanClubNote(note);if(!n)return;OPEN_POSTCARD=n;panel(`<h3>영화 엽서</h3><article class="club-postcard"><h4>「${esc(n.f)}」</h4><p>${esc(n.t)}</p><small>— ${esc(n.n)}</small></article>${shared?'<button class="p" data-a="clubsavecard">내 보드에 보관하기</button>':'<button class="p" data-a="clubshare">엽서 링크 복사하기</button>'}<button data-a="clubboard">보드 보기</button>`)}
+async function copyClubPostcard(){const url=clubPostcardUrl(OPEN_POSTCARD);if(!url)return;try{await navigator.clipboard.writeText(url);toast('엽서 링크를 복사했어요')}catch{panel(`<h3>엽서 링크</h3><p class="sub">링크를 복사해서 전해주세요.</p><input aria-label="엽서 공유 링크" readonly value="${esc(url)}">`)}}
+/* Archival image and caption: Library of Congress, Fred Ott’s Sneeze (1894), item 95505651. */
+const CLUB_ARCHIVE=[{title:'1894 · 움직이는 사진의 기록',image:'https://tile.loc.gov/storage-services/service/pnp/cph/3a40000/3a44000/3a44800/3a44830r.jpg',source:'https://www.loc.gov/item/95505651/',caption:'프레드 오트의 재채기를 담은 45장의 프레임. W. K. L. 딕슨이 남긴 이 사진은 1894년 1월 미국 의회도서관에 저작권 등록 자료로 접수됐어요. 초기 영화가 사진의 형태로 보존된 흔적을 살펴보세요.',credit:'W. K.-L. Dickson · 1894 · Library of Congress'}];
+PANELS.archive=(index=0)=>{const a=CLUB_ARCHIVE[index];if(!a)return;panel(`<h3>${esc(a.title)}</h3><figure class="club-archive"><img src="${esc(a.image)}" alt="프레드 오트의 재채기, 45개 프레임을 모은 1894년 흑백 사진"><figcaption>${esc(a.credit)}</figcaption></figure><p>${esc(a.caption)}</p><a class="pink-buy" href="${esc(a.source)}" target="_blank" rel="noopener noreferrer">소장처에서 자세히 보기</a>`)};
+const CLUB_QUOTE_KEY='aic.clubquotes.v1';
+function cleanClubQuote(v){if(!v||typeof v!=='object'||typeof v.text!=='string')return null;const text=v.text.trim().slice(0,300);return text?{text,film:typeof v.film==='string'?v.film.trim().slice(0,40):'',by:typeof v.by==='string'?v.by.trim().slice(0,14):'관객'}:null}
+function clubQuotes(){const a=store.get(CLUB_QUOTE_KEY);return(Array.isArray(a)?a:[]).map(cleanClubQuote).filter(Boolean).slice(0,30)}
+PANELS.quotes=()=>{const Q=clubQuotes();panel(`<h3>오늘의 영화 속 명대사</h3><p class="sub">기억에 남는 한 문장을 적어주세요. 이 브라우저에 보관돼요.</p><label for="quoteText">명대사</label><textarea id="quoteText" maxlength="300" rows="3" placeholder="오늘은 영화 속 명대사를 적어줘"></textarea><label for="quoteFilm">영화 제목 (선택)</label><input id="quoteFilm" maxlength="40" placeholder="어떤 영화의 대사인가요?"><button class="p" data-a="quotesave">남기기</button>${Q.length?Q.map((q,i)=>`<button class="quote-entry" data-a="quoteview" data-i="${i}"><span>${esc(q.text)}</span><small>${esc(q.film||'기억 속 한 문장')}</small><span class="sub">크게 보기</span></button>`).join(''):'<p class="sub">첫 번째 문장을 남겨주세요.</p>'}`)};
+Object.assign(A,{
+ quotes:()=>PANELS.quotes(),
+ quotesave:()=>{const q=cleanClubQuote({text:$('quoteText').value,film:$('quoteFilm').value,by:window.MYNAME||'관객'});if(!q){toast('명대사를 적어주세요');return}const Q=clubQuotes();Q.unshift(q);store.set(CLUB_QUOTE_KEY,Q.slice(0,30));PANELS.quotes();toast('명대사를 남겼어요')},
+ quoteview:d=>{const q=clubQuotes()[+d.i];if(q)panel(`<h3>기억하는 한 문장</h3><blockquote class="club-quote-full">“${esc(q.text)}”</blockquote><p>${esc(q.film)}${q.film?' · ':''}${esc(q.by)}</p><button class="p" data-a="quotes">목록으로</button>`)},
+ clubview:d=>showClubPostcard(clubNotes()[+d.i]),clubshare:()=>copyClubPostcard(),clubboard:()=>PANELS.club(),
+ clubsavecard:()=>{const n=cleanClubNote(OPEN_POSTCARD);if(!n)return;const a=clubNotes(false);if(!a.some(x=>x.f===n.f&&x.t===n.t&&x.n===n.n)){a.unshift(n);store.set('aic.clubnotes',a.slice(0,30))}if(window.__drawClubBoard)window.__drawClubBoard();toast('내 보드에 보관했어요');PANELS.club()}
 });
 /* 아지트 연속 상영: 입장 시 현재 시간에 맞춘 영상 루프. 로비에서는 디코딩을 쉬고 재입장 때 시간을 맞춘다. */
 /* 최종 실사 필름 진열장: 실제 등록된 13개 파일과 1:1 연결 */
@@ -3105,7 +3138,7 @@ PANELS.wcup=()=>{const rk=wcRank().slice(0,10),mx=rk[0].s,mine=(store.get(WCK)||
  panel(`<h3>영화 월드컵</h3><p class="sub">16편 중 더 좋아하는 영화를 골라 나만의 1위를 뽑아요. 결과는 클럽 랭킹 보드에 반영돼요.</p><button class="p" data-a="wcstart" style="width:100%">월드컵 시작하기</button><div class="wcr"><div class="wcrh">클럽 회원 랭킹 TOP 10</div>`+rk.map((r,n)=>`<div class="wcri"><span class="wcn">${n+1}</span><span class="wct">${r.t}</span><i class="wcb"><i style="width:${Math.round(r.s/mx*100)}%"></i></i><span class="wcs">${r.s}</span></div>`).join('')+`</div><p class="sub" style="font-size:12.5px!important;opacity:.65">내 참여 ${mine}회 · 결과는 서버 연동 전까지 이 브라우저에만 저장돼요.</p>`)};
 PANELS.wcplay=()=>{if(!WC)wcNew();const n=WC.round.length,a=WC.round[WC.k*2],b=WC.round[WC.k*2+1],card=i=>`<button class="wcc" data-a="wcpick" data-i="${i}"><b>${WCF[i][0]}</b><i>${WCF[i][1]}</i></button>`;
  panel(`<h3>영화 월드컵 · ${WCRN[n]}</h3><p class="sub" style="text-align:center">${n===2?'마지막 선택이에요':(WC.k+1)+' / '+n/2}</p><div class="wcvs">${card(a)}<span class="wcx">VS</span>${card(b)}</div>`)};
-Object.assign(A,{wcstart:()=>{wcNew();PANELS.wcplay()},wcpick:d=>{if(!WC)return;const i=+d.i,n=WC.round.length;WC.pts[i]=(WC.pts[i]||0)+({16:1,8:2,4:3,2:5}[n]||1);WC.next.push(i);WC.k++;
+Object.assign(A,{wcstart:()=>{wcNew();PANELS.wcplay()},wcpick:d=>{if(!WC)return;const i=+d.i,n=WC.round.length;if(!Number.isInteger(i)||![WC.round[WC.k*2],WC.round[WC.k*2+1]].includes(i))return;WC.pts[i]=(WC.pts[i]||0)+({16:1,8:2,4:3,2:5}[n]||1);WC.next.push(i);WC.k++;
  if(WC.k*2>=n){if(WC.next.length===1){const w=WC.next[0],r=store.get(WCK)||[];r.push({w,pts:WC.pts,at:Date.now()});store.set(WCK,r.slice(-50));WC=null;if(window.__drawWcBoard)__drawWcBoard();
    panel(`<h3>나의 1위</h3><div class="wcwin"><span>CHAMPION</span><b>${WCF[w][0]}</b><i>${WCF[w][1]}</i></div><button class="p" data-a="wcrank" style="width:100%">클럽 랭킹 보기</button><button data-a="wcstart" style="width:100%;margin-top:8px">다시 하기</button>`);return}
   WC.round=WC.next;WC.next=[];WC.k=0}PANELS.wcplay()},wcrank:()=>PANELS.wcup()});
@@ -3304,7 +3337,8 @@ trapShow();clubDoorPose(0);
 /* 지하 영화클럽 아지트 */var CLUBN=[];
 {const n0=S.children.length,X=BCX,Z=BCZ,bb=(w,h,d,c,x,y,z)=>B(w,h,d,c,X+x,y,Z+z);
  const brick=art(256,256,(c,w,h)=>{c.fillStyle='#503b2c';c.fillRect(0,0,w,h);for(let r=0;r<16;r++)for(let k=0;k<5;k++){const ox=(r%2)*26;c.fillStyle=['#714833','#6b422e','#79503a','#5f402e'][(r*7+k*3)%4];c.fillRect(ox+k*52-26,r*16+2,48,12)}});brick.wrapS=brick.wrapT=THREE.RepeatWrapping;brick.repeat.set(3,1.2);
- const BM=new THREE.MeshLambertMaterial({map:brick}),wall=(w,x,z,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,CBH),BM);m.position.set(X+x,CBH/2,Z+z);m.rotation.y=ry;S.add(m)};
+ const clubPlaster=base=>{const t=art(256,256,(c,w,h)=>{const r=rng(base);c.fillStyle='#'+base.toString(16).padStart(6,'0');c.fillRect(0,0,w,h);for(let k=0;k<12000;k++){c.fillStyle=r()<.5?'rgba(0,0,0,.035)':'rgba(255,237,206,.045)';c.fillRect(r()*w,r()*h,1+r()*4,1+r()*4)}});t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(5,2);return new THREE.MeshLambertMaterial({map:t})};
+ const BM=clubPlaster(0x263f36),burgundyPlaster=clubPlaster(0x5a2531),wall=(w,x,z,ry)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,CBH),x>0||z>0?burgundyPlaster:BM);m.name='club-plaster-wall';m.position.set(X+x,CBH/2,Z+z);m.rotation.y=ry;S.add(m)};
  wall(2*CBW,0,-CBD,0);wall(2*CBW,0,CBD,Math.PI);wall(2*CBD,-CBW,0,Math.PI/2);wall(2*CBD,CBW,0,-Math.PI/2);
  const fw=art(256,256,(c,w,h)=>{c.fillStyle='#4e301c';c.fillRect(0,0,w,h);for(let r=0;r<8;r++)for(let k=0;k<8;k++){c.fillStyle=['#6a4228','#633d24','#70472b'][(r+k*2)%3];c.save();c.translate(k*32+16,r*32+16);c.rotate((r+k)%2?Math.PI/4:-Math.PI/4);c.fillRect(-21,-7,42,14);c.restore()}});fw.wrapS=fw.wrapT=THREE.RepeatWrapping;fw.repeat.set(6,5);
  const fl=new THREE.Mesh(new THREE.BoxGeometry(2*CBW,.2,2*CBD),new THREE.MeshLambertMaterial({map:fw}));fl.position.set(X,-.1,Z);S.add(fl);fl.userData.zone='B';floors.push(fl);
@@ -3386,7 +3420,7 @@ trapShow();clubDoorPose(0);
   const pl=art(512,96,(c,w,h)=>{c.fillStyle='#1d2f4a';c.fillRect(0,0,w,h);const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.5,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,w,h);c.strokeStyle='#efe6cf';c.lineWidth=4;c.strokeRect(8,8,w-16,h-16);c.lineWidth=1.5;c.strokeRect(15,15,w-30,h-30);c.fillStyle='#efe6cf';c.textAlign='center';c.textBaseline='middle';c.font='italic 16px serif';c.fillText('— Les Notes du Ciné-Club —',w/2,30);c.font='bold 32px "Noto Serif KR",serif';c.fillText('오늘의 한줄평',w/2,64);[[28,48],[w-28,48]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,4,0,7);c.fill()})});
   /* 액자등 */{const ar=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.32,8),BRS);ar.rotation.z=Math.PI/2;ar.position.set(X+x-.18,3.3,Z-1.6);S.add(ar);const sh=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1.3,14,1,false,0,Math.PI),BRS);sh.rotation.x=Math.PI/2;sh.rotation.y=Math.PI/2;sh.position.set(X+x-.34,3.28,Z-1.6);S.add(sh);halo(X+x-.36,3.2,Z-1.6,0xffd9a0,1.2,.35);const l=new THREE.PointLight(0xffe2b8,.6,3.2,2);l.position.set(X+x-.5,3.0,Z-1.6);l.userData.i=.6;S.add(l)}
   const hb=new THREE.Mesh(new THREE.BoxGeometry(.6,1.9,2.9),new THREE.MeshBasicMaterial({visible:false}));hb.position.set(X+x-.3,1.95,Z-1.6);S.add(hb);hb.userData.act={fn:()=>openPanel('club'),pt:{x:X+CBW-1.6,z:Z-1.6,zone:'B'}};INTER.push(hb)}
- /* 이번 주 토론 칠판 */{const ch=art(256,192,(c,w,h)=>{c.fillStyle='#24362c';c.fillRect(0,0,w,h);c.strokeStyle='#8a5a2e';c.lineWidth=10;c.strokeRect(5,5,w-10,h-10);c.fillStyle='#f3ead0';c.textAlign='center';c.font='bold 24px sans-serif';c.fillText('이번 주 토론',w/2,48);c.font='18px sans-serif';c.fillText('내 인생의',w/2,96);c.fillText('엔딩 장면은?',w/2,124);c.font='14px sans-serif';c.fillText('금요일 밤 9시',w/2,164)});const g=new THREE.Group();g.position.set(X-2.4,0,Z+CBD-1.2);g.rotation.y=Math.PI*.85;S.add(g);plane(1.1,.82,ch,0,1.45,.03,0,g);B(1.2,.9,.05,0x8a5a2e,0,1.45,0,g);[-1,1].forEach(k=>{const l=B(.05,1.9,.05,0x5a3a20,k*.5,.95,.12,g);l.rotation.x=-.15})}
+ /* QA09: retired discussion board becomes a tappable film-quote object. */{const ch=art(512,352,(c,w,h)=>{c.fillStyle='#24362c';c.fillRect(0,0,w,h);c.strokeStyle='#8a5a2e';c.lineWidth=16;c.strokeRect(8,8,w-16,h-16);c.fillStyle='#f3ead0';c.textAlign='center';c.font='bold 34px "Noto Serif KR",serif';c.fillText('오늘은 영화 속',w/2,105);c.fillText('명대사를 적어줘',w/2,159);c.font='22px sans-serif';c.fillText('마음에 남은 한 문장',w/2,229);c.font='19px sans-serif';c.fillText('눌러서 쓰고 크게 읽기',w/2,285)});const g=new THREE.Group();g.name='club-film-quote-board';g.position.set(X-2.4,0,Z+CBD-1.2);g.rotation.y=Math.PI*.85;S.add(g);plane(1.6,1.1,ch,0,1.45,.05,0,g);B(1.7,1.2,.05,0x8a5a2e,0,1.45,0,g);[-1,1].forEach(k=>{const l=B(.05,1.9,.05,0x5a3a20,k*.6,.95,.12,g);l.rotation.x=-.15});const hit=new THREE.Mesh(new THREE.BoxGeometry(1.8,1.3,.35),new THREE.MeshBasicMaterial({visible:false}));hit.position.set(0,1.45,.04);g.add(hit);hit.userData.act={fn:()=>PANELS.quotes(),pt:{x:X-2.4,z:Z+CBD-2.6,zone:'B'}};INTER.push(hit)}
  /* 바 카트 */{const g=new THREE.Group();g.position.set(X+CBW-.7,0,Z+1.6);g.rotation.y=-Math.PI/2;S.add(g);B(1.1,.04,.5,0xc9a24a,0,.85,0,g);B(1.1,.04,.5,0xc9a24a,0,.4,0,g);[[-.5,-.2],[.5,-.2],[-.5,.2],[.5,.2]].forEach(([a,b])=>B(.03,.85,.03,0xc9a24a,a,.43,b,g));for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.04,.045,.28,10),new THREE.MeshPhongMaterial({color:[0x3a1a14,0x2f5a3a,0x7a1f2b,0xc9a24a][k],transparent:true,opacity:.85,shininess:90}));b.position.set(-.35+k*.22,1.01,0);g.add(b)}}
  /* 조명: 에디슨 전구 줄 + 따뜻한 점광원 */for(let k=0;k<12;k++){const b=new THREE.Mesh(new THREE.SphereGeometry(.06,8,6),new THREE.MeshBasicMaterial({color:0xffebd2}));b.position.set(X-5.5+k,CBH-.5-Math.sin(k/11*Math.PI)*.35,Z+1.6);S.add(b)}
  [[-4,-1],[4,-1],[0,-4],[0,3]].forEach(([x,z])=>{const l=new THREE.PointLight(0xffeedc,1.2,15,1.4);l.position.set(X+x,CBH-.6,Z+z);l.userData.i=1.2;S.add(l)});{const l=new THREE.PointLight(0xfff2e3,.6,8,2);l.position.set(X,2.4,Z-CBD+1.2);l.userData.i=.6;S.add(l)}
@@ -3394,7 +3428,7 @@ trapShow();clubDoorPose(0);
 
  /* Reference interior: aged plaster, wood panelling and cinema collectibles.
     Room bounds, floor navigation, seating and interaction targets stay unchanged. */
- {const pt=art(1024,512,(c,w,h)=>{const r=rng(180);c.clearRect(0,0,w,h);c.fillStyle='#95816a';c.beginPath();c.moveTo(0,0);c.lineTo(w*.86,0);for(let y=0;y<=h;y+=12)c.lineTo(w*(.74+.08*Math.sin(y*.025)+r()*.07),y);c.lineTo(0,h);c.closePath();c.fill();c.globalCompositeOperation='source-atop';for(let k=0;k<40000;k++){c.fillStyle=r()<.5?'rgba(60,31,16,.07)':'rgba(255,228,181,.09)';c.fillRect(r()*w,r()*h,2+r()*5,2+r()*4)}});const pm=new THREE.MeshLambertMaterial({map:pt,transparent:true,depthWrite:false});[[2*CBW,0,-CBD+.025,0],[2*CBD,-CBW+.025,0,Math.PI/2]].forEach(([w,x,z,ry])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,CBH-1.2),pm);m.position.set(X+x,(CBH+1.2)/2,Z+z);m.rotation.y=ry;S.add(m)})}
+ {const pt=art(1024,512,(c,w,h)=>{const r=rng(180);c.clearRect(0,0,w,h);c.fillStyle='#344c40';c.beginPath();c.moveTo(0,0);c.lineTo(w*.86,0);for(let y=0;y<=h;y+=12)c.lineTo(w*(.74+.08*Math.sin(y*.025)+r()*.07),y);c.lineTo(0,h);c.closePath();c.fill();c.globalCompositeOperation='source-atop';for(let k=0;k<40000;k++){c.fillStyle=r()<.5?'rgba(60,31,16,.07)':'rgba(255,228,181,.09)';c.fillRect(r()*w,r()*h,2+r()*5,2+r()*4)}});const pm=new THREE.MeshLambertMaterial({map:pt,transparent:true,depthWrite:false});[[2*CBW,0,-CBD+.025,0],[2*CBD,-CBW+.025,0,Math.PI/2]].forEach(([w,x,z,ry])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,CBH-1.2),pm);m.position.set(X+x,(CBH+1.2)/2,Z+z);m.rotation.y=ry;S.add(m)})}
  for(let x=-CBW+.25;x<CBW;x+=.48){bb(.035,1.15,.055,0x28190f,x,.575,-CBD+.09);bb(.035,.045,2*CBD,0x4b2e1b,x,CBH-.015,0)}
  [-1,1].forEach(k=>{for(let z=-CBD+.2;z<CBD;z+=.48)bb(.055,1.15,.035,0x28190f,k*(CBW-.08),.575,z);bb(.10,.10,2*CBD,0x71492c,k*(CBW-.1),1.16,0)});bb(2*CBW,.1,.12,0x71492c,0,1.16,-CBD+.1);
  
@@ -3407,6 +3441,8 @@ trapShow();clubDoorPose(0);
  [[-1,-1.1],[1,-1.1],[-1,.0],[1,0]].forEach(([x,z])=>{cyl(.18,.025,0xd2b484,X+x,.71,Z+z);cyl(.105,.14,0xe4cba5,X+x,.79,Z+z);cyl(.083,.006,0x352215,X+x,.863,Z+z);const h=new THREE.Mesh(new THREE.TorusGeometry(.066,.018,6,16),mat(0xe4cba5));h.position.set(X+x+.12,.80,Z+z);S.add(h)});
  bb(.72,.035,.53,0xe4cda1,.35,.72,-.45);bb(.015,.025,.53,0x8c6944,.35,.75,-.45);[-1,1].forEach(k=>{for(let l=0;l<6;l++)bb(.22,.003,.009,0x9d805c,.35+k*.17,.742,-.62+l*.06)});bb(.5,.045,.68,0x242c2b,-.75,.74,-.5);sign('CAHIERS',.46,.15,X-.75,.77,Z-.14,0,'#242c2b','#dec69d');
  cyl(.15,.32,0xbab3a0,X,.89,Z-1.05);cyl(.11,.14,0xcac3ae,X,1.12,Z-1.05);
+ {const covers=[['CAHIERS','DU CINÉMA','#c6ac58'],['CAHIERS','ARCHIVES','#a65a46']];covers.forEach(([a,b,col],i)=>{const tex=art(224,300,(c,w,h)=>{c.fillStyle=col;c.fillRect(0,0,w,h);c.fillStyle='#241c17';c.textAlign='center';c.font='bold 32px serif';c.fillText(a,w/2,46);c.font='22px serif';c.fillText(b,w/2,78);c.fillRect(20,105,w-40,125);c.fillStyle='#e9dcc1';c.font='18px serif';c.fillText('NOTES DE LECTURE',w/2,272)});const cover=plane(.4,.54,tex,X-.88+i*.48,.81+i*.025,Z-.48,0);cover.rotation.x=-Math.PI/2;cover.rotation.z=i?.13:-.12;cover.name='cahiers-du-cinema-back-issue'});const note=art(256,170,(c,w,h)=>{c.fillStyle='#f0e3be';c.fillRect(0,0,w,h);c.fillStyle='#3a493d';c.font='italic 24px cursive';['Une image,','un souvenir.','— notes de cinéma'].forEach((t,i)=>c.fillText(t,18,40+i*43))});const paper=plane(.4,.27,note,X+.92,.74,Z-.24,0);paper.rotation.x=-Math.PI/2;paper.rotation.z=.16;paper.name='club-handwritten-reading-note'}
+
  /* Ottoman cushions and plaid throw. */
  [-1,1].forEach(k=>{const p=bb(.58,.52,.18,k<0?0xb6976c:0x8b4c34,k*.82,.97,-3.55);p.rotation.z=k*.14});
  const plaid=art(256,256,(c,w,h)=>{c.fillStyle='#b49a78';c.fillRect(0,0,w,h);for(let k=0;k<8;k++){c.fillStyle=k%2?'#663f32aa':'#292f2ca0';c.fillRect(k*32,0,13,h);c.fillRect(0,k*32,w,13)}c.strokeStyle='#ddc6a2';for(let k=0;k<16;k++){c.beginPath();c.moveTo(k*16,0);c.lineTo(k*16,h);c.stroke()}});plane(.95,.95,plaid,X+3.57,1.0,Z-.4,-Math.PI/2);
@@ -3454,7 +3490,9 @@ trapShow();clubDoorPose(0);
    const pm=art(256,64,(c,w,h)=>{c.fillStyle='#c0232e';c.fillRect(0,0,w,h);c.fillStyle='#fff4c8';c.font='bold 36px serif';c.textAlign='center';c.textBaseline='middle';c.fillText('POPCORN',w/2,h/2+2)});plane(.6,.15,pm,0,.67,-.27,Math.PI,pg);
    [[0xe9c46a,.1],[0xd94a5a,.4],[0x7fd6ff,.7]].forEach(([c_,o])=>{Cyl(.09,.09,.24,GLS,X+cx+o,1.18,Z+cz-.05,16);Cyl(.08,.08,.16,mat(c_),X+cx+o,1.15,Z+cz-.05,16);Cyl(.06,.06,.04,BRS,X+cx+o,1.32,Z+cz-.05,14)});
    for(let k=0;k<7;k++){Bm(.14,.2,.08,mat([0x9a6ad6,0xe9a03b,0x2f8fd9,0xd9382c][k%4]),X+cx-1.0+k*.33,1.83,Z+wz-.18);Bm(.12,.16,.08,mat([0xf2b230,0x5b2417,0x2f5a3a][k%3]),X+cx-1.0+k*.33,2.36,Z+wz-.18)}}
-  /* 영화 포스터(저장 이미지) */[['01',CBW-.04,3.05,-4.6,-Math.PI/2,1.0,1.5,373/560],['04',-CBW+.04,3.0,6.3,Math.PI/2,.9,1.35,373/560],['02',-2.2,3.1,CBD-.04,Math.PI,1.0,1.5,373/560],['03',2.4,3.1,CBD-.04,Math.PI,1.0,1.5,373/560],['13',4.9,3.0,CBD-.04,Math.PI,.75,1.5,280/560]].forEach(([k,x,y,z,ry,w,h,a])=>{frame(wallTex(k,a),w,h,X+x,y,Z+z,ry);const sp=new THREE.PointLight(0xffd9a8,.35,2.6,2);sp.position.set(X+x+(ry===Math.PI/2?.5:ry===-Math.PI/2?-.5:0),y+1.1,Z+z+(ry===Math.PI?-.5:0));sp.userData.i=.35;S.add(sp)});
+  /* QA09 archive frame: use the catalogued photograph, with a readable title while loading. */
+ {const a=CLUB_ARCHIVE[0],x=X-CBW+.11,y=3.15,z=Z+4.7;const fallback=art(320,440,(c,w,h)=>{c.fillStyle='#eee7d7';c.fillRect(0,0,w,h);c.fillStyle='#302a24';c.textAlign='center';c.font='bold 24px serif';c.fillText('1894',w/2,170);c.font='18px serif';c.fillText('FRED OTT',w/2,215);c.fillText('ARCHIVE',w/2,249)});const photo=frame(fallback,1.05,1.41,x,y,z,Math.PI/2);photo.name='club-history-fred-ott-1894';new THREE.TextureLoader().load(a.image,t=>{photo.material.map=t;photo.material.needsUpdate=true},undefined,()=>{});hitbox(x+.12,y,z,.42,1.65,1.3,{fn:()=>PANELS.archive(0),pt:{x:X-CBW+1.55,z,zone:'B'}})}
+ /* 영화 포스터(저장 이미지) */[['01',CBW-.04,3.05,-4.6,-Math.PI/2,1.0,1.5,373/560],['04',-CBW+.04,3.0,6.3,Math.PI/2,.9,1.35,373/560],['02',-2.2,3.1,CBD-.04,Math.PI,1.0,1.5,373/560],['03',2.4,3.1,CBD-.04,Math.PI,1.0,1.5,373/560],['13',4.9,3.0,CBD-.04,Math.PI,.75,1.5,280/560]].forEach(([k,x,y,z,ry,w,h,a])=>{frame(wallTex(k,a),w,h,X+x,y,Z+z,ry);const sp=new THREE.PointLight(0xffd9a8,.35,2.6,2);sp.position.set(X+x+(ry===Math.PI/2?.5:ry===-Math.PI/2?-.5:0),y+1.1,Z+z+(ry===Math.PI?-.5:0));sp.userData.i=.35;S.add(sp)});
   /* 필름 진열장 꼬마전구: 장 테두리를 따라 늘어진 전구줄 */{const fx=X-CBW+.6,z0=Z-.3,z1=Z+3.5,yT=3.28,yB=.72,pts=[];pts.push(new THREE.Vector3(fx,yB,z0));for(let k=0;k<=12;k++){const u=k/12;pts.push(new THREE.Vector3(fx,yB+(yT-yB)*u,z0+Math.sin(u*Math.PI*3)*.04))}
    for(let k=1;k<=24;k++){const u=k/24;pts.push(new THREE.Vector3(fx+.02,yT-Math.abs(Math.sin(u*Math.PI*4))*.16,z0+(z1-z0)*u))}for(let k=1;k<=12;k++){const u=k/12;pts.push(new THREE.Vector3(fx,yT-(yT-yB)*u,z1+Math.sin(u*Math.PI*3)*.04))}
    const cv=new THREE.CatmullRomCurve3(pts);S.add(new THREE.Mesh(new THREE.TubeGeometry(cv,160,.006,4,false),mat(0x2a2016)));const N=64;for(let k=0;k<N;k++){const p_=cv.getPointAt((k+.5)/N),b_=new THREE.Mesh(new THREE.SphereGeometry(.03,8,6),bulbM);b_.scale.y=1.3;b_.position.copy(p_);b_.position.y-=.03;S.add(b_);halo(p_.x+.04,p_.y-.03,p_.z,0xffcf86,.38,.55)}
@@ -3648,7 +3686,7 @@ function softenObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.mat
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
 Object.values(HALLN).forEach(h=>h.pli*=.82);try{softenObject(S);Object.values(TM).forEach(softenSurface)}catch(e){console.warn('soften skipped',e)}
 window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF(){return BUFF},sit,standUp,get SPOTS(){return SPOTS},trapShow:a=>trapShow(a),INTER,get NPCS(){return NPCS},showSpace,get space(){return space},pickSeat,get sel(){return selSeat},get yaw(){return camYaw},set yaw(v){camYaw=v},get me(){return me},upd,walkTo,API,AdService,CFG,openPanel,A,scrAt,listS,curS,HALLN,STAFF,move,zoneOf,hasPass,refTK,paintSeats,PANELS,curZone,get curSp(){return curSp},HNPC,LAYI,layGet,HALLN,txT,txCatalog};
-document.documentElement.dataset.cinemaReady='qa08-recovery-20261112';
+document.documentElement.dataset.cinemaReady='qa09-completion-20261112';
 </script>
 <!-- CINEMA_FINAL_REVIEW_20261109: source audit, runtime QA required -->
 </body></html>

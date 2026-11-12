@@ -38,7 +38,7 @@ test('50 complete looks remain distinct and the same nickname is stable across i
 test('self and peer builders receive matching full appearance without the shared ME preset', () => {
   const ctx = lookContext(), built = [], nodes = new Map([['nsave', { checked: false }], ['join', {}]]);
   function vector() { return { x: 0, y: 0, z: 0, set(x, y, z) { Object.assign(this, { x, y, z }); }, copy(p) { Object.assign(this, { x: p.x, y: p.y, z: p.z }); } }; }
-  Object.assign(ctx, { window: {}, VISITS: 1, localStorage: { setItem() {}, removeItem() {} }, $: id => nodes.get(id),
+  Object.assign(ctx, { window: {}, VISITS: 1, readSharedClubNote: () => null, localStorage: { setItem() {}, removeItem() {} }, $: id => nodes.get(id),
     mk(name, color, options) { const c = { userData: {}, position: vector(), rotation: { y: 0 } }; built.push({ name, color, options, c }); return c; },
     spw: () => ({ x: 0, z: 10, r: Math.PI }), updChip() {}, Multiplayer: { start() {} }, myId: 'self', peers: new Map(), AVATAR_HITS: [], THREE: { Vector3: class { constructor() { Object.assign(this, vector()); } } } });
   vm.runInContext(part('function enterNow(nm)', '/* 랜덤:') + part('function upsert(data)', 'function connect()'), ctx);
@@ -109,6 +109,17 @@ test('an unreachable object never opens remotely or walks into a blocked locatio
   const { ctx, walks, calls } = objectContext(() => true); let opened = false;
   ctx.approachObject({ pt: { x: 0, z: 0, zone: 'L0' }, fn: () => opened = true }, null);
   assert.equal(opened, false); assert.equal(walks.length, 0); assert.equal(calls.length, 1);
+});
+test('the wall clock approaches from in front of the ticket booth rather than behind its counter', () => {
+  const { ctx, walks } = objectContext((x, z) => x < -5.55 && z > 9.1 && z < 13.3);
+  ctx.bounds = () => [-8.5, 8.5, .45, 21]; ctx.me.position.x = 0; ctx.me.position.z = 10.8;
+  let opened = 0;
+  Object.assign(ctx, { X: -8.84, Z: 11.2, clockHit: { userData: {} }, PANELS: { admlogin: () => opened++ } });
+  vm.runInContext(source.split('\n').find(l => l.includes('clockHit.userData.act=')), ctx);
+  ctx.approachObject(ctx.clockHit.userData.act, { getWorldPosition: () => ({ x: -8.84, z: 11.2 }) });
+  assert.equal(walks.length, 1); assert.equal(opened, 0);
+  const [me, x, z, zone, opts] = walks[0]; assert(x > -5.55); assert.equal(ctx.blocked(x, z), false);
+  me.position.x = x; me.position.z = z; opts.after(); assert.equal(opened, 1);
 });
 
 function audioContext(muted = false) {

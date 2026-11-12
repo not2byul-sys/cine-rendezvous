@@ -217,9 +217,15 @@ test('admin authentication survives refresh and clock access, without saving the
   const loggedOut = adminContext(values); loggedOut.ctx.PANELS.admlogin(); assert(loggedOut.calls.includes('password'));
 });
 
-test('flower purchase provides the Alfredo clue and remote gifts still cannot consume items', () => {
+test('flower purchase provides the Alfredo clue and remote gifts consume items only after the receiver confirms', () => {
   assert.equal(source.split('알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.').length - 1, 2);
-  const ctx = { GIFT_TARGET: { userData: { remote: true } }, HELD: [{ k: 'rose1' }], me: {}, closePanel() {}, toast() {} };
+  const calls = [], toasts = [], rose = { k: 'rose1', _giving: 2 };
+  const target = { visible: true, position: { x: 1, z: 0 }, rotation: { y: 0 }, userData: { remote: true, peerId: 'p2' } };
+  const ctx = { GIFT_TARGET: target, HELD: [rose], me: { position: { x: 0, z: 0 }, rotation: { y: 0 }, userData: {} }, IT: { rose1: ['', '장미 한 송이'] }, Math, performance: { now: () => 0 },
+    closePanel() {}, toast: m => toasts.push(m), curZone: () => 'L0', refreshMe() {}, rainbowTick() {}, hudUpd() {}, objectParticle: () => '를', EAT: null, SLOW: null,
+    window: { qa15GiftToPeer: (peer, key, done) => calls.push({ peer, key, done }) } };
   vm.createContext(ctx); vm.runInContext(section('function giveItem(index)', 'function giftTick('), ctx);
-  ctx.giveItem(0); assert.equal(ctx.HELD.length, 1);
+  ctx.giveItem(0); assert.equal(ctx.HELD.length, 1); assert.equal(calls.length, 1); assert.equal(calls[0].peer, 'p2'); assert.equal(calls[0].key, 'rose1');
+  calls[0].done(false, 'timeout'); assert.equal(ctx.HELD.length, 1);
+  ctx.GIFT_TARGET = target; rose._giving = 2; ctx.giveItem(0); calls[1].done(true, ''); assert.equal(ctx.HELD.length, 0); assert(toasts.at(-1).includes('건넸어요'));
 });

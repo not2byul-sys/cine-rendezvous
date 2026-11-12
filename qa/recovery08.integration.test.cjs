@@ -86,7 +86,7 @@ test('NPC chat answers locally and never broadcasts the conversation to other us
 });
 test('closing the conversation cancels a pending NPC reply and clears the target', () => {
   const { ctx, nodes, timers, replies } = chatContext(); ctx.openChat(avatar()); nodes.get('mpinput').value = '안녕하세요'; nodes.get('mpform').onsubmit({ preventDefault() {} });
-  nodes.get('mpclose').listeners.get('click')({ preventDefault() {}, stopPropagation() {} }); timers[0](); assert.equal(replies.length, 0); assert.equal(ctx.els.talkTarget, null);
+  nodes.get('mpinput').listeners.get('keydown')({ key: 'Escape', preventDefault() {} }); timers[0](); assert.equal(replies.length, 0); assert.equal(ctx.els.talkTarget, null);
 });
 test('public user chat keeps its existing transport and outside touch closes the input', () => {
   const { ctx, nodes, sent, documentListeners } = chatContext(), peer = avatar(); peer.userData.remote = true; ctx.openChat(peer);

@@ -40,7 +40,7 @@ function chatContext() {
   return { ctx, nodes, properties, styles };
 }
 
-test('the rendered chat input moves with the keyboard, clears held movement and resets on X', () => {
+test('the rendered chat input moves with the keyboard, clears held movement and enables send only with text', () => {
   const { ctx, nodes, properties, styles } = chatContext();
   nodes.get('mpinput').focus();
   assert.equal(properties.get('--qa-keyboard-offset'), '350px');
@@ -48,10 +48,12 @@ test('the rendered chat input moves with the keyboard, clears held movement and 
   const rules = styles.join('\n').match(/#mpchat\{[^}]*bottom:[^}]*\}/g);
   assert.equal(rules.length, 2);
   for (const rule of rules) assert(rule.includes('var(--qa-keyboard-offset,0px)'));
-  nodes.get('mpinput').value = 'draft';
-  nodes.get('mpclose').dispatch('click');
+  assert.equal(nodes.get('mpclose'), undefined);
+  assert.equal(nodes.get('mpsend').disabled, true);
+  nodes.get('mpinput').value = '   '; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').disabled, true);
+  nodes.get('mpinput').value = 'draft'; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').disabled, false);
+  nodes.get('mpinput').blur();
   assert.equal(properties.get('--qa-keyboard-offset'), '0px');
-  assert.equal(nodes.get('mpinput').value, '');
 });
 
 function customer() {

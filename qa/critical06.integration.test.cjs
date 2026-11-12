@@ -18,6 +18,7 @@ function actorContext() {
   nodes.set('mpchat', { classList: { contains: () => false } });
   const ctx = { Math, me, GIFT_TARGET: null, HELD: [], A: {}, K: { w: 1 }, C: {}, innerWidth: 900, innerHeight: 700,
     $: id => nodes.get(id), esc: x => x, hudUpd() {}, curZone: () => 'L0', zoneOf: () => 'L0', blocked: () => false,
+    furnitureRoute: (c, x, z) => [{ x, z }], performance: { now: () => 1000 },
     VSTAFF: {}, toast: text => calls.push(['toast', text]), npcCard: target => calls.push(['talk', target]),
     Multiplayer: { openChat: () => calls.push(['chat']) }, giftMenu: () => calls.push(['gift']),
     openPanel: name => { nodes.get('pn').hidden = false; calls.push(['panel', name]); },
@@ -31,7 +32,7 @@ function actorContext() {
 }
 
 test('a far touch pauses immediately and approaches the facing side before opening a menu', () => {
-  const { ctx, me, nodes, arrive } = actorContext(), target = actor(); target.rotation.y = Math.PI / 2;
+  const { ctx, me, nodes, arrive } = actorContext(), target = actor(); target.userData.remote = true; target.rotation.y = Math.PI / 2;
   const oldPath = target.userData.path;
   ctx.selectAvatar(target);
   assert.equal(target.userData.interactionPause, true);
@@ -51,12 +52,20 @@ test('a far touch pauses immediately and approaches the facing side before openi
 
 test('a new selection cancels the previous approach and its stale completion callback', () => {
   const { ctx, me, nodes, arrive } = actorContext(), a = actor('A'), b = actor('B');
+  a.userData.remote = b.userData.remote = true;
   ctx.selectAvatar(a); const oldFinish = me.userData.after;
   ctx.selectAvatar(b); oldFinish();
   assert.equal(a.userData.interactionPause, false);
   assert.equal(b.userData.interactionPause, true);
   assert.equal(nodes.has('actorMenu'), false);
   arrive(); assert.equal(nodes.get('actorMenu')['aria-label'], 'B 선택 메뉴'); assert(!nodes.get('actorMenu').innerHTML.includes('<b>'));
+});
+
+test('NPC touch introduces the character directly, without a social tooltip', () => {
+  const { ctx, calls, nodes, arrive } = actorContext(), target = actor('이자벨');
+  ctx.selectAvatar(target); assert.equal(calls.some(x => x[0] === 'talk'), false);
+  arrive(); assert(calls.some(x => x[0] === 'talk' && x[1] === target));
+  assert.equal(nodes.has('actorMenu'), false);
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {

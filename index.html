@@ -2985,7 +2985,7 @@ function qaManualMove(c,dx,dz,dt){const u=c.userData,pressed=!!(dx||dz);
  u.manualVX=(u.manualVX||0)+((pressed?dx/length*SPEED:0)-(u.manualVX||0))*blend;
  u.manualVZ=(u.manualVZ||0)+((pressed?dz/length*SPEED:0)-(u.manualVZ||0))*blend;
  if(Math.hypot(u.manualVX,u.manualVZ)<.025){u.manualVX=0;u.manualVZ=0;u.manualDrift=false;return}
- if(pressed){u.path=[];u.spot=null;u.after=null;u.pendingSeat=null}
+ if(pressed){u.path=[];u.spot=null;u.after=null;u.pendingSeat=null;u.navRequest=null}
  const px=c.position.x,pz=c.position.z,sx=u.manualVX*dt,sz=u.manualVZ*dt;
  if(!move(c,px+sx,pz+sz)){if(!move(c,px+sx,pz))move(c,px,pz+sz)}
  u.manualMoving=Math.hypot(c.position.x-px,c.position.z-pz)>.00001;u.manualDrift=u.manualMoving;

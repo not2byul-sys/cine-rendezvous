@@ -65,7 +65,8 @@ test('NPC touch introduces the character directly, without a social tooltip', ()
   const { ctx, calls, nodes, arrive } = actorContext(), target = actor('이자벨');
   ctx.selectAvatar(target); assert.equal(calls.some(x => x[0] === 'talk'), false);
   arrive(); assert(calls.some(x => x[0] === 'talk' && x[1] === target));
-  assert.equal(nodes.has('actorMenu'), false);
+  /* QA20: 소개 말풍선과 함께 하단 컨텍스트 액션 바(글자 칩)를 띄움 */
+  assert(nodes.get('actorMenu').innerHTML.includes('말걸기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {
@@ -74,7 +75,8 @@ test('the flower seller and Alfredo use the same immediate pause and approach', 
     ctx.selectAvatar(target);
     assert.equal(target.userData.interactionPause, true);
     assert(!calls.some(c => c[0] === action));
-    arrive(); assert(calls.some(c => c[0] === action && c[1] === panel));
+    arrive(); assert(!calls.some(c => c[0] === action)); /* QA20: 도착하면 액션 칩(꽃 사기·퀴즈 풀기)을 먼저 보여줌 */
+    ctx.actorUse(); assert(calls.some(c => c[0] === action && c[1] === panel));
   }
 });
 

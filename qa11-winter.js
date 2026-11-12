@@ -28,11 +28,15 @@ function qa11ChristmasDisplay(){
 
 function qa11WinterStreet(){
  const snowMaterial=new THREE.MeshLambertMaterial({color:0xe0e7e9}),cover=(w,d,x,z)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,.035,d),snowMaterial);mesh.position.set(x,.025,z);mesh.name='outdoor-snow';S.add(mesh)};
- cover(160,2.15,0,LD+1.5);cover(160,2.3,0,LD+12.8);
+ cover(160,2.15,0,LD+1.5);cover(160,2.3,0,LD+12.8);cover(160,8.55,0,LD+7);
+ /* Two shallow slush tracks keep the snowy street readable. */
+ const slush=new THREE.MeshLambertMaterial({color:0x8c999e});for(const z of [LD+5,LD+9]){const track=new THREE.Mesh(new THREE.BoxGeometry(160,.01,.62),slush);track.position.set(0,.049,z);track.name='outdoor-snow-track';S.add(track)}
  /* Uneven snowbanks leave the road legible, with a clear indoor boundary. */
  for(let k=0;k<30;k++){const x=-44+k*3.1,z=LD+(k%2?11.25:2.7),bank=new THREE.Mesh(new THREE.SphereGeometry(.7,10,6),snowMaterial);bank.position.set(x,.055,z);bank.scale.set(1.7,.18,.5);bank.name='outdoor-snowbank';S.add(bank)}
 }
 
 window.NYOVR=Object.assign({},window.NYOVR||{},{code:71,cloud:90});
+/* A soft round flake avoids the default square points against the windows. */
+{const cv=document.createElement('canvas');cv.width=cv.height=32;const c=cv.getContext('2d'),g=c.createRadialGradient(16,16,2,16,16,15);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.5,'rgba(255,255,255,.85)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,32,32);snow.material.map=new THREE.CanvasTexture(cv);snow.material.alphaTest=.04;snow.material.size=.2;snow.material.needsUpdate=true}
 qa11ChristmasDisplay();qa11WinterStreet();BGM.sched=qa11CarolSchedule;BGM.bell=qa11CarolBell;drawSky();
 document.documentElement.dataset.cinemaReady='qa11-winter-layout-20261112';

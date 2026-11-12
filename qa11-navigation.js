@@ -34,3 +34,13 @@ function qa11Destination(c,x,z,zone,nearest=false){
 }
 
 function qa11Retry(c){const u=c.userData,n=u.navRequest;if(!n||curZone(c)!==n.zone||n.retries>=3)return false;OBS=null;n.retries++;const path=qa11Destination(c,n.x,n.z,n.zone,n.nearest);if(!path?.length)return false;u.path=path;return true}
+
+/* Standing up may leave the occupied chair, but must not step into its table. */
+function qa11SeatExit(c,sp){
+ if(!OBS)obsBuild();const level=c.userData.lvl,origin={x:sp.x,z:sp.z},rects=OBS.filter(r=>{const b=r[5]||r;return r[4]===level&&!(sp.x>=b[0]&&sp.x<=b[1]&&sp.z>=b[2]&&sp.z<=b[3])});
+ for(const radius of [.8,1,1.3,1.6])for(const turn of [Math.PI/2,-Math.PI/2,0,Math.PI,.45,-.45,2.3,-2.3]){const angle=sp.rot+turn,x=sp.x+Math.sin(angle)*radius,z=sp.z+Math.cos(angle)*radius,b=bounds(sp.zone,x,z);
+  if(!b||zoneOf(x,z,level)!==sp.zone||x<b[0]||x>b[1]||z<b[2]||z>b[3]||blocked(x,z,level))continue;
+  const steps=Math.ceil(radius/.04);let clear=true;for(let k=1;k<=steps&&clear;k++){const px=origin.x+(x-origin.x)*k/steps,pz=origin.z+(z-origin.z)*k/steps;if(rects.some(r=>px>r[0]&&px<r[1]&&pz>r[2]&&pz<r[3]))clear=false}
+  if(clear){c.position.x=x;c.position.z=z;return true}
+ }return false;
+}

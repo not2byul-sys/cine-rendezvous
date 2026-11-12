@@ -81,7 +81,7 @@ test('the flower seller and Alfredo use the same immediate pause and approach', 
 test('gift menu depends on held inventory and talking opens the existing chat', () => {
   const { ctx, nodes, calls, arrive } = actorContext(), target = actor(); target.userData.remote = true;
   ctx.HELD.push({ k: 'rose1' }); ctx.selectAvatar(target); arrive();
-  assert(nodes.get('actorMenu').innerHTML.includes('선물주기'));
+  assert(nodes.get('actorMenu').innerHTML.includes('선물하기'));
   ctx.actorTalk();
   assert.equal(nodes.has('actorMenu'), false);
   assert(calls.some(c => c[0] === 'chat'));

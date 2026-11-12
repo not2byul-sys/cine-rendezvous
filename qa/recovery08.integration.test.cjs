@@ -159,5 +159,5 @@ test('ticket delivery plays only the punch sound, without drawer or speech (QA17
 });
 test('flower clue is visibly quoted and the tooltip contains action buttons without a nickname heading', () => {
   assert(source.includes('<br>“알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.”'));
-  const menu = part('function showActorMenu(', 'function selectAvatar('); assert(!menu.includes("<b>")); assert(menu.includes('말걸기')); assert(menu.includes('선물주기'));
+  const menu = part('function showActorMenu(', 'function selectAvatar('); assert(!menu.includes("<b>")); assert(menu.includes('말걸기')); assert(menu.includes('선물하기'));
 });

@@ -640,10 +640,10 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 }
 
 /* QA06: actor menu anchored to the selected character. */
-#actorMenu{position:fixed;z-index:38;transform:translate(-50%,-100%);min-width:156px;background:#fff8ed;color:#3a211b;border:1px solid #70483b;border-radius:10px;padding:8px;box-shadow:0 4px 16px #21100d44;font-size:14px}
+#actorMenu{position:fixed;z-index:38;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);animation:qa16pop .35s ease-out}/* QA19: NPC 액션 = 하단 네비 위 둘째 줄 알약 버튼(간식받기·선물하기와 같은 UI) */
 #actorMenu b{display:block;padding:3px 7px 7px;font-size:13px}
-#actorMenu button{display:block;width:100%;text-align:left;margin:0;padding:9px 12px;border:0;border-radius:5px;background:transparent;color:inherit;font:inherit;cursor:pointer}
-#actorMenu button:hover,#actorMenu button:focus-visible{background:#ead5bf}
+#actorMenu button{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;margin:0;border-radius:999px;background:#5d211c;color:#f6e7cc;border:1px solid #983e49;font:600 15px/1 'Noto Sans KR',sans-serif;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);cursor:pointer;white-space:nowrap}
+#actorMenu button:hover,#actorMenu button:focus-visible{background:#6e2a23}body.layed #actorMenu{display:none!important}
 #actorMenu[hidden]{display:none}
 
 /* QA07: a visible lobby mute button beside connection status. */
@@ -932,7 +932,7 @@ function sign(txt,w,h,x,y,z,ry=0,bg='#f1e1b9',fg='#3a1f33',p=S){const fs=Math.mi
 /* ---------- palette ---------- */
 const AM=0xf0dc9a,OR=0xe9a8b4,PK=0xe9a8b4,PKD=0xdc8da2,SG=0x9db58a,SGD=0x6f9470,HW=0xd29a2e,WD=0x6b3a20,WD2=0x8a5a34,BG=0x7a1830,GN=0x2f5b45,CR=0xf6ecc8,TL=0x8fae8a,BR=0xc9a24a,DK=0x2a1418;
 /* ---------- geometry constants (1 unit = 1 m, 도면 X-16 = world x, 도면 Z = world z) ---------- */
-const LW=9,LD=20,ST={x0:-8.8,x1:-6.2,x2:6.2,x3:8.8,z0:2.0,z1:6.4},STX=7.5,DOORX={1:0,2:0},HCX={1:200,2:300,3:400},HZ={H1:1,H2:2},H_BASE={1:0,2:4.2},HL={1:0,2:1},HX=15;
+const LW=9,LD=20,ST={x0:-8.8,x1:-6.2,x2:6.2,x3:8.8,z0:2.0,z1:6.4},STX=7.5,DOORX={1:0,2:0},HCX={1:200,2:300,3:400},HZ={H1:1,H2:2},H_BASE={1:0,2:4.2},HL={1:0,2:1},HX=9.4;/* QA19: 레퍼런스 비율 — 좌석 블록 바로 옆에 벽 */
 const BF=2.0,BW=BF,LB=-4,GATE={1:{x:0,z:BF+1.2,tz:BF-.15,zone:'L0'},2:{x:0,z:LB+1.3,tz:LB+.05,zone:'L1'}},EXIT={1:{x:0,z:BF+2.4,l:0},2:{x:0,z:LB+2.0,l:1}};/* LB: 로비 뒷벽(2층 복도 깊이 BF-LB = 6m, 그 아래 1층은 1관 내부) */
 /* 왼쪽 계단 제거(11/7) → 계단은 오른쪽 하나 */const inStair=(x,z)=>z>=ST.z0&&z<=ST.z1&&x>=ST.x2&&x<=ST.x3;
 const stairY=z=>Math.max(0,Math.min(4.2,4.2*(ST.z1-z)/(ST.z1-ST.z0)));
@@ -942,7 +942,7 @@ function zoneOf(x,z,l){if(l===0&&Math.abs(x-BCX)<CBW-.1&&Math.abs(z-BCZ)<CBD-.1)
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
 const ZB={L0:[-LW+.6,LW-.6,.3,LD-.6],L1:[-LW+.5,LW-.5,LB+.35,BF-.25],H1:[HCX[1]-HX+.4,HCX[1]+HX-.4,-15.3,-.3],H2:[HCX[2]-HX+.4,HCX[2]+HX-.4,-15.3,-.3],B:[BCX-CBW+.5,BCX+CBW-.5,BCZ-CBD+.5,BCZ+CBD-.5]};
 const ZL={L0:0,H1:0,L1:1,H2:1,B:0};
-const SZ0=-14.8,SP=1.12,SCW=26,SCH=14.62,SCY=7.95,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,ELEV=i=>.04*(i+1),NSR=12,NSEAT=120,HSC=.56;
+const SZ0=-14.8,SP=1.12,SCW=14.2,SCH=7.99,SCY=4.85,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,ELEV=i=>.04*(i+1),NSR=12,NSEAT=120,HSC=.9;
 function hallElev(x,z){if(z<SEAT_Z(0)-SP/2||z>SEAT_Z(9)+SP/2)return 0;const i=Math.max(0,Math.min(9,Math.round((z-SZ0)/SP)));return ELEV(i)}
 const WAL=0x6a3c1f,WAL2=0x7d4a28,MU=0xd69b35,MU2=0xe2b04c,ORG=0xdd6a2a,TEAL=0x3f8a86,CREAM=0xefe4cc,VEL1=0x7a1424,VEL2=0x58101c;
 /* ===== 실사 재질: 마호가니 나무결 · 회반죽 벽 · 대리석 · 카펫 · 벨벳 ===== */
@@ -1455,7 +1455,7 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
  if(o.bag==='hand'){const hb=new THREE.Group();hb.position.set(0,-.58,.02);arms[0].add(hb);add(new THREE.BoxGeometry(.2,.16,.08),M(0x8a5226),0,0,0,hb);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,0,.04,.045,hb);const hd_=add(new THREE.TorusGeometry(.06,.012,6,12,Math.PI),M(0x6e3e1a),0,.08,0,hb)}
  if(o.tote){const tb=new THREE.Group();tb.position.set(0,-.62,.02);arms[0].add(tb);add(new THREE.BoxGeometry(.22,.24,.04),M(0xf3ecdc),0,0,0,tb);add(new THREE.BoxGeometry(.1,.08,.01),M(0xb3202e),0,-.02,.025,tb);add(new THREE.TorusGeometry(.07,.01,6,12,Math.PI),M(0xd9cdb0),0,.12,0,tb)}
  if(o.paper||o.flyer){const pp=new THREE.Group();pp.position.set(0,-.5,.08);arms[0].add(pp);const tx=(art(48,64,(c,W,H)=>{c.fillStyle='#f3ecdc';c.fillRect(0,0,W,H);c.fillStyle='#5a4a3a';if(o.paper){for(let y=8;y<H-4;y+=6)c.fillRect(5,y,W-10,2)}else{c.fillStyle='#8a4a2a';c.fillRect(6,8,W-12,30);c.fillStyle='#5a4a3a';c.fillRect(6,44,W-12,3);c.fillRect(6,50,W-20,3)}}));const pl=add(new THREE.PlaneGeometry(.2,.27),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}),0,0,0,pp);pl.rotation.y=.4}
- if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;g.add(sh);const t=tag(name,'rgba(42,20,28,.88)','#fff',24,.62);t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.38:o.hat||o.hs==='curly'?2.26:2.16;g.add(t)}
+ if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;sh.visible=false/* QA19: 아바타 바닥 그림자 제거 */;sh.name='avatar-shadow';g.add(sh);const t=tag(name,'rgba(42,20,28,.88)','#fff',24,.62);t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.38:o.hat||o.hs==='curly'?2.26:2.16;g.add(t)}
  g.scale.setScalar((o.kid?.7:.82)*AVS*.9);g.userData={base:(o.kid?.7/.82:1)*.9,path:[],after:null,spot:null,seat:null,b:null,bt:0,hop:0,wait:2+Math.random()*4,lvl:0,tgY:0,legs,arms,seatedLegs,head:headGroup,bodyK:o.originalViewing?1:1.16*1.13};(o.parent||S).add(g);
  if(o.bw){/* 무성영화 주인공: 흑백 */n.traverse(q=>{if(q.isMesh&&q.material&&q.material.color){const ms=Array.isArray(q.material)?q.material:[q.material];q.material=ms.map(m=>{const c=m.clone(),l=c.color.r*.3+c.color.g*.59+c.color.b*.11;c.color.setRGB(Math.min(1,l*1.035+.008),l,Math.max(0,l*.94));if(c.emissive){const e=c.emissive,le=e.r*.3+e.g*.59+e.b*.11;e.setRGB(le*1.035,le,le*.94)}return c});if(q.material.length===1)q.material=q.material[0]}})}
  if(!o.notag&&!o.me&&CHARINFO[name]){const hb=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.4,1.1),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.15;g.add(hb);hb.userData.act={now:1,fn:()=>{if(!me)return;const talk=()=>{g.rotation.y=Math.atan2(me.position.x-g.position.x,me.position.z-g.position.z);me.rotation.y=Math.atan2(g.position.x-me.position.x,g.position.z-me.position.z);npcCard(g,name)};const dx=me.position.x-g.position.x,dz=me.position.z-g.position.z,d=Math.hypot(dx,dz),zn=curZone(g);
@@ -1510,7 +1510,7 @@ const POST=h=>art(200,300,(x,w,hh)=>{x.fillStyle=`hsl(${h.hue},45%,72%)`;x.fillR
 const HALLG={},HSET=new Set(),CLUBG=[];
 /* QA16: 상영관 첨부2·3 — 크림 회반죽 벽 · 붉은 벽돌 기둥 · 목재 징두리 · 진초록 카펫 · 튤립 벽등 · 세피아 스카이라인 액자 */
 const HALL_GLOW={};
-function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,base=H_BASE[id],zn='H'+id,hx=HX,n0=S.children.length,HH=17.5,PINK=WD,BUT=PLC,WOOD=WD,CARP=0x2c4634,GLOW=0xfff0c8;
+function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,base=H_BASE[id],zn='H'+id,hx=HX,n0=S.children.length,HH=10.2,PINK=WD,BUT=PLC,WOOD=WD,CARP=0x2c4634,GLOW=0xfff0c8;
  /* ===== 상영관 내부 (로비와 분리된 공간) ===== */
  /* 바닥: 진초록 카펫 · 벽: 마호가니 징두리 + 크림 회반죽 · 붉은 벽돌 기둥 · 튤립 벽등 · 액자 */
  const CPT=CARPT.clone();CPT.needsUpdate=true;CPT.repeat.set(2*hx/.8,21/.8);const fl=B(2*hx,.2,21,0xffffff,cx,base-.1,-7.5);fl.material=new THREE.MeshLambertMaterial({map:CPT,color:CARP});fl.userData.zone=zn;floors.push(fl);const flb=B(2*hx+64,.2,96,0xffffff,cx,base-.1,-7.5);flb.material=fl.material;flb.visible=false;
@@ -1519,8 +1519,8 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  const hgS=EMG.length;[-1,1].forEach(sg=>{const wx=cx+sg*hx;wsegX(-18,3.3,base,base+2.4,wx,WD);wsegX(-18,3.3,base+2.4,base+HH,wx,PLC).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeee0c4});B(.14,.14,18,WD2,cx+sg*(hx-.25),base+2.45,-9);B(.1,.22,18,WAL2,cx+sg*(hx-.24),base+.11,-9);
   for(let z=-16.9;z<-.8;z+=1.55)B(.03,1.5,1.25,WAL2,cx+sg*(hx-.22),base+1.2,z);
   [-1.4,-6.1,-10.8,-15.5].forEach(z=>{B(.6,HH,.62,BRK,cx+sg*(hx-.3),base+HH/2,z);B(.68,.16,.7,WD2,cx+sg*(hx-.3),base+2.5,z)});B(.5,.36,18,WD2,cx+sg*(hx-.25),base+HH-.18,-9);
-  [-1.4,-6.1,-10.8,-15.5].forEach(z=>{sconce(cx+sg*(hx-.62),base+4.6,z,-sg*Math.PI/2,1);halo(cx+sg*(hx-.95),base+4.85,z,0xffe2b0,1.5,.8);halo(cx+sg*(hx-.75),base+5.1,z,0xffc27a,3.8,.28);halo(cx+sg*(hx-.75),base+3.8,z,0xffc27a,2.6,.16)});
-  [-3.75,-8.45,-13.15].forEach((z,q)=>{const fp=frame(skyl((q+(sg>0?1:0))%2),1.5,2.1,cx+sg*(hx-.2),base+4.7,z,-sg*Math.PI/2);fp.material=new THREE.MeshLambertMaterial({map:fp.material.map})})});
+  [-1.4,-6.1,-10.8,-15.5].forEach(z=>{sconce(cx+sg*(hx-.62),base+3.5,z,-sg*Math.PI/2,1);halo(cx+sg*(hx-.95),base+3.75,z,0xffe2b0,1.3,.8);halo(cx+sg*(hx-.75),base+4.0,z,0xffc27a,3.2,.28);halo(cx+sg*(hx-.75),base+2.9,z,0xffc27a,2.2,.16)});
+  [-3.75,-8.45,-13.15].forEach((z,q)=>{const fp=frame(skyl((q+(sg>0?1:0))%2),1.25,1.75,cx+sg*(hx-.2),base+4.0,z,-sg*Math.PI/2);fp.material=new THREE.MeshLambertMaterial({map:fp.material.map})})});
  wseg(cx-hx,cx+hx,base,base+HH,-18,PLC).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeee0c4});HALL_GLOW[id]=EMG.slice(hgS);
  const dwn=S.children.length;
   wseg(cx-hx,cx-1.8,base,base+2.4,-.25,PINK,.3);wseg(cx+1.8,cx+hx,base,base+2.4,-.25,PINK,.3);wseg(cx-hx,cx-1.8,base+2.4,base+HH,-.25,BUT,.3);wseg(cx+1.8,cx+hx,base+2.4,base+HH,-.25,BUT,.3);wseg(cx-1.8,cx+1.8,base+3.6,base+HH,-.25,BUT,.3);
@@ -1529,22 +1529,24 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  hitbox(cx,base+1.8,-.38,3.6,3.6,.3,{fn:()=>exitHall(id),pt:{x:cx,z:-1.2,zone:zn}}).userData.exitH=1;sign('🚪 로비로 나가기',2.6,.44,cx,base+4.15,-.43,Math.PI,'#f6ecd0','#3a1f33');
  const dtx=FLOORT.clone();dtx.needsUpdate=true;dtx.repeat.set(4.2,3.5);const op=B(3.6,.1,3,0xffffff,cx,base-.05,1.5);op.material.map=dtx;B(2*hx,HH,.2,PLC,cx,base+HH/2,3.3);
  /* 천장 + 유백색 펜던트 */
- B(2*hx,.2,21.3,0xf6e6c8,cx,base+HH+.1,-7.35).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeadfca,emissive:0x221a12});
+ B(2*hx,.2,21.3,0xf6e6c8,cx,base+HH+.1,-7.35).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeadfca,emissive:0x4a3c2c});
  /* 무대 + 스크린 테두리 + 버건디 벨벳 드레이프 · 스왜그 밸런스 */
  B(SCW+.7,SCH+.7,.15,0x161012,cx,base+SCY,SCZ-.12);
  B(2*hx-1.2,.45,2.2,WD,cx,base+.225,-16.75);B(2*hx-1.2,.05,.08,BRM_C,cx,base+.45,-15.68);
- const DX=SCW/2+1.4;[-1,1].forEach(sg=>{const x0=cx+sg*(SCW/2+.1),x1=cx+sg*(SCW/2+2.2);drape(Math.min(x0,x1),Math.max(x0,x1),base+5.2,base+SCY+SCH/2+.3,-17.3);const xa=cx+sg*(SCW/2+.9),xb=cx+sg*(SCW/2+1.9);drape(Math.min(xa,xb),Math.max(xa,xb),base+.45,base+5.25,-17.2);
-  const tie=B(1.1,.22,.12,VEL2,cx+sg*(SCW/2+1.4),base+5.1,-17.05);const tb=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),BRM);tb.position.set(cx+sg*(SCW/2+1.9),base+5.1,-16.98);S.add(tb)});
- B(2*hx-.4,HH-(SCY+SCH/2+.3),.5,WD,cx,base+(HH+SCY+SCH/2+.3)/2,-17.2);B(2*hx-.4,.08,.55,BRM_C,cx,base+SCY+SCH/2+.3,-17.2);
+ const DX=SCW/2+1.4;[-1,1].forEach(sg=>{const x0=cx+sg*(SCW/2+.1),x1=cx+sg*(SCW/2+2.2);drape(Math.min(x0,x1),Math.max(x0,x1),base+2.6,base+SCY+SCH/2+.3,-17.3);const xa=cx+sg*(SCW/2+.9),xb=cx+sg*(SCW/2+1.9);drape(Math.min(xa,xb),Math.max(xa,xb),base+.45,base+2.65,-17.2);
+  const tie=B(1.1,.22,.12,VEL2,cx+sg*(SCW/2+1.4),base+2.5,-17.05);const tb=new THREE.Mesh(new THREE.SphereGeometry(.09,10,8),BRM);tb.position.set(cx+sg*(SCW/2+1.9),base+2.5,-16.98);S.add(tb)});
+ B(2*hx-.4,HH-(SCY+SCH/2+.3),.5,WD,cx,base+(HH+SCY+SCH/2+.3)/2,-17.2).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeee0c4});B(2*hx-.4,.08,.55,BRM_C,cx,base+SCY+SCH/2+.3,-17.2);
  B(2*hx-.6,.12,.6,BRM_C,cx,base+HH-.18,-17.2);
  const cv=document.createElement('canvas');cv.width=512;cv.height=288;const tex=new THREE.CanvasTexture(cv);const scr=new THREE.Mesh(new THREE.PlaneGeometry(SCW,SCH),new THREE.MeshBasicMaterial({map:tex}));scr.position.set(cx,base+SCY,SCZ);S.add(scr);
- const pl=PL(0xffe8c0,2.2,cx,base+10,-9,48);
- for(let i=0;i<10;i++){const r=B(2*hx-.4,ELEV(i),SP,0xffffff,cx,base+ELEV(i)/2,SEAT_Z(i));r.material=fl.material;r.userData.zone=zn;floors.push(r);[-1,1].forEach(sg=>B(.04,.03,SP,BR,cx+sg*.62,base+ELEV(i)+.02,SEAT_Z(i)))}
- const g1=new THREE.BoxGeometry(.6,.22,.52),g2=new THREE.BoxGeometry(.6,.63,.11),g3=new THREE.BoxGeometry(.06,.43,.49);
- const IC=new THREE.InstancedMesh(g1,new THREE.MeshLambertMaterial({map:VELT,color:0xffffff}),NSEAT),IB=new THREE.InstancedMesh(g2,new THREE.MeshLambertMaterial({map:VELT,color:0xffffff}),NSEAT),IS=new THREE.InstancedMesh(g3,TM[WD],NSEAT);IC.frustumCulled=IB.frustumCulled=IS.frustumCulled=false;
+ const pl=PL(0xffe8c0,2.2,cx,base+HH-.6,-9,40);
+ for(let i=0;i<10;i++){const r=B(2*hx-.4,ELEV(i),SP,0xffffff,cx,base+ELEV(i)/2,SEAT_Z(i));r.material=fl.material;r.userData.zone=zn;floors.push(r)/* QA19: 통로 황동선 제거(레퍼런스) */}
+ const rr=(w,h,d,r,bv)=>{const sh=new THREE.Shape(),x=-w/2,y=-h/2;sh.moveTo(x+r,y);sh.lineTo(x+w-r,y);sh.quadraticCurveTo(x+w,y,x+w,y+r);sh.lineTo(x+w,y+h-r);sh.quadraticCurveTo(x+w,y+h,x+w-r,y+h);sh.lineTo(x+r,y+h);sh.quadraticCurveTo(x,y+h,x,y+h-r);sh.lineTo(x,y+r);sh.quadraticCurveTo(x,y,x+r,y);const g=new THREE.ExtrudeGeometry(sh,{depth:d-2*bv,bevelEnabled:true,bevelThickness:bv,bevelSize:bv*.9,bevelSegments:3,curveSegments:6});g.translate(0,0,-(d-2*bv)/2);g.computeVertexNormals();return g};
+ /* QA19: 레퍼런스 좌석 — 둥근 벨벳 등받이·쿠션 + 목재 팔걸이 측판 */
+ const g1=rr(.96,.18,.58,.08,.07),g2=rr(.96,.6,.16,.2,.06),g3=new THREE.BoxGeometry(.11,.5,.62);{const ar=new THREE.BoxGeometry(.15,.06,.7);ar.translate(0,.27,-.03);const m3=new THREE.BufferGeometry();const a=g3.toNonIndexed(),b=ar.toNonIndexed();const pa=new Float32Array(a.attributes.position.count*3+b.attributes.position.count*3),na=new Float32Array(pa.length),ua=new Float32Array((a.attributes.position.count+b.attributes.position.count)*2);pa.set(a.attributes.position.array);pa.set(b.attributes.position.array,a.attributes.position.array.length);na.set(a.attributes.normal.array);na.set(b.attributes.normal.array,a.attributes.normal.array.length);ua.set(a.attributes.uv.array);ua.set(b.attributes.uv.array,a.attributes.uv.array.length);m3.setAttribute('position',new THREE.BufferAttribute(pa,3));m3.setAttribute('normal',new THREE.BufferAttribute(na,3));m3.setAttribute('uv',new THREE.BufferAttribute(ua,2));g3.dispose();var g3b=m3}
+ const IC=new THREE.InstancedMesh(g1,new THREE.MeshLambertMaterial({map:VELT,color:0xffffff}),NSEAT),IB=new THREE.InstancedMesh(g2,new THREE.MeshLambertMaterial({map:VELT,color:0xffffff}),NSEAT),IS=new THREE.InstancedMesh(g3b,TM[WD],NSEAT+20);IC.frustumCulled=IB.frustumCulled=IS.frustumCulled=false;
  const d=new THREE.Object3D(),col=new THREE.Color(0xb3202e)/* QA15: 붉은 좌석 */,seats=[];
  for(let i=0;i<NSEAT;i++){const r=i/NSR|0,c=i%NSR,off=c<6?-(1.15+(5-c)*1.25):(1.15+(c-6)*1.25),x=cx+off,y=base+ELEV(r),z=SEAT_Z(r);
-  d.position.set(x,y+.21,z);d.updateMatrix();IC.setMatrixAt(i,d.matrix);d.position.set(x,y+.49,z+.28);d.updateMatrix();IB.setMatrixAt(i,d.matrix);d.position.set(x+.33,y+.22,z+.04);d.updateMatrix();IS.setMatrixAt(i,d.matrix);IC.setColorAt(i,col);IB.setColorAt(i,col);
+  d.rotation.set(0,0,0);d.position.set(x,y+.27,z-.04);d.updateMatrix();IC.setMatrixAt(i,d.matrix);d.rotation.set(-.12,0,0);d.position.set(x,y+.6,z+.33);d.updateMatrix();IB.setMatrixAt(i,d.matrix);d.rotation.set(0,0,0);d.position.set(x+.565,y+.25,z+.02);d.updateMatrix();IS.setMatrixAt(i,d.matrix);if(c===0||c===6){d.position.set(x-.565,y+.25,z+.02);d.updateMatrix();IS.setMatrixAt(NSEAT+r*2+(c?1:0),d.matrix)}IC.setColorAt(i,col);IB.setColorAt(i,col);
   seats.push({x,y:y+.12,z,rot:Math.PI,zone:zn,kind:'cine',hall:id,idx:i,label:seatLabel(i),taken:null})}
  S.add(IC,IB,IS);IC.userData.hall=id;IB.userData.hall=id;
  for(let i=0;i<NSEAT;i++)if(isAud(id,i)){const s=seats[i],a=mk('',COLS[i%6],Object.assign(chAud(i),{notag:true}));a.position.set(s.x,s.y,s.z);a.rotation.y=Math.PI;a.children[0].scale.y=.78;a.children[0].position.y=0;a.userData.static=1;s.taken=a}
@@ -1572,7 +1574,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  {const guide=()=>{const t=nowS(),has=TK.some(k=>k.hall===id&&k.end>t&&t>=k.start-CFG.EARLY);if(me)st.rotation.y=Math.atan2(me.position.x-st.position.x,me.position.z-st.position.z);
     if(has){say(st,'티켓 확인할게요 🎫 내 티켓에서 「입장하기」를 눌러주세요')}else qa17NoTicket(st)};
   const gpt={x:gz.x,z:gz.z,zone:gz.zone};
-  if(id===1)hitbox(0,1.7,dzr-.1,3.6,3.4,.6,{fn:()=>walkTo(me,HCX[id],-7.0,'H'+id),pt:gpt});else hitbox(lx,base+1.6,dzr+.15,3.8,3.2,.7,{fn:()=>walkTo(me,HCX[id],-7.0,'H'+id),pt:gpt});
+  if(id===1)hitbox(0,1.7,dzr-.1,3.6,3.4,.6,{fn:()=>walkTo(me,HCX[id],-3.4,'H'+id),pt:gpt});else hitbox(lx,base+1.6,dzr+.15,3.8,3.2,.7,{fn:()=>walkTo(me,HCX[id],-3.4,'H'+id),pt:gpt});
   hitbox(st.position.x,base+1,st.position.z,1.4,2.2,1.4,{fn:guide,pt:id===1?{x:-1.8,z:BF+2.1,zone:'L0'}:{x:-1.6,z:LB+1.4,zone:'L1'}})}
  HALLN[id]={fl,flb,dw:DW,cx,lx,dz:dzr,base,cv,tex,scr,seats,IC,IB,posters:[pL,pR],dL,dR,sec:0,pass:0,pl,pli:pl.intensity,slide:true};DOORS[id]=dg;
  seats.forEach((s,i)=>{IC.userData['s'+i]=s});
@@ -2355,7 +2357,7 @@ const A={
  close:closePanel,
  buy:async d=>{const s=SC[d.s];if(!s||!me)return;closePanel();const ok=await AdService.show({kind:'ticket',label:`${s.hall.name} 「${s.film.title}」 티켓 1장`});if(!ok){toast('광고를 끝까지 봐야 티켓을 받을 수 있어요');return}
   const r=API.buyTicket(s);refTK();if(r.err){toast(r.err);return}paintSeats();/* QA17: 펀칭 전 완료 알림 문구 제거 */
-  await showPunch(r.ok);API.punch(r.ok.id);refTK();const hid=r.ok.hall;if(me.userData.seat)standUp(me,true);me.position.set(HCX[hid],H_BASE[hid],-2.8);me.userData.lvl=HL[hid];me.userData.path=[];me.rotation.y=Math.PI;camYaw=Math.PI;snapCam=true;hallChan(hid);walkTo(me,HCX[hid],-5.4,"H"+hid);say(me,'🎞 입장!')},
+  await showPunch(r.ok);API.punch(r.ok.id);refTK();const hid=r.ok.hall;if(me.userData.seat)standUp(me,true);me.position.set(HCX[hid],H_BASE[hid],-2.8);me.userData.lvl=HL[hid];me.userData.path=[];me.rotation.y=Math.PI;camYaw=Math.PI;snapCam=true;hallChan(hid);walkTo(me,HCX[hid],-3.4,"H"+hid);say(me,'🎞 입장!')},
  fl:d=>PANELS._sel(d.i),
  getset:async d=>{closePanel();const ok=await AdService.show({kind:'popcorn',label:'매점 보상 · 팝콘 + 콜라'});if(!ok){toast('광고를 끝까지 보면 받을 수 있어요');return}API.addItem('pop');API.addItem('cola');toast(`🍿 ${FL[d.i][0]} 팝콘 + 🥤 콜라를 받았어요! (가방에서 확인)`)},
    getcafe:async d=>{const f=CAFEM.find(x=>x[0]===d.k);closePanel();const ok=await AdService.show({kind:'vend',label:'카페 보상 · '+f[2]});if(!ok){toast('광고를 끝까지 보면 받을 수 있어요');return}API.addItem(d.k);toast(f[1]+' '+f[2]+'를 받았어요! (가방에서 확인)')},
@@ -2497,6 +2499,13 @@ function approachObject(act,object){if(!me||!act?.pt)return;const base=act.pt,zo
  for(const p of candidates){const b=bounds(zone,p.x,p.z);if(!b||zoneOf(p.x,p.z,level)!==zone||p.x<b[0]||p.x>b[1]||p.z<b[2]||p.z>b[3]||blocked(p.x,p.z,level))continue;if(curZone(me)===zone&&!furnitureRoute(me,p.x,p.z,zone))continue;point=p;break}
  if(!point){toast('다가갈 수 있는 자리가 없어요');return}const finish=()=>{me.rotation.y=Math.atan2(face.x-me.position.x,face.z-me.position.z);act.fn()};
  if(curZone(me)===zone&&Math.hypot(me.position.x-point.x,me.position.z-point.z)<.3){me.userData.path=[];me.userData.after=null;finish()}else walkTo(me,point.x,point.z,zone,{avoidFurniture:true,exactTarget:true,after:finish})}
+/* QA19: 이동 터치 지점 표시(온라인 산사식) — 바닥에 퍼지는 링 + 도착할 때까지 남는 점 */
+const QA19_TM={g:null,t:-1,dot:null};
+function qa19TapMark(p,zone){let m=QA19_TM;if(!m.g){const g=new THREE.Group();g.name='qa19-tap-mark';const mat=(o,c)=>new THREE.MeshBasicMaterial({color:c||0xffc94a,transparent:true,opacity:o,depthWrite:false,depthTest:false,side:THREE.DoubleSide});
+  const r1=new THREE.Mesh(new THREE.RingGeometry(.36,.46,40),mat(.95));r1.rotation.x=-Math.PI/2;const r2=new THREE.Mesh(new THREE.RingGeometry(.16,.23,32),mat(.95,0xe0921c));r2.rotation.x=-Math.PI/2;const d=new THREE.Mesh(new THREE.CircleGeometry(.09,20),mat(.95,0xfff6dc));d.rotation.x=-Math.PI/2;g.add(r1,r2,d);g.renderOrder=3;S.add(g);m.g=g;m.r1=r1;m.r2=r2;m.dot=d;HSET.add(g)}
+ const y=me?targetY({position:{x:p.x,z:p.z},userData:me.userData}):p.y;m.g.position.set(p.x,(isFinite(y)?y:p.y)+.035,p.z);m.g.visible=true;m.t=0;m.zone=zone}
+function qa19TapTick(dt){const m=QA19_TM;if(!m.g||m.t<0)return;m.t+=dt;const k=Math.min(1,m.t/.55),e=1-Math.pow(1-k,3);m.r1.scale.setScalar(.5+e*1.1);m.r1.material.opacity=.9*(1-k);m.r2.scale.setScalar(.8+.2*Math.sin(m.t*6));
+ const moving=me&&me.userData.path&&me.userData.path.length;if(m.t>.6&&!moving){m.r2.material.opacity=Math.max(0,m.r2.material.opacity-dt*3);m.dot.material.opacity=Math.max(0,m.dot.material.opacity-dt*3);if(m.dot.material.opacity<=0){m.g.visible=false;m.t=-1;m.r2.material.opacity=.95;m.dot.material.opacity=.95}}}
 R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>8||performance.now()-pd.t>500)return;
  mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(mv,C);
  const az=curZone(me),objs=[...AVATAR_HITS.filter(h=>h.userData.giftAvatar!==me&&h.userData.giftAvatar.visible&&curZone(h.userData.giftAvatar)===az),...INTER,...spotMeshes,...floors.filter(f=>!f.userData.zone||f.userData.zone[0]!=='H'||f.userData.zone===az),...CFG.HALLS.filter(h=>'H'+h.id===az).flatMap(h=>[HALLN[h.id].IC,HALLN[h.id].IB])];
@@ -2507,7 +2516,7 @@ R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-
  if(ud.spot){const sp=ud.spot;if(sp.kind==='cine'){pickSeat(sp.hall,sp);return}if(me.userData.seat===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}if(curZone(me)!==sp.zone)return;if(me.userData.seat)standUp(me,true);if(Math.hypot(me.position.x-sp.x,me.position.z-sp.z)<=2.2){NEARSP=null;sit(me,sp);hudUpd();return}me.userData.pendingSeat=sp;NEARSP=sp;let px=sp.x+Math.sin(sp.rot)*.95,pz=sp.z+Math.cos(sp.rot)*.95;{const L=sp.zone==='L1'?1:0;if(blocked(px,pz,L)){let best=null;for(const r of [1.0,1.25,1.5])for(let k=0;k<16;k++){const a=k/16*Math.PI*2,x=sp.x+Math.sin(a)*r,z=sp.z+Math.cos(a)*r;if(!blocked(x,z,L)&&zoneOf(x,z,L)===sp.zone){const dd=Math.abs(Math.atan2(Math.sin(a-sp.rot),Math.cos(a-sp.rot)));if(!best||dd+r*.3<best[2])best=[x,z,dd+r*.3]}}if(best){px=best[0];pz=best[1]}}}walkTo(me,px,pz,sp.zone,{after:()=>{me.userData.pendingSeat=null;NEARSP=null;sit(me,sp);hudUpd()}});me.userData.pendingSeat=sp;return}
 if(me.userData.seat&&floors.includes(o)){standUp(me,true);me.userData.path=[];NEARSP=null;hudUpd();return}
  if(ud.stair){const lv=me.userData.lvl;walkTo(me,STX,lv?ST.z1+.9:ST.z0-.5,lv?'L0':'L1');return}
- walkTo(me,h.point.x,h.point.z,ud.zone)});
+ walkTo(me,h.point.x,h.point.z,ud.zone);qa19TapMark(h.point,ud.zone)});
 const CDIR=new THREE.Vector3();let CUSE=false;let camYaw=Math.PI,camYawS=Math.PI,camPitch=.3,camPitchT=.3,camDist=5.6,camDistT=5.6,yawV=0,sYaw=0,sPitch=0;const clampN=(v,a,b)=>Math.max(a,Math.min(b,v));
 function alignSpaceCamera(c){releaseSeatCamera();camYaw=camYawS=c.rotation.y;camPitch=camPitchT=curZone(c)[0]==='H'?.2:.3;yawV=0;snapCam=true}
 const PTR=new Map();let camDrag=false;let touchViewMode=false; // Mobile drag uses direct look control, without mouse-style momentum
@@ -2519,7 +2528,7 @@ addEventListener('pointermove',e=>{if(!me||!PTR.has(e.pointerId))return;if(e.poi
  if(!o.on){if(Math.hypot(e.clientX-o.sx,e.clientY-o.sy)<8)return;o.on=true;o.x=e.clientX;o.y=e.clientY;camDrag=true;releaseSeatCamera();return}
  const dx=e.clientX-o.x,dy=e.clientY-o.y;o.x=e.clientX;o.y=e.clientY;camDrag=true;
  if(PTR.size>=2){const ps=[...PTR.values()],pe=PTR.get(e.pointerId);const other=ps.find(q=>q!==pe),d1=Math.hypot(pe.x-other.x,pe.y-other.y),d0=Math.hypot(pe.x-dx-other.x,pe.y-dy-other.y);if(!(me.userData.seat&&me.userData.seat.kind==='cine'))camDistT=clampN(camDistT-(d1-d0)*.02,3.5,13);return}
- if(me.userData.seat&&me.userData.seat.kind==='cine'){sYaw=clampN(sYaw-dx*.004,-1.1,1.1);sPitch=clampN(sPitch-dy*.003,-.6,.6)}else{if(e.pointerType==='touch'){/* Mobile: direct, predictable finger tracking; no residual yaw acceleration. */camYaw-=dx*.004;yawV=0;camPitchT=clampN(camPitchT+dy*.005,-.5,.9)}else{camYaw+=dx*.0034;yawV=clampN(dx*.0034*60,-2.2,2.2);camPitchT=clampN(camPitchT+dy*.0035,-.05,.75)}}});
+ if(me.userData.seat&&me.userData.seat.kind==='cine'){sYaw=clampN(sYaw-dx*.004,-1.1,1.1);sPitch=clampN(sPitch-dy*.003,-.6,.6)}else{if(e.pointerType==='touch'){/* QA19: 일반 모바일 게임식 — 한 손가락 드래그 = 아바타 중심 궤도 회전(화면 너비 한 번 = 약 200°), 위아래 = 시점 높이, 두 손가락 = 확대/축소 */const kx=3.4/Math.max(320,Math.min(innerWidth,innerHeight*1.2)),ky=2.2/Math.max(480,innerHeight);camYaw-=dx*kx;yawV=0;camPitchT=clampN(camPitchT+dy*ky,-.12,.95)}else{camYaw+=dx*.0034;yawV=clampN(dx*.0034*60,-2.2,2.2);camPitchT=clampN(camPitchT+dy*.0035,-.05,.75)}}});
 addEventListener('wheel',e=>{if(!me)return;if(e.target.closest&&e.target.closest('#pn,#txpg,#layui,#ad'))return;releaseSeatCamera();if(me.userData.seat&&me.userData.seat.kind==='cine'&&!CWIDE){/* QA15: 착석 후 스크린 중심 고정 — 확대/축소 차단 */}else camDistT=clampN(camDistT+e.deltaY*.006,3.5,13);e.preventDefault()},{passive:false});
 const K={};addEventListener('keydown',e=>{if(document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){K[e.key.toLowerCase()]=1;if(['w','a','s','d','q','e','arrowup','arrowdown','arrowleft','arrowright','+','-','='].includes(e.key.toLowerCase()))releaseSeatCamera()}});addEventListener('keyup',e=>K[e.key.toLowerCase()]=0);
 const send=()=>{const v=$('msg').value.trim();if(me&&v){say(me,v,1);$('msg').value=''}};
@@ -2675,13 +2684,13 @@ let CTRG=null;function counterShow(items){if(CTRG){S.remove(CTRG);INTER.splice(I
  items.forEach((k,i)=>{const m=itemMesh(k),o=(i-(items.length-1)/2)*.3;m.position.set(ct?o:0,0,ct?0:o);g.add(m)});const hb=ct?hitbox(ct[0],ct[1]+.4,ct[2],Math.max(.8,items.length*.32),.8,.8,{fn:()=>A.oget(),pt:{x:pt.x,z:pt.z,zone:pt.zone}}):hitbox(5.85,1.75,pt.z,.8,.8,Math.max(.8,items.length*.32),{fn:()=>A.oget(),pt:{x:pt.x,z:pt.z,zone:pt.zone}});g.userData.hb=hb;CTRG=g}
 /* 아이콘 = shadcn/ui 기본 아이콘셋 Lucide(라인 아이콘, 24·stroke 2) */const LUC={cpause:'<rect x="14" y="4" width="4" height="16" rx="1"/><rect x="6" y="4" width="4" height="16" rx="1"/>',volon:'<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',voloff:'<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/>',giftmenu:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13"/><path d="M12 8H7.5A2.5 2.5 0 1 1 10 5.5L12 8Zm0 0h4.5A2.5 2.5 0 1 0 14 5.5L12 8Z"/>',cresume:'<polygon points="6 3 20 12 6 21 6 3"/>',screq:'<rect width="20" height="16" x="2" y="4" rx="2"/> <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',music:'<path d="M9 18V5l12-2v13"/> <circle cx="6" cy="18" r="3"/> <circle cx="18" cy="16" r="3"/>',musicoff:'<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/> <line x1="22" x2="16" y1="9" y2="15"/> <line x1="16" x2="22" y1="9" y2="15"/>',tix:'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/> <path d="M13 5v2"/> <path d="M13 17v2"/> <path d="M13 11v2"/>',bag:'<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/> <path d="M3 6h18"/> <path d="M16 10a4 4 0 0 1-8 0"/>',tt:'<path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3Z"/> <path d="m6.2 5.3 3.1 3.9"/> <path d="m12.4 3.4 3.1 4"/> <path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/>',sitnear:'<path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/> <path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/> <path d="M5 18v2"/> <path d="M19 18v2"/>',standme:'<path d="m18 9-6-6-6 6"/> <path d="M12 3v14"/> <path d="M5 21h14"/>',cstand:'<path d="M9 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>',oget:'<path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/> <path d="M10 22 9 8"/> <path d="m14 22 1-14"/> <path d="M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z"/>',eatn:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/> <path d="M7 2v20"/> <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',trash:'<path d="M3 6h18"/> <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/> <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/> <line x1="10" x2="10" y1="11" y2="17"/> <line x1="14" x2="14" y1="11" y2="17"/>',exithall:'<path d="M13 4h3a2 2 0 0 1 2 2v14"/> <path d="M2 20h3"/> <path d="M13 20h9"/> <path d="M10 12v.01"/> <path d="M13 4.562v16.157a1 1 0 0 1-1.242.97L5 20V5.562a2 2 0 0 1 1.515-1.94l4-1A2 2 0 0 1 13 4.561Z"/>',goup:'<path d="m5 12 7-7 7 7"/> <path d="M12 19V5"/>',csnd:'<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/> <path d="M16 9a5 5 0 0 1 0 6"/> <path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',csndx:'<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/> <line x1="22" x2="16" y1="9" y2="15"/> <line x1="16" x2="22" y1="9" y2="15"/>',cfull:'<path d="M8 3H5a2 2 0 0 0-2 2v3"/> <path d="M21 8V5a2 2 0 0 0-2-2h-3"/> <path d="M3 16v3a2 2 0 0 0 2 2h3"/> <path d="M16 21h3a2 2 0 0 0 2-2v-3"/>',cfullx:'<path d="M8 3v3a2 2 0 0 1-2 2H3"/> <path d="M21 8h-3a2 2 0 0 1-2-2V3"/> <path d="M3 16h3a2 2 0 0 1 2 2v3"/> <path d="M16 21v-3a2 2 0 0 1 2-2h3"/>',cstart:'<polygon points="19 20 9 12 19 4 19 20"/> <line x1="5" x2="5" y1="19" y2="5"/>',clive:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/> <circle cx="9" cy="7" r="4"/> <path d="M22 21v-2a4 4 0 0 0-3-3.87"/> <path d="M16 3.13a4 4 0 0 1 0 7.75"/>',popcorn:'<path d="M18 8a2 2 0 0 0 0-4 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0-4 0 2 2 0 0 0 0 4"/> <path d="M10 22 9 8"/> <path d="m14 22 1-14"/> <path d="M20 8c.5 0 .9.4.8 1l-2.6 12c-.1.5-.7 1-1.2 1H7c-.6 0-1.1-.4-1.2-1L3.2 9c-.1-.6.3-1 .8-1Z"/>',soda:'<path d="m6 8 1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8"/> <path d="M5 8h14"/> <path d="M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0"/> <path d="m12 8 1-6h2"/>',coffee:'<path d="M10 2v2"/> <path d="M14 2v2"/> <path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/> <path d="M6 2v2"/>',ticket:'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/> <path d="M13 5v2"/> <path d="M13 17v2"/> <path d="M13 11v2"/>'};
 const TBI=LUC;
-const lucide=(k,sz=22)=>`<svg class="lucide" viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LUC[k]||''}</svg>`;
+Object.assign(LUC,{talk:'<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',quiz:'<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'});const lucide=(k,sz=22)=>`<svg class="lucide" viewBox="0 0 24 24" width="${sz}" height="${sz}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${LUC[k]||''}</svg>`;
 const tbIco=k=>k==='clubstop'?lucide(CLUBSTOP?'cresume':'cpause'):lucide(k==='csnd'&&!ytMuted?'csnd':k==='csnd'?'csndx':k==='cfull'&&FULL?'cfullx':k);
 let NEARSP=null;
 function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=me&&me.userData.seat,cine=sp&&sp.kind==='cine'&&!CWIDE;
  if(ORD&&ORD.st==='prep')h+=`<span class="st">간식 준비 중 ${Math.max(0,Math.ceil(ORD.readyAt-nowS()))}초</span>`;
  {let w=$('qa17cta');if(!w){w=document.createElement('div');w.id='qa17cta';document.body.appendChild(w);const mkB=(id,ico,label,fn)=>{const g=document.createElement('button');g.id=id;g.type='button';g.innerHTML=lucide(ico,18)+'<span>'+label+'</span>';g.onclick=()=>{try{CinemaAudio.unlock()}catch(e){}fn()};w.appendChild(g);return g};mkB('qa16get','oget','간식받기',()=>A.oget());mkB('qa17box','tix','매표소 가기',()=>qa17GoBooth())}
-  const t_=nowS();if(QA17_NOTK&&TK.some(k=>k.end>t_))QA17_NOTK=false;$('qa16get').hidden=!(ORD&&ORD.st==='ready')||cine;$('qa17box').hidden=!QA17_NOTK||cine||!(zc==='L0'||zc==='L1');w.hidden=$('qa16get').hidden&&$('qa17box').hidden}
+  const t_=nowS();if(QA17_NOTK&&TK.some(k=>k.end>t_))QA17_NOTK=false;$('qa16get').hidden=!(ORD&&ORD.st==='ready')||cine;$('qa17box').hidden=!QA17_NOTK||cine||!(zc==='L0'||zc==='L1');w.hidden=($('qa16get').hidden&&$('qa17box').hidden)||!!$('actorMenu')/* QA19: NPC 액션 줄과 겹치지 않게 */}
  if(HELD.length&&me&&!cine){const sl=SLOW&&HELD.some(x=>x.slow),free=HELD.filter(x=>!x.slow).length;
   const tot=HELD.reduce((a,x)=>a+eatLeft(x),0);
   if(HELD.some(x=>!isFlower(x.k)))h+=EAT?`<button data-a="eatn" disabled>먹는 중</button>`:`<button data-a="eatn">간식 먹기</button>`;if(!inH)h+=`<button data-a="trash">물건 버리기</button>`}
@@ -2731,7 +2740,7 @@ function qaNpcReachablePoint(target){
  target.position.copy(origin);u.roamHome=origHome||origin;return null;
 }
 function showActorMenu(target,localMenu){if(!target.userData.remote&&!localMenu){npcCard(target,target.userData.displayName);return}const u_=target.userData,useLabel=u_.trayVendor?'구경하기':u_.buff?'퀴즈 풀기':u_.counterStaff?(VSTAFF.shop===target||VSTAFF.cafe===target?'주문하기':'티켓 받기'):'';let el=$('actorMenu');if(!el){el=document.createElement('div');el.id='actorMenu';el.setAttribute('role','menu');document.body.appendChild(el)}
- el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');el.innerHTML='<button role="menuitem" data-a="actorTalk">말걸기</button>'+(HELD.length?'<button role="menuitem" data-a="actorGift">선물주기</button>':'')+(useLabel&&!u_.remote?'<button role="menuitem" data-a="actorUse">'+useLabel+'</button>':'');actorMenuTick()}
+ el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');const bt=(a,ic,t)=>'<button role="menuitem" data-a="'+a+'">'+(typeof lucide==='function'?lucide(ic,18):'')+'<span>'+t+'</span></button>';el.innerHTML=bt('actorTalk','talk','말걸기')+(HELD.length?bt('actorGift','giftmenu','선물하기'):'')+(useLabel&&!u_.remote?bt('actorUse',u_.buff?'quiz':u_.counterStaff?'oget':'bag',useLabel):'');{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick()}
 function selectAvatar(target){if(!me||!target||target===me||!target.visible)return;if(curZone(target)!==curZone(me)){toast('같은 공간의 아바타를 선택해 주세요');return}
  dismissActor();const u=target.userData,session={target,phase:'approach',saved:{path:[...(u.path||[])],spot:u.spot,after:u.after,roamActive:u.roamActive}};ACTOR_SESSION=session;
  u.interactionPause=true;u.path=[];u.spot=null;u.after=null;u.roamActive=false;u.walkVel=0;
@@ -2756,7 +2765,7 @@ function actorMenuTick(){const session=ACTOR_SESSION;if(!session)return;const ta
  if(session.phase==='panel'&&$('pn').hidden&&!target.userData.flowerPurchase){dismissActor();return}
  if(session.phase==='chat'&&!$('mpchat')?.classList.contains('open')){dismissActor();return}
  const el=$('actorMenu');if(!el)return;const p=target.position.clone();p.y+=2.5*target.scale.y;p.project(C);el.hidden=p.z< -1||p.z>1;
- el.style.left=Math.max(92,Math.min(innerWidth-92,(p.x+1)*innerWidth/2))+'px';el.style.top=Math.max(65,Math.min(innerHeight-170,(1-p.y)*innerHeight/2-12))+'px'}
+ el.hidden=false/* QA19: 고정 위치(하단 네비 위) */}
 function npcReplyText(target,message){const name=target.userData.displayName,text=String(message||'').trim().toLowerCase(),intro=CHARINFO[name],prefix=name==='비토 콜레오네'?'친구여, ':name==='마커스 교수'?'흥미롭군요. ':name==='알프레도 할아버지'?'허허, ':'';let answer;
  if(/고마|감사|잘\s*가|안녕히|다음에/.test(text))answer='좋은 영화와 함께 즐거운 시간 보내세요. 또 이야기해요.';
  else if(/비밀|클럽|초대/.test(text))answer='알프레도 할아버지의 영화 퀴즈를 풀면 비밀 클럽 초대장을 받을 수 있어요.';
@@ -2778,58 +2787,59 @@ function giftMenu(){const target=GIFT_TARGET;if(!target)return;if(!HELD.length){
 function confirmGift(index){const target=GIFT_TARGET,it=HELD[index];if(!target||!it)return;GIVE_OFFER={target,item:it};const name=IT[it.k][1];panel('<h3>선물 건네기</h3><p style="font-size:17px;line-height:1.8">'+esc(target.userData.displayName)+'에게 '+esc(name)+objectParticle(name)+' 주시겠어요?</p><button class="p" data-a="giftyes">예</button><button data-a="giftno">아니요</button>')}
 function acceptGift(){const offer=GIVE_OFFER;GIVE_OFFER=null;if(!offer)return;const index=HELD.indexOf(offer.item);if(index<0){closePanel();toast('이미 전달한 선물이에요');return}GIFT_TARGET=offer.target;giveItem(index)}
 /* QA18: NPC마다 다른 말투·캐릭터다운 힌트(감사, 힌트, 꽃 받을 때) */
+/* QA19: 선물 → 캐릭터다운 리액션(인사+몸짓) → 비밀 영화클럽·무지개 팝콘 이야기를 슬쩍 */
 const QA18_GIFT={
-'앨런':['오, 이거 나 주는 거야? 고마워, 진짜로.','아지트 소파에 앉아 있으면 다들 영화 얘기만 해. 그 입구? 로비 왼쪽 벽 책장을 잘 봐.','꽃이라니… 다음 데이트 장면에 쓰면 딱이겠다.'],
-'셜록 영사기사':['흥미롭군요. 이 선물에서 당신의 친절이 추리됩니다.','단서 하나: 로비의 간행물 책장은 생각보다 깊습니다. 알프레도 할아버지의 초대장이 열쇠죠.','장미의 향으로 미루어 보아, 방금 꽃 파는 소녀를 만나셨군요.'],
-'마커스 교수':['허허, 참 사려 깊군요. 감사히 받겠습니다.','강의 한 토막: 좋은 극장엔 늘 숨은 방이 있지요. 영화 퀴즈를 맞힌 사람만 그 방에 초대받는답니다.','꽃이라… 시티 라이트의 마지막 장면이 떠오르는군요.'],
-'세실리아':['어머, 나한테요? 영화 속 주인공이 된 기분이에요.','스크린 속 사람들도 가끔은 밖으로 나오고 싶대요. 아지트 필름장에선 원하는 필름을 직접 고를 수 있어요.','장미… 카이로의 보랏빛 장미처럼 아름다워요.'],
-'토토':['와! 고마워요! 알프레도 아저씨한테 자랑해야지!','쉿, 비밀인데요… 알프레도 아저씨 퀴즈를 맞히면 진짜 멋진 초대장을 줘요!','엄마 갖다 드려야겠다! 고마워요!'],
-'이자벨':['고마워요. 파리의 밤처럼 근사한 선물이네요.','아지트엔 레코드 플레이어가 있어요. 바늘을 올리면 옛날 노래가 흘러나와요.','꽃향기에 영화관 공기가 달라졌어요.'],
-'매튜':['고맙습니다. 이런 다정함이 오래 기억에 남아요.','로비 트리를 한번 눌러 보세요. 불이 꺼지고 아주 특별한 일이 생겨요.','꽃이 참 단정하게 묶였네요. 고마워요.'],
-'프레더 프레데르센':['감사합니다. 위와 아래의 세계를 잇는 건 결국 마음이지요.','지하에는 또 하나의 세계가 있습니다. 책장 너머 계단을 내려가 보세요.','꽃 한 송이가 기계의 도시보다 강하군요.'],
-'조니 그레이':['고마워요. 오늘은 마음이 좀 놓이네요.','2관은 아직 준비 중이에요. 안내판에 상영작 모집 포스터가 붙어 있던데, 봤어요?','꽃이라니, 쑥스럽네요. 고마워요.'],
-'존 심스':['고마워요… 군중 속에서도 이런 일이 생기는군요.','군중 사이에 끼어 있어도 길은 있어요. 하단의 매표소 가기 버튼이면 바로 티켓을 받을 수 있죠.','꽃을 받다니, 오늘은 특별한 날이네요.'],
-'버드 백스터':['이거 정말 고마워요! 오늘 야근도 버틸 수 있겠어요.','사무실 열쇠보다 귀한 정보 하나: 매점에서 사면 바로 나와요. 하단 간식받기 버튼만 누르면 끝!','어… 꽃이요? 프랜에게 보여줘도 될까요?'],
-'프랜 큐벨릭':['고마워요. 깨진 거울로 봐도 기분 좋은 선물이에요.','엘리베이터처럼 위아래로 오가 보세요. 2층 발코니 카페 테이블에서 보는 로비도 근사해요.','장미… 이런 거 받아 본 지 오래됐어요.'],
-'이브 해링턴':['어머, 저를 기억해 주시다니. 감사해요.','무대 뒤엔 늘 비밀이 있죠. 아지트 벽의 월드컵 트로피를 누르면 영화 월드컵이 시작돼요.','꽃다발은 원래 스타의 몫인데… 영광이에요.'],
-'로레인 베인스':['어머, 고마워요! 이런 선물은 처음이에요.','과거로 돌아가지 않아도 옛 영화는 볼 수 있어요. 아지트 필름장에 필름이 스무 개나 있대요.','꽃이라니, 무도회 날처럼 설레요!'],
-'수잔 밴스':['고마워요. 잘 받을게요.','혹시 손에 든 게 너무 많으면 휴지통을 눌러 보세요. 어떤 걸 버릴지 고를 수 있어요.','장미가 참 예뻐요. 고마워요.'],
-'마리옹 슈타이너':['Merci! 정말 다정하시네요.','천사들은 도서관에 모여요. 이 극장의 천사들은 책장 뒤 아지트에 모이고요.','꽃이라니, 서커스 공연 날 같아요.'],
-'테스 맥길':['고마워요. 일 잘하는 사람은 작은 호의도 잊지 않죠.','정보 하나 드릴게요. 무지개 팝콘을 누군가에게 주면 그 사람이 잠깐 무지개빛이 돼요.','꽃 받는 건 언제나 좋네요. 고마워요.'],
-'테리 맬로이':['고마워. 나도 누군가에게 잘해 줄 수 있었는데.','부두에서 배운 거 하나 알려 주지. 검표원은 티켓 없인 꿈쩍도 안 해. 매표소부터 들러.','꽃이라… 비둘기들한테도 보여 줘야겠군.'],
-'샘 스페이드':['고맙소. 이런 건 증거품으로 보관하지.','단서를 원하나? 꽃 파는 소녀가 알프레도 얘길 하던데. 그 영감이 열쇠를 쥐고 있소.','장미라… 몰타의 매보다 값지군.'],
-'조 길리스':['고마워요. 할리우드에서 받은 것 중 제일 솔직한 선물이네요.','시나리오 작가의 감: 로비 책장의 간행물들, 그냥 장식이 아니에요.','꽃이라니, 선셋 대로의 저택보다 낫네요.'],
-'조지 베일리':['고마워요! 이런 작은 친절이 삶을 멋지게 만들죠.','크리스마스엔 기적이 일어나요. 로비 트리를 눌러 점등식을 보세요!','클래런스가 날개를 단 기분이에요!'],
-'릭 블레인':['고맙소. 오늘은 내가 신세를 지는군.','세상 많은 영화관 중에 여길 찾아왔군. 알프레도 영감의 퀴즈를 풀면 아름다운 우정이 시작될 거요.','꽃이라… 파리를 떠올리게 하는군.'],
-'일사 런드':['고마워요. 오래 기억할게요.','그때처럼 연주해 줘요… 아지트 레코드 플레이어라면 옛 노래를 들려줄 거예요.','장미… 파리의 봄이 생각나요.'],
-'앤 공주':['어머, 고마워요! 공식 일정보다 훨씬 즐거워요.','로마에선 몰래 빠져나가는 게 제일 재미있었어요. 여기선 책장 문이 그 비밀 통로예요.','꽃이라니, 스페인 계단에서 받은 것 같아요!'],
-'조 브래들리':['고마워요. 특종감이네요.','기자의 촉으로 말하자면, 지하 아지트 화면을 터치하면 영상이 멈춰요. 취재 끝.','꽃이라니, 공주님께 드려도 될까요?'],
-'찰스 포스터 케인':['아주 훌륭한 선물이군. 고맙네.','로즈버드는 아니지만 단서를 주지. 아지트의 영화 월드컵 트로피, 거기 회원들의 순위가 걸려 있다네.','장미꽃 봉오리… 아니, 로즈버드인가?'],
-'홀리 골라이틀리':['어머, 달링! 티파니만큼 근사한 선물이에요.','아침을 먹으며 알게 된 건데, 매점에서 산 간식은 친구들에게 선물할 수 있대요.','꽃이라니, 티파니 쇼윈도 같아요!'],
-'도로시 게일':['정말 고마워요! 토토도 좋아하겠어요.','노란 벽돌길 대신 계단이 있어요. 책장 문 너머로 내려가면 아지트예요.','꽃이라니, 양귀비 들판 같아요!'],
-'돈 록우드':['고마워요! 빗속에서도 노래하고 싶은 기분이에요.','쇼 비즈니스 팁 하나: 1관 좌석에 앉으면 상영이 시작되고, 카메라는 스크린에 고정돼요.','꽃이라니, 캐시에게 보여 줘야겠어요!'],
-'스칼렛 오하라':['어머, 고마워요. 내일은 내일의 해가 뜨겠죠.','타라만큼 귀한 정보예요. 꽃 파는 소녀가 바구니에 꽃다발을 들고 로비를 돌아다녀요.','장미라니, 무도회 드레스에 꽂아야겠어요.'],
-'마리아 폰 트랩':['고마워요! 내가 좋아하는 것 목록에 추가할게요.','도레미처럼 차근차근: 매표소, 검표원, 그리고 좌석. 그러면 영화가 시작돼요.','꽃이라니, 에델바이스만큼 사랑스러워요.'],
-'노마 데즈먼드':['고마워요. 난 여전히 크다고요, 작아진 건 영화예요.','클로즈업 준비됐나요? 아지트 필름장에서 고른 필름이 끝나면 다음 필름이 이어져요.','꽃이라니, 팬레터보다 반가워요.'],
-'해리 라임':['고맙군. 비엔나 하수도보다 따뜻한 선물이야.','지하로 가는 길은 늘 있지. 책장 문, 기억해 둬.','꽃이라… 대관람차 위에서 받았으면 좋았을걸.'],
-'벤자민 브래독':['어… 고마워요. 이럴 땐 뭐라고 해야 하죠?','미래를 한 단어로 말하자면… 플라스틱 말고, 아지트. 알프레도 할아버지께 물어봐요.','꽃이라니… 일레인에게 전해 줘도 될까요?'],
-'엘렌 리플리':['고마워요. 잠깐 쉬면서 먹을게요.','생존 수칙: 어두운 아지트에선 오른쪽 위 버튼으로 모든 소리를 끌 수 있어요.','꽃이라니, 노스트로모호엔 이런 게 없었죠.'],
-'마이클 코를레오네':['고맙소. 호의는 잊지 않겠소.','가족끼리만 아는 얘기요. 알프레도의 초대장 없이 책장 문은 열리지 않소.','꽃이라… 시칠리아의 봄 같군.'],
-'비토 콜레오네':['이 호의는 기억하겠네. 고맙네.','거절할 수 없는 제안을 하지. 영화 퀴즈를 맞히고 비밀 클럽의 일원이 되게.','장미라… 정원에 심어 두겠네.'],
-'트래비스 비클':['나한테 주는 거야? 그래, 고마워.','밤거리를 다니다 보면 보여. 창밖 눈 쌓인 거리 말이야. 한번 정문 밖을 내다봐.','꽃이라… 이런 건 처음 받아 보는군.'],
-'스카티 퍼거슨':['고마워요. 어지럼증이 좀 가라앉는 기분이에요.','높은 곳이 무섭지 않다면 2층 발코니로 올라가 보세요. 로비가 한눈에 보여요.','꽃다발… 매들린이 들던 것과 닮았네요.'],
-'마티 맥플라이':['와, 끝내주는데요! 고마워요!','시간을 거슬러 갈 필요 없어요. 아지트 필름장엔 옛날 필름이 스무 개나 있거든요!','꽃이요? 엄마… 아니, 제니퍼에게 줘야겠어요!'],
-'필리스 디트릭슨':['고마워요. 당신, 생각보다 친절하네요.','보험 계약처럼 확실한 정보예요. 무지개 팝콘은 1분 지나면 서서히 사라져요.','장미라니, 발찌보다 마음에 들어요.'],
-'레이 킨셀라':['고마워요. 만들면 그들이 올 거예요.','옥수수밭 대신 이 극장엔 아지트가 있어요. 만들어 두면, 영화 친구들이 찾아와요.','꽃이라니, 애니에게 보여 줘야겠어요.'],
-'제프리스':['고맙소. 창밖만 보던 내겐 큰 선물이오.','창문으로 지켜본 결과, 꽃 파는 소녀가 알프레도 얘기를 자주 하더군.','꽃이라… 리사가 좋아하겠소.'],
-'쥬느비에브':['고마워요. 우산 가게에 비가 그친 것 같아요.','노래처럼 말해 줄게요. 로비 음악은 클래식, 아지트에선 레코드를 틀 수 있어요.','꽃이라니, 쉘부르의 봄 같아요.'],
-'귀도':['Buongiorno! 고마워요, 정말 아름다운 인생이에요!','게임 하나 할까요? 영화 퀴즈를 맞히면 진짜 상품이 있어요. 초대장이요!','꽃이라니, 도라에게 바치는 꽃이네요!'],
-'파트리샤':['고마워요! 뉴욕 헤럴드 트리뷴!','샹젤리제를 걷듯 로비를 돌아보세요. 매표소 옆 테이블에 상영 안내 전단이 있어요.','꽃이라니, 파리 거리에서 받은 것 같아요.'],
-'앙투안 두아넬':['고마워요. 학교보다 영화관이 훨씬 좋아요.','몰래 알려 줄게요. 상영관 화면 앞에 앉으면 아무도 방해 못 해요.','꽃이라니… 엄마한테 드릴래요.'],
-'미스 모지':['어머, 매점 직원한테 선물이라니! 고마워요.','매점 팁: 무지개 팝콘은 친구에게 주면 더 재미있어요.','꽃이라니, 매대에 꽂아 둘게요.'],
-'미시즈 퍼재컬리':['고마워요. 매표소 일이 한결 즐거워지네요.','티켓은 저한테서 받아 가세요. 받고 나면 검표원 올드 톰이 펀칭해 줄 거예요.','꽃이라니, 매표소 창가에 두어야겠어요.'],
-'올드 톰':['허허, 고맙구먼. 검표 일 사십 년에 처음이야.','티켓만 있으면 언제든 들여보내 주지. 펀칭 소리가 들리면 입장 완료라네.','꽃이라니, 우리 할멈이 좋아하겠구먼.'],
-'알프레도 할아버지':['허허, 고맙구나. 자네 덕에 영사실 생각이 나는군.','영화 퀴즈를 풀어 보겠나? 맞히면 비밀 클럽 초대장을 주지.','장미라… 엘레나 생각이 나는구먼.']
+'앨런':['오, 이거 나 주는 거야? 고마워, 진짜로.','잠깐, 혹시 무지개 팝콘 먹어 봤어? 친구한테 주면 걔가 무지개색이 된대. 진짜야, 내 정신과 의사도 놀랄걸.','꽃이라니… 다음 데이트 장면에 쓰면 딱이겠다.','bow'],
+'셜록 영사기사':['흥미롭군요. 이 선물에서 당신의 친절이 추리됩니다.','추리 하나 더. 책장 앞에서 사람들이 사라지는 건 우연이 아닙니다. 비밀 영화클럽이 그 아래에 있지요.','장미의 향으로 미루어 보아, 방금 꽃 파는 소녀를 만나셨군요.','bow'],
+'마커스 교수':['허허, 참 사려 깊군요. 감사히 받겠습니다.','여담입니다만, 이 극장엔 강의 계획서에 없는 장소가 하나 있어요. 비밀 영화클럽이라고 들어 보셨나요?','꽃이라… 시티 라이트의 마지막 장면이 떠오르는군요.','bow'],
+'세실리아':['어머, 나한테요? 영화 속 주인공이 된 기분이에요.','있잖아요, 무지개 팝콘을 친구한테 건네 보세요. 스크린 속 장면처럼 반짝반짝 물들어요.','장미… 카이로의 보랏빛 장미처럼 아름다워요.','hop'],
+'토토':['와! 고마워요! 알프레도 아저씨한테 자랑해야지!','근데 무지개 팝콘 알아요? 그거 주면 사람이 무지개가 돼요! 알프레도 아저씨는 클럽 얘기만 하지만요.','엄마 갖다 드려야겠다! 고마워요!','hop'],
+'이자벨':['고마워요. 파리의 밤처럼 근사한 선물이네요.','파리에선 비밀 클럽이 유행이었죠. 여기에도 하나 있대요. 책장 너머, 영화를 사랑하는 사람들만 아는 곳.','꽃향기에 영화관 공기가 달라졌어요.','bow'],
+'매튜':['고맙습니다. 이런 다정함이 오래 기억에 남아요.','혹시 이 극장 아래에 영화클럽이 있다는 소문 들었어요? 조용히, 영화 이야기만 하는 곳이래요.','꽃이 참 단정하게 묶였네요. 고마워요.','bow'],
+'프레더 프레데르센':['감사합니다. 위와 아래의 세계를 잇는 건 결국 마음이지요.','위층이 있으면 아래층도 있는 법. 이 극장 지하엔 영화를 사랑하는 이들의 비밀 클럽이 있습니다.','꽃 한 송이가 기계의 도시보다 강하군요.','bow'],
+'조니 그레이':['고마워요. 오늘은 마음이 좀 놓이네요.','무지개 팝콘 먹어 봤어요? 쓸쓸한 날엔 그 색이 좀 위로가 돼요.','꽃이라니, 쑥스럽네요. 고마워요.','bow'],
+'존 심스':['고마워요… 군중 속에서도 이런 일이 생기는군요.','군중 속에서 들은 얘긴데요, 퀴즈 하나만 맞히면 비밀 영화클럽에 초대받는대요.','꽃을 받다니, 오늘은 특별한 날이네요.','bow'],
+'버드 백스터':['이거 정말 고마워요! 오늘 야근도 버틸 수 있겠어요.','사무실 소문 하나! 매점 무지개 팝콘을 누구한테 주면, 그 사람이 1분 동안 무지개빛이래요. 진짜예요!','어… 꽃이요? 프랜에게 보여줘도 될까요?','hop'],
+'프랜 큐벨릭':['고마워요. 깨진 거울로 봐도 기분 좋은 선물이에요.','깨진 거울 말고 무지개를 보고 싶다면, 매점에서 무지개 팝콘을 사 보세요. 친구에게 주면 더 예뻐요.','장미… 이런 거 받아 본 지 오래됐어요.','bow'],
+'이브 해링턴':['어머, 저를 기억해 주시다니. 감사해요.','무대 뒤에서 들었는데, 진짜 영화광들은 따로 모인대요. 비밀 영화클럽에서요.','꽃다발은 원래 스타의 몫인데… 영광이에요.','bow'],
+'로레인 베인스':['어머, 고마워요! 이런 선물은 처음이에요.','미래에서 온 친구가 그러는데, 무지개 팝콘을 주면 그 사람이 반짝반짝 무지개색이 된대요!','꽃이라니, 무도회 날처럼 설레요!','hop'],
+'수잔 밴스':['고마워요. 잘 받을게요.','작은 비밀이요. 무지개 팝콘은 먹는 사람보다 받는 사람이 더 신나요.','장미가 참 예뻐요. 고마워요.','bow'],
+'마리옹 슈타이너':['Merci! 정말 다정하시네요.','천사들이 모이는 곳이 도서관이라면, 영화광들이 모이는 곳은 비밀 영화클럽이에요.','꽃이라니, 서커스 공연 날 같아요.','hop'],
+'테스 맥길':['고마워요. 일 잘하는 사람은 작은 호의도 잊지 않죠.','일 잘하는 사람의 정보예요. 비밀 영화클럽 입장권은 돈으로 못 사요. 퀴즈로만 얻죠.','꽃 받는 건 언제나 좋네요. 고마워요.','bow'],
+'테리 맬로이':['고마워. 나도 누군가에게 잘해 줄 수 있었는데.','부두에서 들었는데, 이 극장엔 아는 사람만 들어가는 클럽이 있대. 거기선 다들 진짜 친구지.','꽃이라… 비둘기들한테도 보여 줘야겠군.','bow'],
+'샘 스페이드':['고맙소. 이런 건 증거품으로 보관하지.','단서 하나 주지. 무지개 팝콘을 받은 사람은 꼭 무지개빛으로 빛나. 사건 해결이오.','장미라… 몰타의 매보다 값지군.','bow'],
+'조 길리스':['고마워요. 할리우드에서 받은 것 중 제일 솔직한 선물이네요.','시나리오 작가의 직감이요. 이 극장엔 아직 안 쓴 장면이 있어요. 비밀 영화클럽이라는.','꽃이라니, 선셋 대로의 저택보다 낫네요.','bow'],
+'조지 베일리':['고마워요! 이런 작은 친절이 삶을 멋지게 만들죠.','그리고 이건 이웃끼리만 아는 얘긴데요, 이 극장엔 비밀 영화클럽이 있어요!','클래런스가 날개를 단 기분이에요!','hop'],
+'릭 블레인':['고맙소. 오늘은 내가 신세를 지는군.','세상 많은 영화관 중 여길 찾아왔다면, 비밀 영화클럽도 찾을 수 있을 거요.','꽃이라… 파리를 떠올리게 하는군.','bow'],
+'일사 런드':['고마워요. 오래 기억할게요.','그때 그 노래처럼… 비밀 영화클럽에선 옛 노래가 흘러나온대요.','장미… 파리의 봄이 생각나요.','bow'],
+'앤 공주':['어머, 고마워요! 공식 일정보다 훨씬 즐거워요.','공식 일정엔 없는 곳이 제일 재미있죠. 이 극장의 비밀 영화클럽처럼요!','꽃이라니, 스페인 계단에서 받은 것 같아요!','hop'],
+'조 브래들리':['고마워요. 특종감이네요.','특종 하나 줄게요. 무지개 팝콘을 친구에게 주면, 그 친구가 무지개빛으로 변해요. 사진 찍어 둬요.','꽃이라니, 공주님께 드려도 될까요?','bow'],
+'찰스 포스터 케인':['아주 훌륭한 선물이군. 고맙네.','내 신문 1면감이지. 이 극장 지하의 비밀 영화클럽 말일세.','장미꽃 봉오리… 아니, 로즈버드인가?','bow'],
+'홀리 골라이틀리':['어머, 달링! 티파니만큼 근사한 선물이에요.','달링, 무지개 팝콘 알아요? 티파니 쇼윈도보다 반짝여요. 친구한테 줘 봐요.','꽃이라니, 티파니 쇼윈도 같아요!','hop'],
+'도로시 게일':['정말 고마워요! 토토도 좋아하겠어요.','무지개 너머 어딘가처럼… 무지개 팝콘을 주면 친구가 무지개색이 된대요!','꽃이라니, 양귀비 들판 같아요!','hop'],
+'돈 록우드':['고마워요! 빗속에서도 노래하고 싶은 기분이에요.','빗속에서 노래하듯 알려 줄게요. 비밀 영화클럽엔 멋진 레코드 플레이어가 있어요!','꽃이라니, 캐시에게 보여 줘야겠어요!','hop'],
+'스칼렛 오하라':['어머, 고마워요. 내일은 내일의 해가 뜨겠죠.','내일 생각해도 되지만, 무지개 팝콘은 오늘 꼭 맛보세요. 친구에게 주면 더 근사하고요.','장미라니, 무도회 드레스에 꽂아야겠어요.','bow'],
+'마리아 폰 트랩':['고마워요! 내가 좋아하는 것 목록에 추가할게요.','제가 좋아하는 것 하나 더! 무지개 팝콘이요. 친구에게 주면 무지개빛이 된답니다.','꽃이라니, 에델바이스만큼 사랑스러워요.','hop'],
+'노마 데즈먼드':['고마워요. 난 여전히 크다고요, 작아진 건 영화예요.','진짜 스타들은 사람들 눈에 안 띄는 곳에 모여요. 비밀 영화클럽처럼.','꽃이라니, 팬레터보다 반가워요.','bow'],
+'해리 라임':['고맙군. 비엔나 하수도보다 따뜻한 선물이야.','지하로 통하는 길은 늘 있지. 이 극장엔 영화광들의 비밀 클럽이 있어.','꽃이라… 대관람차 위에서 받았으면 좋았을걸.','bow'],
+'벤자민 브래독':['어… 고마워요. 이럴 땐 뭐라고 해야 하죠?','미래에 대한 조언 하나… 무지개 팝콘이요. 그거 친구한테 주면 진짜 놀라요.','꽃이라니… 일레인에게 전해 줘도 될까요?','bow'],
+'엘렌 리플리':['고마워요. 잠깐 쉬면서 먹을게요.','정찰 보고. 이 극장 지하에 사람들이 모이는 공간이 있어요. 비밀 영화클럽이래요.','꽃이라니, 노스트로모호엔 이런 게 없었죠.','bow'],
+'마이클 코를레오네':['고맙소. 호의는 잊지 않겠소.','가족끼리만 아는 얘기요. 이 극장엔 아무나 못 들어가는 영화클럽이 있소.','꽃이라… 시칠리아의 봄 같군.','bow'],
+'비토 콜레오네':['이 호의는 기억하겠네. 고맙네.','친구라면 알려 주지. 이 극장엔 영화를 아는 사람들의 비밀 클럽이 있다네.','장미라… 정원에 심어 두겠네.','bow'],
+'트래비스 비클':['나한테 주는 거야? 그래, 고마워.','너, 무지개 팝콘 알아? 그거 주면 사람이 무지개색이 돼. 밤거리보다 훨씬 밝지.','꽃이라… 이런 건 처음 받아 보는군.','bow'],
+'스카티 퍼거슨':['고마워요. 어지럼증이 좀 가라앉는 기분이에요.','어지럽지 않다면 아래로 내려가 보세요. 이 극장엔 비밀 영화클럽이 있다더군요.','꽃다발… 매들린이 들던 것과 닮았네요.','bow'],
+'마티 맥플라이':['와, 끝내주는데요! 고마워요!','그리고 무지개 팝콘! 친구한테 주면 걔가 무지개색이 돼요. 1985년에도 없던 거예요!','꽃이요? 엄마… 아니, 제니퍼에게 줘야겠어요!','hop'],
+'필리스 디트릭슨':['고마워요. 당신, 생각보다 친절하네요.','확실한 정보예요. 무지개 팝콘을 받은 사람은 1분 동안 무지개빛이 돼요.','장미라니, 발찌보다 마음에 들어요.','bow'],
+'레이 킨셀라':['고마워요. 만들면 그들이 올 거예요.','만들면 그들이 올 거예요. 이 극장의 비밀 영화클럽처럼요.','꽃이라니, 애니에게 보여 줘야겠어요.','bow'],
+'제프리스':['고맙소. 창밖만 보던 내겐 큰 선물이오.','창밖으로 지켜보니 책장 앞에서 사람들이 사라지더군. 비밀 영화클럽이 있는 게 틀림없소.','꽃이라… 리사가 좋아하겠소.','bow'],
+'쥬느비에브':['고마워요. 우산 가게에 비가 그친 것 같아요.','노래처럼 말해 줄게요. 비밀 영화클럽엔 레코드와 필름이 가득하대요.','꽃이라니, 쉘부르의 봄 같아요.','hop'],
+'귀도':['Buongiorno! 고마워요, 정말 아름다운 인생이에요!','Principessa! 비밀 하나 알려 줄게요. 무지개 팝콘을 주면 그 사람이 무지개가 돼요! 정말이에요!','꽃이라니, 도라에게 바치는 꽃이네요!','hop'],
+'파트리샤':['고마워요! 뉴욕 헤럴드 트리뷴!','뉴욕 헤럴드 트리뷴 특보! 무지개 팝콘을 친구에게 주면 친구가 무지개빛이 돼요!','꽃이라니, 파리 거리에서 받은 것 같아요.','hop'],
+'앙투안 두아넬':['고마워요. 학교보다 영화관이 훨씬 좋아요.','몰래 알려 줄게요. 어른들은 책장 너머 영화클럽에 모인대요.','꽃이라니… 엄마한테 드릴래요.','bow'],
+'미스 모지':['어머, 매점 직원한테 선물이라니! 고마워요.','매점 직원 비밀 하나! 무지개 팝콘은 친구한테 주면 친구가 무지개빛이 돼요.','꽃이라니, 매대에 꽂아 둘게요.','hop'],
+'미시즈 퍼재컬리':['고마워요. 매표소 일이 한결 즐거워지네요.','매표소에선 안 파는 표가 있어요. 비밀 영화클럽 초대장이요.','꽃이라니, 매표소 창가에 두어야겠어요.','bow'],
+'올드 톰':['허허, 고맙구먼. 검표 일 사십 년에 처음이야.','검표원 사십 년에 아는 비밀이 있지. 이 극장 지하엔 영화클럽이 있다네.','꽃이라니, 우리 할멈이 좋아하겠구먼.','bow'],
+'알프레도 할아버지':['허허, 고맙구나. 자네 덕에 영사실 생각이 나는군.','자네라면 비밀 영화클럽에 어울리겠구먼. 퀴즈를 맞히면 초대장을 주지.','장미라… 엘레나 생각이 나는구먼.','bow']
 };
 function giftCharacterLines(name,flower){const q=QA18_GIFT[name];if(q)return flower?[q[2],q[1]]:[q[0],q[1]];const warm=['조지 베일리','버드 백스터','프랜 큐벨릭','조 브래들리','일사 런드','로레인 베인스','마리아 폰 트랩','수잔 밴스'];const noir=['샘 스페이드','해리 라임','조 길리스','테리 맬로이','트래비스 비클','스카티 퍼거슨','존 심스'];const elegant=['홀리 골라이틀리','노마 데즈먼드','스칼렛 오하라','이브 해링턴','필리스 디트릭슨','마리옹 슈타이너'];
  const special={
@@ -2853,10 +2863,10 @@ function giveItem(index){const target=GIFT_TARGET,it=HELD[index];if(!me||!target
  delete it._giving;HELD.splice(index,1);if(!HELD.length){EAT=null;SLOW=null}refreshMe();rainbowTick(performance.now()/1000);
  const name=IT[it.k]?IT[it.k][1]:it.k;
  if(it.k==='poprb'){target.userData.qaRainbowUntil=performance.now()/1000+60;QA_RB_TARGETS.add(target)}if(target.userData.isPlayer){const items=(target.userData.carryItems||[]).concat([it]);setCarry(target,items);toast(name+objectParticle(name)+' 건넸어요');return}
- const u=target.userData,previous=u.carryItems||[];u.path=[];u.spot=null;u.after=null;u.roamActive=false;u.giftEating={elapsed:0,item:it,previous,yaw:target.rotation.y,lines:QA18_GIFT[u.displayName]||!isFlower(it.k)?giftCharacterLines(u.displayName,isFlower(it.k)).slice():['장미라니, 정말 아름답네요. 고마워요.','오늘은 이 꽃을 오래 기억할 것 같아요.']};u.storyUntil=performance.now()/1000+12;target.rotation.y=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);setCarry(target,[it]);GIFT_EATERS.add(target);sayB(target,u.giftEating.lines[0],4);toast(name+objectParticle(name)+' 건넸어요');GIFT_TARGET=null;hudUpd();
+ const u=target.userData,previous=u.carryItems||[];u.path=[];u.spot=null;u.after=null;u.roamActive=false;u.giftEating={elapsed:0,item:it,previous,yaw:target.rotation.y,lines:QA18_GIFT[u.displayName]||!isFlower(it.k)?giftCharacterLines(u.displayName,isFlower(it.k)).slice():['장미라니, 정말 아름답네요. 고마워요.','오늘은 이 꽃을 오래 기억할 것 같아요.']};u.storyUntil=performance.now()/1000+12;target.rotation.y=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);setCarry(target,[it]);GIFT_EATERS.add(target);sayB(target,u.giftEating.lines[0],4);{const gq=(QA18_GIFT[u.displayName]||[])[3]||'bow';u.giftEating.gesture=gq;if(gq==='hop')u.hop=.7}toast(name+objectParticle(name)+' 건넸어요');GIFT_TARGET=null;hudUpd();
 }
 function giftTick(dt,t){GIFT_EATERS.forEach(ch=>{const u=ch.userData,e=u.giftEating;if(!e){GIFT_EATERS.delete(ch);return}e.elapsed+=dt;const desired=Math.atan2(me.position.x-ch.position.x,me.position.z-ch.position.z),diff=Math.atan2(Math.sin(desired-ch.rotation.y),Math.cos(desired-ch.rotation.y));ch.rotation.y+=diff*Math.min(1,dt*6);const cr=u.carry,m=cr&&cr.ms[0],arm=u.arms&&u.arms[1];
- if(m&&arm){const ph=Math.min(1,e.elapsed/.45),wave=Math.sin(e.elapsed*11)*.015;const flower=isFlower(e.item.k);const aim=new THREE.Vector3(.35*(1-ph)+.08*ph,.87*(1-ph)+(flower?(.95+wave):(1.20+wave))*ph,.41*(1-ph)+.34*ph);arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),aim.sub(arm.position).normalize());ch.updateMatrixWorld(true);const hand=arm.localToWorld(new THREE.Vector3(0,-.45,0));ch.children[0].worldToLocal(hand);m.scale.setScalar(flower?1.2:1.2*Math.max(.02,1-Math.max(0,e.elapsed-.8)/1.5));m.position.copy(hand).sub(new THREE.Vector3(0,.07*m.scale.x,0));if(u.head){u.head.rotation.x=.035*Math.sin(e.elapsed*11);u.head.rotation.y=.12*Math.sin(Math.min(1,e.elapsed/.5)*Math.PI/2)}}
+ if(m&&arm){const ph=Math.min(1,e.elapsed/.45),wave=Math.sin(e.elapsed*11)*.015;const flower=isFlower(e.item.k);const aim=new THREE.Vector3(.35*(1-ph)+.08*ph,.87*(1-ph)+(flower?(.95+wave):(1.20+wave))*ph,.41*(1-ph)+.34*ph);arm.quaternion.setFromUnitVectors(new THREE.Vector3(0,-1,0),aim.sub(arm.position).normalize());ch.updateMatrixWorld(true);const hand=arm.localToWorld(new THREE.Vector3(0,-.45,0));ch.children[0].worldToLocal(hand);m.scale.setScalar(flower?1.2:1.2*Math.max(.02,1-Math.max(0,e.elapsed-.8)/1.5));m.position.copy(hand).sub(new THREE.Vector3(0,.07*m.scale.x,0));if(u.head){u.head.rotation.x=.035*Math.sin(e.elapsed*11)+(e.gesture==='bow'?.32*Math.max(0,Math.sin(Math.min(1,e.elapsed/1.1)*Math.PI)):0);u.head.rotation.y=.12*Math.sin(Math.min(1,e.elapsed/.5)*Math.PI/2)}}
  if(e.elapsed>=3.8){setCarry(ch,e.previous);if(u.arms)u.arms.forEach(a=>a.rotation.set(0,0,0));if(u.seat&&u.arms)u.arms.forEach(a=>a.rotation.x=-.42);if(u.head){u.head.rotation.x=0;u.head.rotation.y=0}u.giftEating=null;u.giftPauseUntil=performance.now()/1000+2;GIFT_EATERS.delete(ch);sayB(ch,e.lines[1],8)}})}
 function opanel(v){$('pn').dataset.k=v;const pb=document.querySelector('#pn .pbox'),st=pb&&!$('pn').hidden?pb.scrollTop:0;
  if(ORD&&ORD.st!=='compose'){if(ORD.v!==v){toast('다른 곳에서 주문한 메뉴가 진행 중이에요');return}
@@ -2943,7 +2953,7 @@ const QA_RB_TARGETS=new Set();
       if(!active)QA_RB_TARGETS.delete(actor);
     }
   }
-  function orderTick(dt,t){CinemaAudio.prep(ORD&&ORD.st==='prep'?ORD:null);eatTick(dt,t);carryPose(t);giftTick(dt,t);rainbowTick(t);qaRainbowGiftTick(t);if(ORD&&ORD.st==='prep'){const sf=VSTAFF[ORD.v];if(sf){sf.rotation.y=sf.userData.r0+Math.PI+Math.sin(t*2)*.4;sf.children[0].position.y=Math.abs(Math.sin(t*7))*.06}
+  function orderTick(dt,t){CinemaAudio.prep(ORD&&ORD.st==='prep'?ORD:null);eatTick(dt,t);qa19TapTick(dt);carryPose(t);giftTick(dt,t);rainbowTick(t);qaRainbowGiftTick(t);if(ORD&&ORD.st==='prep'){const sf=VSTAFF[ORD.v];if(sf){sf.rotation.y=sf.userData.r0+Math.PI+Math.sin(t*2)*.4;sf.children[0].position.y=Math.abs(Math.sin(t*7))*.06}
   if(nowS()>=ORD.readyAt){ORD.st='ready';if(sf&&sf.userData.carry)setCarry(sf,[]);if(ORD.notify){ORD.notify=0;const it_=ORD.items,nm=[...new Set(it_)].map(k=>IT[k][1]+(it_.filter(x=>x===k).length>1?' '+it_.filter(x=>x===k).length+'개':'')).join(', '),lc=nm.trim().slice(-1),cc=lc.charCodeAt(0),jo=/\d/.test(lc)?('2459'.includes(lc)?'가':'이'):(cc>=0xAC00&&cc<=0xD7A3?((cc-0xAC00)%28?'이':'가'):'이(가)');setTimeout(()=>notice(String(VEN[ORD.v]?VEN[ORD.v].name:'매점').replace(EMO,'').trim(),nm+jo+' 완료되었어요.<br>받아가세요.',[['받기',()=>A.oget()]]),500)}if(sf){sf.rotation.y=me?Math.atan2(me.position.x-sf.position.x,me.position.z-sf.position.z):sf.userData.r0;sf.children[0].position.y=0;say(sf,'주문하신 간식이 나왔습니다 🛎')}counterShow(ORD.items);hudUpd()}}
  if(SLOW&&me&&me.userData.carry){const f=Math.min(1,(nowS()-SLOW.t0)/(SLOW.t1-SLOW.t0));HELD.forEach((it,i)=>{const m=me.userData.carry.ms[i];if(it.slow&&m)m.scale.setScalar(m.userData.b*(1-.85*f))});
   if((SLOW.mt-=dt)<0){SLOW.mt=9+Math.random()*6;me.userData.hop=.35}
@@ -3136,7 +3146,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    if((dx||dz)&&ACTOR_SESSION)dismissActor();qaManualMove(me,dx,dz,dt);}
   const p=me.position,s=u.seat,zn=curZone(me);if(window.__lzn&&window.__lzn!==zn&&!s)alignSpaceCamera(me);window.__lzn=zn;
   if(zn[0]==='H'){
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+19.5),1.5):Math.min(Math.max(s.z+2,SCZ+15.5),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+19.5*SCW/26),1.5):Math.min(Math.max(s.z+2,SCZ+15.5*SCW/26),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3144,7 +3154,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    if(Math.abs(yawV)>.01){camYaw+=yawV*dt;yawV*=Math.pow(.006,dt)}else yawV=0;
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
-   const D=inH?(s?10.5:clampN(camDist*1.8,6.3,18))/* QA15: 착석 전 자유 줌 */:(s&&s.kind!=='cine'?3.7:camDist),PP=inH?Math.max(.06,camPitch-.06):(s&&s.kind!=='cine'?.4:camPitch);
+   const D=inH?(s?10.5:clampN(camDist*.85,3.2,11))/* QA19: 레퍼런스처럼 아바타 바로 뒤 낮은 시점 */:(s&&s.kind!=='cine'?3.7:camDist),PP=inH?Math.max(.06,camPitch-.06):(s&&s.kind!=='cine'?.4:camPitch);
    {let d=camYaw-camYawS;d=Math.atan2(Math.sin(d),Math.cos(d));let st_=d*Math.min(1,dt*4.5);if(!camDrag&&Math.abs(yawV)<.01)st_=clampN(st_,-.7*dt,.7*dt);camYawS=snapCam?camYaw:camYawS+st_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
    const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+(s&&s.kind!=='cine'?.62:1.0);let tt=1;
@@ -3155,11 +3165,11 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
    tt=Math.max(tt,.03);
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
-   const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:-.1)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
+   const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:.0)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);if(hz&&(!s||CWIDE)){/* User-controlled orbit is also available while walking in the auditorium. */}/* 상영관: 뒤쪽 통로에서 높게 → 좌석 전체와 스크린이 한눈에 */lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
-   if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?Math.max(56,2*Math.atan(Math.tan(.58)/C.aspect)*180/Math.PI):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
+   if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }else{
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+19.5),1.5):Math.min(Math.max(s.z+2,SCZ+15.5),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+19.5*SCW/26),1.5):Math.min(Math.max(s.z+2,SCZ+15.5*SCW/26),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3178,9 +3188,9 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
    tt=Math.max(tt,.03);
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
-   const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:-.1)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
+   const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:.0)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
-   if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?Math.max(56,2*Math.atan(Math.tan(.58)/C.aspect)*180/Math.PI):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
+   if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }
   const a=snapCam?1:1-Math.pow(.02,dt),al=a;snapCam=false;if(CUSE){C.position.copy(cp);look.copy(cp).add(CDIR);CUSE=false}else{C.position.lerp(cp,a);look.lerp(lk,al)}C.up.set(0,1,0);C.lookAt(look);if(seatCamera&&zn[0]!=='H'){C.position.copy(seatCamera.position);C.quaternion.copy(seatCamera.quaternion);if(C.fov!==seatCamera.fov){C.fov=seatCamera.fov;C.updateProjectionMatrix()}}if(window.FREE){C.position.set(FREE.p.x,FREE.p.y,FREE.p.z);C.lookAt(FREE.l.x,FREE.l.y,FREE.l.z)}if(LAYED)layCam();
   if(!(ac=(ac||0)-dt)||ac<0){ac=.5;hudUpd();$('hint').textContent=s?'':hintFor(zn);if(s&&s.kind==='cine'&&curSp){syncCine();if(nowS()>=curS(s.hall).end&&!curSc){}}
@@ -3661,7 +3671,7 @@ function relocateClubPieces(mark,from,to,angle){
   const pl=art(512,96,(c,w,h)=>{c.fillStyle='#1d2f4a';c.fillRect(0,0,w,h);const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.5,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,w,h);c.strokeStyle='#efe6cf';c.lineWidth=4;c.strokeRect(8,8,w-16,h-16);c.lineWidth=1.5;c.strokeRect(15,15,w-30,h-30);c.fillStyle='#efe6cf';c.textAlign='center';c.textBaseline='middle';c.font='italic 16px serif';c.fillText('— Les Notes du Ciné-Club —',w/2,30);c.font='bold 32px "Noto Serif KR",serif';c.fillText('오늘의 한줄평',w/2,64);[[28,48],[w-28,48]].forEach(([x,y])=>{c.beginPath();c.arc(x,y,4,0,7);c.fill()})});
   /* 액자등 */{const ar=new THREE.Mesh(new THREE.CylinderGeometry(.012,.012,.32,8),BRS);ar.rotation.z=Math.PI/2;ar.position.set(X+x-.18,3.3,Z-1.6);S.add(ar);const sh=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,1.3,14,1,false,0,Math.PI),BRS);sh.rotation.x=Math.PI/2;sh.rotation.y=Math.PI/2;sh.position.set(X+x-.34,3.28,Z-1.6);S.add(sh);halo(X+x-.36,3.2,Z-1.6,0xffd9a0,1.2,.35);const l=new THREE.PointLight(0xffe2b8,.6,3.2,2);l.position.set(X+x-.5,3.0,Z-1.6);l.userData.i=.6;S.add(l)}
   const hb=new THREE.Mesh(new THREE.BoxGeometry(.6,1.9,2.9),new THREE.MeshBasicMaterial({visible:false}));hb.position.set(X+x-.3,1.95,Z-1.6);S.add(hb);hb.userData.act={fn:()=>openPanel('club'),pt:{x:X+CBW-1.6,z:Z-1.6,zone:'B'}};INTER.push(hb)}
- /* 바 카트 */{const g=new THREE.Group();g.position.set(X+CBW-.7,0,Z+1.6);g.rotation.y=-Math.PI/2;S.add(g);B(1.1,.04,.5,0xc9a24a,0,.85,0,g);B(1.1,.04,.5,0xc9a24a,0,.4,0,g);[[-.5,-.2],[.5,-.2],[-.5,.2],[.5,.2]].forEach(([a,b])=>B(.03,.85,.03,0xc9a24a,a,.43,b,g));for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.04,.045,.28,10),new THREE.MeshPhongMaterial({color:[0x3a1a14,0x2f5a3a,0x7a1f2b,0xc9a24a][k],transparent:true,opacity:.85,shininess:90}));b.position.set(-.35+k*.22,1.01,0);g.add(b)}}
+ /* 바 카트 */{const g=new THREE.Group();g.position.set(X+CBW-.7,0,Z+1.6);g.rotation.y=-Math.PI/2;S.add(g);B(1.1,.04,.5,0xc9a24a,0,.85,0,g);B(1.1,.04,.5,0xc9a24a,0,.4,0,g);[[-.5,-.2],[.5,-.2],[-.5,.2],[.5,.2]].forEach(([a,b])=>B(.03,.85,.03,0xc9a24a,a,.43,b,g));for(let k=0;k<4;k++){const b=new THREE.Mesh(new THREE.CylinderGeometry(.04,.045,.28,10),new THREE.MeshPhongMaterial({color:[0x3a1a14,0x2f5a3a,0x7a1f2b,0xc9a24a][k],transparent:true,opacity:.85,shininess:90}));b.position.set(-.35+k*.22,.56,0);g.add(b)/* QA19: 병은 아래 칸, 윗판엔 월드컵 트로피 */}}
  /* 조명: 에디슨 전구 줄 + 따뜻한 점광원 */for(let k=0;k<12;k++){const b=new THREE.Mesh(new THREE.SphereGeometry(.06,8,6),new THREE.MeshBasicMaterial({color:0xffebd2}));b.position.set(X-5.5+k,CBH-.5-Math.sin(k/11*Math.PI)*.35,Z+1.6);S.add(b)}
  [[-4,-1],[4,-1],[0,-4],[0,3]].forEach(([x,z])=>{const l=new THREE.PointLight(0xffeedc,1.2,15,1.4);l.position.set(X+x,CBH-.6,Z+z);l.userData.i=1.2;S.add(l)});{const l=new THREE.PointLight(0xfff2e3,.6,8,2);l.position.set(X,2.4,Z-CBD+1.2);l.userData.i=.6;S.add(l)}
  [[-CBW+.6,-CBD+.6],[CBW-.6,-CBD+.6]].forEach(([x,z])=>plant(X+x,0,Z+z,'palm',0));trashCan(X-CBW+.7,0,Z+CBD-.7,'B',X-CBW+1.5,Z+CBD-1.4);
@@ -3781,10 +3791,10 @@ function relocateClubPieces(mark,from,to,angle){
   /* 상영 투표함은 요청에 따라 배치하지 않음. 영화 월드컵은 유지 */
  }
  /* QA16·17: 영화 월드컵 = 간판 대신 장식 오브제(황금 트로피 + 빨간 리본), 누르면 실행 */
- {window.__drawWcBoard=()=>{};const px=X+CBW-.62,pz=Z+3.05,g=new THREE.Group();g.name='club-worldcup-trophy';g.position.set(px,0,pz);g.rotation.y=-Math.PI/2;S.add(g);
+ {window.__drawWcBoard=()=>{};const px=X+CBW-.7,pz=Z+1.6,TK_=.72,g=new THREE.Group();g.name='club-worldcup-trophy';/* QA19: 좌측 바 카트(탁자) 위에 올림 */g.scale.setScalar(TK_);g.position.set(px,.87-.96*TK_,pz);g.rotation.y=-Math.PI/2;S.add(g);
   const GOLD=new THREE.MeshPhongMaterial({color:0xd4a840,shininess:120,specular:0xfff0b0,emissive:0x2a1a04}),WOODP=new THREE.MeshPhongMaterial({color:0x3a2216,shininess:30}),RED=new THREE.MeshPhongMaterial({color:0xb3202e,shininess:40,side:THREE.DoubleSide});
   const lathe=(pts,m,y=0)=>{const o=new THREE.Mesh(new THREE.LatheGeometry(pts.map(([r,h])=>new THREE.Vector2(r,h)),28),m);o.position.y=y;g.add(o);return o};
-  lathe([[0,0],[.34,0],[.36,.04],[.3,.08],[.28,.86],[.33,.9],[.33,.96],[0,.96]],WOODP);
+  /* QA19: 나무 받침대 제거 */
   /* QA17: 첨부 이미지형 황금 월드컵 트로피(녹색 말라카이트 띠 받침 · 나선형 몸체 · 지구본) — 하단 글씨 삭제, 리본만 유지 */
   {const MAL=new THREE.MeshPhongMaterial({color:0x1f5a3c,shininess:90,specular:0x4a8a6a});
    lathe([[0,.96],[.2,.96],[.205,.99],[.19,1.0]],GOLD);lathe([[0,1.0],[.19,1.0],[.188,1.07],[0,1.07]],MAL);lathe([[0,1.07],[.19,1.07],[.193,1.09],[.183,1.1]],GOLD);lathe([[0,1.1],[.182,1.1],[.178,1.16],[0,1.16]],MAL);
@@ -3800,8 +3810,8 @@ function relocateClubPieces(mark,from,to,angle){
    [-1,1].forEach(sd=>{const loop=new THREE.Mesh(new THREE.TorusGeometry(.05,.016,6,16),RED);loop.scale.set(1.3,.75,.6);loop.position.set(sd*.065,1.47,.1);loop.rotation.z=sd*.35;g.add(loop);
     const tail=new THREE.Mesh(new THREE.PlaneGeometry(.045,.24),RED);tail.position.set(sd*.04,1.34,.1);tail.rotation.z=sd*.22;g.add(tail)});
    const knot=new THREE.Mesh(new THREE.SphereGeometry(.026,10,8),RED);knot.position.set(0,1.47,.1);g.add(knot)}
-  halo(px-.25,2.0,pz,0xffd9a0,1.1,.28);{const l=new THREE.PointLight(0xffdcb0,.4,2.6,2);l.position.set(px-.7,2.3,pz);l.userData.i=.4;S.add(l)}
-  hitbox(px,1.05,pz,.8,2.1,.8,{now:1,fn:()=>openPanel('wcup'),pt:{x:X+CBW-1.6,z:pz,zone:'B'}})}
+  halo(px-.25,1.55,pz,0xffd9a0,.9,.26);{const l=new THREE.PointLight(0xffdcb0,.4,2.6,2);l.position.set(px-.7,2.0,pz);l.userData.i=.4;S.add(l)}
+  hitbox(px,.95,pz,.7,1.9,1.2,{now:1,fn:()=>openPanel('wcup'),pt:{x:X+CBW-1.7,z:pz,zone:'B'}})}
  /* ===== 램프 3종(11/9): 티파니 스테인드글라스 · 그린 뱅커 · 브론즈 플로어 ===== */
  {const BR=new THREE.MeshPhongMaterial({color:0x5a4220,shininess:50,specular:0x6a5a30}),GD=new THREE.MeshPhongMaterial({color:0xd4aa48,shininess:110,specular:0xffe6a0});
   const lt=(x,y,z,col,i,d)=>{const l=new THREE.PointLight(col,i,d,2);l.position.set(x,y,z);l.userData.i=i;S.add(l);halo(x,y,z,col,.9,.45)};

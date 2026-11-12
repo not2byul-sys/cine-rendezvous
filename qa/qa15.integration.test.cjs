@@ -28,13 +28,13 @@ test('QA15 chat has no X button and the send icon is enabled only for non-blank 
 });
 test('QA15 local NPCs and staff get a gift option whenever something is held, flowers included', () => {
   assert(source.includes("else if(HELD.length){/* QA15"));
-  assert(source.includes('data-a=\\"actorUse\\"') || source.includes("data-a=\"actorUse\""));
+  assert(source.includes("bt('actorUse'"));
   assert(!source.includes('실제 유저에게 선물 전달은 실시간 서버 기능 연결 후 지원돼요'));
   assert(source.includes("window.qa15GiftToPeer(target.userData.peerId"));
 });
 test('QA15 cinema: wood walls, brighter sconces dimmed while playing, free camera before seating and locked after', () => {
   assert(source.includes('QA16: 상영관 첨부2·3'));
   assert(source.includes('HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=(.06+.94*HLF)})'));
-  assert(source.includes('clampN(camDist*1.8,6.3,18))/* QA15: 착석 전 자유 줌 */'));
+  assert(source.includes('clampN(camDist*.85,3.2,11))/* QA19'));
   assert(source.includes("if(me.userData.seat&&me.userData.seat.kind==='cine'&&!CWIDE){/* QA15: 착석 후 스크린 중심 고정"));
 });

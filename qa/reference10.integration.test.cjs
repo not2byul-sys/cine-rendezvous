@@ -48,22 +48,22 @@ function sceneContext() {
       TextureLoader: class { load(url) { images.push(url); return texture(); } }, DoubleSide: 2, sRGBEncoding: 3001 } };
   vm.createContext(ctx); return { ctx, boxes, planes, images, labels };
 }
-test('the complete ticket booth initializes with scoped reference geometry and real embedded poster images', () => {
+test('the original ticket booth initializes after the trim rollback and retains the poster images', () => {
   const x = sceneContext();
   vm.runInContext(part('const _lB=layBeg();', '/* Staff sits behind'), x.ctx);
-  assert(x.labels.includes('BILLETS')); assert.equal(x.images.length, 3);
+  assert(!x.labels.includes('BILLETS')); assert.equal(x.images.length, 3);
   for (const url of x.images) { assert(url.startsWith('data:image/jpeg;base64,')); const bytes = Buffer.from(url.split(',')[1], 'base64'); assert(bytes.length > 10000); assert.equal(bytes.readUInt16BE(0), 0xffd8); assert.equal(bytes.readUInt16BE(bytes.length - 2), 0xffd9); }
   for (const [, , , , y, z] of x.planes.slice(-3)) {
     assert.equal(y, 3.1); assert(z - .34 > 6.05, 'keep clear of the tall bookshelf');
     assert(z + .34 < 9.65, 'keep clear of the booth and the clock above it');
   }
 });
-test('the restored ticket facade leaves the counter opening clear and keeps the reachable interaction', () => {
+test('the original curved booth keeps its ticket opening without the added front frame', () => {
   const x = sceneContext(); vm.runInContext(part('const _lB=layBeg();', '/* Staff sits behind'), x.ctx);
   const faceX = -7.5 + 1.55 + .10;
   assert(!x.boxes.some(([w, h, d, , px]) => px === faceX && h >= 1.9 && d > 3));
   const edgeFrames = x.boxes.filter(([w, h, d, , px]) => px === faceX && h === 2 && d === .13);
-  assert.equal(edgeFrames.length, 2); assert(source.includes("pt:{x:cx+r+.7,z:cz,zone:'L0'}"));
+  assert.equal(edgeFrames.length, 0); assert(source.includes("pt:{x:cx+r+.7,z:cz,zone:'L0'}"));
 });
 test('the central chandelier builds all eight opal lamps without referencing later declarations', () => {
   const x = sceneContext(); vm.runInContext(part('/* QA10_REFERENCE_1:', '/* 유백색 유리 볼 펜던트 */'), x.ctx);
@@ -76,5 +76,5 @@ test('concession signage contains only current snacks while the separate club ca
   assert(shop.includes("c.fillText('BUVETTE'"));
   for (const obsolete of ["['COLA'", "['SODA'", "['COFFEE'", "c.fillText('COFFEE'", 'Popcorn+Soda', '커피 머신: 드립']) assert(!shop.includes(obsolete), obsolete);
   assert(source.includes("cafe:['americano','latte','tea','cake','croi']"));
-  assert(source.includes("FLOORT=diamondT(31,'#f2f0e7','#a4af96'"));
+  assert(source.includes("FLOORT=diamondT(31,'#b0a79c','#7c7069'"));
 });

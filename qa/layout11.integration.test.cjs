@@ -107,7 +107,7 @@ test('long NPC speech keeps every character across wrapped lines with no generat
 });
 test('winter snow ground stays outside the lobby boundary', () => {
   const ctx = sceneContext(); vm.runInContext(winter.slice(winter.indexOf('function qa11WinterStreet()'), winter.indexOf('window.NYOVR=')), ctx);
-  ctx.qa11WinterStreet(); assert.equal(ctx.S.children.length, 32);
+  ctx.qa11WinterStreet(); assert.equal(ctx.S.children.length, 35);
   assert(ctx.S.children.every(o => o.position.z > ctx.LD + .3));
 });
 test('carol playback schedules a bounded original phrase and resumes without a background backlog', () => {

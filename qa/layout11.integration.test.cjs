@@ -67,6 +67,18 @@ test('an interrupted move replans around a new obstacle and retries remain bound
   assert(ctx.qa11Retry(c)); verifyPath(c.position, c.userData.path, walls);
   c.userData.navRequest.retries = 3; assert.equal(ctx.qa11Retry(c), false);
 });
+test('standing up exits the chair sideways instead of stepping into its table', () => {
+  const walls = [[-.5,.5,-.4,.4,0,[-.3,.3,-.2,.2]],[-.6,.6,.45,1.6,0]], ctx=navContext(walls), c=avatar(0, .9);
+  assert(ctx.qa11SeatExit(c,{x:0,z:0,rot:0,zone:'L0'}));
+  assert(Math.abs(c.position.x)>=.8); assert(!ctx.blocked(c.position.x,c.position.z,0));
+  verifyPath(c.position,ctx.qa11Route(c,3,3,'L0'),walls);
+  assert(!part('function standUp(', 'const LINES=').includes('u.path=[{x:sp.x'));
+});
+test('leaving a chair cannot pass through a surrounding solid enclosure', () => {
+  const walls=[[-.4,.4,-.4,.4,0],[-2,2,.45,.7,0],[-2,2,-.7,-.45,0],[.45,.7,-2,2,0],[-.7,-.45,-2,2,0]],ctx=navContext(walls),c=avatar(0,0);
+  assert.equal(ctx.qa11SeatExit(c,{x:0,z:0,rot:0,zone:'L0'}),false);
+  assert.equal(c.position.x,0);assert.equal(c.position.z,0);
+});
 
 function sceneContext() {
   class Vec { constructor(x = 0, y = 0, z = 0) { this.set(x, y, z); } set(x, y, z) { Object.assign(this, { x, y, z }); return this; } copy(p) { return this.set(p.x, p.y, p.z); } clone() { return new Vec(this.x, this.y, this.z); } }

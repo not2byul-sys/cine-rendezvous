@@ -643,7 +643,7 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
 #actorMenu{position:fixed;z-index:38;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}/* QA20: 컨텍스트 액션 바 = 액션 칩(알약 버튼) 형태 + 하단 퀵바 색감 */ /* QA19: NPC 액션 = 하단 네비 위 둘째 줄 알약 버튼(간식받기·선물하기와 같은 UI) */
 #actorMenu b{display:block;padding:3px 7px 7px;font-size:13px}
 #actorMenu button{flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);font:500 15px/1 'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}#actorMenu button svg.lucide{width:20px!important;height:20px!important;stroke-width:1.5!important}
-#actorMenu button:hover,#actorMenu button:focus-visible{background:rgba(48,36,38,.82)}body.layed #actorMenu,body.layed #ctxbar{display:none!important}#sitbox{display:none!important}#ctxbar{position:fixed;z-index:37;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}#ctxbar[hidden]{display:none}#ctxbar::-webkit-scrollbar{display:none}#ctxbar button{flex:none;display:inline-flex;align-items:center;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);font:500 15px/1 'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}#ctxbar button:hover,#ctxbar button:focus-visible{background:rgba(48,36,38,.82)}#ctxbar button[disabled]{opacity:.55}@media (max-width:440px){#ctxbar,#actorMenu{gap:6px}#ctxbar button,#actorMenu button{padding:0 13px;font-size:14px;height:42px}}body:has(#ctxbar:not([hidden])) #hint,body:has(#actorMenu:not([hidden])) #hint{opacity:0}
+#actorMenu button:hover,#actorMenu button:focus-visible{background:rgba(48,36,38,.82)}body.layed #actorMenu,body.layed #ctxbar{display:none!important}#pn .rvrw{align-items:flex-start}#pn .rvb{display:flex;gap:6px;flex:none}#pn .rvb button{height:32px;padding:0 12px;border-radius:999px;font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap}#pn .rvb button.on{background:#5d211c!important;color:#f6e7cc!important;border-color:#5d211c!important}#pn .rvtop{display:block;margin-top:4px;font-style:normal;color:#983e49;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#pn .rvbox{padding:8px 0 14px;border-bottom:1px solid var(--soft);display:flex;flex-direction:column;gap:6px}#pn .rvi{font:400 13px/1.5 'Noto Sans KR',sans-serif;color:#3a211b}#pn .rvi b{margin-right:8px;color:#983e49;font-weight:600}#pn .rvmuted{opacity:.7}#pn .rvin{display:flex;gap:6px;margin-top:4px}#pn .rvin input{flex:1;min-width:0;height:38px}#pn .rvin button{height:38px;padding:0 14px;flex:none}#sitbox{display:none!important}#ctxbar{position:fixed;z-index:37;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}#ctxbar[hidden]{display:none}#ctxbar::-webkit-scrollbar{display:none}#ctxbar button{flex:none;display:inline-flex;align-items:center;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);font:500 15px/1 'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}#ctxbar button:hover,#ctxbar button:focus-visible{background:rgba(48,36,38,.82)}#ctxbar button[disabled]{opacity:.55}@media (max-width:440px){#ctxbar,#actorMenu{gap:6px}#ctxbar button,#actorMenu button{padding:0 13px;font-size:14px;height:42px}}body:has(#ctxbar:not([hidden])) #hint,body:has(#actorMenu:not([hidden])) #hint{opacity:0}
 #actorMenu[hidden]{display:none}
 
 /* QA07: a visible lobby mute button beside connection status. */
@@ -4073,5 +4073,57 @@ document.fonts.ready.then(()=>{if(!$('join').hidden)qa14FieldWidth()});
 /* Snow accumulation is strictly beyond the exterior facade. */
 {const m=new THREE.MeshLambertMaterial({color:0xe8edef});for(let k=0;k<24;k++){const snowcap=new THREE.Mesh(new THREE.SphereGeometry(.34,10,6),m);snowcap.name='qa13-curb-snow';snowcap.position.set(-35+k*3.1,.07,LD+(k%2?11.7:2.8));snowcap.scale.set(1.6,.26,.65);S.add(snowcap)}}
 document.documentElement.dataset.cinemaReady='qa14-figma-christmas';
+</script>
+<script id="qa21-reviews">/* QA21: 영화 좋아요·한줄평 (미니멈 스펙)
+ - 입력: 상영작 안내 패널에서만. 좋아요 = 한 번 탭, 한줄평 = 40자 한 줄(선택). 팝업·강제 요청 없음
+ - 자격: 해당 영화를 1분 이상 봤을 때만(이 브라우저 기록)
+ - 노출: 상영관 입구 옆 황동 명판(좋아요 수 · 한줄평 수 · 대표 한줄평)
+ - 저장: /api/reviews(Cloudflare Pages Functions + KV) 공용 저장, 미연결·오프라인이면 이 브라우저 저장으로 대체 */
+(function(){
+const LK='aic.rv.local',WK='aic.rv.watch',UK='aic.uid';
+const sg=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k));return v==null?d:v}catch(e){return d}},ss=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let uid=sg(UK,null);if(!uid||String(uid).length<8){uid='u'+Math.random().toString(36).slice(2,12)+Date.now().toString(36);ss(UK,uid)}
+const W=sg(WK,{}),L=sg(LK,{}),SRV={};let online=null,openId=null,lastFetch=0;
+const films=()=>{const a=[];CFG.HALLS.forEach(h=>{if(!CLOSEDH.has(h.id))h.films.forEach(f=>{if(f.id&&/^[\w-]{1,64}$/.test(f.id)&&!a.includes(f.id))a.push(f.id)})});return a};
+const watched=id=>(W[id]||0)>=60;
+const loc=id=>L[id]||(L[id]={liked:false,rv:null});
+function data(id){const l=loc(id),s=online&&SRV[id];if(s)return {likes:s.likes,liked:s.liked,reviews:s.reviews};
+ return {likes:l.liked?1:0,liked:l.liked,reviews:l.rv?[{n:l.rv.n,t:l.rv.t,ts:l.rv.ts,mine:true}]:[]}}
+async function api(method,body,q){const r=await fetch('/api/reviews'+(q||''),{method,headers:body?{'content-type':'application/json'}:undefined,body:body?JSON.stringify(body):undefined,cache:'no-store'});if(!r.ok)throw new Error(r.status);return r.json()}
+async function pull(force){if(location.protocol==='file:'){online=false;return}const now=Date.now();if(!force&&now-lastFetch<45000)return;lastFetch=now;
+ try{const j=await api('GET',null,'?uid='+encodeURIComponent(uid)+'&ids='+films().join(','));if(j&&j.ok){online=true;Object.assign(SRV,j.films||{});refresh()}}catch(e){online=false}}
+async function push(op,id,extra){const l=loc(id);if(op==='like')l.liked=true;if(op==='unlike')l.liked=false;if(op==='review')l.rv={n:extra.name,t:extra.text,ts:Date.now()};ss(LK,L);
+ if(online!==false){try{const j=await api('POST',Object.assign({op,id,uid},extra||{}));if(j&&j.ok){online=true;SRV[id]=j.film}}catch(e){online=false}}refresh()}
+function refresh(){plaques();if(!$('pn').hidden&&$('pn').dataset.k==='tt')PANELS.tt(true)}
+/* 시청 기록: 상영관 좌석에서 재생 중인 시간 누적 */
+setInterval(()=>{try{const sp=me&&me.userData.seat;if(!sp||sp.kind!=='cine'||!curSc||!curSc.film||!curSc.film.id)return;const id=curSc.film.id,b=watched(id);W[id]=(W[id]||0)+5;if(!b&&watched(id)){ss(WK,W)}else if(W[id]%30===0)ss(WK,W)}catch(e){}},5000);
+/* 상영작 패널: 영화별 좋아요·한줄평 한 줄 */
+const tt0=PANELS.tt;
+PANELS.tt=function(keep){$('pn').dataset.k='tt';pull();let h='<h3>상영작 안내</h3><p class="sub">티켓을 받고 상영관 좌석에 앉으면 처음부터 바로 시작돼요 · 1분 이상 본 영화엔 좋아요와 한줄평을 남길 수 있어요</p>';
+ CFG.HALLS.forEach(hl=>{if(CLOSEDH.has(hl.id)){h+=`<div class="hall">${hl.name}</div><div class="rw"><div class="m"><b>준비 중입니다</b><i>상영작을 모집하고 있어요</i></div><button data-a="recruit">상영작 모집</button></div>`;return}
+  h+=`<div class="hall">${hl.name} · ${hl.genre}</div>`;hl.films.forEach(f=>{const id=f.id,d=id?data(id):null,top=d&&d.reviews[0];
+   h+=`<div class="rw rvrw"><div class="m"><b>${esc(f.title)}</b><i>러닝타임 ${Math.round(f.dur/60)}분</i>${top?`<i class="rvtop">“${esc(top.t)}” · ${esc(top.n)}</i>`:''}</div>`;
+   if(d)h+=`<div class="rvb"><button class="rvl${d.liked?' on':''}" data-a="rvlike" data-id="${id}" aria-pressed="${d.liked}">좋아요 ${d.likes}</button><button class="rvo${openId===id?' on':''}" data-a="rvopen" data-id="${id}">한줄평 ${d.reviews.length}</button></div>`;h+='</div>';
+   if(d&&openId===id){const mine=d.reviews.find(r=>r.mine);h+='<div class="rvbox">'+(d.reviews.length?d.reviews.slice(0,8).map(r=>`<div class="rvi"><b>${esc(r.n)}</b>${esc(r.t)}</div>`).join(''):'<div class="rvi rvmuted">아직 한줄평이 없어요</div>');
+    h+=watched(id)?`<div class="rvin"><input id="rvtxt" maxlength="40" placeholder="${mine?'한줄평 고치기':'이 영화 한 줄로 (40자)'}" value="${mine?esc(mine.t):''}"><button class="p" data-a="rvsend" data-id="${id}">남기기</button></div>`:'<div class="rvi rvmuted">이 영화를 1분 이상 보면 한줄평을 남길 수 있어요</div>';h+='</div>'}})});
+ panel(h);if(keep&&openId){const i=$('rvtxt');if(i&&document.activeElement!==i){}}};
+Object.assign(A,{
+ rvlike:d=>{const id=d.id;if(!watched(id)){toast('영화를 1분 이상 보면 좋아요를 누를 수 있어요');return}push(data(id).liked?'unlike':'like',id)},
+ rvopen:d=>{openId=openId===d.id?null:d.id;PANELS.tt(true)},
+ rvsend:d=>{const i=$('rvtxt'),t=(i&&i.value||'').replace(/\s+/g,' ').trim().slice(0,40);if(!t){toast('한 줄만 적어 주세요');return}if(!watched(d.id))return;push('review',d.id,{text:t,name:(window.MYNAME||'관객').slice(0,12)});toast('한줄평을 남겼어요')}});
+/* 상영관 입구 옆 황동 명판 */
+const PQ={};
+function plaqueTex(hl){const s=listS(hl,nowS(),1)[0],f=s&&s.film,d=f&&f.id?data(f.id):{likes:0,reviews:[]},top=d.reviews[0];
+ return art(512,300,(c,w,h)=>{const g=c.createLinearGradient(0,0,0,h);g.addColorStop(0,'#c9a24a');g.addColorStop(.5,'#e2c36e');g.addColorStop(1,'#a8822e');c.fillStyle=g;c.fillRect(0,0,w,h);c.strokeStyle='#5a3e12';c.lineWidth=6;c.strokeRect(10,10,w-20,h-20);c.lineWidth=2;c.strokeRect(22,22,w-44,h-44);
+  c.fillStyle='#3a2410';c.textAlign='center';c.font='bold 40px "Noto Serif KR",serif';c.fillText(f?f.title.slice(0,14):hl.name,w/2,84);
+  c.font='700 46px "Noto Sans KR",sans-serif';c.fillText(`좋아요 ${d.likes} · 한줄평 ${d.reviews.length}`,w/2,160);
+  c.font='italic 30px "Noto Serif KR",serif';c.fillStyle='#4a2e14';const q=top?`“${top.t}”`:'첫 한줄평을 기다려요';c.fillText(q.length>17?q.slice(0,16)+'…”':q,w/2,220);
+  if(top){c.font='24px "Noto Sans KR",sans-serif';c.fillText('— '+top.n,w/2,258)}})}
+function plaques(){try{CFG.HALLS.forEach(hl=>{if(CLOSEDH.has(hl.id))return;const H=HALLN[hl.id];if(!H)return;let m=PQ[hl.id];
+  if(!m){/* 입구 커튼 왼쪽에 선 황동 스탠드 명판 */const base=hl.id===1?0:H.base,x=H.lx-2.3,z=H.dz+(hl.id===1?.62:.95),y=base+1.32,g=new THREE.Group();g.position.set(x,0,z);S.add(g);const BRS=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0xfff0b0});const post=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,y-base-.25,10),BRS);post.position.y=base+(y-base-.25)/2;g.add(post);const ft=new THREE.Mesh(new THREE.CylinderGeometry(.2,.24,.05,20),BRS);ft.position.y=base+.025;g.add(ft);const fr=new THREE.Mesh(new THREE.BoxGeometry(.98,.6,.04),new THREE.MeshPhongMaterial({color:0x3a2216}));fr.position.set(0,y,-.02);fr.rotation.x=-.18;g.add(fr);m=plane(.9,.53,plaqueTex(hl),0,y,.005,0,g);m.rotation.x=-.18;m.position.z=.003;m.name='qa21-plaque-'+hl.id;PQ[hl.id]=m;return}
+  const old=m.material.map;m.material.map=plaqueTex(hl);m.material.needsUpdate=true;if(old&&old.dispose)old.dispose()})}catch(e){}}
+setTimeout(()=>{plaques();pull(true)},1200);setInterval(()=>{if(me)pull()},60000);
+window.QA21={data,watched,pull,plaques,get online(){return online}};
+})();
 </script>
 </body></html>

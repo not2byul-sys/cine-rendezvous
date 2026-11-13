@@ -19,3 +19,6 @@ test('QA22 popups are centered, scroll inside the inner frame, and the booth lis
   assert(source.includes('#pn:not(.leg){align-items:center!important;justify-content:center!important}'));
   assert(source.includes('#pn:not(.leg) .pin{flex:1 1 auto;min-height:0;overflow-y:auto'));
   assert(source.includes('if(CLOSEDH.has(hl.id))return/* QA22: 매표소엔 상영 중인 관만 */'));});
+test('QA23 the film-end context bar offers a one-tap like next to the review chip',()=>{
+  assert(source.includes("add('ctxlike',lk?'좋아요 완료':'좋아요',lk?' disabled':'');add('ctxreview','한줄평 남기기')"));
+  assert(source.includes("ctxlike:()=>{const id=QA21.endFilm();"));assert(source.includes('function endFilm(){'));});

@@ -2504,7 +2504,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
  if(me){
   if(selSeat&&!$('sitbox').hidden){add('sit',selSeat.label+' 앉기');add('ctxother','다른 자리');add('sitx','취소')}
   else if(QA20.obj){add('ctxobj',QA20.obj.act.ctx);add('ctxlook','살펴보기')}
-  else if(cine&&CINE_DONE){add('clubboard','한줄평 남기기');add('tt','다음 회차')}
+  else if(cine&&CINE_DONE){/* QA23: 영화가 끝나자마자 좋아요 · 한줄평 */const fid=typeof QA21!=='undefined'&&QA21.endFilm();if(fid){const lk=QA21.data(fid).liked;add('ctxlike',lk?'좋아요 완료':'좋아요',lk?' disabled':'');add('ctxreview','한줄평 남기기')}else add('clubboard','한줄평 남기기');add('tt','다음 회차')}
   else if(!cine){
    if(ORD&&ORD.st==='ready')add('oget','간식받기');
    if(HELD.length){if(HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'');add('ctxgift',HELD.some(x=>x.k==='poprb')?'무지개 팝콘 선물하기':'선물하기');if(!inH)add('trash','버리기')}
@@ -2537,6 +2537,8 @@ Object.assign(A,{
  ctxside:()=>{const r=qa20Side(curZone(me));if(!r){toast('옆자리가 비어 있지 않아요');return}pickSeat(r.hid,r.seat);A.sit()},
  ctxphoto:()=>qa20Photo(),
  ctxunfollow:()=>{QA20.follow=null;hudUpd()},
+ ctxlike:()=>{const id=QA21.endFilm();if(id&&!QA21.data(id).liked){QA21.like(id);toast('좋아요를 남겼어요')}hudUpd()},
+ ctxreview:()=>{const id=QA21.endFilm();if(id)QA21.openReview(id);else PANELS.club()},
  actorHint:()=>{const s_=ACTOR_SESSION;if(!s_)return;const n=s_.target.userData.displayName,q=QA18_GIFT[n];if(q)sayB(s_.target,q[1],8)},
  actorWave:()=>{const s_=ACTOR_SESSION;qa20Emote('wave',s_&&s_.target)},
  actorClap:()=>{const s_=ACTOR_SESSION;qa20Emote('clap',s_&&s_.target)},
@@ -4123,7 +4125,8 @@ function plaques(){try{CFG.HALLS.forEach(hl=>{if(CLOSEDH.has(hl.id))return;const
   if(!m){/* 입구 커튼 왼쪽에 선 황동 스탠드 명판 */const base=hl.id===1?0:H.base,x=H.lx-2.3,z=H.dz+(hl.id===1?.62:.95),y=base+1.32,g=new THREE.Group();g.position.set(x,0,z);S.add(g);const BRS=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0xfff0b0});const post=new THREE.Mesh(new THREE.CylinderGeometry(.03,.03,y-base-.25,10),BRS);post.position.y=base+(y-base-.25)/2;g.add(post);const ft=new THREE.Mesh(new THREE.CylinderGeometry(.2,.24,.05,20),BRS);ft.position.y=base+.025;g.add(ft);const fr=new THREE.Mesh(new THREE.BoxGeometry(.98,.6,.04),new THREE.MeshPhongMaterial({color:0x3a2216}));fr.position.set(0,y,-.02);fr.rotation.x=-.18;g.add(fr);m=plane(.9,.53,plaqueTex(hl),0,y,.005,0,g);m.rotation.x=-.18;m.position.z=.003;m.name='qa21-plaque-'+hl.id;PQ[hl.id]=m;return}
   const old=m.material.map;m.material.map=plaqueTex(hl);m.material.needsUpdate=true;if(old&&old.dispose)old.dispose()})}catch(e){}}
 setTimeout(()=>{plaques();pull(true)},1200);setInterval(()=>{if(me)pull()},60000);
-window.QA21={data,watched,pull,plaques,get online(){return online}};
+function endFilm(){try{const sc=curSc||(curSp&&curS(curSp.hall));const id=sc&&sc.film&&sc.film.id;if(!id||!/^[\w-]{1,64}$/.test(id))return null;if(CINE_DONE&&!watched(id)){W[id]=Math.max(W[id]||0,60);ss(WK,W)}return id}catch(e){return null}}
+window.QA21={data,watched,pull,plaques,endFilm,like:id=>{if(!data(id).liked)push('like',id)},openReview:id=>{openId=id;PANELS.tt()},get online(){return online}};
 })();
 </script>
 </body></html>

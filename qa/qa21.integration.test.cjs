@@ -15,3 +15,7 @@ test('QA21 review function validates and dedupes per user',async()=>{
   j=await post({id:'abc',uid:'user12345',op:'review',name:'나',text:'다시 씀'});assert.equal(j.film.reviews.length,1);
   const bad=await mod.onRequestPost({request:new Request('https://x/api/reviews',{method:'POST',body:'{}'}),env});assert.equal(bad.status,400);
   const unbound=await mod.onRequestGet({request:new Request('https://x/api/reviews?ids=abc'),env:{}});assert.equal(unbound.status,503);});
+test('QA22 popups are centered, scroll inside the inner frame, and the booth lists only open halls',()=>{
+  assert(source.includes('#pn:not(.leg){align-items:center!important;justify-content:center!important}'));
+  assert(source.includes('#pn:not(.leg) .pin{flex:1 1 auto;min-height:0;overflow-y:auto'));
+  assert(source.includes('if(CLOSEDH.has(hl.id))return/* QA22: 매표소엔 상영 중인 관만 */'));});

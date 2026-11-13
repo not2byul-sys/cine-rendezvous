@@ -31,3 +31,5 @@ test('QA27 top chips align, chat shows X until typing, last nickname always kept
   assert(source.includes("sendBtn.dataset.mode==='close'"));assert(source.includes('#mpform{padding-right:14px!important}'));
   assert(source.includes("if(nm)localStorage.setItem('aic.nick',nm);"));assert(source.includes('.jt14-save{display:none!important}'));});
 test('QA29 action chips sit behind every modal',()=>{assert(source.includes('#ctxbar,#actorMenu{z-index:19!important}'));});
+test('QA33 sconces stay lit during the ceremony, no toasts then, tree chips return afterwards',()=>{
+  assert(source.includes('/* QA33: 벽등(근처 조명·광륜·발광 재질 포함)은 소등하지 않음 */'));assert(source.includes('if(window.QA_TREE_ON)return/* QA33: 점등식 중 알림 없음 */'));assert(source.includes('/* QA33: 점등식 후 트리 칩(트리 점등·살펴보기) 복귀 */'));});

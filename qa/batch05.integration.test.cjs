@@ -49,9 +49,10 @@ test('the rendered chat input moves with the keyboard, clears held movement and 
   assert.equal(rules.length, 2);
   for (const rule of rules) assert(rule.includes('var(--qa-keyboard-offset,0px)'));
   assert.equal(nodes.get('mpclose'), undefined);
-  assert.equal(nodes.get('mpsend').disabled, true);
-  nodes.get('mpinput').value = '   '; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').disabled, true);
-  nodes.get('mpinput').value = 'draft'; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').disabled, false);
+  /* QA27: 입력 전 = 닫기(X) 모드, 입력하면 보내기 모드 */
+  assert.equal(nodes.get('mpsend').dataset.mode, 'close');
+  nodes.get('mpinput').value = '   '; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').dataset.mode, 'close');
+  nodes.get('mpinput').value = 'draft'; nodes.get('mpinput').dispatch('input'); assert.equal(nodes.get('mpsend').dataset.mode, 'send');
   nodes.get('mpinput').blur();
   assert.equal(properties.get('--qa-keyboard-offset'), '0px');
 });

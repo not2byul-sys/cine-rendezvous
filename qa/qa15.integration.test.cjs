@@ -21,10 +21,10 @@ test('QA15 every lobby ceiling light except the chandelier is flush-mounted (no 
   assert(block.indexOf('return}CHD.push(g);') > 0);
   assert(source.includes("fixture.name='qa13-crystal-chandelier'"));
 });
-test('QA15 chat has no X button and the send icon is enabled only for non-blank input', () => {
+test('QA15/27 chat has no separate X button; the send button is X until text is typed', () => {
   assert(!/<button id="mpclose"/.test(source));
   assert(source.includes('<button id="mpsend" type="submit" aria-label="보내기" disabled>'));
-  assert(source.includes("const syncSend=()=>{sendBtn.disabled=!els.input.value.trim()}"));
+  assert(source.includes("/* QA27: 입력 전 = X(닫기) · 입력하면 보내기 화살표 */const syncSend="));
 });
 test('QA15 local NPCs and staff get a gift option whenever something is held, flowers included', () => {
   assert(source.includes("else if(HELD.length){/* QA15"));

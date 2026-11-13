@@ -26,3 +26,7 @@ test('QA24 popups follow the Figma panel structure and quick bar icons are 16px'
   assert(source.includes('/* QA24: Figma 3. 패널 팝업(1:38) 구조'));assert(source.includes('#pn:not(.leg) .porn{width:189px;height:20px}'));
   assert(source.includes("#pn:not(.leg) .pbox .hall{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)!important"));
   assert(source.includes('#act button svg.lucide,#act button svg,#act .mp-nav-button svg{width:16px!important;height:16px!important}'));});
+test('QA27 top chips align, chat shows X until typing, last nickname always kept',()=>{
+  assert(source.includes('#hb #bgmb,#hb [data-a=adm]{display:none!important}'));assert(source.includes('#mpstatus{height:36px;'));
+  assert(source.includes("sendBtn.dataset.mode==='close'"));assert(source.includes('#mpform{padding-right:14px!important}'));
+  assert(source.includes("if(nm)localStorage.setItem('aic.nick',nm);"));assert(source.includes('.jt14-save{display:none!important}'));});

@@ -22,3 +22,7 @@ test('QA22 popups are centered, scroll inside the inner frame, and the booth lis
 test('QA23 the film-end context bar offers a one-tap like next to the review chip',()=>{
   assert(source.includes("add('ctxlike',lk?'좋아요 완료':'좋아요',lk?' disabled':'');add('ctxreview','한줄평 남기기')"));
   assert(source.includes("ctxlike:()=>{const id=QA21.endFilm();"));assert(source.includes('function endFilm(){'));});
+test('QA24 popups follow the Figma panel structure and quick bar icons are 14px',()=>{
+  assert(source.includes('/* QA24: Figma 3. 패널 팝업(1:38) 구조'));assert(source.includes('#pn:not(.leg) .porn{width:189px;height:20px}'));
+  assert(source.includes("#pn:not(.leg) .pbox .hall{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)!important"));
+  assert(source.includes('#act button svg.lucide,#act button svg,#act .mp-nav-button svg{width:14px!important;height:14px!important}'));});

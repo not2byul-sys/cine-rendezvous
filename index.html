@@ -2917,8 +2917,8 @@ function giftCharacterLines(name,flower){const q=QA18_GIFT[name];if(q)return flo
  return ['고마워요! 영화 보며 즐기기에 딱 좋겠네요.','비밀 영화클럽 이야기를 들어봤나요? 이 영화관에는 아직 모르는 이야기가 숨어 있어요.']}
 /* QA47: 선물을 건넬 때 두 사람이 옆모습으로 함께 보이도록 카메라를 자동으로 돌림(드래그하면 즉시 해제) */
 function qa47GiftCam(target){const t0=performance.now();let side=0;clearInterval(qa47GiftCam.iv);qa47GiftCam.iv=setInterval(()=>{if(!me||!target||camDrag||performance.now()-t0>7000||(me.userData.seat)){clearInterval(qa47GiftCam.iv);return}
-  const a=Math.atan2(target.position.x-me.position.x,target.position.z-me.position.z),wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));if(!side)side=Math.abs(wrap(a+Math.PI/2-camYaw))<=Math.abs(wrap(a-Math.PI/2-camYaw))?1:-1;
-  const want=a+side*1.25;camYaw+=wrap(want-camYaw)*.12;yawV=0;camPitchT+=(.22-camPitchT)*.12;camDistT+=(4.6-camDistT)*.12},33)}
+  const a=Math.atan2(target.position.x-me.position.x,target.position.z-me.position.z),wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));if(!side){const cx=s=>Math.abs(me.position.x-Math.sin(a+s*1.25)*4.6);side=Math.abs(cx(1)-cx(-1))>.6?(cx(1)<cx(-1)?1:-1):(Math.abs(wrap(a+Math.PI/2-camYaw))<=Math.abs(wrap(a-Math.PI/2-camYaw))?1:-1)}
+  const n=performance.now(),k=1-Math.exp(-Math.min(.5,(n-(qa47GiftCam.lt||n-33))/1000)*4);qa47GiftCam.lt=n;const want=a+side*1.25;camYaw+=wrap(want-camYaw)*k;yawV=0;camPitchT+=(.22-camPitchT)*k;camDistT+=(4.6-camDistT)*k},33)}
 function giveItem(index){const target=GIFT_TARGET,it=HELD[index];if(!me||!target||target===me||!it)return;try{qa47GiftCam(target)}catch(e){}if(target.userData.remote&&it._giving!==2){/* 원격 유저도 같은 다가가기·건네기 모션을 거친 뒤 전송 */}if(target.userData.giftEating){toast('지금 선물을 받고 있어요');return}if(curZone(target)!==curZone(me)||!target.visible){toast('같은 공간에 있는 아바타에게 줄 수 있어요');return}
  closePanel();target.userData.path=[];target.userData.giftPauseUntil=performance.now()/1000+20;if(Math.hypot(target.position.x-me.position.x,target.position.z-me.position.z)>1.7){const a=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);target.userData.path=[];target.userData.giftPauseUntil=performance.now()/1000+20;walkTo(me,target.position.x+Math.sin(a)*1.15,target.position.z+Math.cos(a)*1.15,curZone(target),{after:()=>{const i=HELD.indexOf(it);if(i>=0){GIFT_TARGET=target;giveItem(i)}}});return}
  /* 건네는 모션: 상대를 향해 서서 팔을 뻗고(0.65초) 그다음 전달 */if(!it._giving){it._giving=1;me.userData.path=[];me.rotation.y=Math.atan2(target.position.x-me.position.x,target.position.z-me.position.z);if(!target.userData.isPlayer)target.rotation.y=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);me.userData.reach=.8;setTimeout(()=>{const i=HELD.indexOf(it);if(i<0){delete it._giving;return}it._giving=2;GIFT_TARGET=target;giveItem(i)},650);return}
@@ -4312,6 +4312,20 @@ if(typeof A!=='undefined')A.avatar=()=>qa40Open();
 <script id="qa39-club-loading">/* QA39: 아지트 첫 입장 — 영상이 준비될 때까지 로딩 화면을 보여 주고, 준비되면 재생 */
 function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>=2)return;let o=document.getElementById('clubload');if(!o){o=document.createElement('div');o.id='clubload';o.innerHTML='<div class="cl-spin"></div><p>아지트로 내려가는 중…</p>';document.body.appendChild(o)}o.hidden=false;const t0=performance.now();
  const iv=setInterval(()=>{const ready=typeof CLV!=='undefined'&&CLV&&(CLV.readyState>=2||CLVFAILED);if(ready||performance.now()-t0>8000){clearInterval(iv);o.hidden=true;try{if(CLV&&CLV.paused&&!CLUBSTOP){const r=CLV.play();if(r&&r.catch)r.catch(()=>{})}}catch(e){}}},120)}catch(e){}}
+</script>
+<script id="qa49-talk-camera">
+/* QA49: NPC·다른 관객에게 다가가 메뉴가 뜨면 카메라를 낮추고 당겨 두 사람을 함께 잡고, 끝나면 원래 거리·높이로 복귀(동물의 숲식). 드래그하면 즉시 해제 */
+(function(){const Q={iv:0,saved:null,target:null},wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));
+ const ease=(last,rate)=>{const n=performance.now(),dt=Math.min(.5,(n-last.t)/1000);last.t=n;return 1-Math.exp(-dt*rate)};
+ function stop(restore){clearInterval(Q.iv);Q.iv=0;const s=Q.saved;Q.saved=null;Q.target=null;if(restore&&s&&!camDrag){const L={t:performance.now()};Q.iv=setInterval(()=>{if(camDrag||Q.target){clearInterval(Q.iv);if(!Q.target)Q.iv=0;return}const k=ease(L,5);camPitchT+=(s.pitch-camPitchT)*k;camDistT+=(s.dist-camDistT)*k;if(Math.abs(s.pitch-camPitchT)<.005&&Math.abs(s.dist-camDistT)<.02){camPitchT=s.pitch;camDistT=s.dist;clearInterval(Q.iv);Q.iv=0}},33)}}
+ function start(target){if(!me||!target||target===me||me.userData.seat)return;if(Q.target===target)return;const keep=Q.saved;clearInterval(Q.iv);Q.saved=keep||{pitch:camPitchT,dist:camDistT};Q.target=target;let side=0;const L={t:performance.now()};
+  Q.iv=setInterval(()=>{if(!me||!Q.target||camDrag||me.userData.seat||!target.visible){const dragged=camDrag;clearInterval(Q.iv);Q.iv=0;Q.target=null;if(dragged)Q.saved=null;return}
+   const dx=target.position.x-me.position.x,dz=target.position.z-me.position.z,d=Math.hypot(dx,dz);if(d>6){L.t=performance.now();return}const a=Math.atan2(dx,dz);if(!side){/* 벽 쪽이 아니라 공간 안쪽에서 바라보는 방향을 고름 */const cx=s=>Math.abs(me.position.x-Math.sin(a+s*.95)*4.2);side=Math.abs(cx(1)-cx(-1))>.6?(cx(1)<cx(-1)?1:-1):(Math.abs(wrap(a+.95-camYaw))<=Math.abs(wrap(a-.95-camYaw))?1:-1)}
+   const k=ease(L,3.2);camYaw+=wrap(a+side*.95-camYaw)*k;yawV=0;camPitchT+=(.16-camPitchT)*k;camDistT+=(clampN(3.4+d*.55,3.8,5.2)-camDistT)*k},33)}
+ window.qa49TalkCam={start,stop};
+ const sm=showActorMenu,da=dismissActor;showActorMenu=function(target){const r=sm.apply(this,arguments);try{start(target)}catch(e){}return r};dismissActor=function(){const r=da.apply(this,arguments);try{stop(true)}catch(e){}return r};
+ if(typeof qa47GiftCam==='function'){const g=qa47GiftCam;qa47GiftCam=function(t){try{clearInterval(Q.iv);Q.iv=0;Q.target=null}catch(e){}return g.apply(this,arguments)}}
+})();
 </script>
 <script id="qa44-landscape">
 (function(){/* QA44 */

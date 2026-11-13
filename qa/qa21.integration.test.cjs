@@ -2,7 +2,7 @@ const test=require('node:test');const assert=require('node:assert');const fs=req
 const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),fn=fs.readFileSync(path.join(__dirname,'..','functions','api','reviews.js'),'utf8');
 test('QA21 likes and one-line reviews live only in the timetable panel, gated by one minute of viewing',()=>{
   assert(source.includes('<script id="qa21-reviews">'));assert(source.includes("const watched=id=>(W[id]||0)>=60;"));
-  assert(source.includes('data-a="qlike"'));assert(source.includes('maxlength="40"'));assert(source.includes("PANELS.tt=function(keep)"));});
+  assert(source.includes("add('qlike','좋아요 '+d_.likes"));assert(source.includes('maxlength="40"'));assert(source.includes("PANELS.tt=function(keep)"));});
 test('QA21 hall entrance shows a brass plaque with counts and a top review',()=>{assert(source.includes("m.name='qa21-plaque-'+hl.id"));assert(source.includes('좋아요 ${d.likes} · 한줄평 ${d.reviews.length}'));});
 test('QA21 shared storage is a Pages Function on KV that refuses gracefully when unbound',()=>{
   assert(fn.includes("if (!env.REVIEWS) return json({ ok: false, error: 'storage_unbound' }, 503);"));assert(fn.includes('export async function onRequestGet'));assert(fn.includes('export async function onRequestPost'));
@@ -19,8 +19,8 @@ test('QA22 popups are centered, scroll inside the inner frame, and the booth lis
   assert(source.includes('#pn:not(.leg){align-items:center!important;justify-content:center!important}'));
   assert(source.includes('#pn:not(.leg) .pin{flex:1 1 auto;min-height:0;overflow-y:auto'));
   assert(source.includes('if(CLOSEDH.has(hl.id))return/* QA22: 매표소엔 상영 중인 관만 */'));});
-test('QA25 like is a quick bar toggle while watching; film end offers the review chip',()=>{
-  assert(source.includes("if(fid){add('ctxreview','한줄평 남기기')}"));
+test('QA26 like is a context action bar toggle chip while watching; film end adds the review chip',()=>{
+  assert(source.includes("if(fid)add('ctxreview','한줄평 남기기')"));assert(!source.includes('class="fx qlike'));
   assert(source.includes("qlike:()=>{const id=QA21.curFilm();if(!id)return;QA21.toggle(id);hudUpd()}"));assert(source.includes('function endFilm(){'));});
 test('QA24 popups follow the Figma panel structure and quick bar icons are 16px',()=>{
   assert(source.includes('/* QA24: Figma 3. 패널 팝업(1:38) 구조'));assert(source.includes('#pn:not(.leg) .porn{width:189px;height:20px}'));

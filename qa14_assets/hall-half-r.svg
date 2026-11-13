@@ -1,3 +1,3 @@
 <svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="420" height="254" viewBox="0 0 420 254" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M420 18V236L402 254H18L0 236V147C24 147 24 107 0 107V18L18 0H402L420 18Z" fill="#F5BCD8"/>
+<path d="M420 18V107C396 107 396 147 420 147V236L402 254H18L0 236V18L18 0H402L420 18Z" fill="#F5BCD8"/>
 </svg>

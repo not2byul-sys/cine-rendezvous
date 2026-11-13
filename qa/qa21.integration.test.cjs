@@ -30,3 +30,4 @@ test('QA27 top chips align, chat shows X until typing, last nickname always kept
   assert(source.includes('#hb #bgmb,#hb [data-a=adm]{display:none!important}'));assert(source.includes('#mpstatus{height:36px;'));
   assert(source.includes("sendBtn.dataset.mode==='close'"));assert(source.includes('#mpform{padding-right:14px!important}'));
   assert(source.includes("if(nm)localStorage.setItem('aic.nick',nm);"));assert(source.includes('.jt14-save{display:none!important}'));});
+test('QA29 action chips sit behind every modal',()=>{assert(source.includes('#ctxbar,#actorMenu{z-index:19!important}'));});

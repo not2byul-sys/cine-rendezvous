@@ -7,7 +7,7 @@ const source = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8')
 test('QA17 ceremony dims lobby emissives and drops the awe line', () => {
   assert(!source.includes('와아, 정말 아름다워요'));
   assert(source.includes('QA17: 점등식 동안 매점·벽등 등 로비 발광체도 함께 어둡게'));
-  assert(source.includes('active.glow.forEach(e=>e.h.material.opacity*=dim)'));
+  assert(source.includes('active.glow.forEach(e=>e.h.material.opacity=active.opacity.get(e)*dim)'));
 });
 test('QA17 snack table in front of the shop is removed', () => {
   assert(!source.includes("'snacktable'"));

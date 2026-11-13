@@ -21,7 +21,7 @@ test('QA18 every NPC has its own gift voice and hint', () => {
 });
 test('QA18 lobby music-only toggle and 10s ceremony with English Santa greeting', () => {
   assert(source.includes("b.id='lobbyMusic'"));
-  assert(source.includes("if(s>=20)finish()/* QA34: 점등식 20초 */"));
+  assert(source.includes("if(s>=40)finish()/* QA36: 점등식 40초 */"));
   assert(source.includes("QA15EventAudio.speak('Merry Christmas!'"));
 });
 test('QA18 welcome mat removed, reference-style tree and club mini tree', () => {

@@ -107,7 +107,7 @@ test('the ticket side table registers two facing usable seats in the same layout
   const seats = [], items = [], ctx = sceneContext();
   Object.assign(ctx, { layBeg: () => [], layEnd: (...x) => items.push(x), bentwoodChair: (...x) => seats.push(x), B() {}, wallTex() {}, hitbox() {}, plane: () => ({ rotation: {} }) });
   vm.runInContext(part('/* QA11: a leaflet table beside', '/* 발코니 카페 테이블 */'), ctx);
-  assert.equal(seats.length, 2); assert(seats[0][1] < 14.5 && seats[1][1] > 14.5); assert.equal(seats[0][2], 0); assert.equal(seats[1][2], Math.PI);
+  assert.equal(seats.length, 2); assert(seats[0][1] < 16.6 && seats[1][1] > 16.6); assert.equal(seats[0][2], 0); assert.equal(seats[1][2], Math.PI);
   assert.equal(items[0][1], 'ticket-side-table'); assert(seats.every(p => p[1] > 13.3));
 });
 test('long NPC speech keeps every character across wrapped lines with no generated ellipsis', () => {

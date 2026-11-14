@@ -1023,7 +1023,7 @@ const PANELT=TXR(512,512,(c,W,H)=>{const r=rng(53),n=8,bw=W/n;for(let i=0;i<n;i+
   c.fillStyle=LP_a(LPW.seam,.85);c.fillRect(i*bw,0,1.8,H);c.fillStyle=LP_a(LPW.grainLight,.35);c.fillRect(i*bw+1.8,0,1.2,H)}});
 const FRAMET=TXR(512,512,(c,W,H)=>{const r=rng(67);c.fillStyle=LPF.base;c.fillRect(0,0,W,H);for(let k=0;k<150;k++){const x0=r()*W,amp=1+r()*5,ph=r()*6.3,f=(1+(r()*3|0))*Math.PI*2/H;c.strokeStyle=LP_a(r()<.55?LPF.grainDark:LPF.grainLight,.1+r()*.22);c.lineWidth=.6+r()*2;c.beginPath();for(let y=0;y<=H;y+=8){const x=x0+Math.sin(y*f+ph)*amp;y?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}});
 TM[WAINS]=LP_mat(PANELT,LPW.panelWidthMeters*8,LPW,.42,1.0);TM[LINEN]=TM[WAINS];TM[MU2]=TM[WAINS];/* 1·2층 로비 벽, 계단 옆 삼각 벽, 계단 챌판이 모두 같은 패널 */
-TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.42,.9);/* QA56: 계단·발코니 난간은 짙은 버건디 */TM[MET]=new THREE.MeshPhongMaterial({color:0x2a100e,emissive:0x2e1411,shininess:26,specular:0x241010});
+TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.42,.9);/* QA56: 계단·발코니 난간은 짙은 버건디 */TM[MET]=new THREE.MeshPhongMaterial({color:0x34140f,emissive:0x381812,shininess:26,specular:0x241010});
 const LOBBYT=TXR(512,512,(c,W,H)=>{const r=rng(31),A=LPFL.cream,Bc=LPFL.pink;c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
  for(let k=0;k<2400;k++){const x=r()*W,y=r()*H;c.fillStyle=`rgba(${r()<.5?'255,255,255':'120,96,84'},${.02+r()*.035})`;const z=1+r()*4;c.fillRect(x,y,z,z)}
  c.strokeStyle=LPFL.grout;c.lineWidth=3;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.stroke()});
@@ -1218,11 +1218,11 @@ B(4.4,.32,.3,FRAME,0,3.72,BF+.1);[-1,1].forEach(s=>{B(.28,3.7,.3,FRAME,s*2.0,1.8
 function stairs(x0,x1){const w=x1-x0,n=16,Ln=ST.z1-ST.z0,cz=(ST.z0+ST.z1)/2,ang=Math.atan2(4.2,Ln);
  for(let k=0;k<n;k++){const h=4.2*(k+1)/n,d=Ln/n,zc=ST.z1-d*(k+.5);B(w,h,d+.01,MU2,(x0+x1)/2,h/2,zc);B(w-.5,.05,d*.98,k%2?CARP1:CARP2,(x0+x1)/2,h+.02,zc);B(w-.5,.03,.03,BR,(x0+x1)/2,h+.05,zc+d*.47);/* QA55: 계단 아래 삼각 벽도 같은 세로 패널 */B(.05,h,d+.01,MU2,x0-.02,h/2,zc)}
  B(.07,.2,Ln,FRAME,x0-.05,.1,cz);
- [x0,x1].forEach(sx=>{const r=B(.11,.09,Math.hypot(Ln,4.2),WD,sx,3.0,cz);r.rotation.x=ang;for(let z=ST.z0+.12;z<ST.z1-.1;z+=.2)B(.03,.92,.03,MET,sx,stairY(z)+.48,z);const r2=B(.04,.04,Math.hypot(Ln,4.2),MET,sx,2.2,cz);r2.rotation.x=ang;B(.1,1.15,.1,MET,sx,.58,ST.z1-.12);const cap=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),BRM);cap.position.set(sx,1.22,ST.z1-.12);S.add(cap)})}
+ [x0,x1].forEach(sx=>{const r=B(.11,.09,Math.hypot(Ln,4.2),MET,sx,3.0,cz);r.rotation.x=ang;for(let z=ST.z0+.12;z<ST.z1-.1;z+=.2)B(.03,.92,.03,MET,sx,stairY(z)+.48,z);const r2=B(.04,.04,Math.hypot(Ln,4.2),MET,sx,2.2,cz);r2.rotation.x=ang;B(.1,1.15,.1,MET,sx,.58,ST.z1-.12);const cap=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),BRM);cap.position.set(sx,1.22,ST.z1-.12);S.add(cap)})}
 stairs(ST.x2,ST.x3);
 [[ST.x2,ST.x3]].forEach(([a,b])=>{const Ln=ST.z1-ST.z0,m=B(b-a,.14,Math.hypot(Ln,4.2),0,(a+b)/2,2.1,(ST.z0+ST.z1)/2);m.rotation.x=Math.atan2(4.2,Ln);m.visible=false;m.userData.zone='S';m.userData.stair=1;floors.push(m)});
 /* 발코니 난간 */
-for(let x=-8.7;x<=6.11;x+=.2)B(.03,.9,.03,MET,x,4.68,BF-.1);B(15.0,.1,.14,WD,-1.35,5.16,BF-.1);B(15.0,.04,.05,MET,-1.35,4.3,BF-.1);{B(.1,1.0,.1,MET,-8.85,4.7,BF-.1);const b_=new THREE.Mesh(new THREE.SphereGeometry(.08,12,8),BRM);b_.position.set(-8.85,5.28,BF-.1);S.add(b_)}[-6.15,6.15].forEach(x=>{B(.1,1.0,.1,MET,x,4.7,BF-.1);const b=new THREE.Mesh(new THREE.SphereGeometry(.08,12,8),BRM);b.position.set(x,5.28,BF-.1);S.add(b)});
+for(let x=-8.7;x<=6.11;x+=.2)B(.03,.9,.03,MET,x,4.68,BF-.1);B(15.0,.1,.14,MET,-1.35,5.16,BF-.1);B(15.0,.04,.05,MET,-1.35,4.3,BF-.1);{B(.1,1.0,.1,MET,-8.85,4.7,BF-.1);const b_=new THREE.Mesh(new THREE.SphereGeometry(.08,12,8),BRM);b_.position.set(-8.85,5.28,BF-.1);S.add(b_)}[-6.15,6.15].forEach(x=>{B(.1,1.0,.1,MET,x,4.7,BF-.1);const b=new THREE.Mesh(new THREE.SphereGeometry(.08,12,8),BRM);b.position.set(x,5.28,BF-.1);S.add(b)});
 [-1,1].forEach(s=>{let m_=layBeg();sconce(s*7.95,5.7,LB+.1,0);halo(s*7.95,5.95,LB+.35,0xffd9a0,1.3,.5);layEnd(m_,'scb'+s,'벽등 (2층 뒷벽)',1,{wall:'z',lo:-LW+.6,hi:LW-.6});m_=layBeg();sconce(s*(LW-.24),5.9,LB+3,-s*Math.PI/2,1);halo(s*(LW-.55),6.15,LB+3,0xffd9a0,1.2,.45);layEnd(m_,'scu'+s,'벽등 (2층 옆벽)',1,{wall:'x',lo:LB+.4,hi:LD-.4})});
 /* hall doors, posters, staff per hall */
 /* ---- 상영관 문 장식: 암막커튼 + 레트로 비상등 ---- */

@@ -10,7 +10,7 @@ test('QA16 invite follows the Figma 76:2228 layout', () => {
 });
 test('QA16 lobby plays a calm classical schedule and is 5% darker', () => {
   assert(source.includes('BGM.sched=qa16ClassicSchedule;'));
-  assert(source.includes('LOBBY_HEMI=.66,LOBBY_DL=.115'));
+  assert(source.includes('LOBBY_HEMI=.72,LOBBY_DL=.15'));
   assert(source.includes('o.intensity*=.95'));
 });
 test('QA16 chat send button uses the shadcn icon button shape', () => {

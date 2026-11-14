@@ -12,8 +12,12 @@ test('QA15 front glass window area is 1.30x (each side x sqrt(1.3)) and the wall
   assert.ok(Math.abs(Math.sqrt(1.3) ** 2 - 1.3) < 1e-12);
 });
 test('QA15 snow particles grow by 20% (1050 -> 1260) and stay outdoors', () => {
-  assert(source.includes('const SN=1260'));
-  assert(/sp_\.set\(\[-44\+Math\.random\(\)\*88,Math\.random\(\)\*28,LD\+\.45\+Math\.random\(\)\*32\]/.test(source));
+  assert(source.includes('const snowCount = 1260;'));
+  // QA69 entrance snowfall: every flake stays between the door (LD+.9) and the opposite facade (LD+14.05), with its own fall speed, sway and wind drift
+  assert(source.includes("x: snowRandom() * 80 - 40, z: LD + .9 + snowRandom() * 12.5,"));
+  assert(source.includes('speed: .48 + snowRandom() * .62, sway: .06 + snowRandom() * .19,'));
+  assert(source.includes('drift: .55 + snowRandom() * .9, flutter: .08 + snowRandom() * .16'));
+  assert(source.includes('if (snow.visible) updateEntranceSnow(dt, t);'));
 });
 test('QA15 every lobby ceiling light except the chandelier is flush-mounted (no rod)', () => {
   const i = source.indexOf('/* 유백색 유리 볼 펜던트 */'), block = source.slice(i, source.indexOf('/* ---------- CINEMA 입구', i));

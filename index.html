@@ -1442,7 +1442,14 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
  /* 공통 의복 디테일: 소맷단, 손가락 대신 엄지, 가죽 밑창 */
  const trim=M(new THREE.Color(coat).multiplyScalar(.78).getHex()),sole=M(0x382b25),leather=M(o.shoe?new THREE.Color(o.shoe).multiplyScalar(1.15).getHex():0x936346);
  arms.forEach((a,i)=>{add(new THREE.CylinderGeometry(.073,.075,.035,12),trim,0,-.395-AL,0,a);add(new THREE.SphereGeometry(.023,8,6),sm,i?-.052:.052,-.448-AL,.035,a);add(new THREE.SphereGeometry(.009,6,4),trim,0,-.365-AL,.074,a)});
- legs.forEach(a=>{const so=add(new THREE.SphereGeometry(.116,12,8),sole,0,-.478,.05,a);so.scale.set(1,.19,1.5);const tongue=add(new THREE.SphereGeometry(.06,10,6),leather,0,-.403,.09,a);tongue.scale.set(.9,.18,.8)});
+ legs.forEach(a=>{const so=add(new THREE.SphereGeometry(.116,12,8),sole,0,-.478,.05,a);so.scale.set(1,.19,1.5);const tongue=add(new THREE.SphereGeometry(.06,10,6),leather,0,-.403,.09,a);tongue.scale.set(.9,.18,.8);
+  /* QA66: 신발 종류(o.shoeStyle) — 기본 신발 위에 형태를 더하거나 바꿈 */const SS=o.shoeStyle,sh=a.children[1],SC=o.shoe||0x7a4626,sc_=M(SC),sd_=M(new THREE.Color(SC).multiplyScalar(.7).getHex());
+  if(SS==='loafer'){add(new THREE.BoxGeometry(.2,.028,.07),sd_,0,-.4,.1,a);add(new THREE.BoxGeometry(.06,.012,.03),GOLD,0,-.385,.1,a)}
+  else if(SS==='ballet'){sh.scale.set(1,.4,1.5);sh.position.y=-.455;tongue.visible=false;add(new THREE.SphereGeometry(.022,8,6),sd_,0,-.425,.175,a);[-1,1].forEach(k=>add(new THREE.SphereGeometry(.02,8,6),sd_,k*.03,-.425,.17,a).scale.set(1.4,.8,.7))}
+  else if(SS==='sneaker'){const wh=M(0xf3efe6);so.material=wh;so.scale.set(1.03,.3,1.53);so.position.y=-.47;tongue.material=wh;add(new THREE.SphereGeometry(.07,10,8),wh,0,-.445,.185,a).scale.set(1.25,.6,.8);[-.02,.03].forEach(z=>add(new THREE.BoxGeometry(.1,.01,.016),wh,0,-.392,.09+z,a))}
+  else if(SS==='ankle'){add(new THREE.CylinderGeometry(.11,.108,.15,14),sc_,0,-.355,0,a);add(new THREE.BoxGeometry(.2,.03,.14),sd_,0,-.483,-.02,a)}
+  else if(SS==='knee'){add(new THREE.CylinderGeometry(.112,.108,.37,14),sc_,0,-.245,0,a);add(new THREE.CylinderGeometry(.115,.115,.03,14),sd_,0,-.065,0,a);add(new THREE.BoxGeometry(.2,.03,.14),sd_,0,-.483,-.02,a)}
+  else if(SS==='maryjane'){tongue.visible=false;sh.scale.set(1,.46,1.5);sh.position.y=-.45;add(new THREE.BoxGeometry(.215,.024,.04),sc_,0,-.4,.02,a);add(new THREE.SphereGeometry(.014,8,6),GOLD,.1,-.4,.03,a)}});
  [-1,1].forEach(side=>{const so=add(new THREE.SphereGeometry(.116,12,8),sole,side*.12,.067,.48,seatedLegs);so.scale.set(1,.19,1.5)});
  if(!o.dress&&!o.apron&&o.open!==0&&!o.vest){[-1,1].forEach(side=>{const shape=new THREE.Shape();shape.moveTo(side*.07,1.105);shape.lineTo(side*.185,.995);shape.lineTo(side*.105,.91);shape.lineTo(side*.035,.79);shape.lineTo(side*.065,1.015);shape.closePath();const lp=add(new THREE.ShapeGeometry(shape),M(new THREE.Color(coat).multiplyScalar(1.09).getHex()),0,0,0);const pos=lp.geometry.attributes.position;for(let j=0;j<pos.count;j++){const x=pos.getX(j),y=pos.getY(j);pos.setZ(j,Math.sqrt(Math.max(0,rAt(y)**2-x*x))*.82+.018)}lp.geometry.computeVertexNormals()});add(new THREE.BoxGeometry(.10,.015,.012),trim,-.15,.875,zf(.875)-.022);add(new THREE.SphereGeometry(.014,8,6),trim,.035,.69,zf(.69)+.016)}
  /* 머리 */const headStart=n.children.length;const hd=add(new THREE.SphereGeometry(.48,26,20),sm,0,1.6,0);hd.scale.set(.93,1.04,.93);/* QA18: 첨부 3D 캐릭터처럼 살짝 세로로 긴 두상 */
@@ -1466,8 +1473,9 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
   if(hs==='wavy'){[-1,1].forEach(sx=>{add(new THREE.SphereGeometry(.17,10,8),hm,sx*.42,1.2,-.12);add(new THREE.SphereGeometry(.15,10,8),hm,sx*.3,1.12,-.24)});const bk=add(new THREE.SphereGeometry(.42,14,10),hm,0,1.32,-.24);bk.scale.set(1.05,.85,.7)}}
  if(hs==='curly'){for(let k=0;k<14;k++){const a=k/14*Math.PI*2,r=.43;const b=add(new THREE.SphereGeometry(.17,10,8),hm,Math.cos(a)*r*(Math.sin(a)>.4?.85:1),1.82+Math.sin(k*1.7)*.05-(Math.sin(a)>.4?.06:0),Math.sin(a)*r*.95-.03);}for(let k=0;k<6;k++)add(new THREE.SphereGeometry(.18,10,8),hm,(k-2.5)*.12,2.0,(k%2)*.1-.05)}
  if(o.long&&hs!=='wavy'){const lh=add(new THREE.SphereGeometry(.5,18,12),hm,0,1.42,-.22);lh.scale.set(1.05,1.05,.62)}
- if(o.glasses!=null&&o.glasses!==false){const gm=M(typeof o.glasses==='number'&&o.glasses>1?o.glasses:0x1a1a1a);[-.16,.16].forEach(x=>add(new THREE.TorusGeometry(.085,.014,6,18),gm,x,1.56,.455));add(new THREE.BoxGeometry(.08,.014,.014),gm,0,1.57,.465)}
- if(o.sung){/* QA41: 선글라스 */const fm=M(0x17171b),lm=new THREE.MeshPhongMaterial({color:0x121216,shininess:90,specular:0x666666});[-.16,.16].forEach(x=>{add(new THREE.TorusGeometry(.09,.016,6,20),fm,x,1.56,.452);add(new THREE.CircleGeometry(.088,20),lm,x,1.56,.456)});add(new THREE.BoxGeometry(.08,.016,.014),fm,0,1.575,.465)}
+ if(o.glasses!=null&&o.glasses!==false){const gm=M(o.glc||(typeof o.glasses==='number'&&o.glasses>1?o.glasses:0x1a1a1a));[-.16,.16].forEach(x=>add(new THREE.TorusGeometry(.085,.014,6,18),gm,x,1.56,.455));add(new THREE.BoxGeometry(.08,.014,.014),gm,0,1.57,.465)}
+ if(o.gsq){/* QA66: 사각 안경 */const gm=M(o.glc||0x1a1a1a);[-.16,.16].forEach(x=>{[[0,.062,.17,.016],[0,-.062,.17,.016],[-.077,0,.016,.14],[.077,0,.016,.14]].forEach(([dx,dy,w,h])=>add(new THREE.BoxGeometry(w,h,.014),gm,x+dx,1.56+dy,.458))});add(new THREE.BoxGeometry(.15,.014,.014),gm,0,1.585,.465)}
+ if(o.sung){/* QA41: 선글라스 */const fm=M(o.glc||0x17171b),lm=new THREE.MeshPhongMaterial({color:0x121216,shininess:90,specular:0x666666});[-.16,.16].forEach(x=>{add(new THREE.TorusGeometry(.09,.016,6,20),fm,x,1.56,.452);add(new THREE.CircleGeometry(.088,20),lm,x,1.56,.456)});add(new THREE.BoxGeometry(.08,.016,.014),fm,0,1.575,.465)}
  if(o.shades)[-.12,.12].forEach(x=>{const r=add(new THREE.TorusGeometry(.08,.02,6,16),GOLD,x,2.06,.2);r.rotation.x=-1.1;const l=add(new THREE.CircleGeometry(.07,14),M(0x6a3a1a),x,2.06,.2);l.rotation.x=-1.1});
  /* 모자 */const hc=o.hatc||0x3a2a22,HM=M(hc);
  if(o.staff&&!o.hat&&!o.ch)o.hat='pillbox';
@@ -1476,16 +1484,19 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
  else if(o.hat==='flat'){const cp=add(new THREE.SphereGeometry(.54,20,12,0,Math.PI*2,0,Math.PI*.5),HM,0,1.9,-.02);cp.scale.set(1.02,.42,1.05);const vs=add(new THREE.CylinderGeometry(.34,.34,.035,16,1,false,-Math.PI/2,Math.PI),HM,0,1.9,.28);vs.rotation.x=.12;add(new THREE.CylinderGeometry(.548,.548,.05,20),M(new THREE.Color(hc).multiplyScalar(.8).getHex()),0,1.9,-.02)}
  else if(o.hat==='scarf'){const tx=(art(64,64,(c,W,H)=>{for(let y=0;y<8;y++)for(let x=0;x<8;x++){c.fillStyle=(x+y)%2?'#f3e6cc':'#b8452a';c.fillRect(x*8,y*8,8,8)}}));tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(3,2);const sf=add(new THREE.SphereGeometry(.545,22,14,0,Math.PI*2,0,Math.PI*.55),new THREE.MeshPhongMaterial({map:tx,emissive:0x2a1a10}),0,1.64,-.02);sf.scale.set(1.04,1,1.04);const kn=add(new THREE.ConeGeometry(.1,.26,4),new THREE.MeshPhongMaterial({map:tx,emissive:0x2a1a10}),-.5,1.6,-.12);kn.rotation.z=-.9}
  else if(o.hat==='fedora'){add(new THREE.CylinderGeometry(.6,.6,.04,24),HM,0,2.0,0);add(new THREE.CylinderGeometry(.32,.37,.28,20),HM,0,2.15,0);add(new THREE.CylinderGeometry(.375,.375,.07,20),M(0x1a1410),0,2.05,0)}
- else if(o.hat==='cloche'){add(new THREE.SphereGeometry(.55,22,14,0,Math.PI*2,0,Math.PI*.5),HM,0,1.72,0);add(new THREE.CylinderGeometry(.6,.6,.04,22),HM,0,1.72,0)}
+ else if(o.hat==='cloche'){/* QA66: 종 모양 클로슈 — 깊은 돔 + 아래로 살짝 벌어지는 챙 + 리본 */const dm=add(new THREE.SphereGeometry(.545,24,14,0,Math.PI*2,0,Math.PI*.5),HM,0,1.8,0);dm.scale.set(1,.82,1.04);const HB=HM.clone();HB.side=THREE.DoubleSide;add(new THREE.CylinderGeometry(.548,.64,.15,24,1,true),HB,0,1.735,0).scale.z=1.04;add(new THREE.CylinderGeometry(.553,.553,.07,24),M(new THREE.Color(hc).multiplyScalar(.62).getHex()),0,1.83,0).scale.z=1.04}
+ else if(o.hat==='bowler'){/* QA66: 보울러 — 둥근 돔 + 좁게 말린 챙 */const dm=add(new THREE.SphereGeometry(.44,24,14,0,Math.PI*2,0,Math.PI*.5),HM,0,2.0,0);dm.scale.set(1,.9,1.04);add(new THREE.CylinderGeometry(.6,.6,.035,26),HM,0,2.0,0);const rim=add(new THREE.TorusGeometry(.6,.022,8,30),HM,0,2.012,0);rim.rotation.x=Math.PI/2;add(new THREE.CylinderGeometry(.446,.446,.06,24),M(new THREE.Color(hc).multiplyScalar(.6).getHex()),0,2.045,0).scale.z=1.04}
  else if(o.hat==='cap'){const cp=add(new THREE.SphereGeometry(.54,20,12,0,Math.PI*2,0,Math.PI*.5),HM,0,1.85,0);cp.scale.set(1,.6,1.05);add(new THREE.CylinderGeometry(.3,.3,.03,16,1,false,-Math.PI/2,Math.PI),HM,0,1.86,.36)}
  if(o.marcus){add(new THREE.BoxGeometry(.15,.035,.018),M(0xece1c8),0,1.425,.453);[-1,1].forEach(k=>{const brow=add(new THREE.BoxGeometry(.105,.017,.025),hm,k*.16,1.65,.43);brow.rotation.z=k*-.18})}
  const headGroup=new THREE.Group();headGroup.position.set(0,1.13,0);n.children.slice(headStart).forEach(q=>{n.remove(q);q.position.y-=1.13;headGroup.add(q)});headGroup.scale.setScalar(o.originalViewing?1:.5);n.add(headGroup);
  /* QA18: 첨부 3D 캐릭터 비율 — 작은 머리 + 길어진 몸통·다리(패션은 그대로) */const BODYK=o.originalViewing?1:1.16;if(BODYK!==1){const bodyG=new THREE.Group();bodyG.name='qa18-body';n.children.slice().forEach(q=>{if(q===headGroup||q===seatedLegs)return;n.remove(q);bodyG.add(q)});bodyG.scale.y=BODYK;n.add(bodyG);const LS=1.3,LEGX=.48*(LS-1);bodyG.children.forEach(q=>{if(legs.includes(q)){q.scale.y=LS;q.position.y=.48*LS}else q.position.y+=LEGX});const hy=(1.13+LEGX)*BODYK-.02;headGroup.position.y=hy;let sv=false;Object.defineProperty(seatedLegs,'visible',{configurable:true,get(){return sv},set(v){sv=!!v;bodyG.position.y=sv?-LEGX*BODYK:0;headGroup.position.y=hy-(sv?LEGX*BODYK:0)}})}
  /* 소품 */
  if(o.camera){const cg=new THREE.Group();cg.position.set(0,.92,zf(.92)+.05);n.add(cg);add(new THREE.BoxGeometry(.24,.15,.08),M(0x1c1c1e),0,0,0,cg);add(new THREE.BoxGeometry(.24,.04,.081),M(0xcfd3d6),0,.07,0,cg);const ln=add(new THREE.CylinderGeometry(.05,.055,.07,16),M(0x2a2a2a),0,0,.06,cg);ln.rotation.x=Math.PI/2;add(new THREE.CircleGeometry(.035,14),M(0x3a5a7a),0,0,.096,cg);[-1,1].forEach(sx=>{const st=add(new THREE.BoxGeometry(.02,.32,.02),M(0x3a2418),sx*.12,.18,-.04,cg);st.rotation.z=sx*-.3})}
- if(o.bag==='cross'){const bg=add(new THREE.BoxGeometry(.2,.17,.08),M(0x8a5226),.27,.56,.12);add(new THREE.BoxGeometry(.2,.06,.085),M(0x6e3e1a),.27,.62,.125);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,.27,.6,.17);const st=add(new THREE.BoxGeometry(.025,.75,.02),M(0x6e3e1a),.02,.86,zf(.86)+.02);st.rotation.z=.68}
- if(o.bag==='shoulder'){/* QA44: 어깨에 멘 가방 */const bm=M(0x8a5226),sd=M(0x6e3e1a);add(new THREE.BoxGeometry(.1,.2,.25),bm,-.45,.56,0);add(new THREE.BoxGeometry(.11,.05,.26),sd,-.45,.67,0);add(new THREE.SphereGeometry(.018,8,6),GOLD,-.505,.6,0);/* QA47: 끈이 어깨 위를 넘어 앞뒤로 내려오는 고리 */const lp=add(new THREE.TorusGeometry(.26,.014,6,28),sd,-.385,.98,0);lp.rotation.y=Math.PI/2;lp.scale.set(.5,1.2,1.6)}
- if(o.bag==='hand'){const hb=new THREE.Group();hb.position.set(0,-.58-AL,.02);arms[0].add(hb);add(new THREE.BoxGeometry(.2,.16,.08),M(0x8a5226),0,0,0,hb);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,0,.04,.045,hb);const hd_=add(new THREE.TorusGeometry(.06,.012,6,12,Math.PI),M(0x6e3e1a),0,.08,0,hb)}
+ /* QA66: 가방 색(o.bagc) */const BGC=o.bagc||0x8a5226,BGD=o.bagc?new THREE.Color(o.bagc).multiplyScalar(.78).getHex():0x6e3e1a;
+ if(o.bag==='cross'){const bg=add(new THREE.BoxGeometry(.2,.17,.08),M(BGC),.27,.56,.12);add(new THREE.BoxGeometry(.2,.06,.085),M(BGD),.27,.62,.125);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,.27,.6,.17);const st=add(new THREE.BoxGeometry(.025,.75,.02),M(BGD),.02,.86,zf(.86)+.02);st.rotation.z=.68}
+ if(o.bag==='rattan'){/* QA66: 손에 든 라탄 바구니 가방 */const rb=new THREE.Group();rb.position.set(0,-.6-AL,.03);arms[0].add(rb);const RC_=o.bagc||0xc9a063,rm=M(RC_),rd=M(new THREE.Color(RC_).multiplyScalar(.74).getHex());add(new THREE.CylinderGeometry(.115,.09,.15,16),rm,0,0,0,rb).scale.z=.7;[-.045,0,.045].forEach(y=>{const ring=add(new THREE.TorusGeometry(.105-Math.abs(y-.045)*.12,.008,5,20),rd,0,y,0,rb);ring.rotation.x=Math.PI/2;ring.scale.y=.7});const hd=add(new THREE.TorusGeometry(.075,.011,6,14,Math.PI),rd,0,.075,0,rb)}
+ if(o.bag==='shoulder'){/* QA44: 어깨에 멘 가방 */const bm=M(BGC),sd=M(BGD);add(new THREE.BoxGeometry(.1,.2,.25),bm,-.45,.56,0);add(new THREE.BoxGeometry(.11,.05,.26),sd,-.45,.67,0);add(new THREE.SphereGeometry(.018,8,6),GOLD,-.505,.6,0);/* QA47: 끈이 어깨 위를 넘어 앞뒤로 내려오는 고리 */const lp=add(new THREE.TorusGeometry(.26,.014,6,28),sd,-.385,.98,0);lp.rotation.y=Math.PI/2;lp.scale.set(.5,1.2,1.6)}
+ if(o.bag==='hand'){const hb=new THREE.Group();hb.position.set(0,-.58-AL,.02);arms[0].add(hb);add(new THREE.BoxGeometry(.2,.16,.08),M(BGC),0,0,0,hb);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,0,.04,.045,hb);const hd_=add(new THREE.TorusGeometry(.06,.012,6,12,Math.PI),M(BGD),0,.08,0,hb)}
  if(o.tote){const tb=new THREE.Group();tb.position.set(0,-.62-AL,.02);arms[0].add(tb);add(new THREE.BoxGeometry(.22,.24,.04),M(0xf3ecdc),0,0,0,tb);add(new THREE.BoxGeometry(.1,.08,.01),M(0xb3202e),0,-.02,.025,tb);add(new THREE.TorusGeometry(.07,.01,6,12,Math.PI),M(0xd9cdb0),0,.12,0,tb)}
  if(o.paper||o.flyer){const pp=new THREE.Group();pp.position.set(0,-.5-AL,.08);arms[0].add(pp);const tx=(art(48,64,(c,W,H)=>{c.fillStyle='#f3ecdc';c.fillRect(0,0,W,H);c.fillStyle='#5a4a3a';if(o.paper){for(let y=8;y<H-4;y+=6)c.fillRect(5,y,W-10,2)}else{c.fillStyle='#8a4a2a';c.fillRect(6,8,W-12,30);c.fillStyle='#5a4a3a';c.fillRect(6,44,W-12,3);c.fillRect(6,50,W-20,3)}}));const pl=add(new THREE.PlaneGeometry(.2,.27),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}),0,0,0,pp);pl.rotation.y=.4}
  if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;sh.visible=false/* QA19: 아바타 바닥 그림자 제거 */;sh.name='avatar-shadow';g.add(sh);const t=tag(name,'rgba(42,20,28,.88)','#fff',24,.62);t.name='avatar-tag';t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.38:o.hat||o.hs==='curly'?2.26:2.16;g.add(t)}
@@ -4040,7 +4051,7 @@ CLUBG.forEach(o=>{if(o.isLight){o.color.setHex(0xffd9b3);o.intensity*=.85;if(o.u
 const SOFT_MATERIALS=new Set();/* WeakSet은 객체가 아닌 값에서 오류가 나므로 Set 사용 */
 function softenSurface(m){if(!m||typeof m!=='object'||SOFT_MATERIALS.has(m))return;SOFT_MATERIALS.add(m);if(m.isMeshPhongMaterial){m.shininess=Math.max(6,Math.min(38,m.shininess*.6));if(m.specular)m.specular.multiplyScalar(.58);m.needsUpdate=true}}
 /* QA59: 소프트 클레이 질감 — 번들거림을 없애고 자체 발광을 줄여 과한 노출을 낮춤. 면의 방향에 따른 부드러운 음영이 남아 점토처럼 보임. 금속 장식과 팔레트 재질(벽·바닥·문틀)은 제외 */
-const CLAY_DONE=new Set();function clayify(m){if(!m||typeof m!=='object'||CLAY_DONE.has(m)||m.userData&&m.userData.keep)return;CLAY_DONE.add(m);if(!(m.isMeshPhongMaterial||m.isMeshLambertMaterial)||m.transparent)return;const metal=m.isMeshPhongMaterial&&m.userData.metal;if(m.isMeshPhongMaterial&&!metal){m.shininess=Math.min(m.shininess,7);if(m.specular)m.specular.multiplyScalar(.3)}if(m.color)m.color.multiplyScalar(.9);if(m.emissive)m.emissive.multiplyScalar(metal?.8:.5);m.needsUpdate=true}
+const CLAY_DONE=new WeakSet();function clayify(m){if(!m||typeof m!=='object'||CLAY_DONE.has(m)||m.userData&&m.userData.keep)return;CLAY_DONE.add(m);if(!(m.isMeshPhongMaterial||m.isMeshLambertMaterial)||m.transparent)return;const metal=m.isMeshPhongMaterial&&m.userData.metal;if(m.isMeshPhongMaterial&&!metal){m.shininess=Math.min(m.shininess,7);if(m.specular)m.specular.multiplyScalar(.3)}if(m.color)m.color.multiplyScalar(.9);if(m.emissive)m.emissive.multiplyScalar(metal?.8:.5);m.needsUpdate=true}
 function clayObject(root){root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(clayify)})}
 function softenObject(root){if(root&&root.userData&&root.userData.legs)clayObject(root);root.traverse(o=>{if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(m&&m.isMeshPhongMaterial&&m.shininess>=70&&!SOFT_MATERIALS.has(m))m.userData.metal=1;softenSurface(m)});if(o.isSprite&&o.material&&o.material.map===haloTex){o.material.opacity*=.78;o.scale.multiplyScalar(1.10)}})}
 S.traverse(o=>{if(o.isPointLight){o.intensity*=.82;if(o.userData.i!=null)o.userData.i*=.82;if(o.distance>0)o.distance*=1.12;o.decay=Math.max(1,o.decay*.85)}});
@@ -4068,8 +4079,8 @@ window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF()
  for(let k=0;k<18;k++){const x=-26+k*3.1;add(sph,x,.05,LD+7+((k*7)%5-2)*.6,1.2,.08,.5,'qa17-snow-patch')}
 })();
 /* QA18: 로비 음악만 끄는 버튼(효과음·점등식 소리는 유지) — 소리 버튼 왼쪽 */
-(function(){const up=CinemaAudio.updateButton.bind(CinemaAudio);CinemaAudio.updateButton=function(){up();const mute=document.getElementById('lobbyMute');if(!mute)return;let b=document.getElementById('lobbyMusic');if(!b){b=document.createElement('button');b.id='lobbyMusic';b.type='button';b.onclick=()=>{A.bgm();CinemaAudio.updateButton()};mute.parentNode.insertBefore(b,mute);const st=document.createElement('style');st.textContent='#lobbyMusic{display:flex;align-items:center;justify-content:center;width:38px;height:36px;padding:0;background:#fff8ed;color:#5d211c;border:1px solid #5d211c;border-radius:18px;cursor:pointer}#lobbyMusic[hidden]{display:none}#lobbyMusic.off{opacity:.6}';document.head.appendChild(st)}
- const zl=typeof me!=='undefined'&&me&&['L0','L1'].includes(curZone(me));mute.hidden=true;b.hidden=!zl;const on=!!BGM.on;b.classList.toggle('off',!on);b.setAttribute('aria-pressed',String(!on));b.setAttribute('aria-label',on?'로비 음악 끄기':'로비 음악 켜기');b.title=on?'로비 음악 끄기':'로비 음악 켜기';const k=on?'music':'musicoff';if(b.dataset.k!==k){b.dataset.k=k;b.innerHTML=lucide(k,20)}}})();
+(function(){const up=CinemaAudio.updateButton.bind(CinemaAudio);CinemaAudio.updateButton=function(){up();const mute=document.getElementById('lobbyMute');if(!mute)return;let b=document.getElementById('lobbyMusic');if(!b){b=document.createElement('button');b.id='lobbyMusic';b.type='button';b.onclick=()=>{A.bgm();CinemaAudio.updateButton()};mute.parentNode.insertBefore(b,mute);const st=document.createElement('style');/* QA67: shadcn/ui Toggle(outline, size default) 구조 — 색만 브랜드 팔레트 */st.textContent='#lobbyMusic{display:inline-flex;align-items:center;justify-content:center;height:36px;min-width:36px;padding:0 8px;border-radius:6px;border:1px solid rgba(255,255,255,.2);background:rgba(42,20,28,.88);color:#fbefd9;font:500 14px/20px inherit;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.05);transition:background-color .15s,color .15s,border-color .15s}#lobbyMusic svg{width:16px;height:16px;flex:none;pointer-events:none}#lobbyMusic:hover{background:rgba(74,44,52,.95)}#lobbyMusic[data-state=on]{background:#f2d9a5;color:#2a1600;border-color:#f2d9a5}#lobbyMusic[data-state=on]:hover{background:#f7e6c0}#lobbyMusic:focus-visible{outline:0;box-shadow:0 0 0 1px #2a141c,0 0 0 3px #f2d9a5}#lobbyMusic[hidden]{display:none}';document.head.appendChild(st)}
+ const zl=typeof me!=='undefined'&&me&&['L0','L1'].includes(curZone(me));mute.hidden=true;b.hidden=!zl;const on=!!BGM.on;b.classList.toggle('off',!on);b.setAttribute('aria-pressed',String(on))/* QA67: 눌림 = 음악 켜짐 */;b.dataset.state=on?'on':'off';b.setAttribute('aria-label',on?'로비 음악 끄기':'로비 음악 켜기');b.title=on?'로비 음악 끄기':'로비 음악 켜기';const k=on?'music':'musicoff';if(b.dataset.k!==k){b.dataset.k=k;b.innerHTML=lucide(k,16)}}})();
 /* QA18: 아지트 작은 트리 — 반짝이는 전구 */
 (function(){if(typeof qa18BuildFir!=='function')return;const mark=layBeg(),g=new THREE.Group();g.name='club-mini-tree';g.position.set(BCX-2.6,0,BCZ+6.6);S.add(g);CLUBG.push(g);HSET.add(g);
  const gold=new THREE.MeshPhongMaterial({color:0xd9b25a,shininess:95,specular:0xfff1c0,emissive:0x2a1c04}),glow=new THREE.MeshBasicMaterial({color:0xffffff,toneMapped:false});
@@ -4202,49 +4213,8 @@ window.QA21={data,watched,pull,plaques,endFilm,curFilm,toggle:id=>push(data(id).
 </script>
 <script id="qa38-chandelier">/* QA38: 중앙 샹들리에 15% 축소 — 천장에 매달린 윗부분 높이는 그대로 */(function(){const f=S.getObjectByName('qa13-crystal-chandelier');if(!f)return;f.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(f),top=b.max.y,k=.85;f.scale.multiplyScalar(k);f.updateMatrixWorld(true);const b2=new THREE.Box3().setFromObject(f);f.position.y+=top-b2.max.y})();</script>
 <style id="qa40-style">
-/* QA40: 캐릭터 바꾸기 — shadcn/ui Dialog·Input·RadioGroup(Card) 구조, 색만 브랜드 팔레트 */
-#ccdlg{--background:#2a141c;--foreground:#fbefd9;--muted-foreground:rgba(251,239,217,.64);--border:rgba(255,255,255,.2);--input:rgba(255,255,255,.2);--primary:#f2d9a5;--primary-foreground:#2a1600;--accent:rgba(255,255,255,.08);--ring:#f2d9a5;--radius:8px;position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(26,11,16,.8);font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--foreground)}
-#ccdlg[hidden]{display:none}
-#ccdlg .cc-content{position:relative;width:100%;max-width:512px;max-height:calc(100dvh - 32px);overflow-y:auto;display:grid;gap:16px;padding:24px;background:var(--background);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 10px 15px -3px rgba(0,0,0,.4),0 4px 6px -4px rgba(0,0,0,.4)}
-#ccdlg .cc-header{display:grid;gap:6px;padding-right:24px}
-#ccdlg h2{margin:0;font-size:18px;line-height:1;font-weight:600;letter-spacing:-.01em;color:var(--foreground)}
-#ccdlg .cc-desc{margin:0;font-size:14px;line-height:20px;color:var(--muted-foreground)}
-#ccdlg .cc-close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:grid;place-items:center;padding:0;border:0;border-radius:4px;background:transparent;color:var(--foreground);opacity:.7;cursor:pointer}
-#ccdlg .cc-close:hover{opacity:1}
-#ccdlg .cc-field{display:grid;gap:8px}
-#ccdlg label,#ccdlg .cc-label{font-size:14px;line-height:1;font-weight:500;color:var(--foreground)}
-#ccdlg input{height:36px;width:100%;box-sizing:border-box;padding:4px 12px;border:1px solid var(--input);border-radius:6px;background:transparent;color:var(--foreground);font:400 14px/20px inherit;font-family:inherit;outline:0;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-#ccdlg input::placeholder{color:var(--muted-foreground)}
-#ccdlg input:focus-visible,#ccdlg button:focus-visible{outline:0;box-shadow:0 0 0 1px var(--background),0 0 0 3px var(--ring)}
-#ccdlg .cc-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-#ccdlg .cc-card{display:grid;gap:6px;justify-items:center;padding:4px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--foreground);cursor:pointer;transition:background .15s,border-color .15s}
-#ccdlg .cc-card:hover{background:var(--accent)}
-#ccdlg .cc-card[aria-checked="true"]{border-color:var(--primary);background:rgba(242,217,165,.12);box-shadow:0 0 0 1px var(--primary)}
-#ccdlg .cc-card img{width:100%;aspect-ratio:3/4;object-fit:contain;display:block;border-radius:6px;background:rgba(255,255,255,.05)}
-#ccdlg .cc-card{position:relative}#ccdlg .cc-badge{position:absolute;top:4px;left:4px;padding:2px 6px;border-radius:999px;background:var(--primary);color:var(--primary-foreground);font-size:11px;line-height:14px;font-weight:600}#ccdlg .cc-me{display:grid;grid-template-columns:72px minmax(0,1fr);gap:16px;align-items:center}#ccdlg .cc-avatar .cc-badge{top:auto;bottom:4px}#ccdlg .cc-avatar{position:relative;border:1px solid var(--border);border-radius:var(--radius);background:rgba(255,255,255,.05);overflow:hidden}#ccdlg .cc-avatar img{display:block;width:100%;aspect-ratio:3/4;object-fit:contain}
-#ccdlg .cc-footer{display:flex;justify-content:flex-end;gap:8px}
-#ccdlg .cc-btn{height:36px;padding:0 16px;border-radius:6px;font:500 14px/20px inherit;font-family:inherit;cursor:pointer;border:1px solid transparent}
-#ccdlg .cc-btn.outline{background:transparent;border-color:var(--input);color:var(--foreground)}
-#ccdlg .cc-btn.outline:hover{background:var(--accent)}
-#ccdlg .cc-btn.primary{background:var(--primary);color:var(--primary-foreground)}
-#ccdlg .cc-btn.primary:hover{background:#f7e6c0}
-#ccdlg .cc-err{margin:0;font-size:13px;line-height:16px;color:#f0a39a;min-height:0}
-@media(max-width:520px){#ccdlg .cc-content{padding:20px 16px}#ccdlg .cc-grid{gap:6px}#ccdlg .cc-card{padding:3px}#ccdlg .cc-footer{flex-direction:column-reverse}#ccdlg .cc-btn{width:100%}}
-
-/* QA44: 꾸미기 컨트롤(shadcn ToggleGroup·색 스와치) */
-#ccdlg .cc-custom{display:grid;gap:14px}#ccdlg .cc-custom.off{opacity:.45;pointer-events:none}
-#ccdlg .cc-sw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-#ccdlg .cc-sw-b{width:28px;height:28px;padding:0;border-radius:999px;border:1px solid var(--border);background:var(--c,transparent);cursor:pointer}
-#ccdlg .cc-sw-b.dflt{width:auto;padding:0 12px;height:28px;border-radius:999px;background:transparent;color:var(--foreground);font:500 13px/1 'Noto Sans KR',sans-serif}
-#ccdlg .cc-sw-b[aria-pressed="true"]{box-shadow:0 0 0 2px var(--background),0 0 0 4px var(--primary);border-color:var(--primary)}
-#ccdlg .cc-sw-b.dflt[aria-pressed="true"]{background:rgba(242,217,165,.14);box-shadow:0 0 0 1px var(--primary)}
-#ccdlg .cc-tg{display:flex;flex-wrap:wrap;gap:6px}
-#ccdlg .cc-tg button{height:32px;padding:0 12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--foreground);font:500 13px/1 'Noto Sans KR',sans-serif;cursor:pointer}
-#ccdlg .cc-tg button[aria-pressed="true"]{background:var(--primary);color:var(--primary-foreground);border-color:var(--primary)}
-#ccdlg .cc-hint{margin:0;font-size:12px;line-height:16px;color:var(--muted-foreground)}#ccdlg .cc-custom:not(.off) .cc-hint{display:none}
 /* QA44: 모바일 하단 네비 5칸 균등 배치 */
 @media(max-width:600px){html body .bar #act{flex:1 1 auto!important;width:auto!important;max-width:none!important;margin:0 10px!important;overflow:visible!important;box-sizing:border-box;gap:0!important;padding:6px 4px!important;justify-content:stretch!important}html body #act button,html body #act .fx{flex:1 1 0!important;min-width:0!important;padding:8px 2px!important}html body #act .fx.sep{margin-left:0!important;padding-left:2px!important}html body #act .fx.sep::before{display:none}}
-
 /* QA44: 모바일에서 영상 시작 시 가로(와이드) 화면 — 세로 고정 기기는 화면을 90도 돌려 보여줌 */
 html.qa44-rot,html.qa44-rot body{overflow:hidden!important}
 html.qa44-rot body{position:fixed!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:var(--qa-rh)!important;height:var(--qa-rw)!important;min-height:0!important;margin:0!important;transform-origin:0 0!important;transform:translateX(var(--qa-rw)) rotate(90deg)!important}
@@ -4263,21 +4233,29 @@ const LOOK10=[/* QA41: 여 6 · 남 4, 레퍼런스 원단 패턴 적용, 안경
  {id:'m12',n:'아가일 카디건',o:{skin:SK.dk,hair:0x1e1a1a,hs:'short',coat:0x8a5a3a,pat:['argyle',0x8a5a3a,[0xe6dccb,0x2a1e1a,0x2a1e1a],[4,1.6]],shirt:0xf3ecdc,tie:0x5a1f2a,pants:0x6e6a66,shoe:0x2a2624,glasses:0x1a1a1a}},
  {id:'m07',n:'체크 트렌치',o:{bag:'shoulder',skin:SK.lt,hair:0x2e201c,hs:'short',coat:0x6a4226,pat:['tartan',0x6a4226,0x2a1612],dbl:1,belt:0x4a2c1a,shirt:0xf3ecdc,tie:0x2a2624,skirt:0x6a4226,skirtPat:['tartan',0x6a4226,0x2a1612],legs:0x2a2a30,shoe:0x1c1c1e,hat:'fedora',hatc:0x2a2624}}];
 const QA40={thumbs:null,sel:null,announceT:0};
-/* QA44: 꾸미기 — 선택한 의상 + 색/안경/모자/가방. 저장 형식 aic.look = 'id,top,bot,gl,hat,bag'(기본은 '-') */
-const QA44={tops:[0xb3202e,0xd9822b,0xd6a12a,0x3f5a34,0x2f6a6a,0x2a3a5e,0x6c4a6f,0x6a3a1e,0xe9dcc3,0x2a2624,0x7c7773,0xe9a8b8],
- hats:[['-','기본'],['none','없음'],['beret','베레'],['flat','플랫캡'],['cap','캡'],['fedora','페도라']],bags:[['-','기본'],['none','없음'],['cross','크로스'],['shoulder','숄더']],gls:[['-','기본'],['0','없음'],['1','안경'],['2','선글라스']]};
+/* QA66: 외형 저장 형식 aic.look = 'id,top,bot,gl,hat,bag,shoes,hatc,glc,bagc,shoec' — '-'는 그 캐릭터의 원래 모습. id 'auto'는 닉네임으로 정해지는 기본 캐릭터. 예전 6칸 형식도 읽음 */
 const hex6=n=>n.toString(16).padStart(6,'0');
-function qa44Parse(str){const p=String(str||'').split(',');const L=LOOK10.find(l=>l.id===p[0]);if(!L)return null;const col=v=>/^[0-9a-f]{6}$/i.test(v||'')?parseInt(v,16):null;return {L,c:{top:col(p[1]),bot:col(p[2]),gl:['0','1','2'].includes(p[3])?p[3]:'-',hat:QA44.hats.some(h=>h[0]===p[4])?p[4]:'-',bag:QA44.bags.some(h=>h[0]===p[5])?p[5]:'-'}}}
-function qa44Spec(L,c){return [L.id,c.top==null?'-':hex6(c.top),c.bot==null?'-':hex6(c.bot),c.gl||'-',c.hat||'-',c.bag||'-'].join(',')}
-function qa44Build(L,c){const o=JSON.parse(JSON.stringify(L.o));c=c||{};
+const QA66={items:{gl:['none','round','sun','square'],hat:['none','beret','flatcap','fedora','cloche','bowler'],bag:['none','crossbody','shoulder','rattan'],shoes:['loafer','ballet','sneaker','ankle','knee','maryjane']},legacy:{gl:{'0':'none','1':'round','2':'sun'},hat:{flat:'flatcap',cap:'flatcap'},bag:{cross:'crossbody'},shoes:{}},open:false,P:null};
+/* 'auto~닉네임'은 그 닉네임으로 정해진 기본 캐릭터를 고정한 것(닉네임을 바꿔도 모습 유지) */
+function qa66Base(id,name){const L=LOOK10.find(l=>l.id===id);let seed=name||(me&&me.userData.displayName)||'관객';if(!L&&String(id).startsWith('auto~'))try{seed=decodeURIComponent(String(id).slice(5))||seed}catch(e){}return JSON.parse(JSON.stringify(L?L.o:qaUserLook(seed)))}
+/* 캐릭터 원래 모습의 악세서리를 편집기 ID로 */
+function qa66Nat(o){return {gl:o.sung?'sun':o.gsq?'square':(o.glasses!=null&&o.glasses!==false)?'round':'none',hat:!o.hat?'none':({beret:'beret',flat:'flatcap',cap:'flatcap',fedora:'fedora',cloche:'cloche',bowler:'bowler'})[o.hat]||'other',bag:!o.bag?'none':({cross:'crossbody',shoulder:'shoulder',rattan:'rattan'})[o.bag]||'other',shoes:o.shoeStyle||'default'}}
+function qa44Parse(str){const p=String(str||'').split(',');if(p[0]!=='auto'&&!/^auto~[A-Za-z0-9%._~!*'()-]{1,200}$/.test(p[0])&&!LOOK10.some(l=>l.id===p[0]))return null;const col=v=>/^[0-9a-f]{6}$/i.test(v||'')?parseInt(v,16):null,it=(k,v)=>{v=QA66.legacy[k][v]||v;return QA66.items[k].includes(v)?v:'-'};return {id:p[0],c:{top:col(p[1]),bot:col(p[2]),gl:it('gl',p[3]),hat:it('hat',p[4]),bag:it('bag',p[5]),shoes:it('shoes',p[6]),hatc:col(p[7]),glc:col(p[8]),bagc:col(p[9]),shoec:col(p[10])}}}
+function qa44Spec(id,c){const h=v=>v==null?'-':hex6(v);return [id,h(c.top),h(c.bot),c.gl||'-',c.hat||'-',c.bag||'-',c.shoes||'-',h(c.hatc),h(c.glc),h(c.bagc),h(c.shoec)].join(',')}
+function qa44Build(id,c,name){const o=qa66Base(id,name);c=c||{};
  if(c.top!=null){if(o.dress){o.dress=c.top;if(o.dressPat)o.dressPat[1]=c.top}else{o.coat=c.top;if(o.pat)o.pat[1]=c.top}}
  if(c.bot!=null){if(o.skirt){o.skirt=c.bot;if(o.skirtPat)o.skirtPat[1]=c.bot}else if(o.dress)o.legs=c.bot;else o.pants=c.bot}
- if(c.gl==='0'){delete o.glasses;delete o.sung}else if(c.gl==='1'){o.glasses=0x1a1a1a;delete o.sung}else if(c.gl==='2'){o.sung=1;delete o.glasses}
- if(c.hat==='none')delete o.hat;else if(c.hat&&c.hat!=='-'){o.hat=c.hat;if(!o.hatc)o.hatc=0x3a2a22}
- if(c.bag==='none')delete o.bag;else if(c.bag&&c.bag!=='-')o.bag=c.bag;
- o.lookId=qa44Spec(L,c);return o}
-function qa40Saved(){try{const v=localStorage.getItem('aic.look');if(!v)return null;if(v[0]==='{'){const j=JSON.parse(v);return qa44Parse(j.id)}return qa44Parse(v)}catch(e){return null}}
-function qa40MyLook(name){const s=qa40Saved();return s?qa44Build(s.L,s.c):qaUserLook(name)}
+ if(c.gl&&c.gl!=='-'){delete o.glasses;delete o.sung;delete o.gsq;if(c.gl==='round')o.glasses=0x1a1a1a;else if(c.gl==='sun')o.sung=1;else if(c.gl==='square')o.gsq=1}
+ if(c.glc!=null)o.glc=c.glc;
+ if(c.hat==='none')delete o.hat;else if(c.hat&&c.hat!=='-'){o.hat=c.hat==='flatcap'?'flat':c.hat;if(!o.hatc)o.hatc=0x3a2a22}
+ if(c.hatc!=null)o.hatc=c.hatc;
+ if(c.bag==='none')delete o.bag;else if(c.bag&&c.bag!=='-')o.bag=c.bag==='crossbody'?'cross':c.bag;
+ if(c.bagc!=null)o.bagc=c.bagc;
+ if(c.shoes&&c.shoes!=='-')o.shoeStyle=c.shoes;
+ if(c.shoec!=null)o.shoe=c.shoec;
+ o.lookId=qa44Spec(id,c);return o}
+function qa40Saved(){try{const v=localStorage.getItem('aic.look');return v?qa44Parse(v):null}catch(e){return null}}
+function qa40MyLook(name){const s=qa40Saved();return s?qa44Build(s.id,s.c,name):qaUserLook(name)}
 /* 같은 아바타 객체를 유지한 채 몸(모델)·이름표만 새로 갈아 끼움 — 위치·좌석·들고 있는 물건은 그대로 */
 function qa40Rebuild(av,name,look,isMe){const u=av.userData,oldN=av.children[0],oldSeat=!!(u.seatedLegs&&u.seatedLegs.visible),oldLegs=(u.legs||[]).map(l=>({v:l.visible,rx:l.rotation.x})),oldArms=(u.arms||[]).map(a=>a.rotation.x);
  const g=mk(name,0,{...look,me:isMe?1:0}),nu=g.userData,newN=g.children[0];if(g.parent)g.parent.remove(g);
@@ -4291,48 +4269,41 @@ function qa40Rebuild(av,name,look,isMe){const u=av.userData,oldN=av.children[0],
  if(oldSeat){u.seatedLegs.visible=true}u.legs.forEach((l,i)=>{if(oldLegs[i]){l.visible=oldLegs[i].v;l.rotation.x=oldLegs[i].rx}});u.arms.forEach((a,i)=>{if(oldArms[i]!=null)a.rotation.x=oldArms[i]});
  try{if(typeof softenObject==='function')softenObject(av)}catch(e){}
  try{setCarry(av,u.carryItems||[])}catch(e){}}
-function qa40PeerLook(p,spec){const r=qa44Parse(spec);if(!r||!p||!p.avatar||p.lookId===spec)return;p.lookId=spec;qa40Rebuild(p.avatar,p.avatar.userData.displayName||'관객',qa44Build(r.L,r.c),false)}
-function qa40Announce(){clearTimeout(QA40.announceT);QA40.announceT=setTimeout(()=>{const s=qa40Saved();if(s&&window.qa40MpSendLook)window.qa40MpSendLook(qa44Spec(s.L,s.c))},700)}
+function qa40PeerLook(p,spec){const r=qa44Parse(spec);if(!r||!p||!p.avatar||p.lookId===spec)return;p.lookId=spec;const nm=p.avatar.userData.displayName||'관객';qa40Rebuild(p.avatar,nm,qa44Build(r.id,r.c,nm),false)}
+function qa40Announce(){clearTimeout(QA40.announceT);QA40.announceT=setTimeout(()=>{const s=qa40Saved();if(s&&window.qa40MpSendLook)window.qa40MpSendLook(qa44Spec(s.id,s.c))},700)}
 function qa40Render(list){const out=[];try{const W=180,H=240;if(!QA40.rr){const r=new THREE.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:true});r.setPixelRatio(1);r.setSize(W,H,false);try{r.outputEncoding=R.outputEncoding}catch(e){}
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xfff4e0,0x7a5a48,.5));const d=new THREE.DirectionalLight(0xffffff,.32);d.position.set(1.5,3,4);sc.add(d);const cam=new THREE.PerspectiveCamera(23,W/H,.1,30);cam.position.set(0,.78,3.45);cam.lookAt(0,.64,0);QA40.rr={r,sc,cam}}
   const {r,sc,cam}=QA40.rr;list.forEach(o=>{const a=mk('',0,{...o,me:0,notag:1,parent:sc});a.rotation.y=.32;r.render(sc,cam);out.push(r.domElement.toDataURL('image/png'));sc.remove(a);a.traverse(q=>{if(q.geometry&&q.geometry.dispose)q.geometry.dispose()})})}catch(e){}return out}
 function qa40Thumbs(){if(QA40.thumbs)return QA40.thumbs;const imgs=qa40Render(LOOK10.map(L=>L.o)),out={};LOOK10.forEach((L,i)=>out[L.id]=imgs[i]);QA40.thumbs=out;return out}
-function qa40Close(){const d=document.getElementById('ccdlg');if(d)d.hidden=true}
-const DEF44=()=>({top:null,bot:null,gl:'-',hat:'-',bag:'-'});
-/* 미리보기·선택 표시 갱신 */
-function qa44Sync(){const d=document.getElementById('ccdlg');if(!d)return;const st=QA40.st,L=LOOK10.find(l=>l.id===st.id),sv=qa40Saved();
- d.querySelectorAll('.cc-card').forEach(b=>b.setAttribute('aria-checked',b.dataset.id===st.id?'true':'false'));
- d.querySelector('.cc-custom').classList.toggle('off',!L);
- d.querySelectorAll('.cc-sw-b').forEach(b=>{const cur=st.c[b.dataset.k];b.setAttribute('aria-pressed',String((b.dataset.v==='-'&&cur==null)||(cur!=null&&b.dataset.v===hex6(cur))))});
- d.querySelectorAll('.cc-tg button').forEach(b=>b.setAttribute('aria-pressed',String(st.c[b.dataset.k]===b.dataset.v)));
- const spec=L?qa44Spec(L,st.c):null,same=sv?(spec===qa44Spec(sv.L,sv.c)):!L;
- d.querySelector('#cc-badge').textContent=same?'현재':'미리보기';
- const opts=L?qa44Build(L,st.c):(me.userData.lookOpts||{}),key=JSON.stringify(opts);if(QA40.pvKey!==key){QA40.pvKey=key;const src=qa40Render([opts])[0];if(src)d.querySelector('#cc-cur').src=src}}
-function qa40Open(){if(!me)return;try{closePanel()}catch(e){}let d=document.getElementById('ccdlg');
- if(!d){d=document.createElement('div');d.id='ccdlg';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','cc-title');d.setAttribute('aria-describedby','cc-desc');
-  const sw=k=>'<button type="button" class="cc-sw-b dflt" data-k="'+k+'" data-v="-" aria-pressed="true">기본</button>'+QA44.tops.map(c=>'<button type="button" class="cc-sw-b" data-k="'+k+'" data-v="'+hex6(c)+'" style="--c:#'+hex6(c)+'" aria-label="#'+hex6(c)+'" aria-pressed="false"></button>').join(''),
-   tg=(k,arr)=>arr.map(([v,n])=>'<button type="button" data-k="'+k+'" data-v="'+v+'" aria-pressed="false">'+n+'</button>').join('');
-  d.innerHTML='<div class="cc-content"><div class="cc-header"><h2 id="cc-title">캐릭터 바꾸기</h2><p class="cc-desc" id="cc-desc">모습과 닉네임을 바꿀 수 있어요.</p></div><button type="button" class="cc-close" data-cc="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><div class="cc-me"><div class="cc-avatar"><img id="cc-cur" alt="내 캐릭터 미리보기"><span class="cc-badge" id="cc-badge">현재</span></div><div class="cc-field"><label for="cc-nick">닉네임</label><input id="cc-nick" maxlength="14" autocomplete="off" placeholder="닉네임을 입력하세요"><p class="cc-err" id="cc-err" role="alert"></p></div></div><div class="cc-field"><div class="cc-label" id="cc-looks">캐릭터</div><div class="cc-grid" role="radiogroup" aria-labelledby="cc-looks"></div></div>'
-   +'<div class="cc-custom"><div class="cc-field"><div class="cc-label">상의 색</div><div class="cc-sw">'+sw('top')+'</div></div><div class="cc-field"><div class="cc-label">하의 색</div><div class="cc-sw">'+sw('bot')+'</div></div><div class="cc-field"><div class="cc-label">안경</div><div class="cc-tg">'+tg('gl',QA44.gls)+'</div></div><div class="cc-field"><div class="cc-label">모자</div><div class="cc-tg">'+tg('hat',QA44.hats)+'</div></div><div class="cc-field"><div class="cc-label">가방</div><div class="cc-tg">'+tg('bag',QA44.bags)+'</div></div><p class="cc-hint">캐릭터를 고르면 그 옷에서 색만 바꿀 수 있어요.</p></div>'
-   +'<div class="cc-footer"><button type="button" class="cc-btn outline" data-cc="close">취소</button><button type="button" class="cc-btn primary" data-cc="save">저장</button></div></div>';
-  document.body.appendChild(d);
-  d.addEventListener('click',e=>{if(e.target===d){qa40Close();return}const c=e.target.closest('[data-cc]');if(c){if(c.dataset.cc==='close')qa40Close();else if(c.dataset.cc==='save')qa40Save();return}
-   const card=e.target.closest('.cc-card');if(card){if(QA40.st.id!==card.dataset.id){QA40.st={id:card.dataset.id,c:DEF44()}}qa44Sync();return}
-   const sb=e.target.closest('.cc-sw-b');if(sb&&QA40.st.id){QA40.st.c[sb.dataset.k]=sb.dataset.v==='-'?null:parseInt(sb.dataset.v,16);qa44Sync();return}
-   const tb=e.target.closest('.cc-tg button');if(tb&&QA40.st.id){QA40.st.c[tb.dataset.k]=tb.dataset.v;qa44Sync()}});
-  d.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape')qa40Close();if(e.key==='Enter'&&e.target.id==='cc-nick'&&!e.isComposing){e.preventDefault();qa40Save()}});d.addEventListener('keyup',e=>e.stopPropagation());
-  ['pointerdown','mousedown','touchstart','wheel'].forEach(t=>d.addEventListener(t,e=>e.stopPropagation(),{passive:true}))}
- const th=qa40Thumbs(),sv=qa40Saved();QA40.st=sv?{id:sv.L.id,c:{...DEF44(),...sv.c}}:{id:null,c:DEF44()};QA40.pvKey=null;
- d.querySelector('.cc-grid').innerHTML=LOOK10.map(L=>'<button type="button" class="cc-card" role="radio" data-id="'+L.id+'" aria-label="'+L.n+'" aria-checked="false">'+(th[L.id]?'<img alt="" src="'+th[L.id]+'">':'')+'</button>').join('');
- d.querySelector('#cc-nick').value=me.userData.displayName||'';d.querySelector('#cc-err').textContent='';d.hidden=false;qa44Sync()}
-function qa40Save(){const d=document.getElementById('ccdlg');if(!d||!me)return;const nm=qaGuestName(d.querySelector('#cc-nick').value),u=me.userData;
- if(!String(d.querySelector('#cc-nick').value||'').trim()){d.querySelector('#cc-err').textContent='닉네임을 입력해 주세요.';d.querySelector('#cc-nick').focus();return}
- const st=QA40.st,L=LOOK10.find(l=>l.id===st.id),prev=qa40Saved(),spec=L?qa44Spec(L,st.c):null,prevSpec=prev?qa44Spec(prev.L,prev.c):null,nameChanged=nm!==u.displayName,lookChanged=!!L&&spec!==prevSpec;
- if(nameChanged||lookChanged){const look=L?qa44Build(L,st.c):(u.lookOpts||qa40MyLook(u.displayName));try{if(L)localStorage.setItem('aic.look',spec);localStorage.setItem('aic.nick',nm)}catch(e){}
-  qa40Rebuild(me,nm,look,true);try{const ni=document.getElementById('nick');if(ni)ni.value=nm}catch(e){}
-  try{if(nameChanged&&window.qa40MpRename)window.qa40MpRename(nm);else qa40Announce()}catch(e){}
-  try{toast(nameChanged&&lookChanged?'캐릭터와 닉네임을 바꿨어요':nameChanged?'닉네임을 바꿨어요':'캐릭터를 바꿨어요')}catch(e){}}
- qa40Close()}
+/* ---------- QA66: 캐릭터 꾸미기 창(editor/editor.js) 연결 ---------- */
+const QA66_HEX=v=>v==null?null:'#'+hex6(v).toUpperCase(),QA66_NUM=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):null;
+/* 저장값 → 편집기 초안(catalog.js의 defaults 구조) */
+function qa66Draft(id,c,name){const nat=qa66Nat(qa66Base(id,name)),pick=k=>(!c[k]||c[k]==='-')?nat[k]:c[k];return {nickname:name,character:id,items:{glasses:pick('gl'),hat:pick('hat'),bag:pick('bag'),shoes:pick('shoes')},colors:{top:QA66_HEX(c.top),bottom:QA66_HEX(c.bot),hat:QA66_HEX(c.hatc),glasses:QA66_HEX(c.glc),bag:QA66_HEX(c.bagc),shoes:QA66_HEX(c.shoec)}}}
+/* 편집기 초안 → 저장값. 캐릭터의 원래 악세서리와 같으면 '-'로 저장해 원래 소품(스카프·손가방 등)을 보존 */
+function qa66FromDraft(d,name){const id=d.character,nat=qa66Nat(qa66Base(id,name)),it=(k,v)=>(v===nat[k]||v==='other'||v==='default')?'-':v,I=d.items||{},K=d.colors||{};return {id,c:{top:QA66_NUM(K.top),bot:QA66_NUM(K.bottom),gl:it('gl',I.glasses),hat:it('hat',I.hat),bag:it('bag',I.bag),shoes:it('shoes',I.shoes),hatc:QA66_NUM(K.hat),glc:QA66_NUM(K.glasses),bagc:QA66_NUM(K.bag),shoec:QA66_NUM(K.shoes)}}}
+/* 착용 미리보기: 전용 렌더러·카메라 하나를 재사용하고, 선택할 때마다 프리뷰 아바타만 새로 만듦 */
+function qa66DropAvatar(P){if(!P||!P.av)return;P.sc.remove(P.av);P.av.traverse(q=>{if(q.userData&&q.userData.giftAvatar){const i=AVATAR_HITS.indexOf(q);if(i>=0)AVATAR_HITS.splice(i,1)}if(q.geometry&&q.geometry.dispose)q.geometry.dispose();if(q.material)(Array.isArray(q.material)?q.material:[q.material]).forEach(m=>{if(m&&m.dispose)m.dispose()})});P.av=null}
+function qa66Preview(host,draft){let P=QA66.P;if(!P||P.host!==host){qa66Dispose(host);const W=384,H=488,r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(1);r.setSize(W,H,false);try{r.outputEncoding=R.outputEncoding}catch(e){}
+   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xfff4e0,0x7a5a48,.62));const dl=new THREE.DirectionalLight(0xffffff,.4);dl.position.set(1.5,3,4);sc.add(dl);const cam=new THREE.PerspectiveCamera(23,W/H,.1,30);cam.position.set(0,.78,3.45);cam.lookAt(0,.64,0);
+   r.domElement.setAttribute('role','img');r.domElement.setAttribute('aria-label','내 캐릭터 착용 미리보기');host.replaceChildren(r.domElement);P=QA66.P={host,r,sc,cam,av:null,raf:0,t0:performance.now()};
+   const loop=()=>{if(QA66.P!==P)return;P.raf=requestAnimationFrame(loop);if(P.av){P.av.rotation.y=.3+Math.sin((performance.now()-P.t0)/1000*.7)*.55;P.r.render(P.sc,P.cam)}};loop()}
+ qa66DropAvatar(P);const cur=(me&&me.userData.displayName)||draft.nickname,{id,c}=qa66FromDraft(draft,cur),o=qa44Build(id,c,cur);P.av=mk('',0,{...o,me:0,notag:1,parent:P.sc});try{clayObject(P.av)}catch(e){}P.r.render(P.sc,P.cam)}
+function qa66Dispose(host){const P=QA66.P;QA66.open=false;if(!P)return;QA66.P=null;cancelAnimationFrame(P.raf);qa66DropAvatar(P);try{P.r.dispose();P.r.forceContextLoss()}catch(e){}try{P.r.domElement.remove()}catch(e){}}
+/* 저장: 내 외형·닉네임만 갱신하고(다른 저장값은 그대로), 월드 아바타와 멀티플레이 동기화를 갱신. 실패하면 예외로 알려 다시 시도할 수 있게 함 */
+async function qa66Save(draft){if(!me)throw new Error('no avatar');const u=me.userData,nm=qaGuestName(draft.nickname),fd=qa66FromDraft(draft,u.displayName),c=fd.c,id=fd.id==='auto'&&nm!==u.displayName?'auto~'+encodeURIComponent(u.displayName):fd.id/* 닉네임을 바꿔도 기본 캐릭터 모습은 유지 */,spec=qa44Spec(id,c),prev=qa40Saved(),prevSpec=prev?qa44Spec(prev.id,prev.c):qa44Spec('auto',{}),nameChanged=nm!==u.displayName,lookChanged=spec!==prevSpec;if(!nameChanged&&!lookChanged)return;
+ localStorage.setItem('aic.look',spec);localStorage.setItem('aic.nick',nm);
+ qa40Rebuild(me,nm,qa44Build(id,c,nm),true);try{const ni=document.getElementById('nick');if(ni)ni.value=nm}catch(e){}
+ try{if(nameChanged&&window.qa40MpRename)window.qa40MpRename(nm);else qa40Announce()}catch(e){}
+ try{toast(nameChanged&&lookChanged?'캐릭터와 닉네임을 바꿨어요':nameChanged?'닉네임을 바꿨어요':'캐릭터를 바꿨어요')}catch(e){}}
+/* 창 안에서 생긴 키·포인터 입력이 게임(이동·시점·탭 이동)으로 새지 않게, 창의 호스트 요소에서 전파를 멈춤. 창 안의 버튼·입력은 그 전에 정상 처리됨 */
+function qa66Shield(){const host=[...document.body.children].reverse().find(el=>el.shadowRoot&&el.shadowRoot.querySelector('dialog'));if(!host||host.__qa66)return;host.__qa66=1;['keydown','keyup','keypress','pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','click','dblclick','wheel','touchstart','touchmove','touchend','contextmenu'].forEach(t=>host.addEventListener(t,e=>e.stopPropagation(),{passive:true}))}
+async function qa40Open(){if(!me||QA66.open)return;QA66.open=true;try{closePanel()}catch(e){}
+ try{if(!document.getElementById('qa66-font')){const l=document.createElement('link');l.id='qa66-font';l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css';document.head.appendChild(l)}}catch(e){}
+ try{const {openAvatarEditor}=await import('./editor/editor.js'),name=me.userData.displayName||'관객',sv=qa40Saved()||{id:'auto',c:{}},th=qa40Thumbs();
+    const autoId=String(sv.id).startsWith('auto')?sv.id:'auto';if(QA40.autoKey!==autoId+'|'+name){QA40.autoKey=autoId+'|'+name;QA40.autoImg=qa40Render([qa66Base(autoId,name)])[0]||''}
+  const characters=[{id:autoId,label:'기본 캐릭터',image:QA40.autoImg},...LOOK10.map(L=>({id:L.id,label:L.n,image:th[L.id]}))];
+  await openAvatarEditor({characters,initial:qa66Draft(sv.id,sv.c,name),baseline:qa66Draft(sv.id,{},name),renderPreview:qa66Preview,disposePreview:qa66Dispose,save:qa66Save});qa66Shield()}
+ catch(e){QA66.open=false;console.warn('avatar editor',e);try{toast('캐릭터 꾸미기 창을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.')}catch(_){}}}
 if(typeof A!=='undefined')A.avatar=()=>qa40Open();
 </script>
 <script id="qa39-seat-labels">/* QA39: 좌석 등받이 뒤에 작은 금색 자석 번호표 */(function(){try{CFG.HALLS.forEach(h=>{const H=HALLN[h.id];if(!H||!H.seats||!HALLG[h.id])return;const N=H.seats.length,cols=10,rows=Math.ceil(N/cols),cw=128,ch=48;

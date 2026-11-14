@@ -4342,17 +4342,25 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const iv=setInterval(()=>{const ready=typeof CLV!=='undefined'&&CLV&&(CLV.readyState>=2||CLVFAILED);if(ready||performance.now()-t0>8000){clearInterval(iv);o.hidden=true;try{if(CLV&&CLV.paused&&!CLUBSTOP){const r=CLV.play();if(r&&r.catch)r.catch(()=>{})}}catch(e){}}},120)}catch(e){}}
 </script>
 <script id="qa49-talk-camera">
-/* QA49: NPC·다른 관객에게 다가가 메뉴가 뜨면 카메라를 낮추고 당겨 두 사람을 함께 잡고, 끝나면 원래 거리·높이로 복귀(동물의 숲식). 드래그하면 즉시 해제 */
-(function(){const Q={iv:0,saved:null,target:null},wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));
+/* QA62: 대화·선물 카메라 — 회전하지 않음. 보고 있던 방향 그대로 거리와 높이만 부드럽게 조정하고, 카메라와 두 사람 사이에 물체가 걸리면 카메라를 그 앞까지 당김. 끝나면 원래 거리·높이로 복귀, 드래그하면 즉시 해제 */
+(function(){const Q={iv:0,saved:null,target:null,obs:null,obsAt:0,clip:99,until:0},wrap=v=>Math.atan2(Math.sin(v),Math.cos(v)),RC=new THREE.Raycaster(),F=new THREE.Vector3(),D=new THREE.Vector3();
  const ease=(last,rate)=>{const n=performance.now(),dt=Math.min(.5,(n-last.t)/1000);last.t=n;return 1-Math.exp(-dt*rate)};
- function stop(restore){clearInterval(Q.iv);Q.iv=0;const s=Q.saved;Q.saved=null;Q.target=null;if(restore&&s&&!camDrag){const L={t:performance.now()};Q.iv=setInterval(()=>{if(camDrag||Q.target){clearInterval(Q.iv);if(!Q.target)Q.iv=0;return}const k=ease(L,5);camPitchT+=(s.pitch-camPitchT)*k;camDistT+=(s.dist-camDistT)*k;if(Math.abs(s.pitch-camPitchT)<.005&&Math.abs(s.dist-camDistT)<.02){camPitchT=s.pitch;camDistT=s.dist;clearInterval(Q.iv);Q.iv=0}},33)}}
- function start(target){if(!me||!target||target===me||me.userData.seat)return;if(Q.target===target)return;const keep=Q.saved;clearInterval(Q.iv);Q.saved=keep||{pitch:camPitchT,dist:camDistT};Q.target=target;let side=0;const L={t:performance.now()};
+ /* 가릴 수 있는 물체 목록: 지금 공간에 보이는 메시 중 두 사람 근처 것만(캐릭터·이름표·빛무리 제외) */
+ function obstacles(){const out=[],c=me.position,skip=o=>o.userData&&(o.userData.legs||o.userData.giftAvatar);S.children.forEach(r=>{if(!r.visible||skip(r)||r.isSprite||r.isLight||r.isPoints)return;r.traverse(o=>{if(!o.isMesh||!o.visible||o.isInstancedMesh||o.isSprite||(o.material&&(o.material.transparent||o.material.visible===false)))return;if(!o.geometry.boundingSphere)o.geometry.computeBoundingSphere();const bs=o.geometry.boundingSphere;F.copy(bs.center).applyMatrix4(o.matrixWorld);const far=Math.hypot(F.x-c.x,F.z-c.z)-bs.radius*Math.max(o.scale.x,o.scale.y,o.scale.z);if(far<9&&bs.radius<30)out.push(o)})});return out}
+ /* 초점(사람 가슴 높이)에서 카메라 쪽으로 광선을 쏴 가장 가까운 장애물까지의 거리(카메라 거리 단위)를 구함 */
+ function clipDist(target,want){const now=performance.now();if(!Q.obs||now-Q.obsAt>2500){Q.obs=obstacles();Q.obsAt=now}let best=want;[me,target].forEach(a=>{F.set(a.position.x,a.position.y+1.25,a.position.z);D.copy(C.position).sub(F);const len=D.length();if(len<.5||camDist<.5)return;const ratio=len/camDist;D.multiplyScalar(1/len);RC.set(F,D);RC.near=.35;RC.far=want*ratio+.2;const h=RC.intersectObjects(Q.obs,false)[0];if(h)best=Math.min(best,Math.max(1.9,(h.distance-.35)/ratio))});return best}
+ function stop(restore){clearInterval(Q.iv);Q.iv=0;const s=Q.saved;Q.saved=null;Q.target=null;Q.obs=null;if(restore&&s&&!camDrag){const L={t:performance.now()};Q.iv=setInterval(()=>{if(camDrag||Q.target){clearInterval(Q.iv);if(!Q.target)Q.iv=0;return}const k=ease(L,5);camPitchT+=(s.pitch-camPitchT)*k;camDistT+=(s.dist-camDistT)*k;if(Math.abs(s.pitch-camPitchT)<.005&&Math.abs(s.dist-camDistT)<.02){camPitchT=s.pitch;camDistT=s.dist;clearInterval(Q.iv);Q.iv=0}},33)}}
+ function start(target,ms){if(!me||!target||target===me||me.userData.seat)return;Q.until=ms?performance.now()+ms:0;if(Q.target===target)return;const keep=Q.saved;clearInterval(Q.iv);Q.saved=keep||{pitch:camPitchT,dist:camDistT};Q.target=target;Q.obs=null;Q.clip=99;const L={t:performance.now()};let n=0;
   Q.iv=setInterval(()=>{if(!me||!Q.target||camDrag||me.userData.seat||!target.visible){const dragged=camDrag;clearInterval(Q.iv);Q.iv=0;Q.target=null;if(dragged)Q.saved=null;return}
-   const dx=target.position.x-me.position.x,dz=target.position.z-me.position.z,d=Math.hypot(dx,dz);if(d>6){L.t=performance.now();return}const a=Math.atan2(dx,dz);if(!side){/* 벽 쪽이 아니라 공간 안쪽에서 바라보는 방향을 고름 */const cx=s=>Math.abs(me.position.x-Math.sin(a+s*.95)*4.2);side=Math.abs(cx(1)-cx(-1))>.6?(cx(1)<cx(-1)?1:-1):(Math.abs(wrap(a+.95-camYaw))<=Math.abs(wrap(a-.95-camYaw))?1:-1)}
-   const k=ease(L,3.2);camYaw+=wrap(a+side*.95-camYaw)*k;yawV=0;camPitchT+=(.16-camPitchT)*k;camDistT+=(clampN(3.4+d*.55,3.8,5.2)-camDistT)*k},33)}
+   if(Q.until&&performance.now()>Q.until){stop(true);return}
+   const dx=target.position.x-me.position.x,dz=target.position.z-me.position.z,d=Math.hypot(dx,dz);if(d>6){L.t=performance.now();return}
+   const k=ease(L,3.2),want=clampN(3.3+d*.55,3.7,5.2);if(n++%6===0)try{Q.clip=clipDist(target,want)}catch(e){Q.clip=99}
+   /* 서 있을 때는 내 캐릭터가 상대를 바라봄(카메라는 돌지 않음) */if(!(me.userData.path||[]).length&&d<3.2)me.rotation.y+=wrap(Math.atan2(dx,dz)-me.rotation.y)*k;
+   camPitchT+=(.2-camPitchT)*k;camDistT+=(Math.min(want,Q.clip)-camDistT)*k},33)}
  window.qa49TalkCam={start,stop};
- const sm=showActorMenu,da=dismissActor;showActorMenu=function(target){const r=sm.apply(this,arguments);try{start(target)}catch(e){}return r};dismissActor=function(){const r=da.apply(this,arguments);try{stop(true)}catch(e){}return r};
- if(typeof qa47GiftCam==='function'){const g=qa47GiftCam;qa47GiftCam=function(t){try{clearInterval(Q.iv);Q.iv=0;Q.target=null}catch(e){}return g.apply(this,arguments)}}
+ const sm=showActorMenu,da=dismissActor;showActorMenu=function(target){const r=sm.apply(this,arguments);try{start(target)}catch(e){}return r};dismissActor=function(){const r=da.apply(this,arguments);try{if(!Q.until)stop(true)}catch(e){}return r};
+ /* 선물 건네기도 같은 방식(회전 없음), 7초 뒤 원래 거리·높이로 복귀 */
+ if(typeof qa47GiftCam==='function')qa47GiftCam=function(t){try{clearInterval(qa47GiftCam.iv);start(t,7000)}catch(e){}};
 })();
 </script>
 <script id="qa44-landscape">

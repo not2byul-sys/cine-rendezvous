@@ -1008,7 +1008,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 const LOBBY_PALETTE={
- floor:{pink:"#E3C5C0"/* QA63: 더 연한 핑크 */,cream:"#EDE0CB",grout:"#C8B9A7",roughness:.85,metalness:0},
+ floor:{dark:"#BDA38A",cream:"#EFE7CC",grout:"#A8957F",roughness:.85,metalness:0}/* QA64: 오늘 맨 처음 바닥색(크림·토프 체크)으로 복원 */,
  wall:{base:"#A47B55",grainLight:"#B58C65",grainDark:"#896345",seam:"#805C40",panelWidthMeters:.16,roughness:.85,metalness:0},
  woodFrame:{base:"#65432F",grainLight:"#7D573C",grainDark:"#4E3224",roughness:.75,metalness:0},
  ceilingTrim:{color:"#E9DFCF",roughness:.9,metalness:0}};
@@ -1024,7 +1024,7 @@ const PANELT=TXR(512,512,(c,W,H)=>{const r=rng(53),n=8,bw=W/n;for(let i=0;i<n;i+
 const FRAMET=TXR(512,512,(c,W,H)=>{const r=rng(67);c.fillStyle=LPF.base;c.fillRect(0,0,W,H);for(let k=0;k<150;k++){const x0=r()*W,amp=1+r()*5,ph=r()*6.3,f=(1+(r()*3|0))*Math.PI*2/H;c.strokeStyle=LP_a(r()<.55?LPF.grainDark:LPF.grainLight,.1+r()*.22);c.lineWidth=.6+r()*2;c.beginPath();for(let y=0;y<=H;y+=8){const x=x0+Math.sin(y*f+ph)*amp;y?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}});
 TM[WAINS]=LP_mat(PANELT,LPW.panelWidthMeters*8,LPW,.32,.95);{/* QA57: 첨부 이미지에 맞춰 벽 원목을 조금 더 짙고 붉게(화면 측정 보정) */const k=new THREE.Color(1.03,.975,.86)/* QA61: 마젠타 기를 살짝 뺌 */;TM[WAINS].color.multiply(k);TM[WAINS].emissive.multiply(k)}TM[LINEN]=TM[WAINS];TM[MU2]=TM[WAINS];/* 1·2층 로비 벽, 계단 옆 삼각 벽, 계단 챌판이 모두 같은 패널 */
 TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.42,.9);/* QA56: 계단·발코니 난간은 짙은 버건디 */TM[MET]=new THREE.MeshPhongMaterial({color:0x2b1711,emissive:0x281611,shininess:18,specular:0x140c0a});TM[MET].userData.keep=1;
-const LOBBYT=TXR(512,512,(c,W,H)=>{const r=rng(31),A=LPFL.cream,Bc=LPFL.pink;c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
+const LOBBYT=TXR(512,512,(c,W,H)=>{const r=rng(31),A=LPFL.cream,Bc=LPFL.dark;c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
  for(let k=0;k<2400;k++){const x=r()*W,y=r()*H;c.fillStyle=`rgba(${r()<.5?'255,255,255':'120,96,84'},${.02+r()*.035})`;const z=1+r()*4;c.fillRect(x,y,z,z)}
  c.strokeStyle=LPFL.grout;c.lineWidth=3;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.stroke()});
 {const mk_=(rx,ry)=>{const t=LOBBYT.clone();t.needsUpdate=true;t.repeat.set(rx,ry);const m=LP_mat(t,0,LPFL,.3,1.0);m.userData.tile=0;return m};fL0.material=mk_(21,LD/.857);fL0b.material=mk_(91,91)}

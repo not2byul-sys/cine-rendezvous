@@ -990,8 +990,8 @@ const haloTex=art(64,64,(c)=>{const g=c.createRadialGradient(32,32,0,32,32,32);g
 function halo(x,y,z,col,s,b){const m=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:col,transparent:true,opacity:b,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.set(x,y,z);m.scale.setScalar(s);m.renderOrder=9;S.add(m);EMG.push({h:m,b,f:1.2+Math.random()});return m}
 function emgAnim(t){EMG.forEach((e,i)=>{e.h.material.opacity=e.b*(.78+.22*Math.sin(t*e.f+i*1.7))})}
 const dia=art(128,128,x=>{x.fillStyle='#eadcc0';x.fillRect(0,0,128,128);x.fillStyle='#4f6a4c';x.beginPath();x.moveTo(64,0);x.lineTo(128,64);x.lineTo(64,128);x.lineTo(0,64);x.closePath();x.fill();let sd=5;const R_=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<70;i++){x.strokeStyle=`rgba(${R_()<.5?'255,250,235':'30,45,30'},${.05+R_()*.08})`;x.lineWidth=1+R_()*2;x.beginPath();const a=R_()*128,b=R_()*128;x.moveTo(a,b);x.quadraticCurveTo(a+R_()*30-15,b+R_()*30-15,a+R_()*40-20,b+R_()*40-20);x.stroke()}x.strokeStyle='rgba(60,50,30,.25)';x.lineWidth=1.5;x.beginPath();x.moveTo(64,0);x.lineTo(128,64);x.lineTo(64,128);x.lineTo(0,64);x.closePath();x.stroke()});dia.wrapS=dia.wrapT=THREE.RepeatWrapping;dia.repeat.set(20,18);
-const fL0=B(18,.2,LD,0xffffff,0,-.1,LD/2);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(21,LD/.857);fL0.material=new THREE.MeshPhongMaterial({map:t,shininess:65,specular:0x2a2620})}fL0.userData.zone='L0';floors.push(fL0);
-/* 카메라가 벽 밖일 때만 쓰는 넓은 바닥(같은 무늬·같은 높이, 타일 이음 맞춤 78m=91칸) → 바닥 경계가 보이지 않음 */const fL0b=B(78,.2,78,0xffffff,0,-.1,9);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(91,91);fL0b.material=fL0.material.clone();fL0b.material.map=t}fL0b.visible=false;
+/* QA51: 로비 바닥 — 핑크·크림 다이아 타일, 조명 영향을 받지 않는 균일한 색 */const LOBBYT=diamondT(31,'#ece0d0','#cda79f','236,224,208','205,167,159');const fL0=B(18,.2,LD,0xffffff,0,-.1,LD/2);{const t=LOBBYT.clone();t.needsUpdate=true;t.repeat.set(21,LD/.857);fL0.material=new THREE.MeshBasicMaterial({map:t})}fL0.userData.zone='L0';floors.push(fL0);
+/* 카메라가 벽 밖일 때만 쓰는 넓은 바닥(같은 무늬·같은 높이, 타일 이음 맞춤 78m=91칸) → 바닥 경계가 보이지 않음 */const fL0b=B(78,.2,78,0xffffff,0,-.1,9);{const t=LOBBYT.clone();t.needsUpdate=true;t.repeat.set(91,91);fL0b.material=fL0.material.clone();fL0b.material.map=t}fL0b.visible=false;
 const fL1=B(2*LW-.4,.3,BF-LB,0xffffff,0,4.05,(BF+LB)/2);fL1.userData.zone='L1';floors.push(fL1);const slabMat=fL1.material;
 const plk=art(128,128,x=>{x.fillStyle='#b98a55';x.fillRect(0,0,128,128);for(let i=0;i<4;i++){x.fillStyle=i%2?'#c39561':'#ae7f4c';x.fillRect(0,i*32,128,30)}x.fillStyle='#7a5230';for(let i=0;i<4;i++)x.fillRect(0,i*32+30,128,2)});plk.wrapS=plk.wrapT=THREE.RepeatWrapping;plk.repeat.set(4,.6);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(20.7,2.35);slabMat.map=t}
 /* 2층 발코니 원목 마루 (뒤쪽 통로 2m + 가운데 확장 4m → 깊이 6m) */
@@ -1006,14 +1006,15 @@ const wsegX=(z0,z1,y0,y1,x,c,t=.4)=>B(t,y1-y0,z1-z0,c,x,(y0+y1)/2,(z0+z1)/2);
 /* ===== 벽 · 천장 (레퍼런스: 월넛 패널 뒷벽 · 머스터드/오렌지 옆벽 · 버건디 벨벳) ===== */
 function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(let i=0;i<n;i++){const o=i%2;B(w/n+.012,y1-y0,.08,o?VEL1:VEL2,x0+(i+.5)*w/n,(y0+y1)/2,z+(o?.05:-.01))}}
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
+/* QA51: 1층 벽은 나무 대신 베이지 벽, 2층은 원목 유지 */const BEIGE1F=0xe9dcc4;TM[BEIGE1F]=TMm(PLAS,2.6,0xf3e6cd);
 /* 뒷벽: 베이지 회반죽 */
-wseg(-LW,LW,0,8.8,LB-.2,MU2);B(2*LW,.22,.06,WAL,0,4.42,LB+.03);
+wseg(-LW,LW,0,4.3,LB-.2,BEIGE1F);wseg(-LW,LW,4.3,8.8,LB-.2,MU2);B(2*LW,.22,.06,WAL,0,4.42,LB+.03);
 /* 왼쪽 벽: 회반죽 + 마호가니 걸레받이 */
-wsegX(LB,LD,0,5.2,-LW,MU2);wsegX(LB,LD,5.2,8.8,-LW,MU2);B(.1,.25,LD,WD,-LW+.24,.12,LD/2);B(.1,.25,BF-LB,WD,-LW+.24,4.32,(BF+LB)/2);
+wsegX(LB,LD,0,4.3,-LW,BEIGE1F);wsegX(LB,LD,4.3,8.8,-LW,MU2);B(.1,.25,LD,WD,-LW+.24,.12,LD/2);B(.1,.25,BF-LB,WD,-LW+.24,4.32,(BF+LB)/2);
 /* 오른쪽 벽: 오렌지 + 매점 알코브 (z 10~20) */
-wsegX(LB,LD,0,5.2,LW,MU2);wsegX(LB,LD,5.2,8.8,LW,MU2);B(.1,.25,LD,WD,LW-.24,.12,LD/2);B(.1,.25,BF-LB,WD,LW-.24,4.32,(BF+LB)/2);
+wsegX(LB,LD,0,4.3,LW,BEIGE1F);wsegX(LB,LD,4.3,8.8,LW,MU2);B(.1,.25,LD,WD,LW-.24,.12,LD/2);B(.1,.25,BF-LB,WD,LW-.24,4.32,(BF+LB)/2);
 /* 앞벽 */
-{const fw=4.4*Math.sqrt(1.3),fh=5.6*Math.sqrt(1.3);wseg(-LW,-fw,0,8.8,LD,MU2,.3);wseg(fw,LW,0,8.8,LD,MU2,.3);wseg(-fw,fw,fh,8.8,LD,MU2,.3)}B(2*LW,.25,.1,WD,0,.12,LD-.2);
+{const fw=4.4*Math.sqrt(1.3),fh=5.6*Math.sqrt(1.3);wseg(-LW,-fw,0,4.3,LD,BEIGE1F,.3);wseg(-LW,-fw,4.3,8.8,LD,MU2,.3);wseg(fw,LW,0,4.3,LD,BEIGE1F,.3);wseg(fw,LW,4.3,8.8,LD,MU2,.3);wseg(-fw,fw,fh,8.8,LD,MU2,.3)}B(2*LW,.25,.1,WD,0,.12,LD-.2);
 /* 천장: 머스터드 평천장 + 크라운 몰딩 + 메달리온 */
 {const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0xf3ead8,emissive:0x2a2418})}const CRN=0xefe6d4;B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
  [LB+3,5.2,10.2].forEach(z=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),mat(0xf1e8d6));m.position.set(0,CY-.03,z);S.add(m)})}
@@ -1186,7 +1187,7 @@ const CHD=[];function chandelier(x,y,z){const g=new THREE.Group();g.position.set
  const top=new THREE.Mesh(new THREE.CylinderGeometry(.3,.42,.1,22,1,true),new THREE.MeshBasicMaterial({color:0xf6e8d0,side:THREE.DoubleSide}));top.position.y=-L-.06;g.add(top);const fin=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),BRM_);fin.position.y=-L-.55;g.add(fin);
  const hl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffdcaa,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false}));hl.position.y=-L-.3;hl.scale.setScalar(3.2);g.add(hl);const bulbLight=new THREE.PointLight(0xffe6bc,.45,4.6,2);bulbLight.position.y=-L-.27;bulbLight.userData.i=.45;g.add(bulbLight);layEnd(m_,'pend'+pi_,'펜던트 조명',0,{ceil:1})});
 /* ---------- CINEMA 입구 구조물 + 쌍계단 + 2층 발코니 ---------- */
-B(7.0,3.88,BF,MU2,-5.3,1.94,BF/2);B(7.0,3.88,BF,MU2,5.3,1.94,BF/2);B(17.6,.28,.12,MU2,0,4.04,BF+.06);B(3.6,3.88,BF-1.1,WAL,0,1.94,(BF-1.1)/2);B(3.6,.38,1.1,WAL,0,3.69,BF-.55);B(3.6,3.5,.2,0x0e0709,0,1.75,BF-1.0);
+B(7.0,3.88,BF,BEIGE1F,-5.3,1.94,BF/2);B(7.0,3.88,BF,BEIGE1F,5.3,1.94,BF/2);/* QA51: 1층 정면 벽도 베이지 */B(17.6,.28,.12,MU2,0,4.04,BF+.06);B(3.6,3.88,BF-1.1,WAL,0,1.94,(BF-1.1)/2);B(3.6,.38,1.1,WAL,0,3.69,BF-.55);B(3.6,3.5,.2,0x0e0709,0,1.75,BF-1.0);
 B(4.4,.32,.3,WD,0,3.72,BF+.1);[-1,1].forEach(s=>{B(.28,3.7,.3,WD,s*2.0,1.85,BF+.1);B(4.8,.25,.08,WD,s*4.2,.12,BF+.04);
  /* 열린 마호가니 문짝 (벽에 붙어 열림) */B(1.7,3.35,.07,WAL2,s*2.98,1.72,BF+.08);B(1.3,1.1,.03,WAL,s*2.98,.9,BF+.13);B(1.3,1.5,.03,WAL,s*2.98,2.45,BF+.13);B(.04,.45,.05,BR,s*2.3,1.4,BF+.15);
  /* 튤립 벽등 */{const m_=layBeg();sconce(s*4.95,2.75,BF+.02,0);halo(s*4.95,3.0,BF+.3,0xffd9a0,1.3,.5);layEnd(m_,'scf'+s,'벽등 (1관 정면)',0,{wall:'z',lo:-6,hi:6})}

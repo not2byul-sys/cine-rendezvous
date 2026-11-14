@@ -2569,10 +2569,34 @@ function qa20Tick(dt){if(!me)return;const O=QA20.obj;if(O&&O.pt&&Math.hypot(me.p
 function qa20Nearest(){let best=null,bd=6;for(const hb of AVATAR_HITS){const a=hb.userData.giftAvatar;if(!a||a===me||!a.visible||curZone(a)!==curZone(me)||a.userData.counterStaff&&false)continue;const d=Math.hypot(a.position.x-me.position.x,a.position.z-me.position.z);if(d<bd){bd=d;best=a}}return best}
 function qa44SayEmoji(c,txt){const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(txt);s.position.y=2.6+s.scale.y/2;c.add(s);u.b=s;u.bt=3.2;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},3200)}
 function qa20Emote(kind,target){if(!me)return;qa44SayEmoji(me,kind==='wave'?'👋':'👏👏👏')/* QA44: 박수·손흔들기는 이모지 말풍선 */;me.userData.hop=.6;if(target&&!target.userData.remote&&target.userData.npc){setTimeout(()=>{if(target.visible)sayB(target,kind==='wave'?'반가워요!':'박수 고마워요!',3);target.userData.hop=.6},500)}}
+/* QA68: 사진 찍기 → 미리보기 → 가방에 넣어두기 · 버리기 · 다운받기. 사진은 서버에 올리지 않고 이 기기 안에서만 다룸(가방 사진은 이 브라우저에 최대 10장 보관) */
+const QA68={key:'aic.photos',max:10,list:null,cur:null};
+function qa68List(){if(QA68.list)return QA68.list;try{const v=JSON.parse(localStorage.getItem(QA68.key)||'[]');QA68.list=Array.isArray(v)?v.filter(p=>p&&typeof p.src==='string'&&p.src.startsWith('data:image/')):[]}catch(e){QA68.list=[]}return QA68.list}
+function qa68Persist(){try{localStorage.setItem(QA68.key,JSON.stringify(QA68.list));return true}catch(e){return false}}
+function qa68Blob(src){const [h,b]=src.split(','),bin=atob(b),u=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);return new Blob([u],{type:(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg'})}
+async function qa68Download(blob){const ext=blob.type==='image/png'?'png':'jpg',name='cine-rendezvous-'+new Date().toISOString().slice(0,19).replace(/[-:T]/g,'')+'.'+ext;
+ try{const file=new File([blob],name,{type:blob.type});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'씨네 랑데뷰'});return true}}catch(e){if(e&&e.name==='AbortError')return false}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);return true}
+function qa68Close(){const o=document.getElementById('qa68photo');if(o)o.hidden=true;const c=QA68.cur;QA68.cur=null;if(c&&c.url)URL.revokeObjectURL(c.url)}
+/* cur = {src: 화면에 띄울 주소, full: 원본 Blob(방금 찍은 사진), small: 가방 보관용 dataURL, idx: 가방 안 위치(가방에서 연 경우)} */
+function qa68Show(cur){QA68.cur=cur;let o=document.getElementById('qa68photo');
+ if(!o){o=document.createElement('div');o.id='qa68photo';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-labelledby','qa68-title');
+  o.innerHTML='<div class="ph-content"><div class="ph-header"><h2 id="qa68-title"></h2><p id="qa68-desc"></p></div><button type="button" class="ph-close" data-ph="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><div class="ph-frame"><img alt="찍은 사진 미리보기"></div><div class="ph-footer"><button type="button" class="ph-btn outline" data-ph="drop">버리기</button><button type="button" class="ph-btn outline" data-ph="down">다운받기</button><button type="button" class="ph-btn primary" data-ph="keep">가방에 넣어두기</button></div></div>';
+  document.body.appendChild(o);
+  o.addEventListener('click',async e=>{const b=e.target.closest('[data-ph]'),c=QA68.cur;if(!b){if(e.target===o&&c&&c.idx!=null)qa68Close();return}if(!c)return;const k=b.dataset.ph;
+   if(k==='close'){qa68Close();if(c.idx==null)toast('사진을 버렸어요')}
+   else if(k==='drop'){if(c.idx!=null){qa68List().splice(c.idx,1);qa68Persist()}qa68Close();toast('사진을 버렸어요');if(c.idx!=null)PANELS.bag()}
+   else if(k==='down'){const ok=await qa68Download(c.full||qa68Blob(c.small));if(ok)toast('사진을 내려받았어요')}
+   else if(k==='keep'){const L=qa68List();if(L.length>=QA68.max){toast('가방에 사진은 '+QA68.max+'장까지 넣을 수 있어요. 가방에서 사진을 버린 뒤 다시 넣어 주세요');return}L.push({src:c.small,t:Date.now()});const saved=qa68Persist();qa68Close();toast(saved?'사진을 가방에 넣었어요':'사진을 가방에 넣었어요. 저장 공간이 부족해 이 접속 동안만 보관돼요')}});
+  o.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Escape'){const c=QA68.cur;qa68Close();if(c&&c.idx==null)toast('사진을 버렸어요')}});o.addEventListener('keyup',e=>e.stopPropagation());
+  ['pointerdown','pointerup','pointermove','mousedown','mouseup','touchstart','touchmove','touchend','wheel'].forEach(t_=>o.addEventListener(t_,e=>e.stopPropagation(),{passive:true}))}
+ const inBag=cur.idx!=null;o.querySelector('#qa68-title').textContent=inBag?'가방 속 사진':'사진을 찍었어요';o.querySelector('#qa68-desc').textContent=inBag?'내려받거나 버릴 수 있어요.':'가방에 넣어두거나, 내려받거나, 버릴 수 있어요.';
+ o.querySelector('img').src=cur.src;o.querySelector('[data-ph=keep]').hidden=inBag;o.hidden=false;try{o.querySelector(inBag?'[data-ph=down]':'[data-ph=keep]').focus()}catch(e){}}
 async function qa20Photo(){try{const fl=document.createElement('div');fl.style.cssText='position:fixed;inset:0;background:#fff;opacity:.85;z-index:90;pointer-events:none;transition:opacity .5s';document.body.appendChild(fl);requestAnimationFrame(()=>{fl.style.opacity='0'});setTimeout(()=>fl.remove(),600);
- try{CinemaAudio.effect&&CinemaAudio.effect('click')}catch(e){}R.render(S,C);const blob=await new Promise(r=>R.domElement.toBlob(r,'image/png'));if(!blob){toast('사진을 저장하지 못했어요');return}
- const file=new File([blob],'cine-rendezvous.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'씨네 랑데뷰'}).catch(()=>{});return}
- const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='cine-rendezvous.png';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast('사진을 저장했어요')}catch(e){toast('사진을 저장하지 못했어요')}}
+ try{CinemaAudio.effect&&CinemaAudio.effect('click')}catch(e){}R.render(S,C);const cv=R.domElement,full=await new Promise(r=>cv.toBlob(r,'image/png'));if(!full){toast('사진을 찍지 못했어요');return}
+ /* 가방 보관용은 가로 960px JPEG로 줄여 용량을 아낌 */const sc=Math.min(1,960/cv.width),sm=document.createElement('canvas');sm.width=Math.round(cv.width*sc);sm.height=Math.round(cv.height*sc);const im=await createImageBitmap(full);sm.getContext('2d').drawImage(im,0,0,sm.width,sm.height);try{im.close()}catch(e){}
+ const url=URL.createObjectURL(full);qa68Show({src:url,url,full,small:sm.toDataURL('image/jpeg',.82),idx:null})}catch(e){toast('사진을 찍지 못했어요')}}
+Object.assign(A,{qa68open:d=>{const p=qa68List()[+d.i];if(!p)return;closePanel();qa68Show({src:p.src,small:p.src,idx:+d.i})}});
 Object.assign(A,{
  ctxother:()=>{hideSit();toast('앉고 싶은 다른 좌석을 눌러 주세요')},
  ctxobj:()=>{const O=QA20.obj;QA20.obj=null;hudUpd();if(O)O.act.fn()},
@@ -3057,7 +3081,7 @@ const QA_RB_TARGETS=new Set();
   if(f>=1){HELD=HELD.filter(x=>!x.slow);SLOW=null;refreshMe();toast('🎬 영화와 함께 다 먹었어요 😋')}}
  if((otk-=dt)<0){otk=.5;hudUpd()}}
 PANELS.shop=()=>opanel('shop');
-PANELS.bag=()=>panel('<h3>🖐 들고 있는 것</h3><p class="sub"></p>'+(HELD.length?HELD.map((it,i)=>`<div class="rw"><div class="m"><b>${IT[it.k][0]} ${IT[it.k][1]}</b>${it.slow?'<i>영화 보면서 먹는 중</i>':''}</div><button data-a="eat1" data-i="${i}" ${it.slow?'disabled':''}>먹기</button></div>`).join(''):'<p>빈손이에요.</p>'));
+PANELS.bag=()=>panel('<h3>🖐 들고 있는 것</h3><p class="sub"></p>'+(HELD.length?HELD.map((it,i)=>`<div class="rw"><div class="m"><b>${IT[it.k][0]} ${IT[it.k][1]}</b>${it.slow?'<i>영화 보면서 먹는 중</i>':''}</div><button data-a="eat1" data-i="${i}" ${it.slow?'disabled':''}>먹기</button></div>`).join(''):'<p>빈손이에요.</p>')+(typeof qa68List==='function'?(()=>{const L=qa68List();return '<div class="ph-h"><b>찍은 사진</b><i>'+L.length+' / '+QA68.max+'</i></div>'+(L.length?'<div class="ph-grid">'+L.map((p,i)=>'<button type="button" class="ph-th" data-a="qa68open" data-i="'+i+'" aria-label="사진 '+(i+1)+' 열기"><img alt="" src="'+p.src+'"></button>').join('')+'</div>':'<p>아직 넣어 둔 사진이 없어요.</p>')})():''));
 Object.assign(A,{
  giftmenu:()=>giftMenu(),giftchoose:d=>confirmGift(+d.i),giftyes:()=>acceptGift(),giftno:()=>{GIVE_OFFER=null;closePanel()},giveitem:d=>confirmGift(+d.i),
  oq:d=>{if(!ORD)return;const q=(ORD.q[d.k]||0)+ +d.d;ORD.q[d.k]=Math.max(0,q);opanel(ORD.v)},
@@ -4218,6 +4242,25 @@ window.QA21={data,watched,pull,plaques,endFilm,curFilm,toggle:id=>push(data(id).
 /* QA44: 모바일에서 영상 시작 시 가로(와이드) 화면 — 세로 고정 기기는 화면을 90도 돌려 보여줌 */
 html.qa44-rot,html.qa44-rot body{overflow:hidden!important}
 html.qa44-rot body{position:fixed!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:var(--qa-rh)!important;height:var(--qa-rw)!important;min-height:0!important;margin:0!important;transform-origin:0 0!important;transform:translateX(var(--qa-rw)) rotate(90deg)!important}
+
+/* QA68: 사진 미리보기 창(shadcn Dialog 구조, 브랜드 색) + 가방의 사진 목록 */
+#qa68photo{--background:#2a141c;--foreground:#fbefd9;--muted-foreground:rgba(251,239,217,.64);--border:rgba(255,255,255,.2);--primary:#f2d9a5;--primary-foreground:#2a1600;position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(26,11,16,.8);font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--foreground)}
+#qa68photo[hidden]{display:none}
+#qa68photo .ph-content{position:relative;width:100%;max-width:512px;max-height:calc(100dvh - 32px);overflow-y:auto;display:grid;gap:16px;padding:24px;background:var(--background);border:1px solid var(--border);border-radius:8px;box-shadow:0 10px 15px -3px rgba(0,0,0,.4)}
+#qa68photo .ph-header{display:grid;gap:6px;padding-right:24px}#qa68photo h2{margin:0;font-size:18px;line-height:1;font-weight:600;color:var(--foreground)}#qa68photo p{margin:0;font-size:14px;line-height:20px;color:var(--muted-foreground)}
+#qa68photo .ph-close{position:absolute;top:16px;right:16px;width:24px;height:24px;display:grid;place-items:center;padding:0;border:0;border-radius:4px;background:transparent;color:var(--foreground);opacity:.7;cursor:pointer}#qa68photo .ph-close:hover{opacity:1}
+#qa68photo .ph-frame{border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#150a0e}#qa68photo .ph-frame img{display:block;width:100%;max-height:52dvh;object-fit:contain}
+#qa68photo .ph-footer{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+#qa68photo .ph-btn{height:36px;padding:0 16px;border-radius:6px;font:500 14px/20px 'Noto Sans KR',system-ui,sans-serif;cursor:pointer;border:1px solid transparent}#qa68photo .ph-btn[hidden]{display:none}
+#qa68photo .ph-btn.outline{background:transparent;border-color:var(--border);color:var(--foreground)}#qa68photo .ph-btn.outline:hover{background:rgba(255,255,255,.08)}
+#qa68photo .ph-btn.primary{background:var(--primary);color:var(--primary-foreground)}#qa68photo .ph-btn.primary:hover{background:#f7e6c0}
+#qa68photo button:focus-visible{outline:0;box-shadow:0 0 0 1px var(--background),0 0 0 3px var(--primary)}
+@media(max-width:520px){#qa68photo .ph-content{padding:20px 16px}#qa68photo .ph-footer{flex-direction:column-reverse}#qa68photo .ph-btn{width:100%;height:40px}}
+html body #pn .ph-h{display:flex;align-items:baseline;gap:8px;margin:20px 0 0;padding-top:16px;border-top:1px solid rgba(90,36,28,.25);text-align:left;font-size:15px;line-height:20px}html body #pn .ph-h b{font-weight:700}html body #pn .ph-h i{font-style:normal;font-size:12px;opacity:.7}
+html body #pn .ph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+html body #pn .ph-th{display:block!important;width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;border:1px solid rgba(90,36,28,.45)!important;border-radius:6px!important;overflow:hidden;background:#150a0e!important;cursor:pointer;aspect-ratio:4/3;box-shadow:none!important}
+html body #pn .ph-th img{display:block;width:100%;height:100%;object-fit:cover}
+html body #pn .ph-th:focus-visible{outline:2px solid #5a241c;outline-offset:2px}
 </style>
 <script id="qa40-avatar-picker">
 /* QA40: 캐릭터 10종(피그마 Avatar 50 – Retro Cast 170:649에서 선별) + 닉네임 변경 */

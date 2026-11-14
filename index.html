@@ -990,8 +990,8 @@ const haloTex=art(64,64,(c)=>{const g=c.createRadialGradient(32,32,0,32,32,32);g
 function halo(x,y,z,col,s,b){const m=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:col,transparent:true,opacity:b,blending:THREE.AdditiveBlending,depthWrite:false}));m.position.set(x,y,z);m.scale.setScalar(s);m.renderOrder=9;S.add(m);EMG.push({h:m,b,f:1.2+Math.random()});return m}
 function emgAnim(t){EMG.forEach((e,i)=>{e.h.material.opacity=e.b*(.78+.22*Math.sin(t*e.f+i*1.7))})}
 const dia=art(128,128,x=>{x.fillStyle='#eadcc0';x.fillRect(0,0,128,128);x.fillStyle='#4f6a4c';x.beginPath();x.moveTo(64,0);x.lineTo(128,64);x.lineTo(64,128);x.lineTo(0,64);x.closePath();x.fill();let sd=5;const R_=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};for(let i=0;i<70;i++){x.strokeStyle=`rgba(${R_()<.5?'255,250,235':'30,45,30'},${.05+R_()*.08})`;x.lineWidth=1+R_()*2;x.beginPath();const a=R_()*128,b=R_()*128;x.moveTo(a,b);x.quadraticCurveTo(a+R_()*30-15,b+R_()*30-15,a+R_()*40-20,b+R_()*40-20);x.stroke()}x.strokeStyle='rgba(60,50,30,.25)';x.lineWidth=1.5;x.beginPath();x.moveTo(64,0);x.lineTo(128,64);x.lineTo(64,128);x.lineTo(0,64);x.closePath();x.stroke()});dia.wrapS=dia.wrapT=THREE.RepeatWrapping;dia.repeat.set(20,18);
-const fL0=B(18,.2,LD,0xffffff,0,-.1,LD/2);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(21,LD/.857);fL0.material=new THREE.MeshPhongMaterial({map:t,shininess:65,specular:0x2a2620})}fL0.userData.zone='L0';floors.push(fL0);
-/* 카메라가 벽 밖일 때만 쓰는 넓은 바닥(같은 무늬·같은 높이, 타일 이음 맞춤 78m=91칸) → 바닥 경계가 보이지 않음 */const fL0b=B(78,.2,78,0xffffff,0,-.1,9);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(91,91);fL0b.material=fL0.material.clone();fL0b.material.map=t}fL0b.visible=false;
+const fL0=B(18,.2,LD,0xffffff,0,-.1,LD/2);fL0.userData.qa54=1;fL0.userData.zone='L0';floors.push(fL0);
+/* 카메라가 벽 밖일 때만 쓰는 넓은 바닥(같은 무늬·같은 높이, 타일 이음 맞춤 78m=91칸) → 바닥 경계가 보이지 않음 */const fL0b=B(78,.2,78,0xffffff,0,-.1,9);fL0b.userData.qa54=1;fL0b.visible=false;
 const fL1=B(2*LW-.4,.3,BF-LB,0xffffff,0,4.05,(BF+LB)/2);fL1.userData.zone='L1';floors.push(fL1);const slabMat=fL1.material;
 const plk=art(128,128,x=>{x.fillStyle='#b98a55';x.fillRect(0,0,128,128);for(let i=0;i<4;i++){x.fillStyle=i%2?'#c39561':'#ae7f4c';x.fillRect(0,i*32,128,30)}x.fillStyle='#7a5230';for(let i=0;i<4;i++)x.fillRect(0,i*32+30,128,2)});plk.wrapS=plk.wrapT=THREE.RepeatWrapping;plk.repeat.set(4,.6);{const t=FLOORT.clone();t.needsUpdate=true;t.repeat.set(20.7,2.35);slabMat.map=t}
 /* 2층 발코니 원목 마루 (뒤쪽 통로 2m + 가운데 확장 4m → 깊이 6m) */
@@ -1006,14 +1006,28 @@ const wsegX=(z0,z1,y0,y1,x,c,t=.4)=>B(t,y1-y0,z1-z0,c,x,(y0+y1)/2,(z0+z1)/2);
 /* ===== 벽 · 천장 (레퍼런스: 월넛 패널 뒷벽 · 머스터드/오렌지 옆벽 · 버건디 벨벳) ===== */
 function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(let i=0;i<n;i++){const o=i%2;B(w/n+.012,y1-y0,.08,o?VEL1:VEL2,x0+(i+.5)*w/n,(y0+y1)/2,z+(o?.05:-.01))}}
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
-/* 뒷벽: 베이지 회반죽 */
-wseg(-LW,LW,0,4.3,LB-.2,MU2);wseg(-LW,LW,4.3,8.8,LB-.2,MU2);B(2*LW,.22,.06,WAL,0,4.42,LB+.03);
+/* QA54: 1층 로비 — 린넨 베이지 벽 + 허리 높이 세로 원목 패널 + 테라코타·크림 대각선 타일(레퍼런스 색·재질 기준, 실제 3D 재질로 구현) */
+const WAINS=0xa85f2e,LINEN=0xd8ccb9,WH=1.15;
+const PANELT=TXR(512,512,(c,W,H)=>{const r=rng(53),n=12,bw=W/n;for(let i=0;i<n;i++){const tone=r();c.fillStyle=`hsl(${25+tone*4},${60+tone*6}%,${39+tone*6}%)`;c.fillRect(i*bw,0,bw,H);
+  for(let k=0;k<16;k++){const x0=i*bw+3+r()*(bw-6),a=.05+r()*.11,amp=.6+r()*2.2,ph=r()*6.3,f=(1+(r()*3|0))*Math.PI*2/H;c.strokeStyle=`rgba(${r()<.6?'70,32,10':'235,170,100'},${a})`;c.lineWidth=.5+r()*1.1;c.beginPath();for(let y=0;y<=H;y+=8){const x=Math.max(i*bw+2,Math.min((i+1)*bw-2,x0+Math.sin(y*f+ph)*amp));y?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}
+  if(r()<.55){const kx=i*bw+bw*(.3+r()*.4),ky=30+r()*(H-60),ks=3+r()*4;for(let q=ks;q>0;q-=1.2){c.strokeStyle=`rgba(70,30,8,${.1+.25*(1-q/ks)})`;c.lineWidth=1;c.beginPath();c.ellipse(kx,ky,q*.8,q*1.5,0,0,7);c.stroke()}}
+  c.fillStyle='rgba(48,20,6,.62)';c.fillRect(i*bw,0,1.6,H);c.fillStyle='rgba(255,205,150,.2)';c.fillRect(i*bw+1.6,0,1.2,H)}});
+const LINENT=TXR(512,512,(c,W,H)=>{const r=rng(61);c.fillStyle='#d6cec0';c.fillRect(0,0,W,H);for(let y=0;y<H;y+=3){c.fillStyle=`rgba(${r()<.5?'255,250,242':'120,104,86'},${.02+r()*.035})`;c.fillRect(0,y,W,1)}for(let x=0;x<W;x+=3){c.fillStyle=`rgba(${r()<.5?'255,250,242':'120,104,86'},${.018+r()*.03})`;c.fillRect(x,0,1,H)}for(let i=0;i<9000;i++){c.fillStyle=`rgba(${r()<.5?'255,252,246':'104,90,74'},${.02+r()*.04})`;c.fillRect(r()*W,r()*H,1+r()*1.4,1+r()*1.4)}});
+TM[WAINS]=new THREE.MeshLambertMaterial({map:PANELT,color:0x8a8a8a,emissive:0x6a6a6a,emissiveMap:PANELT});TM[WAINS].userData.tile=1.3;
+/* 조명이 따뜻해도 벽이 노랗게 뜨지 않도록, 색의 대부분을 자체 발색으로 잡고 조명은 음영만 얹음 */
+TM[LINEN]=new THREE.MeshLambertMaterial({map:LINENT,color:0x474c55,emissive:0xb6b6b6,emissiveMap:LINENT});TM[LINEN].userData.tile=1.6;
+const LOBBYT=TXR(512,512,(c,W,H)=>{const r=rng(31),A='#e8dcc6',Bc='#b3644c';c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
+ for(let k=0;k<2600;k++){const x=r()*W,y=r()*H,inD=Math.abs(x-W/2)+Math.abs(y-H/2)<W/2;c.fillStyle=`rgba(${inD?(r()<.5?'150,78,56':'205,128,104'):(r()<.5?'206,192,170':'250,242,228')},${.05+r()*.07})`;const z=1+r()*4;c.fillRect(x,y,z,z)}
+ c.strokeStyle='rgba(214,203,186,.95)';c.lineWidth=3;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.stroke();c.strokeStyle='rgba(120,100,84,.22)';c.lineWidth=1;c.stroke()});
+{/* 무광 타일: 반사 없음, 자체 발색 비중을 높여 위치별 밝기 차이를 줄임 */const mk_=(rx,ry)=>{const t=LOBBYT.clone();t.needsUpdate=true;t.repeat.set(rx,ry);return new THREE.MeshLambertMaterial({map:t,color:0x6a6a6a,emissive:0x9c9c9c,emissiveMap:t})};fL0.material=mk_(21,LD/.857);fL0b.material=mk_(91,91)}
+/* 뒷벽 */
+wseg(-LW,LW,0,WH,LB-.2,WAINS);wseg(-LW,LW,WH,4.3,LB-.2,LINEN);B(2*LW,.08,.06,WAINS,0,WH+.03,LB+.03);wseg(-LW,LW,4.3,8.8,LB-.2,MU2);B(2*LW,.22,.06,WAL,0,4.42,LB+.03);
 /* 왼쪽 벽: 회반죽 + 마호가니 걸레받이 */
-wsegX(LB,LD,0,4.3,-LW,MU2);wsegX(LB,LD,4.3,8.8,-LW,MU2);B(.1,.25,LD,WD,-LW+.24,.12,LD/2);B(.1,.25,BF-LB,WD,-LW+.24,4.32,(BF+LB)/2);
+wsegX(LB,LD,0,WH,-LW,WAINS);wsegX(LB,LD,WH,4.3,-LW,LINEN);wsegX(LB,LD,4.3,8.8,-LW,MU2);B(.1,.2,LD,WAINS,-LW+.24,.1,LD/2);B(.06,.08,LD-LB,WAINS,-LW+.23,WH+.03,(LD+LB)/2);B(.1,.25,BF-LB,WD,-LW+.24,4.32,(BF+LB)/2);
 /* 오른쪽 벽: 오렌지 + 매점 알코브 (z 10~20) */
-wsegX(LB,LD,0,4.3,LW,MU2);wsegX(LB,LD,4.3,8.8,LW,MU2);B(.1,.25,LD,WD,LW-.24,.12,LD/2);B(.1,.25,BF-LB,WD,LW-.24,4.32,(BF+LB)/2);
+wsegX(LB,LD,0,WH,LW,WAINS);wsegX(LB,LD,WH,4.3,LW,LINEN);wsegX(LB,LD,4.3,8.8,LW,MU2);B(.1,.2,LD,WAINS,LW-.24,.1,LD/2);B(.06,.08,LD-LB,WAINS,LW-.23,WH+.03,(LD+LB)/2);B(.1,.25,BF-LB,WD,LW-.24,4.32,(BF+LB)/2);
 /* 앞벽 */
-{const fw=4.4*Math.sqrt(1.3),fh=5.6*Math.sqrt(1.3);wseg(-LW,-fw,0,4.3,LD,MU2,.3);wseg(-LW,-fw,4.3,8.8,LD,MU2,.3);wseg(fw,LW,0,4.3,LD,MU2,.3);wseg(fw,LW,4.3,8.8,LD,MU2,.3);wseg(-fw,fw,fh,8.8,LD,MU2,.3)}B(2*LW,.25,.1,WD,0,.12,LD-.2);
+{const fw=4.4*Math.sqrt(1.3),fh=5.6*Math.sqrt(1.3);wseg(-LW,-fw,0,4.3,LD,MU2,.3);wseg(-LW,-fw,4.3,8.8,LD,MU2,.3);wseg(fw,LW,0,4.3,LD,MU2,.3);wseg(fw,LW,4.3,8.8,LD,MU2,.3);wseg(-fw,fw,fh,8.8,LD,MU2,.3);/* QA54: 앞벽 안쪽 면(로비 쪽)만 패널·린넨으로 덧댐 — 바깥 면은 그대로 */[[-LW,-fw],[fw,LW]].forEach(([a,b])=>{wseg(a,b,0,WH,LD-.17,WAINS,.05);wseg(a,b,WH,4.3,LD-.17,LINEN,.05);B(b-a,.08,.06,WAINS,(a+b)/2,WH+.03,LD-.22);B(b-a,.2,.08,WAINS,(a+b)/2,.1,LD-.22)})}
 /* 천장: 머스터드 평천장 + 크라운 몰딩 + 메달리온 */
 {const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0xf3ead8,emissive:0x2a2418})}const CRN=0xefe6d4;B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
  [LB+3,5.2,10.2].forEach(z=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),mat(0xf1e8d6));m.position.set(0,CY-.03,z);S.add(m)})}
@@ -1186,15 +1200,16 @@ const CHD=[];function chandelier(x,y,z){const g=new THREE.Group();g.position.set
  const top=new THREE.Mesh(new THREE.CylinderGeometry(.3,.42,.1,22,1,true),new THREE.MeshBasicMaterial({color:0xf6e8d0,side:THREE.DoubleSide}));top.position.y=-L-.06;g.add(top);const fin=new THREE.Mesh(new THREE.SphereGeometry(.035,8,6),BRM_);fin.position.y=-L-.55;g.add(fin);
  const hl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffdcaa,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false}));hl.position.y=-L-.3;hl.scale.setScalar(3.2);g.add(hl);const bulbLight=new THREE.PointLight(0xffe6bc,.45,4.6,2);bulbLight.position.y=-L-.27;bulbLight.userData.i=.45;g.add(bulbLight);layEnd(m_,'pend'+pi_,'펜던트 조명',0,{ceil:1})});
 /* ---------- CINEMA 입구 구조물 + 쌍계단 + 2층 발코니 ---------- */
-B(7.0,3.88,BF,MU2,-5.3,1.94,BF/2);B(7.0,3.88,BF,MU2,5.3,1.94,BF/2);B(17.6,.28,.12,MU2,0,4.04,BF+.06);B(3.6,3.88,BF-1.1,WAL,0,1.94,(BF-1.1)/2);B(3.6,.38,1.1,WAL,0,3.69,BF-.55);B(3.6,3.5,.2,0x0e0709,0,1.75,BF-1.0);
-B(4.4,.32,.3,WD,0,3.72,BF+.1);[-1,1].forEach(s=>{B(.28,3.7,.3,WD,s*2.0,1.85,BF+.1);B(4.8,.25,.08,WD,s*4.2,.12,BF+.04);
+[-5.3,5.3].forEach(x=>{B(7.0,WH,BF,WAINS,x,WH/2,BF/2);B(7.0,3.88-WH,BF,LINEN,x,(3.88+WH)/2,BF/2);B(7.0,.08,.06,WAINS,x,WH+.03,BF+.03)});B(17.6,.28,.12,MU2,0,4.04,BF+.06);B(3.6,3.88,BF-1.1,WAL,0,1.94,(BF-1.1)/2);B(3.6,.38,1.1,WAL,0,3.69,BF-.55);B(3.6,3.5,.2,0x0e0709,0,1.75,BF-1.0);
+B(4.4,.32,.3,WD,0,3.72,BF+.1);[-1,1].forEach(s=>{B(.28,3.7,.3,WD,s*2.0,1.85,BF+.1);B(4.8,.2,.08,WAINS,s*4.2,.1,BF+.04);
  /* 열린 마호가니 문짝 (벽에 붙어 열림) */B(1.7,3.35,.07,WAL2,s*2.98,1.72,BF+.08);B(1.3,1.1,.03,WAL,s*2.98,.9,BF+.13);B(1.3,1.5,.03,WAL,s*2.98,2.45,BF+.13);B(.04,.45,.05,BR,s*2.3,1.4,BF+.15);
  /* 튤립 벽등 */{const m_=layBeg();sconce(s*4.95,2.75,BF+.02,0);halo(s*4.95,3.0,BF+.3,0xffd9a0,1.3,.5);layEnd(m_,'scf'+s,'벽등 (1관 정면)',0,{wall:'z',lo:-6,hi:6})}
  /* 협탁 + 수국 화병 */const m2_=layBeg();const tx=s*4.95,tz=BF+.6;B(.6,.05,.45,WD,tx,.8,tz);B(.56,.12,.41,WD2,tx,.7,tz);[[-.25,-.18],[.25,-.18],[-.25,.18],[.25,.18]].forEach(([a,b])=>B(.04,.78,.04,WD,tx+a,.39,tz+b));
  const v=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,.36,10),mat(0x9db8a6));v.position.set(tx,1.0,tz);S.add(v);for(let i=0;i<7;i++){const f=new THREE.Mesh(new THREE.SphereGeometry(.09,7,5),mat(i%3?0xf0b8b8:0xf7e2d8));f.position.set(tx+Math.cos(i)*.13*(i?1:0),1.28+(i%2)*.05,tz+Math.sin(i)*.13*(i?1:0));S.add(f)}layEnd(m2_,'side'+s,'협탁 · 화병',0)});
 /* stairs (초록 카펫 디딤판 · 나무 난간) */
 function stairs(x0,x1){const w=x1-x0,n=16,Ln=ST.z1-ST.z0,cz=(ST.z0+ST.z1)/2,ang=Math.atan2(4.2,Ln);
- for(let k=0;k<n;k++){const h=4.2*(k+1)/n,d=Ln/n,zc=ST.z1-d*(k+.5);B(w,h,d+.01,MU2,(x0+x1)/2,h/2,zc);B(w-.5,.05,d*.98,k%2?CARP1:CARP2,(x0+x1)/2,h+.02,zc);B(w-.5,.03,.03,BR,(x0+x1)/2,h+.05,zc+d*.47)}
+ for(let k=0;k<n;k++){const h=4.2*(k+1)/n,d=Ln/n,zc=ST.z1-d*(k+.5);B(w,h,d+.01,MU2,(x0+x1)/2,h/2,zc);B(w-.5,.05,d*.98,k%2?CARP1:CARP2,(x0+x1)/2,h+.02,zc);B(w-.5,.03,.03,BR,(x0+x1)/2,h+.05,zc+d*.47);/* QA54: 계단실 옆벽도 1층 벽과 같은 마감(허리 높이 원목 패널 + 린넨) */const lo=Math.min(h,WH);B(.05,lo,d+.01,WAINS,x0-.02,lo/2,zc);if(h>WH)B(.05,h-WH,d+.01,LINEN,x0-.02,(h+WH)/2,zc)}
+ {const d=Ln/n,k0=Math.ceil(WH*n/4.2)-1,len=Ln-d*k0;B(.06,.08,len,WAINS,x0-.05,WH+.03,ST.z0+len/2);B(.07,.2,Ln,WAINS,x0-.05,.1,cz)}
  [x0,x1].forEach(sx=>{const r=B(.11,.09,Math.hypot(Ln,4.2),WD,sx,3.0,cz);r.rotation.x=ang;for(let z=ST.z0+.12;z<ST.z1-.1;z+=.2)B(.03,.92,.03,MET,sx,stairY(z)+.48,z);const r2=B(.04,.04,Math.hypot(Ln,4.2),MET,sx,2.2,cz);r2.rotation.x=ang;B(.1,1.15,.1,MET,sx,.58,ST.z1-.12);const cap=new THREE.Mesh(new THREE.SphereGeometry(.09,12,8),BRM);cap.position.set(sx,1.22,ST.z1-.12);S.add(cap)})}
 stairs(ST.x2,ST.x3);
 [[ST.x2,ST.x3]].forEach(([a,b])=>{const Ln=ST.z1-ST.z0,m=B(b-a,.14,Math.hypot(Ln,4.2),0,(a+b)/2,2.1,(ST.z0+ST.z1)/2);m.rotation.x=Math.atan2(4.2,Ln);m.visible=false;m.userData.zone='S';m.userData.stair=1;floors.push(m)});

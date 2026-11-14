@@ -1008,7 +1008,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 const LOBBY_PALETTE={
- floor:{dark:"#BDA38A",cream:"#EFE7CC",grout:"#A8957F",roughness:.85,metalness:0}/* QA64: 오늘 맨 처음 바닥색(크림·토프 체크)으로 복원 */,
+ floor:{dark:"#CDB2A8",cream:"#EFE7CC",grout:"#A8957F",roughness:.85,metalness:0}/* QA64: 오늘 맨 처음 바닥색(크림·토프 체크)으로 복원 */,
  wall:{base:"#A47B55",grainLight:"#B58C65",grainDark:"#896345",seam:"#805C40",panelWidthMeters:.16,roughness:.85,metalness:0},
  woodFrame:{base:"#65432F",grainLight:"#7D573C",grainDark:"#4E3224",roughness:.75,metalness:0},
  ceilingTrim:{color:"#E9DFCF",roughness:.9,metalness:0}};

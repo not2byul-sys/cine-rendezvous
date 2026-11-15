@@ -99,4 +99,5 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
  assert(source.includes("const fresh=QA86_JUST===tk.id;"));
  assert(source.includes("hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{now:1,fn:()=>toast('준비 중입니다')})"));
  assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});
+test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 

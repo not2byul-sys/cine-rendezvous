@@ -1021,8 +1021,8 @@ const wsegX=(z0,z1,y0,y1,x,c,t=.4)=>B(t,y1-y0,z1-z0,c,x,(y0+y1)/2,(z0+z1)/2);
 function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(let i=0;i<n;i++){const o=i%2;B(w/n+.012,y1-y0,.08,o?VEL1:VEL2,x0+(i+.5)*w/n,(y0+y1)/2,z+(o?.05:-.01))}}
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
-/* QA73·74: 최신 피그마(90:1362) 로비 팔레트 14색. 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
-const LP_DEF=Object.freeze({floorCream:"#F7F1E4",floorPink:"#E6CDCD",floorGrout:"#986B41",wallWood:"#986B41",wallDark:"#643817",carpetA:"#6D8273",carpetB:"#768A7B",railing:"#4C1C15",railingBase:"#2B1711",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#986B41",counterBody:"#BC9875",glass:"#A6BDB0"});
+/* QA73·74: 로비 팔레트 13색(피그마 90:1362 기반, QA76에서 사용자 지정 값으로 교체). 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
+const LP_DEF=Object.freeze({floorCream:"#EBE6D5",floorPink:"#E1CBC1",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음) */
 const LP_HEX=/^#[0-9a-f]{6}$/i,LP_clean=o=>{const r={};Object.keys(LP_DEF).forEach(k=>{const v=o&&o[k];r[k]=typeof v==='string'&&LP_HEX.test(v)?v.toUpperCase():LP_DEF[k]});return r};
 const LP_CUR=LP_clean(store.get('aic.lobbyPalette'));
 const LOBBY_PALETTE={
@@ -1032,7 +1032,7 @@ const LOBBY_PALETTE={
  ceilingTrim:{color:"#E9DFCF",roughness:.9,metalness:0}};
 const LP_rgb=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255]},LP_mix=(a,b,k)=>{const A=LP_rgb(a),B_=LP_rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B_[i]-v)*k)).join(',')})`},LP_a=(h,al)=>`rgba(${LP_rgb(h).join(',')},${al})`;
 const LP_shade=(h,k)=>'#'+LP_rgb(h).map(v=>Math.max(0,Math.min(255,Math.round(k<0?v*(1+k):v+(255-v)*k))).toString(16).padStart(2,'0')).join('');
-/* 나뭇결 밝은 줄·어두운 줄·이음매는 기준색에서 같은 비율로 계산 */function LP_sync(){const P=LOBBY_PALETTE,c=LP_CUR;P.floor.dark=c.floorPink;P.floor.cream=c.floorCream;P.floor.grout=c.floorGrout;P.wall.base=c.wallWood;P.wall.grainLight=LP_shade(c.wallWood,.17);P.wall.grainDark=LP_shade(c.wallWood,-.165);P.wall.seam=LP_shade(c.wallWood,-.22);P.woodFrame.base=c.wallDark;P.woodFrame.grainLight=LP_shade(c.wallDark,.155);P.woodFrame.grainDark=LP_shade(c.wallDark,-.23)}LP_sync();
+/* 나뭇결 밝은 줄·어두운 줄·이음매는 기준색에서 같은 비율로 계산 */function LP_sync(){const P=LOBBY_PALETTE,c=LP_CUR;P.floor.dark=c.floorPink;P.floor.cream=c.floorCream;P.wall.base=c.wallWood;P.wall.grainLight=LP_shade(c.wallWood,.17);P.wall.grainDark=LP_shade(c.wallWood,-.165);P.wall.seam=LP_shade(c.wallWood,-.22);P.woodFrame.base=c.wallDark;P.woodFrame.grainLight=LP_shade(c.wallDark,.155);P.woodFrame.grainDark=LP_shade(c.wallDark,-.23)}LP_sync();
 /* 로비 전용 재질 목록(조명 관리자가 자체 발색분을 함께 조절) · 기준색 기록 */const LP_MATS=[],LP_LIGHT=(o=>({b:o&&o.b>=50&&o.b<=150?Math.round(o.b/5)*5/100:1,k:o&&o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}))(store.get('aic.lobbyLighting'));
 function LP_base(m,c,e){m.userData.lp={c,e};m.color.copy(c);if(m.emissive)m.emissive.copy(e)}
 const LP_flat=(lit=.42,gain=.95)=>{const m=new THREE.MeshLambertMaterial({color:0xffffff});m.userData.keep=1;m.userData.flat={lit,gain};LP_MATS.push(m);return m};
@@ -1050,7 +1050,7 @@ TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.42,.945);/* QA56: 계단·발코니 난간은 �
 /* QA73: 계단 디딤판 금색 · 계단 옆판 · 매표소·매점 상판과 몸체는 로비 전용 재질(다른 공간과 공유하지 않음) */const GOLDT='lpGold';TM[GOLDT]=new THREE.MeshPhongMaterial({color:0xdeb967,shininess:30,specular:0x3a2c14});TM[GOLDT].userData.keep=1;TM.lpSide=LP_flat();TM.lpTop=LP_flat();TM.lpBody=LP_flat(.42,.97);TM.lpBody.side=THREE.DoubleSide;[TM[CARP1],TM[CARP2]].forEach(m=>m.userData.keep=1);LP_MATS.push(TM[CARP1],TM[CARP2],TM[MET],TM[GOLDT]);
 const LOBBYT=TXR(512,512,LP_DRAW.floor=(c,W,H)=>{const r=rng(31),A=LPFL.cream,Bc=LPFL.dark;c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
  for(let k=0;k<2400;k++){const x=r()*W,y=r()*H;c.fillStyle=`rgba(${r()<.5?'255,255,255':'120,96,84'},${.02+r()*.035})`;const z=1+r()*4;c.fillRect(x,y,z,z)}
- c.strokeStyle=LPFL.grout;c.lineWidth=3;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.stroke()});
+ /* QA76: 타일 사이 줄눈 선 제거 */});
 const LP_FLOORT=[];{const mk_=(rx,ry)=>{const t=LOBBYT.clone();LP_FLOORT.push(t);t.needsUpdate=true;t.repeat.set(rx,ry);const m=LP_mat(t,0,LPFL,.3,1)/* QA73: 새 크림색이 하얗게 뜨지 않게 보정값 1 */;m.userData.tile=0;return m};fL0.material=mk_(21,LD/.857);fL0b.material=mk_(91,91)}
 /* 뒷벽 */
 wseg(-LW,LW,0,4.3,LB-.2,MU2);wseg(-LW,LW,4.3,8.8,LB-.2,MU2);B(2*LW,.22,.06,FRAME,0,4.42,LB+.03);
@@ -2544,7 +2544,7 @@ PANELS.admposter=()=>{if(!ADM){PANELS.admlogin();return}const o=pGet();panel(`<h
  document.querySelectorAll('#pn input[data-pid]').forEach(inp=>inp.onchange=()=>{const f=inp.files[0];if(!f)return;const sl=PSLOT.find(q=>q.id===inp.dataset.pid);const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const H=900,W=Math.round(H*sl.w/sl.h),cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d'),sc=Math.max(W/im.width,H/im.height),dw=im.width*sc,dh=im.height*sc;c.drawImage(im,(W-dw)/2,(H-dh)/2,dw,dh);const url=cv.toDataURL('image/jpeg',.82);const o=pGet();o[sl.id]=url;try{store.set(PKEY,o)}catch(e){toast('저장 공간이 부족해요');return}pApply(sl,url);toast('포스터를 바꿨어요');PANELS.admposter()};im.src=r.result};r.readAsDataURL(f)})};
 Object.assign(A,{admposter:()=>PANELS.admposter(),preset:d=>{const o=pGet();delete o[d.pid];store.set(PKEY,o);const sl=PSLOT.find(q=>q.id===d.pid);if(sl)pApply(sl,null);PANELS.admposter()}});
 /* QA74: 관리 → 로비 컬러·조명. 바꾸면 바로 미리보기, 저장하면 이 브라우저에 보관(설정 내보내기 파일에도 포함), 초기화하면 피그마 기본값·밝기 100%·색온도 끔 */
-const LP_LABEL={floorCream:'바닥 타일 · 크림',floorPink:'바닥 타일 · 핑크',floorGrout:'바닥 줄눈',wallWood:'벽 패널 · 원목',wallDark:'짙은 원목 · 몰딩',carpetA:'계단 카펫 A',carpetB:'계단 카펫 B',railing:'계단 난간 · 버건디',railingBase:'계단 난간 · 베이스',goldTrim:'계단 디딤판 · 골드',sidePanel:'계단 옆판',counterTop:'매표소·매점 상판',counterBody:'매표소·매점 몸체',glass:'출입문 유리'};
+const LP_LABEL={floorCream:'바닥 타일 · 크림',floorPink:'바닥 타일 · 핑크',wallWood:'벽 패널 · 원목',wallDark:'짙은 원목 · 몰딩',carpetA:'계단 카펫 A',carpetB:'계단 카펫 B',railing:'계단 난간 · 버건디',railingBase:'계단 난간 · 베이스',goldTrim:'계단 디딤판 · 골드',sidePanel:'계단 옆판',counterTop:'매표소·매점 상판',counterBody:'매표소·매점 몸체',glass:'출입문 유리'};
 const LPA={tab:'color',dirty:false,saved:()=>({pal:LP_clean(store.get('aic.lobbyPalette')),light:(o=>({b:o&&o.b>=50&&o.b<=150?Math.round(o.b/5)*5:100,k:o&&o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}))(store.get('aic.lobbyLighting'))})};
 function lpaSet(pal,light){if(light){LP_LIGHT.b=light.b/100;LP_LIGHT.k=light.k}LP_apply(pal||{})}
 window.lpaRevert=()=>{if(!LPA.dirty)return;LPA.dirty=false;const sv=LPA.saved();lpaSet(sv.pal,sv.light)};

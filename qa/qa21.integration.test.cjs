@@ -76,4 +76,15 @@ test('QA75 quick bar has no chat entry, NPC menus have no talk action, Alfredo o
  const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));assert(!hud.includes('mpchat'));
  const menu=source.slice(source.indexOf('function showActorMenu('),source.indexOf('function selectAvatar('));assert(!menu.includes("bt('actorTalk'"));assert(menu.includes("if(u_.buff&&!u_.remote){"));assert(menu.includes("el.innerHTML=bt('actorUse','','퀴즈 풀기')/* QA75"));assert(menu.includes("bt('actorGift','giftmenu','선물하기')"));assert(menu.includes("bt('actorWave','','손 흔들기')"));
  assert(source.includes("Object.assign(A,{actorGift,actorUse});"));assert(!/A\.actorTalk|actorTalk:/.test(source));});
+test('QA78 screening view: camera approach, sconces off, replay, chip-style overlay buttons, external-link title chip, fixed-size labels',()=>{
+ assert(source.includes('function qa78CineZ(z0,dt){'));assert.equal(source.split('cp.set(H.cx,H.base+SCY,qa78CineZ(z0,dt))').length-1,2);
+ {const vm=require('vm'),ctx={Math,CINE_DONE:false,SCW:7.8,SCZ:-17.55,C:{aspect:16/9,fov:64},$:()=>({classList:{contains:()=>ctx.live}}),live:true};vm.createContext(ctx);const i=source.indexOf('let QA78_Z=0;function qa78CineZ('),j=source.indexOf('function openCine(');vm.runInContext(source.slice(i,j),ctx);
+  const z0=-4.96;let z=z0;for(let k=0;k<40;k++)z=ctx.qa78CineZ(z0,.05);const D=z+17.55,frac=7.8/(2*D*Math.tan(32*Math.PI/180)*16/9);assert(Math.abs(frac-.66)<.01,'fills '+frac);ctx.live=false;for(let k=0;k<40;k++)z=ctx.qa78CineZ(z0,.05);assert(Math.abs(z-z0)<1e-9);
+  ctx.live=true;ctx.C.aspect=.5;ctx.C.fov=80;for(let k=0;k<40;k++)z=ctx.qa78CineZ(-12,.05);assert(z<=-12+1e-9,'never moves back')}
+ assert(source.includes("HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF})"));assert(source.includes("HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k)"));
+ assert(source.includes("$('watch').textContent='다시 보기';$('watch').hidden=false}"));assert(source.includes("if(curSp&&CINE_DONE){/* QA78: 다시 보기"));
+ assert(source.includes('<button id="cyt" type="button" title="보러가기" aria-label="보러가기"><span id="qa-yt-label"></span><svg'));assert(source.includes("$('cyt').onclick=()=>$('ext').onclick();"));assert(!/openCine\(sp\)\{[^\n]*window\.open/.test(source));
+ assert(source.includes('body.inhall #mpbar,body.cineseat #mpbar{display:none!important}'));assert(source.includes("html body #watch{height:42px;padding:0 13px;border-radius:999px;background:rgba(28,20,22,.72)"));assert(source.includes("html body #ctxbar button.on{background:rgba(28,20,22,.72)"));
+ assert(source.includes("#cine iframe{position:absolute;left:0;top:-60px;height:calc(100% + 120px)!important}"));
+ assert(source.includes("s.material.sizeAttenuation=false"));assert(!source.includes("2.6+s.scale.y/2"));assert(source.includes("f=`500 ${fs}px \"Noto Sans KR\",sans-serif`;"));assert(source.includes("qa78Fix(sprite,w*.583,h*.583)"));});
 

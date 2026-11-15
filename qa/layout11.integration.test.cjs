@@ -112,7 +112,7 @@ test('the ticket side table registers two facing usable seats in the same layout
 });
 test('long NPC speech keeps every character across wrapped lines with no generated ellipsis', () => {
   const printed = [], drawing = { measureText: s => ({ width: Array.from(s).length * 24 }), beginPath() {}, roundRect() {}, fill() {}, fillText: t => printed.push(t) },
-    ctx = { Math, document: { createElement: () => ({ getContext: () => drawing }) }, THREE: { CanvasTexture: class {}, SpriteMaterial: class {}, Sprite: class { constructor() { this.scale = { set() {} }; } } } };
+    ctx = { qa78Fix: s => s, Math, document: { createElement: () => ({ getContext: () => drawing }) }, THREE: { CanvasTexture: class {}, SpriteMaterial: class {}, Sprite: class { constructor() { this.scale = { set() {} }; } } } };
   vm.createContext(ctx); vm.runInContext(part('function bubble(t)', 'function sayB('), ctx);
   const text = '안녕하세요. 저는 영화관에서 여러분을 기다리고 있었어요. 이 긴 자기소개는 끝까지 보이며 마침표까지 모두 남아 있어야 합니다.';
   ctx.bubble(text); assert.equal(printed.join(''), text); assert(printed.length > 2); assert(!printed.join('').includes('…'));

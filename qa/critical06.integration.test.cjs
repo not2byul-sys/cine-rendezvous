@@ -42,7 +42,7 @@ test('a far touch pauses immediately and approaches the facing side before openi
   assert(Math.abs(me.userData.path[0].z) < 1e-9);
   assert.equal(nodes.has('actorMenu'), false);
   arrive();
-  assert(nodes.get('actorMenu').innerHTML.includes('말걸기'));
+  assert(nodes.get('actorMenu').innerHTML.includes('손 흔들기'));
   assert(!nodes.get('actorMenu').innerHTML.includes('선물주기'));
   ctx.dismissActor();
   assert.equal(nodes.has('actorMenu'), false);
@@ -66,7 +66,7 @@ test('NPC touch introduces the character directly, without a social tooltip', ()
   ctx.selectAvatar(target); assert.equal(calls.some(x => x[0] === 'talk'), false);
   arrive(); assert(calls.some(x => x[0] === 'talk' && x[1] === target));
   /* QA20: 소개 말풍선과 함께 하단 컨텍스트 액션 바(글자 칩)를 띄움 */
-  assert(nodes.get('actorMenu').innerHTML.includes('말걸기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
+  assert(nodes.get('actorMenu').innerHTML.includes('손 흔들기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {

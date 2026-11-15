@@ -6,7 +6,7 @@ test('QA19 hall follows the reference proportions: narrow room, smaller screen, 
 test('QA19 world cup trophy sits on the left bar cart without its pedestal',()=>{
   assert(source.includes('QA19: 좌측 바 카트(탁자) 위에 올림'));assert(source.includes('const px=X+CBW-.7,pz=Z+1.6'));});
 test('QA19 NPC actions render as a pill row above the bottom nav',()=>{
-  assert(source.includes("bt('actorTalk','talk','말걸기')"));assert(source.includes("bt('actorGift','giftmenu','선물하기')"));assert(source.includes('#actorMenu{position:fixed;z-index:38;left:50%'));});
+  assert(!source.includes("bt('actorTalk'"));assert(source.includes("bt('actorGift','giftmenu','선물하기')"));assert(source.includes('#actorMenu{position:fixed;z-index:38;left:50%'));});
 test('QA19 every NPC gift line reacts in character and then hints at the club or rainbow popcorn',()=>{
   const st=source.indexOf('const QA18_GIFT={'),body=source.slice(st,source.indexOf('};',st));
   const rows=[...body.matchAll(/'([^']+)':\['([^']*)','([^']*)','([^']*)','(hop|bow)'\]/g)];assert(rows.length>=50);

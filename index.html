@@ -938,7 +938,7 @@ try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.
 
 /* QA78: 이름표·말풍선은 원근과 상관없이 화면에서 같은 크기(px)로 보임. 이름표는 멀어지면 흐려짐 */let QA78_K=0;const QA78_TAGS=[];function qa78Fix(s,wpx,hpx){s.material.sizeAttenuation=false;s.material.needsUpdate=true;s.userData.px=[wpx,hpx];s.scale.set(wpx*QA78_K,hpx*QA78_K,1);return s}
 /* 부모(아바타)의 크기 배율이 스프라이트에 곱해지므로 그만큼 나눠 화면 크기를 맞춤 */const QA78_V=new THREE.Vector3();function qa78Scale(o){const p=o.userData.px,ps=o.parent?o.parent.getWorldScale(QA78_V).y||1:1;o.scale.set(p[0]*QA78_K/ps,p[1]*QA78_K/ps,1)}
-function qa78Bubble(c,s){const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(s);qa78Scale(s)}
+function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(s);qa78Scale(s)}
 let seatedHall=0,QA85_CINE=false;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?80:64):(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 S.add(new THREE.HemisphereLight(0xf1eee6,0x697783,.74));
 const dl=new THREE.DirectionalLight(0xfff2dc,.26);dl.position.set(-8,20,14);S.add(dl);
@@ -2382,7 +2382,7 @@ function bubble(t){
  c.width=w;c.height=h;x.font=f;x.fillStyle='#FFFFFF';x.beginPath();x.roundRect?x.roundRect(0,0,w,h,18):x.rect(0,0,w,h);x.fill();
  x.fillStyle='#2a1418';x.textBaseline='middle';lines.forEach((l,i)=>x.fillText(l,18,12+lh*i+lh/2));
  const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false}));
- qa78Fix(sprite,w*.583,h*.583);sprite.renderOrder=11;return sprite;
+ sprite.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1)/* QA86: 말풍선 크기는 QA78 이전으로 */;sprite.renderOrder=11;return sprite;
 }
 function sayB(c,t,dur=5){dur=Math.max(1,Math.min(dur,20));if(!String(noEmo(txT(t))||'').trim())return;const u=c.userData;if(u.b)c.remove(u.b);const s=bubble(noEmo(txT(t)));qa78Bubble(c,s);c.add(s);u.b=s;u.bt=dur;setTimeout(()=>{if(u.b===s){c.remove(s);u.b=null}},dur*1000+400)}
 const TRIVIA=['최초의 유료 영화 상영은 1895년 파리, 뤼미에르 형제였어요','「열차의 도착」을 보고 관객이 놀라 피했다는 전설, 들어봤어요?','유성영화 시대는 1927년 「재즈 싱어」로 열렸죠','「오즈의 마법사」에서 흑백이 컬러로 바뀌는 순간, 기억나요?','「시민 케인」의 마지막 말 \'로즈버드\'… 뭔지 아세요?','히치콕 감독은 자기 영화에 늘 잠깐씩 얼굴을 비췄어요. 찾아보는 재미가 있죠','칸 최고상은 황금종려상, 베를린은 황금곰상, 베니스는 황금사자상!','「기생충」은 아카데미 작품상을 받은 첫 비영어 영화예요','필름 영화는 1초에 24프레임으로 돌아가요','누벨바그 하면 고다르와 트뤼포죠. 「네 멋대로 해라」 봤어요?','부산국제영화제는 1996년에 처음 열렸어요','「하녀」(1960), 김기영 감독의 걸작이에요. 지금 봐도 서늘하죠','「8월의 크리스마스」(1998), 한국 멜로의 교과서 같은 작품이에요','시네마스코프 와이드스크린은 1953년 「성의」로 처음 선보였어요','팝콘이 극장 간식이 된 건 대공황 시절부터래요 🍿','아카데미 시상식은 1929년에 처음 열렸어요','「메트로폴리스」(1927)는 SF 영화의 출발점 같은 작품이에요','「라라랜드」 오프닝은 실제 고속도로 램프에서 찍었어요','「시네마 천국」 마지막 키스 장면 몽타주… 볼 때마다 울컥해요','이런 단관 극장, 요즘은 정말 귀하답니다','질문! 극장에서 처음 본 영화가 뭐였어요?','질문! 인생 영화를 딱 한 편만 꼽는다면?','질문! 엔딩 크레딧은 끝까지 보는 편이에요?','질문! 팝콘파예요, 나초파예요?','질문! 혼자 보는 영화, 좋아해요?','질문! 흑백 영화도 즐겨 보나요?'].sort(()=>Math.random()-.5);
@@ -2498,7 +2498,7 @@ const tcNo=n=>String(n||'').replace(/\D/g,'').padStart(6,'0').slice(-6);
 function tc3({tag='div',attrs='',hall=1,hn,title,no,act,punched=false,punchX=50,punchY=45,cls=''}){const [paper,stubc]=TCPAL[hall]||TCPAL[1];return `<${tag} class="tc3 ${cls}" data-punched="${punched}" style="--c:${paper};--sc:${stubc}"${attrs}><i class="tc3-f1"></i><i class="tc3-f2"></i><div class="tc3-face"><div class="tc3-brand">Vintage Cinema</div><div class="tc3-hn">★ ${hn} ★</div><div class="tc3-ti">${esc(title)}</div></div><div class="tc3-stub"><span class="tc3-no">${no}</span><span class="tc3-act">${act}</span></div></${tag}>`}
 const tcHTML=(t,b=1)=>{const now=nowS(),can=t.end>now,on=b&&can;return `<div class="tcw">${tc3({tag:on?'button':'div',attrs:on?` data-a="enter" data-id="${t.id}"`:'',hall:t.hall,hn:t.hn,title:t.title,no:tcNo(t.no),act:can?(b?'입장하기':'자유석'):'기간 만료',punched:t.punched,punchX:t.punchX||50,punchY:t.punchY||45,cls:can?'':'ex'})}</div>`};
 const tcHTML_OLD=(t,b=1)=>{const now=nowS(),can=t.end>now,on=b&&can;return `<div class="tcw"><${on?'button':'div'} class="tc ${t.punched?'pu':''} ${can?'':'ex'}" style="--c:${t.color}"${on?` data-a="enter" data-id="${t.id}"`:''}><div class="mn"><b class="hn">★ ${t.hn} ★</b><b class="ti">${t.title}</b><span class="dt">${can?(b?'입장하기':'자유석'):'기간 만료'}</span></div><div class="sb"><span>${t.no}</span></div></${on?'button':'div'}></div>`};
-/* 발권 전 티켓(매표소·관 입구 팝업): 같은 피그마 티켓 모양, 누르면 광고 → 발권 / 보유 중이면 내 티켓(입장하기) */const bkHTML=(hl,sc)=>{const t=TK.find(k=>k.hall===hl.id);if(t)return tcHTML(t);return `<div class="tcw">${tc3({tag:'button',attrs:` data-a="buy" data-s="${sc.id}"`,hall:hl.id,hn:hl.name,title:sc.film.title,no:'ADMIT ONE',act:'티켓 발급'})}</div>`};
+/* 발권 전 티켓(매표소·관 입구 팝업): 같은 피그마 티켓 모양, 누르면 광고 → 발권 / 보유 중이면 내 티켓(입장하기) */const bkHTML=(hl,sc)=>{const t=TK.find(k=>k.hall===hl.id);if(t)return tcHTML(t);return `<div class="tcw">${tc3({tag:'button',attrs:` data-a="buy" data-s="${sc.id}"`,hall:hl.id,hn:hl.name,title:sc.film.title,no:'ADMIT ONE',act:'발급하기'})}</div>`};
 const SC={};
 const PANELS={
  booth(){let h='<h3>🎫 매표소</h3><p class="sub">관을 선택하면 티켓이 바로 발급돼요 · 상영 시간 없이 좌석에 앉으면 바로 시작 · 보유 '+TK.length+'/'+CFG.MAX_TICKETS+'장</p>';
@@ -2528,7 +2528,7 @@ const A={
  close:closePanel,
  buy:async d=>{const s=SC[d.s];if(!s||!me)return;closePanel();const ok=await AdService.show({kind:'ticket',label:`${s.hall.name} 「${s.film.title}」 티켓 1장`});if(!ok){toast('광고를 끝까지 봐야 티켓을 받을 수 있어요');return}
   const r=API.buyTicket(s);refTK();if(r.err){toast(r.err);return}paintSeats();/* QA17: 펀칭 전 완료 알림 문구 제거 */
-  await showPunch(r.ok);API.punch(r.ok.id);refTK();const hid=r.ok.hall;if(me.userData.seat)standUp(me,true);me.position.set(HCX[hid],H_BASE[hid],-2.8);me.userData.lvl=HL[hid];me.userData.path=[];me.rotation.y=Math.PI;camYaw=Math.PI;snapCam=true;hallChan(hid);walkTo(me,HCX[hid],-3.4,"H"+hid);say(me,'🎞 입장!')},
+  await showPunch(r.ok);API.punch(r.ok.id);refTK();const hid=r.ok.hall;/* QA86: 순간이동 대신 펀칭 후 상영관 문으로 걸어 들어감 */if(me.userData.seat)standUp(me,true);toast(`${s.hall.name}으로 입장합니다`);QA86_JUST=r.ok.id;ENTER_TK=r.ok.id;hallChan(hid);HALLN[hid].entryUntil=performance.now()/1000+4;walkTo(me,HCX[hid],-7.0,'H'+hid)},
  fl:d=>PANELS._sel(d.i),
  getset:async d=>{closePanel();const ok=await AdService.show({kind:'popcorn',label:'매점 보상 · 팝콘 + 콜라'});if(!ok){toast('광고를 끝까지 보면 받을 수 있어요');return}API.addItem('pop');API.addItem('cola');toast(`🍿 ${FL[d.i][0]} 팝콘 + 🥤 콜라를 받았어요! (가방에서 확인)`)},
    getcafe:async d=>{const f=CAFEM.find(x=>x[0]===d.k);closePanel();const ok=await AdService.show({kind:'vend',label:'카페 보상 · '+f[2]});if(!ok){toast('광고를 끝까지 보면 받을 수 있어요');return}API.addItem(d.k);toast(f[1]+' '+f[2]+'를 받았어요! (가방에서 확인)')},
@@ -2669,9 +2669,9 @@ function requestEntry(hid,cont){if(CLOSEDH.has(hid)){const s_=STAFF[hid];if(s_)s
  if(me){me.rotation.y=Math.PI;st.rotation.y=Math.atan2(me.position.x-st.position.x,me.position.z-st.position.z)}
   if(!tk){ENTER_TK=null;qa17NoTicket(st);return}
  const go=()=>{HALLN[hid].entryUntil=performance.now()/1000+4;walkTo(me,cont.x,cont.z,cont.zone,cont.opt)};
- if(tk.punched){ENTER_TK=null;say(st,'다시 오셨네요! 아무 자리나 앉으세요 🎞');go();return}
+ if(tk.punched){const fresh=QA86_JUST===tk.id;QA86_JUST=null;ENTER_TK=null;say(st,fresh?'티켓 확인했어요! 원하는 자리에 앉으세요 🎞':'다시 오셨네요! 아무 자리나 앉으세요 🎞');go();return}
  showPunch(tk).then(()=>{API.punch(tk.id);refTK();ENTER_TK=null;say(st,'티켓 확인했어요! 자유석이니 원하는 자리에 앉으세요 🎞');go()})}
-let selSeat=null;
+let selSeat=null,QA86_JUST=null;
 function paintSeats(){CFG.HALLS.forEach(h=>{const H=HALLN[h.id],c=new THREE.Color(0x86203a),g=new THREE.Color(0xf2c14e),sl=new THREE.Color(0xf3ead2),sc=curS(h.id),mine=null;const tk_=new THREE.Color(0x4a0a16);for(let i=0;i<NSEAT;i++){const st_=H.seats[i],cc=selSeat&&selSeat.hall===h.id&&selSeat.idx===i?sl:(st_&&st_.taken?tk_:c);H.IC.setColorAt(i,cc);H.IB.setColorAt(i,cc)}H.IC.instanceColor.needsUpdate=H.IB.instanceColor.needsUpdate=true})}
 function hideSit(){selSeat=null;$('sitbox').hidden=true;paintSeats();hudUpd()}
 function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){say(me,'이미 앉은 자리예요');return}selSeat=sp;paintSeats();const b=$('sitbox');b.hidden=false;b.innerHTML=`<span>${hallCfg(hid).name} · ${sp.label} 좌석</span><button class="p" data-a="sit">앉기</button>`;hudUpd()}
@@ -3907,7 +3907,7 @@ function relocateClubPieces(mark,from,to,angle){
    const hb=new THREE.Mesh(new THREE.BoxGeometry(.48,Math.max(hh,.52),Math.max(hw,.55)),new THREE.MeshBasicMaterial({visible:false}));hb.position.set(X+x+.1,y0+hh/2,Z+z);S.add(hb);hb.userData.act={now:1,fn:()=>clubPick(i),pt:{x:X-CBW+1.5,z:Z+z,zone:'B'}};INTER.push(hb)})}
  relocateClubPieces(filmCornerMark,{x:X-CBW+.3,z:Z+1.6},{x:X-6,z:Z-CBD+.38},-Math.PI/2);
  /* 한줄평 보드(11/9 리디자인): 월넛 액자 + 황동 코너 · 딥그린 펠트 · 타자기 리뷰 카드(별점) · 황동 명판 · 액자등 */{const x=CBW-.06,BRS=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0x886622});
-  bb(.06,1.6,2.8,0x9a6a40,x,1.95,-1.6);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-.2);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-3.0);bb(.09,.08,2.88,0xb36a36,x-.02,2.79,-1.6);bb(.09,.08,2.88,0xb36a36,x-.02,1.11,-1.6);/* 밝은 오크 액자(레퍼런스) */
+  /* QA86: 게시판을 누르면 준비 중 안내 */hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{now:1,fn:()=>toast('준비 중입니다')});bb(.06,1.6,2.8,0x9a6a40,x,1.95,-1.6);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-.2);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-3.0);bb(.09,.08,2.88,0xb36a36,x-.02,2.79,-1.6);bb(.09,.08,2.88,0xb36a36,x-.02,1.11,-1.6);/* 밝은 오크 액자(레퍼런스) */
   
   const cv=document.createElement('canvas');cv.width=1024;cv.height=576;const tex=new THREE.CanvasTexture(cv);tex.anisotropy=4;
   window.__drawClubBoard=()=>{const c=cv.getContext('2d'),w=1024,h=576,R=rng(42);

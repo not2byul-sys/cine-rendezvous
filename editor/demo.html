@@ -1,0 +1,6 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>캐릭터 꾸미기</title><body style="background:#211317"><button id="open">캐릭터 꾸미기 열기</button><script type="module">
+import {openAvatarEditor} from './editor.js';
+const open=()=>openAvatarEditor({initial:JSON.parse(localStorage.getItem('avatar-editor-demo')||'{}'),save:value=>localStorage.setItem('avatar-editor-demo',JSON.stringify(value))});
+document.querySelector('#open').onclick=open;
+open();
+</script></body></html>

@@ -10,7 +10,7 @@ test('QA16 invite follows the Figma 76:2228 layout', () => {
 });
 test('QA16 lobby plays a calm classical schedule and is 5% darker', () => {
   assert(source.includes('BGM.sched=qa16ClassicSchedule;'));
-  assert(source.includes('LOBBY_HEMI=.608,LOBBY_DL=.17145'));
+  assert(source.includes('LOBBY_HEMI=.756,LOBBY_DL=.1575'));
   assert(source.includes('o.intensity*=.95'));
 });
 test('QA16 chat send button uses the shadcn icon button shape', () => {
@@ -44,7 +44,7 @@ test('QA16 ticket checker guidance and silent punch', () => {
 });
 test('QA16 hall: cream plaster, brick pilasters, green carpet, skyline frames', () => {
   assert(source.includes('CARP=0x2c4634'));
-  assert(source.includes('B(.6,HH,.62,BRK,'));
+  assert(source.includes('B(.2,HH,.62,BRK,'));
   assert(source.includes('frame(skyl('));
   assert(!source.includes('hallWood('));
 });

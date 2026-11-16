@@ -1036,7 +1036,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 /* QA73·74: 로비 팔레트 13색(피그마 90:1362 기반, QA76에서 사용자 지정 값으로 교체). 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
-const LP_DEF=Object.freeze({floorCream:"#E1DFCB",floorPink:"#D8CBBA",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음) */
+const LP_DEF=Object.freeze({floorCream:"#E2DCC1",floorPink:"#D2BDA3",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음) */
 const LP_HEX=/^#[0-9a-f]{6}$/i,LP_clean=o=>{const r={};Object.keys(LP_DEF).forEach(k=>{const v=o&&o[k];r[k]=typeof v==='string'&&LP_HEX.test(v)?v.toUpperCase():LP_DEF[k]});return r};
 const LP_CUR=LP_clean(store.get('aic.lobbyPalette'));
 const LOBBY_PALETTE={

@@ -101,8 +101,8 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
  assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});
 test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 test('QA88 hands hold two, the rest go to the bag; context discard opens the bag and drops in place; trash can still walks there',()=>{
- assert(source.includes("if(me)setCarry(me,HELD.slice(0,2));"));assert(source.includes("toast(`양손이 가득 차서 ${now-was}개는 가방에 넣었어요`)"));
- assert(source.includes("${i<2?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
+ assert(source.includes("if(me)setCarry(me,HELD.slice(0,1))/* QA96"));assert(source.includes("toast(`나머지 ${now-was}개는 가방에 넣었어요`)"));
+ assert(source.includes("${i<1?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
 test('QA91 interaction policy: tap a chair to walk and sit, exits live at the quick bar end, one name per action, clear notices',()=>{
  assert(source.includes("function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91"));assert(source.includes("selSeat=sp;paintSeats();walkToSpot(me,sp);return;"));assert(!source.includes("say(me,'이미 앉은 자리예요')"));
  assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));

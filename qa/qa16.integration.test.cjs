@@ -31,7 +31,7 @@ test('QA16 club: brick walls, no quote board, no chalkboards, world cup trophy o
   assert(source.includes("openPanel('wcup')"));
 });
 test('QA16 shop purchase completes immediately with a pickup button above the nav', () => {
-  assert(source.includes("toast('구매가 완료되었어요. 받아가주세요.')"));
+  assert(source.includes("setTimeout(()=>{if(ORD&&ORD.st==='ready')A.oget()},400)/* QA94"));
   assert(source.includes("mkB('qa16get'"));
   assert(source.includes('A.oget()'));
   assert(source.includes('#qa17cta{position:fixed'));

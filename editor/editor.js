@@ -17,7 +17,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const dialog=document.createElement('dialog');
   dialog.setAttribute('aria-labelledby','editor-title');
   dialog.innerHTML=`<header><div><h2 id="editor-title">복고풍 캐릭터 꾸미기</h2><p>오늘 극장에서 만날 나의 모습</p></div><button class="close" aria-label="닫기"><img alt=""></button></header>
-  <main><section class="preview"><label>닉네임 수정하기<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div></section>
+  <main><section class="preview"><label>닉네임 (좋아하는 영화)<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div></section>
   <section class="controls"><nav aria-label="꾸미기 메뉴"></nav><div class="options"></div></section><footer><button class="reset">초기화</button><button class="save">저장</button></footer></main><output role="alert"></output>`;
   root.append(dialog); document.body.append(host);
   try {await ready;} catch(e){host.remove();throw e;}
@@ -26,7 +26,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const input=q('input'), panel=q('.options'), previewHost=q('.avatar');
   const make=(tag,cls,txt)=>{const n=document.createElement(tag);n.className=cls;if(txt)n.textContent=txt;return n;};
   const button=(label,run)=>{const n=make('button','',label);n.onclick=run;return n;};
-  const tabs={character:'캐릭터', accessory:'악세서리', color:'칼라'};
+  const tabs={character:'캐릭터', accessory:'악세서리', color:'색상'};
   function preview(){
     if(renderPreview){renderPreview(previewHost,structuredClone(draft));return;}
     const c=characters.find(x=>x.id===draft.character);

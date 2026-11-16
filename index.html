@@ -817,7 +817,7 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
  window.setTimeout(poll,700);
 })();
 </script>
-<div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk" data-state="empty"><img class="jt14-paper" src="qa14_assets/join-plain.svg" alt="" aria-hidden="true"><img class="jt14-punched-paper" src="qa14_assets/join-half-r.svg" alt="" aria-hidden="true"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt2-opts"><label class="jt2-ck jt14-random"><input type="checkbox" id="nrand"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>랜덤고르기</span></label><label class="jt2-ck jt14-save"><input type="checkbox" id="nsave"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>저장</span></label></div><button id="go" class="jt2-go">입장하기</button></div><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
+<div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk" data-state="empty"><img class="jt14-paper" src="qa14_assets/join-plain.svg" alt="" aria-hidden="true"><img class="jt14-punched-paper" src="qa14_assets/join-half-r.svg" alt="" aria-hidden="true"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">좋아하는 영화를 적어주세요</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="입장 닉네임" maxlength="14" autocomplete="off" aria-label="닉네임으로 사용할 좋아하는 영화"></div><div class="jt2-opts"><label class="jt2-ck jt14-random"><input type="checkbox" id="nrand"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>랜덤고르기</span></label><label class="jt2-ck jt14-save"><input type="checkbox" id="nsave"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>저장</span></label></div><button id="go" class="jt2-go">시작하기</button></div><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="multiplayer-config.js"></script>
 <script id="config">
@@ -1036,7 +1036,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 /* QA73·74: 로비 팔레트 13색(피그마 90:1362 기반, QA76에서 사용자 지정 값으로 교체). 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
-const LP_DEF=Object.freeze({floorCream:"#E1DFCB",floorPink:"#D8CBBA",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음) */
+const LP_DEF=Object.freeze({floorCream:"#E2DCC1",floorPink:"#D2BDA3",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음) */
 const LP_HEX=/^#[0-9a-f]{6}$/i,LP_clean=o=>{const r={};Object.keys(LP_DEF).forEach(k=>{const v=o&&o[k];r[k]=typeof v==='string'&&LP_HEX.test(v)?v.toUpperCase():LP_DEF[k]});return r};
 const LP_CUR=LP_clean(store.get('aic.lobbyPalette'));
 const LOBBY_PALETTE={
@@ -2679,7 +2679,7 @@ function requestEntry(hid,cont){if(CLOSEDH.has(hid)){const s_=STAFF[hid];if(s_)s
 let selSeat=null,QA86_JUST=null;
 function paintSeats(){CFG.HALLS.forEach(h=>{const H=HALLN[h.id],c=new THREE.Color(0x86203a),g=new THREE.Color(0xf2c14e),sl=new THREE.Color(0xf3ead2),sc=curS(h.id),mine=null;const tk_=new THREE.Color(0x4a0a16);for(let i=0;i<NSEAT;i++){const st_=H.seats[i],cc=selSeat&&selSeat.hall===h.id&&selSeat.idx===i?sl:(st_&&st_.taken?tk_:c);H.IC.setColorAt(i,cc);H.IB.setColorAt(i,cc)}H.IC.instanceColor.needsUpdate=H.IB.instanceColor.needsUpdate=true})}
 function hideSit(){selSeat=null;$('sitbox').hidden=true;paintSeats();hudUpd()}
-function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){say(me,'이미 앉은 자리예요');return}selSeat=sp;paintSeats();const b=$('sitbox');b.hidden=false;b.innerHTML=`<span>${hallCfg(hid).name} · ${sp.label} 좌석</span><button class="p" data-a="sit">앉기</button>`;hudUpd()}
+function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91: 의자는 어디서든 탭 = 걸어가서 앉기(확인 단계 없음) */if(me&&me.userData.seat===sp)return;selSeat=sp;paintSeats();walkToSpot(me,sp);return;const b=$('sitbox');b.hidden=false;b.innerHTML=`<span>${hallCfg(hid).name} · ${sp.label} 좌석</span><button class="p" data-a="sit">앉기</button>`;hudUpd()}
 /* ---------- input ---------- */
 const rc=new THREE.Raycaster(),mv=new THREE.Vector2();
 /* 마우스 호버: 누를 수 있는 것(사람·사물·좌석) 위에서는 손 모양 커서 */
@@ -2699,15 +2699,15 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
  if(me){
   if(selSeat&&!$('sitbox').hidden){add('sit',selSeat.label+'번 앉기',' class="ivory"');add('ctxother','다른 자리 앉기');add('sitx','취소')}
   else if(QA20.obj){add('ctxobj',QA20.obj.act.ctx);add('ctxlook','살펴보기')}
-  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike','좋아요 '+d_.likes,` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','다음 회차')}}
+  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike','좋아요 '+d_.likes,` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
   else if(!cine){
    if(ORD&&ORD.st==='ready')add('oget','간식받기');
    if(HELD.length){if(HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'');add('ctxgift',HELD.some(x=>x.k==='poprb')?'무지개 팝콘 선물하기':'선물하기');if(!inH)add('trash','버리기')}
    if(sp&&sp.kind!=='cine'){add('standme','일어나기');add('ctxwave','손 흔들기')}
    else if(!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length))add('sitnear','앉기');
-   if(QA17_NOTK&&(zc==='L0'||zc==='L1')){add('ctxbooth','매표소 가기');add('tt','상영작 보기')}
-   if(inH&&!sp){const sd=qa20Side(zc);if(sd)add('ctxside',sd.name+' 옆자리 앉기');add('tt','상영작 정보')}
-   if(zc==='B'){if(!sp)add('goup','로비로 올라가기');add('clubstop',CLUBSTOP?'영상 재생':'영상 멈추기')}
+   if(QA17_NOTK&&(zc==='L0'||zc==='L1')){add('ctxbooth','매표소 가기');add('tt','상영작')}
+   if(inH&&!sp){const sd=qa20Side(zc);if(sd)add('ctxside',sd.name+' 옆자리 앉기');add('tt','상영작')}
+   if(zc==='B'){/* QA91: 나가기는 퀵바 오른쪽 끝 */add('clubstop',CLUBSTOP?'영상 재생':'영상 멈추기')}
    if(zc==='L0'&&!sp&&qa20Near('qa13-tree-click',5.2))add('ctxphoto','사진 찍기');
    if(QA20.follow)add('ctxunfollow','따라가기 멈추기')}}
  let cb=$('ctxbar');if(!cb){cb=document.createElement('div');cb.id='ctxbar';cb.setAttribute('role','toolbar');cb.setAttribute('aria-label','지금 할 수 있는 일');document.body.appendChild(cb)}
@@ -2754,7 +2754,7 @@ Object.assign(A,{
  ctxgift:()=>{const t=qa20Nearest();if(!t){toast('선물할 사람이 근처에 없어요. 아바타를 눌러 선물해 보세요');return}selectAvatar(t);const iv=setInterval(()=>{const s_=ACTOR_SESSION;if(!s_||s_.target!==t){clearInterval(iv);return}if(s_.phase==='menu'){clearInterval(iv);actorGift()}},150);setTimeout(()=>clearInterval(iv),15000)},
  ctxwave:()=>qa20Emote('wave'),
  ctxbooth:()=>qa17GoBooth(),
- ctxside:()=>{const r=qa20Side(curZone(me));if(!r){toast('옆자리가 비어 있지 않아요');return}pickSeat(r.hid,r.seat);A.sit()},
+ ctxside:()=>{const r=qa20Side(curZone(me));if(!r){toast('옆자리가 비어 있지 않아요');return}pickSeat(r.hid,r.seat)},
  ctxphoto:()=>qa20Photo(),
  ctxunfollow:()=>{QA20.follow=null;hudUpd()},
  qlike:()=>{const id=QA21.curFilm();if(!id)return;QA21.toggle(id);hudUpd()},
@@ -2968,8 +2968,8 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(!cine)h+=['tix:티켓','bag:가방','tt:상영작','avatar:캐릭터'/* QA40 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
- if(inH){
-   h+=`<button class="fx" data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide('hallDoor')}<span>로비로 나가기</span></button>`;
+ if(inH||zc==='B'){
+   h+=`<button class="fx" data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide('hallDoor')}<span>로비로 나가기</span></button>`.replace('data-a="exithall"',zc==='B'?'data-a="goup"':'data-a="exithall"');
  }
  const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none';CinemaAudio.updateButton()}
 function toLobby(){const u=me.userData;u.path=[];u.spot=null;u.after=null;me.position.set(0,0,17.3);u.lvl=0;me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;snapCam=true;closePanel()}
@@ -3266,7 +3266,7 @@ Object.assign(A,{
  eat1:()=>startEat(),eatn:()=>startEat(),trash:()=>{/* QA88: 컨텍스트 '버리기'는 가방을 열어 고른 것을 그 자리에서 버림(휴지통 터치는 기존대로 걸어가서 버림) */if(!HELD.length){toast('버릴 것이 없어요');return}PANELS.bag('trash')},trashhere:d=>{const i=+d.i,it=HELD[i];if(!it||it.slow)return;if(EAT&&i===0){toast('먹는 중에는 버릴 수 없어요');return}HELD.splice(i,1);QA88_N=HELD.length;refreshMe();toast('휴지통에 버렸습니다');if(HELD.length)PANELS.bag('trash');else closePanel()},trash1:d=>{const it=HELD[+d.i];if(!it)return;closePanel();const nm=IT[it.k][1];notice('간식 버리기',esc(nm)+objectParticle(nm)+' 정말 버리시겠어요?',[['버리기',()=>goTrash(it)],['취소',()=>askTrash()]])},trashall:()=>{closePanel();notice('간식 버리기','들고 있는 간식을 모두 버리시겠어요?',[['모두 버리기',()=>goTrash()],['취소',null]])},cstart:()=>{if(!curSp)return;CMODE='full';($('cine').classList.remove('lv'),document.body.classList.remove('cinelv'));const h=hallCfg(curSp.hall);ODS[curSp.hall]=mkS(h,nowFilm(h),nowS());curSc=null;syncCine();hudUpd()},
  clive:()=>{if(!curSp)return;CMODE='live';($('cine').classList.add('lv'),document.body.classList.add('cinelv'));const h=hallCfg(curSp.hall),f=nowFilm(h);ODS[curSp.hall]=mkS(h,f,liveStart(f));curSc=null;syncCine();hudUpd()},
  csnd:()=>{$('snd').onclick();hudUpd()},cfull:()=>{setFull(!FULL);hudUpd()},cstand:()=>{if(!me||!me.userData.seat)return;/* QA83: 상단 X — 상영이 끝났든 아니든 앉은 채 착석 시점으로. 그만보기: 자리에 앉은 채 불 켜진 와이드 샷 */const sp=me.userData.seat;closeCine();CWIDE=true;document.body.classList.remove('cineseat');hudUpd()},cresume:()=>{const sp=me&&me.userData.seat;if(sp&&sp.kind==='cine'){releaseSeatCamera();CUSE=false;snapCam=true;openCine(sp)}hudUpd()},cexit:()=>{if(!me)return;CWIDE=false;standUp(me,true);toLobby();hudUpd()},exithall:d=>{/* QA72: 착석 중에도 바로 퇴장 */if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}exitHall(+d.k);hudUpd()},eatmovie:()=>startEat(),
- getvend:async d=>{if(HELD.length>=MAXH){toast('손이 가득 찼어요. 먼저 먹어주세요');return}closePanel();const ok=await AdService.show({kind:'vend',label:IT[d.k][1]+' 1개'});if(!ok){toast('광고를 끝까지 봐야 받을 수 있어요');return}holdAdd([d.k]);toast('🖐 손에 들었어요')}
+ getvend:async d=>{if(HELD.length>=MAXH){toast('가방이 가득 찼어요');return}closePanel();const ok=await AdService.show({kind:'vend',label:IT[d.k][1]+' 1개'});if(!ok){toast('광고를 끝까지 봐야 받을 수 있어요');return}holdAdd([d.k]);toast('🖐 손에 들었어요')}
 });
 window.ORDAPI={get HELD(){return HELD},get ORD(){return ORD},get SLOW(){return SLOW},holdAdd,startSlow};
 
@@ -3388,7 +3388,7 @@ const Multiplayer=(()=>{
  function giftToPeer(peerId,key,onDone){if(!socket||socket.readyState!==1||!myId){onDone(false,'offline');return}const nonce=Math.random().toString(36).slice(2,8);const text=GIFT_TAG+'g|'+peerId+'|'+key+'|'+nonce;
   const timer=setTimeout(()=>{if(pendingGifts.delete(nonce))onDone(false,'timeout')},6000);pendingGifts.set(nonce,{onDone,timer});try{socket.send(JSON.stringify({t:'chat',text}))}catch{clearTimeout(timer);pendingGifts.delete(nonce);onDone(false,'offline')}}
  function handleGiftSignal(d){const parts=d.text.slice(GIFT_TAG.length).split('|'),kind=parts[0],to=parts[1],key=parts[2],nonce=parts[3],from=String(d.id);if(kind==='k'){/* QA40: 상대가 고른 캐릭터 */if(from!==String(myId)){const p=peers.get(from);if(p&&typeof qa40PeerLook==='function')qa40PeerLook(p,key)}return}if(String(to)!==String(myId)||from===String(myId))return;
-  if(kind==='g'){const ok=!!(IT[key]&&me&&HELD.length<MAXH);if(ok){HELD.push({k:key});refreshMe();hudUpd();const giver=peers.get(from)?.avatar,who=giver?giver.userData.displayName:'관객',name=IT[key][1];toast(who+'님이 '+name+objectParticle(name)+' 선물했어요');if(key==='poprb'&&me){me.userData.rbUntil=performance.now()/1000+60}}else if(me)toast('손이 가득 차서 선물을 받지 못했어요');
+  if(kind==='g'){const ok=!!(IT[key]&&me&&HELD.length<MAXH);if(ok){HELD.push({k:key});refreshMe();hudUpd();const giver=peers.get(from)?.avatar,who=giver?giver.userData.displayName:'관객',name=IT[key][1];toast(who+'님이 '+name+objectParticle(name)+' 선물했어요');if(key==='poprb'&&me){me.userData.rbUntil=performance.now()/1000+60}}else if(me)toast('가방이 가득 차서 선물을 받지 못했어요');
    try{socket.send(JSON.stringify({t:'chat',text:GIFT_TAG+'a|'+from+'|'+key+'|'+nonce+'|'+(ok?1:0)}))}catch{}}
   else if(kind==='a'){const p=pendingGifts.get(nonce);if(!p)return;pendingGifts.delete(nonce);clearTimeout(p.timer);p.onDone(parts[4]==='1',parts[4]==='1'?'':'full')}}
  if(typeof window!=='undefined')window.qa15GiftToPeer=giftToPeer;
@@ -3417,7 +3417,7 @@ function qaManualMove(c,dx,dz,dt){const u=c.userData,pressed=!!(dx||dz);
  else{u.manualVX=0;u.manualVZ=0;idlePose(c,dt)}}
 /* ---------- loop ---------- */
 const clk=new THREE.Clock(),look=new THREE.Vector3(0,1,18),cp=new THREE.Vector3(),lk=new THREE.Vector3();let ac=0,CLOST=0;
-function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러보기',L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉으면 바로 상영',H2:'의자를 눌러 앉으면 바로 상영',B:'영화클럽 아지트 · 보드를 눌러 한줄평 남기기'})[z]||''}
+function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러보기',L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉기',H2:'의자를 눌러 앉기',B:'영화클럽 아지트'})[z]||''}
 (function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.1),t=clk.elapsedTime;if(window.__wx)__wx(dt,t);if(space>0)idleScreen(space,t);
  if(me){const u=me.userData;u.manualMoving=false;
   if(!u.seat&&!u.flowerPurchase){{if(K.q)camYaw+=dt*1.8;if(K.e)camYaw-=dt*1.8}const fw=(K.w||K.arrowup?1:0)-(K.s||K.arrowdown?1:0),sd=(K.d||K.arrowright?1:0)-(K.a||K.arrowleft?1:0),cfx=Math.sin(camYaw),cfz=Math.cos(camYaw),dx=cfx*fw-cfz*sd,dz=cfz*fw+cfx*sd;
@@ -3912,7 +3912,7 @@ function relocateClubPieces(mark,from,to,angle){
    const hb=new THREE.Mesh(new THREE.BoxGeometry(.48,Math.max(hh,.52),Math.max(hw,.55)),new THREE.MeshBasicMaterial({visible:false}));hb.position.set(X+x+.1,y0+hh/2,Z+z);S.add(hb);hb.userData.act={now:1,fn:()=>clubPick(i),pt:{x:X-CBW+1.5,z:Z+z,zone:'B'}};INTER.push(hb)})}
  relocateClubPieces(filmCornerMark,{x:X-CBW+.3,z:Z+1.6},{x:X-6,z:Z-CBD+.38},-Math.PI/2);
  /* 한줄평 보드(11/9 리디자인): 월넛 액자 + 황동 코너 · 딥그린 펠트 · 타자기 리뷰 카드(별점) · 황동 명판 · 액자등 */{const x=CBW-.06,BRS=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0x886622});
-  /* QA86: 게시판을 누르면 준비 중 안내 */hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{now:1,fn:()=>toast('준비 중입니다')});bb(.06,1.6,2.8,0x9a6a40,x,1.95,-1.6);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-.2);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-3.0);bb(.09,.08,2.88,0xb36a36,x-.02,2.79,-1.6);bb(.09,.08,2.88,0xb36a36,x-.02,1.11,-1.6);/* 밝은 오크 액자(레퍼런스) */
+  /* QA86: 게시판을 누르면 준비 중 안내 */hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{fn:()=>toast('준비 중입니다'),pt:{x:X+x-1.2,z:Z-1.6,zone:'B'}});bb(.06,1.6,2.8,0x9a6a40,x,1.95,-1.6);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-.2);bb(.09,1.66,.08,0xb36a36,x-.02,1.95,-3.0);bb(.09,.08,2.88,0xb36a36,x-.02,2.79,-1.6);bb(.09,.08,2.88,0xb36a36,x-.02,1.11,-1.6);/* 밝은 오크 액자(레퍼런스) */
   
   const cv=document.createElement('canvas');cv.width=1024;cv.height=576;const tex=new THREE.CanvasTexture(cv);tex.anisotropy=4;
   window.__drawClubBoard=()=>{const c=cv.getContext('2d'),w=1024,h=576,R=rng(42);

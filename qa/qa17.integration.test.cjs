@@ -33,7 +33,7 @@ test('QA17 club entry view, unified mute, tap-to-pause screen', () => {
   assert(source.includes("function clubHover(){CSB.style.display='none';return;"));
 });
 test('QA17 shop purchase uses an auto-dismissing toast', () => {
-  assert(source.includes("toast('구매가 완료되었어요. 받아가주세요.')"));
+  assert(!source.includes("toast('구매가 완료되었어요. 받아가주세요.')"));
 });
 test('QA17 chat placeholder 15px and round send button', () => {
   assert(source.includes('#mpinput::placeholder{color:#8E8E93;opacity:1;font-size:15px}'));

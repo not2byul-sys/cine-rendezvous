@@ -775,7 +775,7 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 </head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
-<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="adm">관리</button><button data-a="cstand" id="cx" title="그만보기" aria-label="그만보기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt" hidden></b><button id="cyt" type="button" title="유튜브에서 보기" aria-label="유튜브에서 보기"><span id="qa-yt-label"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
+<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="adm">관리</button><button data-a="cstand" id="cx" title="닫기" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt" hidden></b><button id="cyt" type="button" title="유튜브에서 보기" aria-label="유튜브에서 보기"><span id="qa-yt-label"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
 <div class="hint" id="hint"></div>
 <div class="bar"><div id="act"></div><input id="msg" placeholder="채팅 입력" maxlength="40" hidden><button id="send" hidden>전송</button><button id="hi" hidden></button><button id="clap" hidden></button></div>
 <div id="aud" aria-hidden="true"><canvas></canvas></div><div id="cine" hidden><div id="yt"></div><video id="vf" hidden playsinline muted></video><div id="cmsg" hidden></div><div id="shield"></div><button class="p" id="watch" hidden>영화 보기</button></div>
@@ -2059,7 +2059,7 @@ function clsPoster(i,W=300,H=440){const [t,bg,fg,kind,tag_]=VPOST[i%VPOST.length
  const BRZ=new THREE.MeshPhongMaterial({color:0xb8893a,shininess:80,specular:0x7a6030});[-.75,.75].forEach(x=>{bb(.04,.04,.25,BRZ,x,H+.12,.06);const sh_=new THREE.Mesh(new THREE.CylinderGeometry(.06,.06,.5,14),BRZ);sh_.rotation.z=Math.PI/2;sh_.position.set(x,H+.14,.2);g.add(sh_)});
  /* 미닫이 책장: 평소엔 지하 문을 가리고, 클럽 미션 완료 시 왼쪽(+z)으로 밀려 문이 드러남 */const sl=new THREE.Group();[...g.children].forEach(ch=>sl.add(ch));g.add(sl);
  [-.75,.75].forEach(x=>{const hs_=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffd9a0,transparent:true,opacity:.4,blending:THREE.AdditiveBlending,depthWrite:false}));hs_.position.set(x,H-.2,.4);hs_.scale.setScalar(1.4);sl.add(hs_)});
- const hbS=hitbox(X+.4,1.8,ZC,.8,3.4,W,{now:1,ctx:'책장 열기',info:'오래된 간행물이 꽂힌 책장이에요. 알프레도 할아버지의 초대장이 있으면 열린대요.',fn:()=>trapShow(true),pt:{x:X+1.4,z:ZC,zone:'L0'}});window.SHELF={g,sl,hb:hbS,SL:2.75};layEnd(m_,'bookshelf','간행물 책장 (클럽 비밀문)',0,{wall:'x',lo:LB+2,hi:LD-1.8})}
+ const hbS=hitbox(X+.4,1.8,ZC,.8,3.4,W,{now:1,ctx:'책장 열기',info:'오래된 간행물이 꽂힌 책장이에요. 알프레도 할아버지의 초대장이 있으면 열린대요.',fn:()=>{if(!hasInv()){toast('초대장이 있어야 열리는 책장이에요');return}trapShow(true)}/* QA94 */,pt:{x:X+1.4,z:ZC,zone:'L0'}});window.SHELF={g,sl,hb:hbS,SL:2.75};layEnd(m_,'bookshelf','간행물 책장 (클럽 비밀문)',0,{wall:'x',lo:LB+2,hi:LD-1.8})}
 
 
 /* 매점 위 오른쪽 벽 창문(바깥 = 서울 실시간 하늘·건물, 밤엔 불 켜진 창) */
@@ -2699,16 +2699,16 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
  if(me){
   if(selSeat&&!$('sitbox').hidden){add('sit',selSeat.label+'번 앉기',' class="ivory"');add('ctxother','다른 자리 앉기');add('sitx','취소')}
   else if(QA20.obj){add('ctxobj',QA20.obj.act.ctx);add('ctxlook','살펴보기')}
-  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike','좋아요 '+d_.likes,` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
+  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike','좋아요 '+d_.likes,` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}if(HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'');/* QA94: 상영 중에도 먹기 */if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
   else if(!cine){
-   if(ORD&&ORD.st==='ready')add('oget','간식받기');
+   if(ORD&&ORD.st==='ready'&&!inH)add('oget','간식받기')/* QA94: 상영관에선 숨김 */;
    if(HELD.length){if(HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'');add('ctxgift',HELD.some(x=>x.k==='poprb')?'무지개 팝콘 선물하기':'선물하기');if(!inH)add('trash','버리기')}
    if(sp&&(sp.kind!=='cine'||!document.body.classList.contains('cineseat'))){/* QA93: 상영 화면을 닫으면 상영관 좌석도 일어나기 */add('standme','일어나기');add('ctxwave','손 흔들기')}
    else if(!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length))add('sitnear','앉기');
    if(QA17_NOTK&&(zc==='L0'||zc==='L1')){add('ctxbooth','매표소 가기');add('tt','상영작')}
    if(inH&&!sp){const sd=qa20Side(zc);if(sd)add('ctxside',sd.name+' 옆자리 앉기');add('tt','상영작')}
    if(zc==='B'){/* QA91: 나가기는 퀵바 오른쪽 끝 */add('clubstop',CLUBSTOP?'영상 재생':'영상 멈추기')}
-   if(zc==='L0'&&!sp&&qa20Near('qa13-tree-click',5.2))add('ctxphoto','사진 찍기');
+   if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto','사진 찍기')/* QA94: 앉아서도 */;
    if(QA20.follow)add('ctxunfollow','따라가기 멈추기')}}
  let cb=$('ctxbar');if(!cb){cb=document.createElement('div');cb.id='ctxbar';cb.setAttribute('role','toolbar');cb.setAttribute('aria-label','지금 할 수 있는 일');document.body.appendChild(cb)}
  const html=X.join('');if(cb._h!==html){cb.innerHTML=html;cb._h=html}cb.hidden=!X.length||!!$('actorMenu')||(typeof LAYED!=='undefined'&&LAYED)}
@@ -2751,7 +2751,7 @@ Object.assign(A,{
  ctxother:()=>{hideSit();toast('앉고 싶은 다른 좌석을 눌러 주세요')},
  ctxobj:()=>{const O=QA20.obj;QA20.obj=null;hudUpd();if(O)O.act.fn()},
  ctxlook:()=>{const O=QA20.obj;if(O&&O.act.info)toast(O.act.info)},
- ctxgift:()=>{const t=qa20Nearest();if(!t){toast('선물할 사람이 근처에 없어요');return}selectAvatar(t);const iv=setInterval(()=>{const s_=ACTOR_SESSION;if(!s_||s_.target!==t){clearInterval(iv);return}if(s_.phase==='menu'){clearInterval(iv);actorGift()}},150);setTimeout(()=>clearInterval(iv),15000)},
+ ctxgift:()=>{const t=qa20Nearest();if(!t){toast('선물할 사람이 근처에 없어요');return}selectAvatar(t,{gift:1});const iv=setInterval(()=>{const s_=ACTOR_SESSION;if(!s_||s_.target!==t){clearInterval(iv);return}if(s_.phase==='menu'){clearInterval(iv);actorGift()}},150);setTimeout(()=>clearInterval(iv),15000)},
  ctxwave:()=>qa20Emote('wave'),
  ctxbooth:()=>qa17GoBooth(),
  ctxside:()=>{const r=qa20Side(curZone(me));if(!r){toast('옆자리가 비어 있지 않아요');return}pickSeat(r.hid,r.seat)},
@@ -2780,7 +2780,7 @@ R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-
  const hs=rc.intersectObjects(objs.filter(o=>!(o.userData.exitH&&C.position.z>-.7)),false);if(!hs.length)return;if(!$('sitbox').hidden&&!(hs[0].object.isInstancedMesh))hideSit();const h=hs[0],o=h.object,ud=o.userData;
  const ah=hs.find(q=>q.object.userData.giftAvatar&&q.distance<=h.distance+.65);if(ah){selectAvatar(ah.object.userData.giftAvatar);return}
  if(ud.act){if(ud.act.avatar){selectAvatar(ud.act.avatar);return}if(ud.act.ctx){qa20Obj(ud.act,o,az);return}if(az==='L0'||az==='L1'){approachObject(ud.act,o);return}if(ud.act.now){ud.act.fn();return}walkTo(me,ud.act.pt.x,ud.act.pt.z,ud.act.pt.zone,{after:ud.act.fn});return}
- if(o.isInstancedMesh){pickSeat(ud.hall,HALLN[ud.hall].seats[h.instanceId]);return}
+ if(o.isInstancedMesh){let id=h.instanceId;{const HN=HALLN[ud.hall];if(HN&&o===HN.IB){const c2=hs.find(q=>q.object===HN.IC&&q.instanceId!==id&&q.distance-h.distance<1.2);if(c2)id=c2.instanceId}}/* QA94: 앞줄 등받이 윗단을 스쳐 뒷좌석 방석에 닿으면 방석 쪽 좌석 */pickSeat(ud.hall,HALLN[ud.hall].seats[id]);return}
  if(ud.spot){const sp=ud.spot;if(sp.kind==='cine'){pickSeat(sp.hall,sp);return}if(me.userData.seat===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}if(curZone(me)!==sp.zone)return;if(me.userData.seat)standUp(me,true);if(Math.hypot(me.position.x-(sp.x+Math.sin(sp.rot)*.95),me.position.z-(sp.z+Math.cos(sp.rot)*.95))<=.6/* QA70: 이미 의자 앞에 서 있을 때만 바로 앉고, 아니면 의자 앞까지 걸어감 */){NEARSP=null;sit(me,sp);hudUpd();return}me.userData.pendingSeat=sp;NEARSP=sp;let px=sp.x+Math.sin(sp.rot)*.95,pz=sp.z+Math.cos(sp.rot)*.95;{const L=sp.zone==='L1'?1:0;if(blocked(px,pz,L)){let best=null;for(const r of [1.0,1.25,1.5])for(let k=0;k<16;k++){const a=k/16*Math.PI*2,x=sp.x+Math.sin(a)*r,z=sp.z+Math.cos(a)*r;if(!blocked(x,z,L)&&zoneOf(x,z,L)===sp.zone){const dd=Math.abs(Math.atan2(Math.sin(a-sp.rot),Math.cos(a-sp.rot)));if(!best||dd+r*.3<best[2])best=[x,z,dd+r*.3]}}if(best){px=best[0];pz=best[1]}}}walkTo(me,px,pz,sp.zone,{after:()=>{me.userData.pendingSeat=null;NEARSP=null;sit(me,sp);hudUpd()}});me.userData.pendingSeat=sp;return}
 if(me.userData.seat&&floors.includes(o)){standUp(me,true);me.userData.path=[];NEARSP=null;hudUpd();return}
  if(ud.stair){const lv=me.userData.lvl;walkTo(me,STX,lv?ST.z1+.9:ST.z0-.5,lv?'L0':'L1');return}
@@ -3010,24 +3010,24 @@ function qaNpcReachablePoint(target){
 }
 function showActorMenu(target,localMenu){if(!target.userData.remote&&!localMenu){npcCard(target,target.userData.displayName);return}const u_=target.userData,useLabel=u_.trayVendor?'구경하기':u_.buff?'퀴즈 풀기':u_.counterStaff?(VSTAFF.shop===target||VSTAFF.cafe===target?'주문하기':'티켓 받기'):'';let el=$('actorMenu');if(!el){el=document.createElement('div');el.id='actorMenu';el.setAttribute('role','menu');document.body.appendChild(el)}
  el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');const bt=(a,ic,t)=>'<button role="menuitem" data-a="'+a+'"><span>'+t+'</span></button>'/* QA20: 액션 칩은 아이콘 없이 글자만 */;const hint_=!u_.remote&&typeof QA18_GIFT!=='undefined'&&QA18_GIFT[u_.displayName];
- if(u_.buff&&!u_.remote){/* QA39: 알프레도 할아버지 — '대화하기'를 누르면 퀴즈. 일반 말걸기 없음 */el.innerHTML=bt('actorUse','','퀴즈 풀기')/* QA75: 알프레도는 퀴즈 풀기 하나만 */;{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick();return}
+ if(u_.buff&&!u_.remote){/* QA39: 알프레도 할아버지 — '대화하기'를 누르면 퀴즈. 일반 말걸기 없음 */el.innerHTML=(typeof hasInv==='function'&&hasInv()?bt('actorClub','','아지트 가기'):bt('actorUse','','퀴즈 풀기'))+(HELD.length?bt('actorGift','giftmenu','선물하기'):'')/* QA94: 초대장이 있으면 아지트 안내 · 들고 있으면 선물 *//* QA75: 알프레도는 퀴즈 풀기 하나만 */;{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick();return}
  el.innerHTML=(useLabel&&!u_.remote?bt('actorUse','',u_.trayVendor?'꽃 사기':useLabel):'')+/* QA75: 말걸기 삭제 */(HELD.length?bt('actorGift','giftmenu','선물하기'):'')+(hint_?bt('actorHint','','힌트 듣기'):'')+bt('actorWave','','손 흔들기')+bt('actorClap','','박수')+(u_.remote?bt('actorFollow','','따라가기'):'');{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick()}
-function selectAvatar(target){if(!me||!target||target===me||!target.visible)return;if(curZone(target)!==curZone(me)){toast('같은 공간의 아바타를 선택해 주세요');return}
+function selectAvatar(target,opt={}){if(!me||!target||target===me||!target.visible)return;if(curZone(target)!==curZone(me)){toast('같은 공간의 아바타를 선택해 주세요');return}
  dismissActor();const u=target.userData,session={target,phase:'approach',saved:{path:[...(u.path||[])],spot:u.spot,after:u.after,roamActive:u.roamActive}};ACTOR_SESSION=session;
  u.interactionPause=true;u.path=[];u.spot=null;u.after=null;u.roamActive=false;u.walkVel=0;
  const mu=me.userData;mu.manualVX=mu.manualVZ=0;mu.manualDrift=mu.manualMoving=false;Object.keys(K).forEach(k=>K[k]=0);
- const point=qaNpcReachablePoint(target);if(!point){dismissActor();return}
+ session.gift=!!opt.gift;const seatNear=!!me.userData.seat&&Math.hypot(target.position.x-me.position.x,target.position.z-me.position.z)<3.2;/* QA94: 앉은 채 가까운 상대는 일어나지 않고 바로 메뉴 */if(me.userData.seat&&!seatNear)standUp(me,true);const point=seatNear?null:qaNpcReachablePoint(target);if(!seatNear&&!point){dismissActor();toast('다가갈 수 있는 자리가 없어요');return}
  session.finish=()=>{if(ACTOR_SESSION!==session)return;if(!target.visible||curZone(target)!==curZone(me)){dismissActor();return}
-  me.rotation.y=Math.atan2(target.position.x-me.position.x,target.position.z-me.position.z);if(!u.seat)target.rotation.y=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);GIFT_TARGET=target;
+  if(!me.userData.seat)me.rotation.y=Math.atan2(target.position.x-me.position.x,target.position.z-me.position.z);if(!u.seat)target.rotation.y=Math.atan2(me.position.x-target.position.x,me.position.z-target.position.z);GIFT_TARGET=target;
   if(u.remote){session.phase='menu';showActorMenu(target)}
-  else if(HELD.length){/* QA15: 꽃 포함 들고 있는 모든 물건을 NPC·직원 누구에게나 선물 */npcCard(target,u.displayName);session.phase='menu';showActorMenu(target,true)}
+  else if(HELD.length&&(session.gift||!(u.counterStaff&&!u.trayVendor)&&!(typeof STAFF!=='undefined'&&Object.values(STAFF).includes(target)))){/* QA94: 직원·검표원은 들고 있어도 첫 반응 동일(선물은 하단 '선물하기') · QA15: 꽃 포함 들고 있는 모든 물건을 NPC·직원 누구에게나 선물 */npcCard(target,u.displayName);session.phase='menu';showActorMenu(target,true)}
   else if(typeof STAFF!=='undefined'&&Object.keys(STAFF).some(h=>STAFF[h]===target)&&(()=>{const hid=+Object.keys(STAFF).find(h=>STAFF[h]===target),t=nowS();return !CLOSEDH.has(hid)&&!TK.some(k=>k.hall===hid&&k.end>t)})()){/* QA16·17: 티켓 없이 검표원 선택 시 말풍선 안내 */session.phase='greeting';qa17NoTicket(target)}
   else{
    npcCard(target,u.displayName);session.phase='greeting';
    if(u.trayVendor||u.buff||!u.counterStaff){/* QA20: 꽃 사기·퀴즈 풀기·말걸기 등은 컨텍스트 액션 바로 */session.phase='menu';showActorMenu(target,true)}
    else if(u.counterStaff){session.phase='panel';if(VSTAFF.shop===target)opanel('shop');else if(VSTAFF.cafe===target)opanel('cafe');else openPanel('booth')}
   }hudUpd()};
- if(Math.hypot(me.position.x-point.x,me.position.z-point.z)>.25)walkTo(me,point.x,point.z,point.zone,{avoidFurniture:true,exactTarget:true,after:session.finish});else session.finish()}
+ if(seatNear)session.finish();else if(Math.hypot(me.position.x-point.x,me.position.z-point.z)>.25)walkTo(me,point.x,point.z,point.zone,{avoidFurniture:true,exactTarget:true,after:session.finish});else session.finish()}
 function actorMenuTick(){const session=ACTOR_SESSION;if(!session)return;const target=session.target;
  if(!me||!target.visible||curZone(target)!==curZone(me)){dismissActor();return}
  if(session.phase==='approach'&&!me.userData.path.length){if(Math.hypot(me.position.x-target.position.x,me.position.z-target.position.z)<=2.3)session.finish();else if((session.retries||0)<3){session.retries=(session.retries||0)+1;const point=qaNpcReachablePoint(target);if(point)walkTo(me,point.x,point.z,point.zone,{avoidFurniture:true,exactTarget:true,after:session.finish});else dismissActor()}else dismissActor();return}
@@ -3051,10 +3051,11 @@ function actorTalk(){const session=ACTOR_SESSION;if(!session)return;const target
 function actorUse(){const session=ACTOR_SESSION;if(!session)return;const target=session.target,u=target.userData,el=$('actorMenu');if(el)el.remove();session.phase='panel';if(u.trayVendor){VSTAFF.vendor=target;opanel('vendor')}else if(u.buff)openPanel('quiz');else if(u.counterStaff){if(VSTAFF.shop===target)opanel('shop');else if(VSTAFF.cafe===target)opanel('cafe');else openPanel('booth')}}
 function actorGift(){if(!ACTOR_SESSION)return;ACTOR_SESSION.phase='panel';const el=$('actorMenu');if(el)el.remove();giftMenu()}
 function openGift(target){selectAvatar(target)}
-Object.assign(A,{actorGift,actorUse});/* QA75: 말걸기(채팅창 자동 열기) 액션 제거 */
+function actorClub(){dismissActor();trapShow(true);if(BUFF)sayB(BUFF,'저 책장 뒤 비밀문으로 가보게나',5);if(!me)return;if(me.userData.seat)standUp(me,true);walkTo(me,TRAP.x+.8,TRAP.z,'L0',{avoidFurniture:true,after:()=>{me.rotation.y=-Math.PI/2;toast('비밀문을 눌러 들어가세요');hudUpd()}})}
+Object.assign(A,{actorGift,actorUse,actorClub});/* QA75: 말걸기(채팅창 자동 열기) 액션 제거 */
 document.addEventListener('pointerdown',e=>{if(ACTOR_SESSION&&!e.target.closest('#actorMenu,#pn,#mpchat,[data-a="mpchat"]'))dismissActor()});
-function giftMenu(){const target=GIFT_TARGET;if(!target)return;if(!HELD.length){toast('선물할 물건이 없어요');return}if(target.userData.giftEating){toast('지금 선물을 받고 있어요');return}if(HELD.length===1){confirmGift(0);return}panel('<h3>'+esc(target.userData.displayName)+'에게 주기</h3><p class="sub">건네줄 선물을 골라주세요.</p>'+HELD.map((it,i)=>'<div class="rw"><b>'+esc(IT[it.k][1])+'</b><button data-a="giftchoose" data-i="'+i+'">선택</button></div>').join(''))}
-function confirmGift(index){const target=GIFT_TARGET,it=HELD[index];if(!target||!it)return;GIVE_OFFER={target,item:it};const name=IT[it.k][1];panel('<h3>선물 건네기</h3><p style="font-size:17px;line-height:1.8">'+esc(target.userData.displayName)+'에게 '+esc(name)+objectParticle(name)+' 주시겠어요?</p><button class="p" data-a="giftyes">예</button><button data-a="giftno">아니요</button>')}
+function giftMenu(){const target=GIFT_TARGET;if(!target)return;if(!HELD.length){toast('선물할 물건이 없어요');return}if(target.userData.giftEating){toast('지금 선물을 받고 있어요');return}const ok=i=>!(EAT&&i===0)&&!HELD[i].slow;if(!HELD.some((_,i)=>ok(i))){toast('먹는 중인 건 선물할 수 없어요');return}if(HELD.length===1){confirmGift(0);return}panel('<h3>'+esc(target.userData.displayName)+'에게 주기</h3><p class="sub">건네줄 선물을 골라주세요.</p>'+HELD.map((it,i)=>'<div class="rw"><b>'+esc(IT[it.k][1])+(i<2?' <span class="qa88-hand">(손에 듦)</span>':'')+'</b><button data-a="giftchoose" data-i="'+i+'"'+(ok(i)?'':' disabled')+'>'+(ok(i)?'선택':'먹는 중')+'</button></div>').join(''))}/* QA94: 먹는 중인 건 제외 · 손에 든 것 표시 */
+function confirmGift(index){const target=GIFT_TARGET,it=HELD[index];if(!target||!it)return;if(EAT&&index===0||it.slow){toast('먹는 중인 건 선물할 수 없어요');return}GIVE_OFFER=null;closePanel();giveItem(index)}/* QA94: 대상·물건을 고른 뒤 다시 묻지 않고 바로 건넴 */
 function acceptGift(){const offer=GIVE_OFFER;GIVE_OFFER=null;if(!offer)return;const index=HELD.indexOf(offer.item);if(index<0){closePanel();toast('이미 전달한 선물이에요');return}GIFT_TARGET=offer.target;giveItem(index)}
 /* QA18: NPC마다 다른 말투·캐릭터다운 힌트(감사, 힌트, 꽃 받을 때) */
 /* QA19: 선물 → 캐릭터다운 리액션(인사+몸짓) → 비밀 영화클럽·무지개 팝콘 이야기를 슬쩍 */
@@ -3159,7 +3160,7 @@ function opanel(v){$('pn').dataset.k=v;const pb=document.querySelector('#pn .pbo
  let h=`<h3>${staff?staff.title:VEN[v].name+' · 주문'}</h3>`;
  if(staff)h+=`<p class="sub staff-dialogue" style="margin:8px 0 18px">&quot;${staff.speech}&quot;</p>`;
 
- if(room<=0)h+='<p>🖐 손이 가득 찼어요. 먼저 들고 있는 걸 먹어주세요.</p>';
+ if(room<=0)h+='<p>🎒 가방이 가득 찼어요. 먼저 먹거나 버려주세요.</p>';
  h+='<div class="og">';MENU[v].forEach(k=>{const q=ORD.q[k]||0;h+=`<div class="rw"><div class="m"><b>${IT[k][0]} ${IT[k][1]}</b></div><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg></button><b style="min-width:24px;text-align:center;display:inline-block">${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${tot>=room?'disabled':''} aria-label="더하기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M12 5v14"/></svg></button></div>`});h+='</div>';
  
  h+=`<button class="p" data-a="obuy" ${tot||v==='vendor'?'':'disabled'} style="width:100%">${v==='vendor'?'꽃 받기':'간식 주문하기'}</button>`;
@@ -3234,7 +3235,7 @@ const QA_RB_TARGETS=new Set();
   if(f>=1){HELD=HELD.filter(x=>!x.slow);SLOW=null;refreshMe();toast('🎬 영화와 함께 다 먹었어요 😋')}}
  if((otk-=dt)<0){otk=.5;hudUpd()}}
 PANELS.shop=()=>opanel('shop');
-PANELS.bag=(mode)=>{const del=mode==='trash';panel('<h3>🎒 가방</h3>'+(del?'<p class="qa88-tip">버릴 것을 골라주세요</p>':'')+(HELD.length?HELD.map((it,i)=>`<div class="rw"><div class="m"><b>${IT[it.k][0]} ${IT[it.k][1]}${i<2?' <span class="qa88-hand">(손에 듦)</span>':''}</b>${it.slow?'<i>영화 보면서 먹는 중</i>':''}</div>${del?`<button data-a="trashhere" data-i="${i}" ${it.slow?'disabled':''}>버리기</button>`:`<button data-a="eat1" data-i="${i}" ${it.slow?'disabled':''}>먹기</button>`}</div>`).join(''):'<p>비어 있어요.</p>')+(!del&&typeof qa68List==='function'?(()=>{const L=qa68List();return '<div class="ph-h"><b>찍은 사진</b><i>'+L.length+' / '+QA68.max+'</i></div>'+(L.length?'<div class="ph-grid">'+L.map((p,i)=>'<button type="button" class="ph-th" data-a="qa68open" data-i="'+i+'" aria-label="사진 '+(i+1)+' 열기"><img alt="" src="'+p.src+'"></button>').join('')+'</div>':'<p>아직 넣어 둔 사진이 없어요.</p>')})():''))};
+PANELS.bag=(mode)=>{const del=mode==='trash';panel('<h3>🎒 가방</h3>'+(del?'<p class="qa88-tip">버릴 것을 골라주세요</p>':'')+(HELD.length?HELD.map((it,i)=>`<div class="rw"><div class="m"><b>${IT[it.k][0]} ${IT[it.k][1]}${i<2?' <span class="qa88-hand">(손에 듦)</span>':''}</b>${it.slow?'<i>영화 보면서 먹는 중</i>':''}</div>${del?`<button data-a="trashhere" data-i="${i}" ${it.slow||(EAT&&i===0)?'disabled':''}>${EAT&&i===0?'먹는 중':'버리기'}</button>`:`<button data-a="eat1" data-i="${i}" ${it.slow?'disabled':''}>먹기</button>`}</div>`).join(''):'<p>비어 있어요.</p>')+(!del&&typeof qa68List==='function'?(()=>{const L=qa68List();return '<div class="ph-h"><b>찍은 사진</b><i>'+L.length+' / '+QA68.max+'</i></div>'+(L.length?'<div class="ph-grid">'+L.map((p,i)=>'<button type="button" class="ph-th" data-a="qa68open" data-i="'+i+'" aria-label="사진 '+(i+1)+' 열기"><img alt="" src="'+p.src+'"></button>').join('')+'</div>':'<p>아직 넣어 둔 사진이 없어요.</p>')})():''))};
 Object.assign(A,{
  giftmenu:()=>giftMenu(),giftchoose:d=>confirmGift(+d.i),giftyes:()=>acceptGift(),giftno:()=>{GIVE_OFFER=null;closePanel()},giveitem:d=>confirmGift(+d.i),
  oq:d=>{if(!ORD)return;const q=(ORD.q[d.k]||0)+ +d.d;ORD.q[d.k]=Math.max(0,q);opanel(ORD.v)},
@@ -3255,14 +3256,14 @@ Object.assign(A,{
   finally{resumeFlowerWalk();}
   if(!ok){ORD={v,q:q0,ad:false,st:'compose'};if(v!=='vendor')counterShow([]);hudUpd();notice(v==='vendor'?'꽃가게':'매점','광고를 끝까지 보지 않아 주문이 취소됐어요',[['광고 다시 보기',()=>A.obuy()],['닫기',null]]);return}
   if(v==='vendor'){const nm_=[...new Set(items)].map(k=>IT[k][1]+(items.filter(x=>x===k).length>1?' '+items.filter(x=>x===k).length+'개':'')).join(', ');items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();if(sf)say(sf,'알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.',7);notice('꽃 파는 소녀',nm_+objectParticle(nm_)+' 받았어요.<br>“알프레도 할아버지와 대화하면 비밀 클럽에 대한 정보를 얻을 수 있어요.”',[['확인',null]]);return}
-  /* QA16: 구매 즉시 완료 알림 + 하단 네비 위 간식받기 버튼 */Object.assign(ORD,{ad:true,st:'ready',items,readyAt:nowS(),notify:0});counterShow(items);toast('구매가 완료되었어요. 받아가주세요.');if(sf)say(sf,'주문하신 간식이 나왔습니다');hudUpd()},
+  /* QA16: 구매 즉시 완료 알림 + 하단 네비 위 간식받기 버튼 */Object.assign(ORD,{ad:true,st:'ready',items,readyAt:nowS(),notify:0});counterShow(items);if(sf)say(sf,'주문하신 간식이 나왔습니다');hudUpd();setTimeout(()=>{if(ORD&&ORD.st==='ready')A.oget()},400)/* QA94: 결제 직후 바로 받음(티켓 발급→자동 입장과 같은 흐름). 자리를 떠났으면 간식받기 칩으로 */},
  oad:async()=>{if(!ORD)return;const v=ORD.v;closePanel();const ok=await AdService.show({kind:'order',label:VEN[v].name+' 주문'});if(!ok){toast('광고를 끝까지 보면 주문할 수 있어요');opanel(v);return}ORD.ad=true;opanel(v);toast('「✅ 주문하기」 버튼이 활성화됐어요')},
  oplace:()=>{if(!ORD||!ORD.ad)return;const items=[];Object.entries(ORD.q).forEach(([k,q])=>{for(let i=0;i<q;i++)items.push(k)});if(!items.length)return;
   Object.assign(ORD,{st:'prep',items,readyAt:nowS()+3+1.2*items.length});const sf=VSTAFF[ORD.v];if(sf){sf.userData.r0=sf.rotation.y;say(sf,'주문 받았어요! 바로 준비할게요 😊')}closePanel();hudUpd()},
  oget:()=>{if(!ORD||ORD.st!=='ready'||!me)return;const v=ORD.v,pt=VEN[v].pt,sf=VSTAFF[v];
   if(curZone(me)!==pt.zone||Math.hypot(me.position.x-pt.x,me.position.z-pt.z)>2.4){closePanel();say(me,'받으러 가요!');walkTo(me,pt.x,pt.z,pt.zone,{after:()=>A.oget()});return}
   closePanel();if(ORD.taking)return;ORD.taking=1;me.rotation.y=Math.atan2((sf?sf.position.x:pt.x)-me.position.x,(sf?sf.position.z:pt.z-1)-me.position.z);me.userData.reach=.8;if(sf)say(sf,'맛있게 드세요!');
-  setTimeout(()=>{if(!ORD)return;if(sf&&sf.userData.r0!=null)sf.rotation.y=sf.userData.r0;counterShow([]);ORD.items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();toast(HELD.length>2?'쟁반에 담아 들었어요':HELD.length===2?'두 손에 들었어요':'손에 들었어요')},700)},
+  setTimeout(()=>{if(!ORD)return;if(sf&&sf.userData.r0!=null)sf.rotation.y=sf.userData.r0;counterShow([]);const over=HELD.length+ORD.items.length>2;ORD.items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();if(!over)toast(HELD.length===2?'두 손에 들었어요':'손에 들었어요')/* QA94: 양손을 넘으면 refreshMe의 '가방에 넣었어요' 알림만 */},700)},
  eat1:()=>startEat(),eatn:()=>startEat(),trash:()=>{/* QA88: 컨텍스트 '버리기'는 가방을 열어 고른 것을 그 자리에서 버림(휴지통 터치는 기존대로 걸어가서 버림) */if(!HELD.length){toast('버릴 것이 없어요');return}PANELS.bag('trash')},trashhere:d=>{const i=+d.i,it=HELD[i];if(!it||it.slow)return;if(EAT&&i===0){toast('먹는 중에는 버릴 수 없어요');return}HELD.splice(i,1);QA88_N=HELD.length;refreshMe();toast('휴지통에 버렸습니다');if(HELD.length)PANELS.bag('trash');else closePanel()},trash1:d=>{const it=HELD[+d.i];if(!it)return;closePanel();const nm=IT[it.k][1];notice('간식 버리기',esc(nm)+objectParticle(nm)+' 정말 버리시겠어요?',[['버리기',()=>goTrash(it)],['취소',()=>askTrash()]])},trashall:()=>{closePanel();notice('간식 버리기','들고 있는 간식을 모두 버리시겠어요?',[['모두 버리기',()=>goTrash()],['취소',null]])},cstart:()=>{if(!curSp)return;CMODE='full';($('cine').classList.remove('lv'),document.body.classList.remove('cinelv'));const h=hallCfg(curSp.hall);ODS[curSp.hall]=mkS(h,nowFilm(h),nowS());curSc=null;syncCine();hudUpd()},
  clive:()=>{if(!curSp)return;CMODE='live';($('cine').classList.add('lv'),document.body.classList.add('cinelv'));const h=hallCfg(curSp.hall),f=nowFilm(h);ODS[curSp.hall]=mkS(h,f,liveStart(f));curSc=null;syncCine();hudUpd()},
  csnd:()=>{$('snd').onclick();hudUpd()},cfull:()=>{setFull(!FULL);hudUpd()},cstand:()=>{if(!me||!me.userData.seat)return;/* QA83: 상단 X — 상영이 끝났든 아니든 앉은 채 착석 시점으로. 그만보기: 자리에 앉은 채 불 켜진 와이드 샷 */const sp=me.userData.seat;closeCine();CWIDE=true;document.body.classList.remove('cineseat');hudUpd()},cresume:()=>{const sp=me&&me.userData.seat;if(sp&&sp.kind==='cine'){releaseSeatCamera();CUSE=false;snapCam=true;openCine(sp)}hudUpd()},cexit:()=>{if(!me)return;CWIDE=false;standUp(me,true);toLobby();hudUpd()},exithall:d=>{/* QA72: 착석 중에도 바로 퇴장 */if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}exitHall(+d.k);hudUpd()},eatmovie:()=>startEat(),

@@ -31,7 +31,7 @@ test('QA15/27 chat has no separate X button; the send button is X until text is 
   assert(source.includes("/* QA27: 입력 전 = X(닫기) · 입력하면 보내기 화살표 */const syncSend="));
 });
 test('QA15 local NPCs and staff get a gift option whenever something is held, flowers included', () => {
-  assert(source.includes("else if(HELD.length){/* QA15"));
+  assert(source.includes("else if(HELD.length&&(session.gift||"));
   assert(source.includes("bt('actorUse'"));
   assert(!source.includes('실제 유저에게 선물 전달은 실시간 서버 기능 연결 후 지원돼요'));
   assert(source.includes("window.qa15GiftToPeer(target.userData.peerId"));

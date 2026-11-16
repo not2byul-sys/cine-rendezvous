@@ -108,4 +108,11 @@ test('QA91 interaction policy: tap a chair to walk and sit, exits live at the qu
  assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));
  assert(!/add\('tt','(다음 회차|상영작 보기|상영작 정보)'\)/.test(source));assert(source.includes('id="go" class="jt2-go">시작하기'));
  assert(!source.includes("'손이 가득 찼어요"));assert(source.includes("'가방이 가득 찼어요'"));assert(!source.includes('의자를 눌러 앉으면 바로 상영'));assert(!source.includes('보드를 눌러 한줄평 남기기'));});
+test('QA93 policy checklist: objects open without a chip step, film-title field, stand up after closing the screen, ticket button below, not-ready toast, one-line gift notices',()=>{
+ assert(source.includes("function qa20Obj(act,o,az){/* QA93"));assert(source.includes("const show=()=>{QA20.obj=null;act.fn();hudUpd()};"));
+ assert(source.includes('placeholder="영화 제목"'));
+ assert(source.includes("if(sp&&(sp.kind!=='cine'||!document.body.classList.contains('cineseat'))){/* QA93"));
+ assert(source.includes('<button type="button" class="qa88-buy" data-a="enter" data-id="${t.id}">입장하기</button>'));assert(!source.includes("tag:on?'button':'div'"));
+ assert(source.includes("if(CLOSEDH.has(h.id)){toast('준비 중입니다');return}"));assert(source.includes("'선물할 물건이 없어요'"));assert(!source.includes('매점이나 꽃가게에서 먼저 받아주세요'));
+ assert(source.includes("const AdService={busy:false,providers:{h5:{},gpt:{},mock:{}},async show(){return true}};"));});
 

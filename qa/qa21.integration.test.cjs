@@ -56,7 +56,7 @@ test('QA72 each hall has 80 flat seats (4+4 by 10 rows, A01~J08), width 12.4, an
  const vm=require('vm'),ctx={pad:n=>String(n).padStart(2,'0')};vm.createContext(ctx);const i=source.indexOf("const ROWS='ABCDEFGHIJ';"),j=source.indexOf('const API={',i);vm.runInContext(source.slice(i,j)+';this.o={NSEAT,L:[...Array(NSEAT)].map((_,k)=>seatLabel(k)),X:[...Array(NSR)].map((_,k)=>hallSeatX(k))}',ctx);
  assert.equal(ctx.o.NSEAT,80);assert.equal(ctx.o.L[0],'A01');assert.equal(ctx.o.L[7],'A08');assert.equal(ctx.o.L[8],'B01');assert.equal(ctx.o.L[79],'J08');assert.equal(new Set(ctx.o.L).size,80);
  const X=ctx.o.X,arm=.565+.075,aisle=X[4]-X[3]-2*arm,side=6.2-(X[7]+arm);assert(Math.abs(X[0]+X[7])<1e-9);assert(aisle>side*1.4,'aisle '+aisle+' side '+side);assert(side>.3&&side<.8);
- const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));assert(hud.includes('data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide(\'hallDoor\')}<span>로비로 나가기</span>'));assert(hud.includes('if(inH){'));assert(!hud.includes('data-a="cstand"'));assert(!hud.includes('data-a="mpchat"'));
+ const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));assert(hud.includes('data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide(\'hallDoor\')}<span>로비로 나가기</span>'));assert(hud.includes("if(inH||zc==='B'){"));assert(!hud.includes('data-a="cstand"'));assert(!hud.includes('data-a="mpchat"'));
  const ctxm=source.slice(source.indexOf('function qa20Ctx('),source.indexOf('function hudUpd(){'));assert(!ctxm.includes("add('exithall'"));assert(source.includes('exithall:d=>{/* QA72'));});
 test('QA73 lobby materials follow the 2026-11-14 Figma palette through lobby-only materials',()=>{
  const m=source.match(/const LP_DEF=Object\.freeze\((\{[^}]*\})\);/);assert(m);const def=JSON.parse(m[1].replace(/(\w+):"/g,'"$1":"'));
@@ -97,10 +97,15 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
  assert(source.includes('<button type="button" class="qa88-buy" data-a="buy" data-s="${sc.id}">입장하기</button>'));
  const buy=source.slice(source.indexOf('buy:async d=>{const s=SC[d.s]'),source.indexOf(' fl:d=>PANELS._sel(d.i),'));assert(buy.includes('await showPunch(r.ok);API.punch(r.ok.id);'));assert(buy.includes("toast(`${s.hall.name}으로 입장합니다`)"));assert(buy.includes("walkTo(me,HCX[hid],-7.0,'H'+hid)"));assert(!buy.includes('me.position.set('));
  assert(source.includes("const fresh=QA86_JUST===tk.id;"));
- assert(source.includes("hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{now:1,fn:()=>toast('준비 중입니다')})"));
+ assert(source.includes("hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{fn:()=>toast('준비 중입니다'),pt:{x:X+x-1.2,z:Z-1.6,zone:'B'}})"));
  assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});
 test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 test('QA88 hands hold two, the rest go to the bag; context discard opens the bag and drops in place; trash can still walks there',()=>{
  assert(source.includes("if(me)setCarry(me,HELD.slice(0,2));"));assert(source.includes("toast(`양손이 가득 차서 ${now-was}개는 가방에 넣었어요`)"));
  assert(source.includes("${i<2?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
+test('QA91 interaction policy: tap a chair to walk and sit, exits live at the quick bar end, one name per action, clear notices',()=>{
+ assert(source.includes("function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91"));assert(source.includes("selSeat=sp;paintSeats();walkToSpot(me,sp);return;"));assert(!source.includes("say(me,'이미 앉은 자리예요')"));
+ assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));
+ assert(!/add\('tt','(다음 회차|상영작 보기|상영작 정보)'\)/.test(source));assert(source.includes('id="go" class="jt2-go">시작하기'));
+ assert(!source.includes("'손이 가득 찼어요"));assert(source.includes("'가방이 가득 찼어요'"));assert(!source.includes('의자를 눌러 앉으면 바로 상영'));assert(!source.includes('보드를 눌러 한줄평 남기기'));});
 

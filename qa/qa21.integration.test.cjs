@@ -101,8 +101,8 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
  assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});
 test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 test('QA88 hands hold two, the rest go to the bag; context discard opens the bag and drops in place; trash can still walks there',()=>{
- assert(source.includes("if(me)setCarry(me,HELD.slice(0,2));"));assert(source.includes("toast(`양손이 가득 차서 ${now-was}개는 가방에 넣었어요`)"));
- assert(source.includes("${i<2?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
+ assert(source.includes("if(me)setCarry(me,HELD.slice(0,1))/* QA96"));assert(source.includes("toast(`나머지 ${now-was}개는 가방에 넣었어요`)"));
+ assert(source.includes("${i<1?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
 test('QA91 interaction policy: tap a chair to walk and sit, exits live at the quick bar end, one name per action, clear notices',()=>{
  assert(source.includes("function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91"));assert(source.includes("selSeat=sp;paintSeats();walkToSpot(me,sp);return;"));assert(!source.includes("say(me,'이미 앉은 자리예요')"));
  assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));
@@ -123,12 +123,21 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("if(!hasInv()){toast('초대장이 있어야 열리는 책장이에요');return}trapShow(true)"));
  assert(source.includes('id="cx" title="닫기" aria-label="닫기"'));
  assert(source.includes("GIVE_OFFER=null;closePanel();giveItem(index)}"));
- assert(source.includes("${EAT&&i===0?'먹는 중':'버리기'}"));
+ assert(source.includes("data-a=\"trashhere\" data-i=\"${i}\" ${it.slow?'disabled':''}>버리기</button>"));
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
- assert(source.includes("/* QA94: 상영 중에도 먹기 */"));
+ assert(source.includes("/* QA95: 상영관에선 먹기 없음(들고 있기만) */"));
  assert(source.includes("ORD.st==='ready'&&!inH)add('oget'"));
  assert(source.includes("if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto'"));
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
  const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(ed.includes("color:'색상'")&&ed.includes('닉네임 (좋아하는 영화)'));
+});
+
+test('QA95 performance and eating fixes',()=>{
+ assert(source.includes('function qa95Budget(){')&&source.includes('function qa95LightVis(){')&&source.includes('qa95Budget()}'));
+ assert(!/data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]{2000,}/.test(source));
+ assert(source.includes("eat1:d=>startEat(+d.i)")&&source.includes("const i=HELD.indexOf(EAT.it);"));
+ assert(source.includes("if(i===eatingI()){EAT=null;"));
+ assert(source.includes("if(!me||curZone(me)[0]==='H')return;"));
+ for(const m of source.matchAll(/qa95_assets\/img-[0-9a-f]+\.(jpg|png)/g))assert(require('fs').existsSync(require('path').join(__dirname,'..',m[0])));
 });

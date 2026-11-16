@@ -123,12 +123,21 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("if(!hasInv()){toast('초대장이 있어야 열리는 책장이에요');return}trapShow(true)"));
  assert(source.includes('id="cx" title="닫기" aria-label="닫기"'));
  assert(source.includes("GIVE_OFFER=null;closePanel();giveItem(index)}"));
- assert(source.includes("${EAT&&i===0?'먹는 중':'버리기'}"));
+ assert(source.includes("data-a=\"trashhere\" data-i=\"${i}\" ${it.slow?'disabled':''}>버리기</button>"));
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
- assert(source.includes("/* QA94: 상영 중에도 먹기 */"));
+ assert(source.includes("/* QA95: 상영관에선 먹기 없음(들고 있기만) */"));
  assert(source.includes("ORD.st==='ready'&&!inH)add('oget'"));
  assert(source.includes("if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto'"));
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
  const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(ed.includes("color:'색상'")&&ed.includes('닉네임 (좋아하는 영화)'));
+});
+
+test('QA95 performance and eating fixes',()=>{
+ assert(source.includes('function qa95Budget(){')&&source.includes('function qa95LightVis(){')&&source.includes('qa95Budget()}'));
+ assert(!/data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]{2000,}/.test(source));
+ assert(source.includes("eat1:d=>startEat(+d.i)")&&source.includes("const i=HELD.indexOf(EAT.it);"));
+ assert(source.includes("if(i===eatingI()){EAT=null;"));
+ assert(source.includes("if(!me||curZone(me)[0]==='H')return;"));
+ for(const m of source.matchAll(/qa95_assets\/img-[0-9a-f]+\.(jpg|png)/g))assert(require('fs').existsSync(require('path').join(__dirname,'..',m[0])));
 });

@@ -52,7 +52,7 @@ test('the original ticket booth initializes after the trim rollback and retains 
   const x = sceneContext();
   vm.runInContext(part('const _lB=layBeg();', '/* Staff sits behind'), x.ctx);
   assert(!x.labels.includes('BILLETS')); assert.equal(x.images.length, 3);
-  for (const url of x.images) { assert(url.startsWith('data:image/jpeg;base64,')); const bytes = Buffer.from(url.split(',')[1], 'base64'); assert(bytes.length > 10000); assert.equal(bytes.readUInt16BE(0), 0xffd8); assert.equal(bytes.readUInt16BE(bytes.length - 2), 0xffd9); }
+  for (const url of x.images) { /* QA95: 이미지는 qa95_assets 파일로 분리 */ assert(url.startsWith('qa95_assets/')); const bytes = require('fs').readFileSync(require('path').join(__dirname, '..', url)); assert(bytes.length > 10000); assert.equal(bytes.readUInt16BE(0), 0xffd8); assert.equal(bytes.readUInt16BE(bytes.length - 2), 0xffd9); }
   for (const [, , , , y, z] of x.planes.slice(-3)) {
     assert.equal(y, 3.1); assert(z - .34 > 6.05, 'keep clear of the tall bookshelf');
     assert(z + .34 < 9.65, 'keep clear of the booth and the clock above it');

@@ -10,7 +10,7 @@ function section(start, end) {
   return source.slice(a, b);
 }
 function actor(name = '관객') {
-  return { visible: true, position: { x: 0, y: 0, z: 0, clone() { return { ...this, project() {} }; } }, rotation: { y: 0 }, scale: { y: 1 }, userData: { displayName: name, lvl: 0, path: [{ x: 4, z: 2 }], spot: null, after: null } };
+  return { visible: true, position: { x: 0, y: 0, z: 0, clone() { return { ...this, project() {} }; }, set(x, y, z) { this.x = x; this.y = y; this.z = z; return this; }, copy(v) { this.x = v.x; this.y = v.y; this.z = v.z; return this; } }, rotation: { y: 0 }, scale: { y: 1 }, userData: { displayName: name, lvl: 0, path: [{ x: 4, z: 2 }], spot: null, after: null } };
 }
 function actorContext() {
   const nodes = new Map(), calls = [], me = actor('나'); me.position.z = -20;

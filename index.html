@@ -3972,6 +3972,9 @@ function relocateClubPieces(mark,from,to,angle){
  cyl(.15,.32,0xbab3a0,X,.89,Z-1.05);cyl(.11,.14,0xcac3ae,X,1.12,Z-1.05);
  {const covers=[['CAHIERS','DU CINÉMA','#c6ac58'],['CAHIERS','ARCHIVES','#a65a46']];covers.forEach(([a,b,col],i)=>{const tex=art(224,300,(c,w,h)=>{c.fillStyle=col;c.fillRect(0,0,w,h);c.fillStyle='#241c17';c.textAlign='center';c.font='bold 32px serif';c.fillText(a,w/2,46);c.font='22px serif';c.fillText(b,w/2,78);c.fillRect(20,105,w-40,125);c.fillStyle='#e9dcc1';c.font='18px serif';c.fillText('NOTES DE LECTURE',w/2,272)});const cover=plane(.4,.54,tex,X-.88+i*.48,.81+i*.025,Z-.48,0);cover.rotation.x=-Math.PI/2;cover.rotation.z=i?.13:-.12;cover.name='cahiers-du-cinema-back-issue'});const note=art(256,170,(c,w,h)=>{c.fillStyle='#f0e3be';c.fillRect(0,0,w,h);c.fillStyle='#3a493d';c.font='italic 24px cursive';['Une image,','un souvenir.','— notes de cinéma'].forEach((t,i)=>c.fillText(t,18,40+i*43))});const paper=plane(.4,.27,note,X+.92,.74,Z-.24,0);paper.rotation.x=-Math.PI/2;paper.rotation.z=.16;paper.name='club-handwritten-reading-note'}
 
+ /* QA94: 11/9에 빠졌던 왼쪽 책장 옆 호박색 독서 램프 복원(인테리어 램프 모두 유지) */
+ bb(.75,1.05,.75,0x51351f,-6.9,.525,-2.65);bb(.84,.08,.84,0x815331,-6.9,1.09,-2.65);cyl(.24,.06,0x9d7034,X-6.9,1.16,Z-2.65);cyl(.045,.67,0xb88c45,X-6.9,1.51,Z-2.65);
+ {const shade=new THREE.Mesh(new THREE.CylinderGeometry(.27,.53,.42,32,1,true),new THREE.MeshPhongMaterial({color:0xead5b5,emissive:0x59483a,side:THREE.DoubleSide}));shade.position.set(X-6.9,1.99,Z-2.65);S.add(shade);const l=new THREE.PointLight(0xffe9d2,.9,6,2);l.position.set(X-6.9,1.85,Z-2.65);l.userData.i=.9;S.add(l)}
  /* Ottoman cushions and plaid throw. */
  [-1,1].forEach(k=>{const p=bb(.58,.52,.18,k<0?0xb6976c:0x8b4c34,k*.82,.97,-3.55);p.rotation.z=k*.14});
  const plaid=art(256,256,(c,w,h)=>{c.fillStyle='#b49a78';c.fillRect(0,0,w,h);for(let k=0;k<8;k++){c.fillStyle=k%2?'#663f32aa':'#292f2ca0';c.fillRect(k*32,0,13,h);c.fillRect(0,k*32,w,13)}c.strokeStyle='#ddc6a2';for(let k=0;k<16;k++){c.beginPath();c.moveTo(k*16,0);c.lineTo(k*16,h);c.stroke()}});plane(.95,.95,plaid,X+3.57,1.0,Z-.4,-Math.PI/2);
@@ -3989,6 +3992,7 @@ function relocateClubPieces(mark,from,to,angle){
  /* Tailored cushions, table edging, lamp pleats and cart wheels. */
  {[-1,1].forEach(k=>{const cushion=new THREE.Mesh(new THREE.SphereGeometry(1,18,12),new THREE.MeshPhongMaterial({color:k<0?0x9c815d:0x794839,shininess:5}));cushion.scale.set(.31,.27,.11);cushion.position.set(X+k*.80,.92,Z-3.45);cushion.rotation.z=k*.12;S.add(cushion)});
  [-1,1].forEach(k=>{bb(3.34,.035,.035,0x9b7449,0,.66,-.6+k*.90);bb(.035,.035,1.8,0x9b7449,k*1.64,.66,-.6)});
+ for(let i=0;i<24;i++){const a=i*Math.PI/12,pts=[new THREE.Vector3(X-6.9+Math.cos(a)*.27,2.20,Z-2.65+Math.sin(a)*.27),new THREE.Vector3(X-6.9+Math.cos(a)*.53,1.78,Z-2.65+Math.sin(a)*.53)];S.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),1,.008,4,false),mat(0x9b6a33)))}
  for(let k=0;k<4;k++){const wheel=new THREE.Mesh(new THREE.TorusGeometry(.055,.018,6,14),mat(0x362c20));wheel.rotation.y=Math.PI/2;wheel.position.set(X+CBW-.7+(k<2?-.20:.20),.075,Z+1.6+(k%2?-.5:.5));S.add(wheel)}
  for(let k=0;k<5;k++){const plate=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.018,24),mat(0xc8b89c));plate.position.set(X+CBW-.7,.44+k*.022,Z+1.6);S.add(plate)}}
  /* ===== 아지트 아늑하게(11/9): 카페 · 와인 바 · 스낵 바(광고 보고 이용) + 포스터 + 필름장 꼬마전구 + 영사기 디테일 ===== */

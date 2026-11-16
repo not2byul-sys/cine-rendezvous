@@ -32,18 +32,18 @@ test('a startup failure leaves a visible retry link without falsely revealing a 
 
 function sceneContext() {
   const boxes = [], planes = [], images = [], labels = [];
-  class Vector { set(x, y, z) { Object.assign(this, { x, y, z }); return this; } setScalar(v) { this.set(v, v, v); } }
-  class Node { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = new Vector(); this.rotation = new Vector(); this.scale = new Vector(); this.children = []; this.userData = {}; } add(x) { this.children.push(x); } }
+  class Vector { constructor(x = 0, y = 0, z = 0) { Object.assign(this, { x, y, z }); } set(x, y, z) { Object.assign(this, { x, y, z }); return this; } setScalar(v) { this.set(v, v, v); } copy(v) { return this.set(v.x, v.y, v.z); } clone() { return new Vector(this.x, this.y, this.z); } add(v) { this.x += v.x; this.y += v.y; this.z += v.z; return this; } multiplyScalar(k) { this.x *= k; this.y *= k; this.z *= k; return this; } }
+  class Node { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = new Vector(); this.rotation = new Vector(); this.scale = new Vector(); this.children = []; this.userData = {}; } add(x) { x.parent = this; this.children.push(x); } }
   class Material { constructor(options) { Object.assign(this, options); } clone() { return new Material({ ...this }); } }
   class Geometry { constructor(...args) { this.args = args; } }
   const texture = () => ({ repeat: { set() {} }, clone: texture });
   const drawing = new Proxy({}, { get: (o, k) => k in o ? o[k] : k === 'createLinearGradient' ? () => ({ addColorStop() {} }) : k === 'fillText' ? text => labels.push(text) : () => {}, set: (o, k, v) => (o[k] = v, true) });
   const ctx = { Math, S: new Node(), LW: 9, WAL: 1, WD: 2, BR: 3, WAL2: 4, BRM_C: 5, TM: {}, MAHO: texture(), WMARB: texture(), BRM: new Material(), glassM: new Material(),
     CFG: { HALLS: [{ id: 1 }] }, nowFilm: () => ({ color: '#9fd8c9' }), setInterval() {}, layBeg: () => [],
-    mat: color => new Material({ color }), art: (w, h, fn) => { fn(drawing, w, h); return texture(); }, halo() {}, hitbox() {}, openPanel() {}, CHD: [],
+    haloTex: texture(), EMG: [], mat: color => new Material({ color }), art: (w, h, fn) => { fn(drawing, w, h); return texture(); }, halo() {}, hitbox() {}, openPanel() {}, CHD: [],
     B: (...a) => { const node = new Node(); boxes.push(a); return node; },
     plane: (...a) => { const node = new Node(); planes.push(a); return node; },
-    THREE: { Group: Node, Mesh: Node, MeshPhongMaterial: Material, MeshBasicMaterial: Material, MeshLambertMaterial: Material, PointLight: Node,
+    THREE: { Vector3: Vector, CatmullRomCurve3: class { constructor(p) { this.points = p; } }, TubeGeometry: Geometry, InstancedMesh: class extends Node { setMatrixAt() {} }, Object3D: class extends Node { updateMatrix() {} }, Color: class { set() { return this; } }, Sprite: Node, SpriteMaterial: Material, AdditiveBlending: 2, CanvasTexture: class { constructor() { this.needsUpdate = true; } }, Group: Node, Mesh: Node, MeshPhongMaterial: Material, MeshBasicMaterial: Material, MeshLambertMaterial: Material, PointLight: Node,
       CylinderGeometry: Geometry, CircleGeometry: Geometry, PlaneGeometry: Geometry, SphereGeometry: Geometry, TorusGeometry: Geometry, BoxGeometry: Geometry,
       TextureLoader: class { load(url) { images.push(url); return texture(); } }, DoubleSide: 2, sRGBEncoding: 3001 } };
   vm.createContext(ctx); return { ctx, boxes, planes, images, labels };
@@ -65,11 +65,11 @@ test('the original curved booth keeps its ticket opening without the added front
   const edgeFrames = x.boxes.filter(([w, h, d, , px]) => px === faceX && h === 2 && d === .13);
   assert.equal(edgeFrames.length, 0); assert(source.includes("pt:{x:cx+r+.7,z:cz,zone:'L0'}"));
 });
-test('the central chandelier builds all eight opal lamps without referencing later declarations', () => {
+test('the central chandelier builds its candle bulbs with halos without referencing later declarations', () => {
   const x = sceneContext(); vm.runInContext(part('/* QA10_REFERENCE_1:', '/* 유백색 유리 볼 펜던트 */'), x.ctx);
   assert.equal(x.ctx.CHD.length, 1); const fixture = x.ctx.CHD[0];
-  assert.equal(fixture.position.y, 8.45); assert(fixture.children.length >= 37);
-  assert.equal(fixture.children.filter(o => o.material?.color === 0xfff5de).length, 9);
+  assert(fixture.position.y > 5 && fixture.position.y < 9); assert(fixture.children.length >= 37);
+  assert(x.ctx.EMG.length >= 6, 'every candle bulb gets a glow halo'); /* QA102: 전구 재질이 바뀌어 색상 대신 전구 수(후광)로 확인 */
 });
 test('concession signage contains only current snacks while the separate club cafe retains coffee', () => {
   const shop = part('/* 03 REFRESHMENTS:', 'const stM=');

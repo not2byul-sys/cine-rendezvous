@@ -64,32 +64,13 @@ test('quote detail opens the whole escaped text rather than truncating it', () =
   const count = panels.length; ctx.A.quoteview({ i: '999' }); assert.equal(panels.length, count);
 });
 
-function adContext() {
-  const nodes = new Map(), intervals = new Map(), messages = []; let nextId = 0;
-  for (const id of ['ad', 'adbt', 'adx']) nodes.set(id, { hidden: true, innerHTML: '', outerHTML: '', querySelectorAll: () => [] });
-  const ctx = { CFG: { AD: { seconds: 3, provider: 'mock', fallback: false } }, $: id => nodes.get(id),
-    adReward: () => '보상', lucide: () => '', IT: { pop: ['🍿', '팝콘'] }, window: {},
-    toast: t => messages.push(t), setTimeout: () => 1, clearTimeout() {},
-    setInterval: fn => { const id = ++nextId; intervals.set(id, fn); return id; }, clearInterval: id => intervals.delete(id) };
-  vm.createContext(ctx); vm.runInContext(part('const AdService=', 'const KSTEP=') + '\nthis.service=AdService;', ctx);
-  return { ctx, nodes, intervals, messages, tick: () => { for (const fn of [...intervals.values()]) fn(); } };
-}
-for (const kind of ['ticket', 'order', 'vend', 'quiz']) test(`completed ${kind} example ad closes automatically and grants once`, async () => {
-  const f = adContext(), pending = f.ctx.service.show({ kind, label: '테스트' }); let grants = 0; pending.then(v => { if (v) grants++; });
-  assert.equal(f.nodes.get('ad').hidden, false); f.tick(); f.tick(); assert.equal(f.nodes.get('ad').hidden, false);
-  f.tick(); assert.equal(await pending, true); assert.equal(f.nodes.get('ad').hidden, true); assert.equal(f.intervals.size, 0);
-  f.tick(); f.nodes.get('adx').onclick(); await Promise.resolve(); assert.equal(grants, 1);
-});
-test('an early ad close cancels the timer and grants nothing', async () => {
-  const f = adContext(), p = f.ctx.service.show({ kind: 'ticket', label: '테스트' }); f.tick(); f.nodes.get('adx').onclick();
-  assert.equal(await p, false); assert.equal(f.intervals.size, 0); assert.equal(f.ctx.service.busy, false);
-});
-test('a simultaneous ad and an unavailable provider cannot grant a reward', async () => {
-  const f = adContext(), first = f.ctx.service.show({ kind: 'ticket', label: '테스트' });
-  assert.equal(await f.ctx.service.show({ kind: 'ticket', label: '테스트' }), false);
-  f.nodes.get('adx').onclick(); await first;
-  f.ctx.service.providers.empty = { show: async () => null }; f.ctx.CFG.AD.provider = 'empty';
-  assert.equal(await f.ctx.service.show({ kind: 'ticket', label: '테스트' }), false);
+/* QA102: 광고는 QA12에서 제거(광고 없는 극장). 예전 광고 타이머 테스트 대신 '광고 없이 바로 지급' 계약을 확인 */
+test('AdService grants immediately with no ad overlay, timer or SDK', async () => {
+  const code = part('const AdService=', 'const KSTEP=');
+  const ctx = { setInterval() { throw Error('ad timer started'); }, setTimeout() { throw Error('ad timer started'); } };
+  vm.createContext(ctx); vm.runInContext(code + '\nthis.service=AdService;', ctx);
+  for (const kind of ['ticket', 'order', 'vend', 'quiz']) assert.equal(await ctx.service.show({ kind, label: '테스트' }), true);
+  assert(!/googletag|adsbygoogle|<script[^>]+ads/i.test(source));
 });
 
 function cupContext(data = new Map()) {

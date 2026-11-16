@@ -50,7 +50,7 @@ test('QA58 tree sits left of the ticket booth, the table moves in front of the s
 test('QA59 soft clay pass tones down gloss and self-illumination on characters and lobby objects, keeping palette materials',()=>{assert(source.includes('function clayify(m){'));assert(source.includes('m.userData.tile=tile;m.userData.keep=1;LP_MATS.push(m);return m};'));assert(source.includes('if(root&&root.userData&&root.userData.legs)clayObject(root);'));assert(source.includes('if(HSET.has(r)||club.has(r))return;clayObject(r)'));});
 test('QA60 tree bulbs follow one spiral string from bottom to top; bells are not lights',()=>{const fs4=require('fs'),p4=require('path'),w=fs4.readFileSync(p4.join(__dirname,'..','qa11-winter.js'),'utf8');assert(w.includes('f*Math.PI*2*(o.lightTurns||7)'));assert(w.includes("const bellMat=new THREE.MeshLambertMaterial({color:0x9c8246})"));assert(!/ConeGeometry\(\.05,\.09,10,1,true\),gd,/.test(w));});
 test('QA63 lighting the tree first walks the player to the best viewing spot; tree lights fade out at the end',()=>{assert(source.includes('const VIEW={x:tree.position.x+3.4,z:tree.position.z+.6};'));assert(source.includes('if(!start.ready){goView();return}start.ready=false;'));assert(source.includes('GL.pts.material.opacity*=f;GL.l.intensity*=f;GL.l2.intensity*=f;'));});
-test('QA68 a photo opens a preview with keep-in-bag, discard and download; bag photos stay on the device',()=>{assert(source.includes("const QA68={key:'aic.photos',max:10,list:null,cur:null};"));for(const k of ['data-ph="drop">버리기<','data-ph="down">다운받기<','data-ph="keep">가방에 넣어두기<','data-a="qa68open"',"qa68Show({src:url,url,full,small:sm.toDataURL('image/jpeg',.82),idx:null})"])assert(source.includes(k),k);const i=source.indexOf('async function qa20Photo(){'),seg=source.slice(i,i+1600);assert(!/fetch\(|XMLHttpRequest/.test(seg));});
+test('QA68 a photo opens a preview with keep-in-bag, discard and download; bag photos stay on the device',()=>{assert(source.includes("const QA68={key:'aic.photos',max:10,list:null,cur:null};"));for(const k of ['data-ph="drop">버리기<','data-ph="down">다운받기<','data-ph="keep">가방에 넣어두기<','data-a="qa68open"',"qa68Show({src:url,url,full:print,small:sm.toDataURL('image/jpeg',.85),idx:null})"])assert(source.includes(k),k);const i=source.indexOf('async function qa20Photo(){'),seg=source.slice(i,i+1600);assert(!/fetch\(|XMLHttpRequest/.test(seg));});
 test('QA70 ordinary chairs and sofas use a walk-up, turn and knee-bend sit animation; cinema seats stay instant',()=>{assert(source.includes('function sitLegPose(u,k){'));assert(source.includes('const SIT_TURN=.5,SIT_DOWN=.65;'));assert(source.includes('if(u.sitAnim){sitStep(c,dt);return}'));assert(source.includes('function sit(c,sp,opt={}){const u=c.userData,prevRot=c.rotation.y;'));const i=source.indexOf('function sit(c,sp,opt={})'),seg=source.slice(i,i+1400);assert(seg.includes("if(sp.kind==='cine'){if(u.seatedLegs){u.seatedLegs.visible=false;u.legs.forEach(l=>l.visible=true)}c.position.set(sp.x,sp.y,sp.z);c.children[0].scale.y=.78}"));assert(source.includes('<=(u.path.length?.3:1.8)'));});
 test('QA72 each hall has 80 flat seats (4+4 by 10 rows, A01~J08), width 12.4, and a door-icon exit at the end of the quick bar',()=>{assert(source.includes("const SEATS_PER_SIDE=4, NSR=SEATS_PER_SIDE*2, NSEAT=ROWS.length*NSR;"));assert(source.includes('HX=6.20;'));assert(source.includes('SCW=2*HX*14.2/18.8'));assert(source.includes(',SCH=SCW*9/16,SCY=3.5,'));assert(!source.includes('hallElev('));assert(source.includes('return u.lvl*4.2+(u.floorOffset||0)}'));
  const vm=require('vm'),ctx={pad:n=>String(n).padStart(2,'0')};vm.createContext(ctx);const i=source.indexOf("const ROWS='ABCDEFGHIJ';"),j=source.indexOf('const API={',i);vm.runInContext(source.slice(i,j)+';this.o={NSEAT,L:[...Array(NSEAT)].map((_,k)=>seatLabel(k)),X:[...Array(NSR)].map((_,k)=>hallSeatX(k))}',ctx);
@@ -102,7 +102,7 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
 test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 test('QA88 hands hold two, the rest go to the bag; context discard opens the bag and drops in place; trash can still walks there',()=>{
  assert(source.includes("if(me)setCarry(me,HELD.slice(0,1))/* QA96"));assert(source.includes("toast(`나머지 ${now-was}개는 가방에 넣었어요`)"));
- assert(source.includes("${i<1?' <span class=\"qa88-hand\">(손에 듦)</span>':''}"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
+ assert(!source.includes("qa88-hand\">(손에 듦)"));assert(source.includes("trash:()=>{/* QA88"));assert(source.includes("toast('휴지통에 버렸습니다')"));assert(source.includes("hitbox(x,y+.42,z,.49,.91,.49,{now:1,fn:()=>askTrash(),"));});
 test('QA91 interaction policy: tap a chair to walk and sit, exits live at the quick bar end, one name per action, clear notices',()=>{
  assert(source.includes("function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91"));assert(source.includes("selSeat=sp;paintSeats();walkToSpot(me,sp);return;"));assert(!source.includes("say(me,'이미 앉은 자리예요')"));
  assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));
@@ -123,7 +123,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("if(!hasInv()){toast('초대장이 있어야 열리는 책장이에요');return}trapShow(true)"));
  assert(source.includes('id="cx" title="닫기" aria-label="닫기"'));
  assert(source.includes("GIVE_OFFER=null;closePanel();giveItem(index)}"));
- assert(source.includes("data-a=\"trashhere\" data-i=\"${i}\" ${it.slow?'disabled':''}>버리기</button>"));
+ assert(source.includes("data-a=\"bagdelsel\" disabled>선택 버리기</button>"));
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
  assert(source.includes("/* QA95: 상영관에선 먹기 없음(들고 있기만) */"));
  assert(source.includes("ORD.st==='ready'&&!inH)add('oget'"));
@@ -138,6 +138,23 @@ test('QA95 performance and eating fixes',()=>{
  assert(!/data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]{2000,}/.test(source));
  assert(source.includes("eat1:d=>startEat(+d.i)")&&source.includes("const i=HELD.indexOf(EAT.it);"));
  assert(source.includes("if(i===eatingI()){EAT=null;"));
- assert(source.includes("if(!me||curZone(me)[0]==='H')return;"));
+ assert(source.includes("if(!me||curZone(me)[0]==='H'||EAT)return;"));
  for(const m of source.matchAll(/qa95_assets\/img-[0-9a-f]+\.(jpg|png)/g))assert(require('fs').existsSync(require('path').join(__dirname,'..',m[0])));
+});
+
+test('QA100 snack rules, unified bag discard, hall snacks',()=>{
+ assert(source.includes("EAT={t:0,t0:n,until:n+5,it}")&&source.includes("toast(nm+objectParticle(nm)+' 다 먹었어요')"));
+ assert(source.includes("data-a=\"bagdelall\">모두 버리기</button>")&&source.includes("bagdelallyes:"));
+ assert(source.includes("간식을 먹으면서 영화를 볼까요?")&&source.includes("function qa100Tag(){"));
+ assert(source.includes("cap=Math.min(5,MAXH-HELD.length)"));
+});
+
+test('QA102 first concept batch: tests, boards, free seating, light rhythm, instant photo, easter eggs, credits, licence fields',()=>{
+ assert(source.includes("const zc=18.2,X=LW-.18;")&&source.includes("'TOUR EIFFEL':'ARC DE TRIOMPHE'"));
+ assert(source.includes("if(window.QA102_FREESEAT!==false)return;")&&source.includes("${hallCfg(hid).name} · 빈자리"));
+ assert(source.includes("const b=LP_LIGHT.b*(window.QA102_LF||1)")&&source.includes("const tg=on?.78:1"));
+ assert(source.includes("g.fillText('Paris · déc. 1979',540,1215)"));
+ assert(source.includes("const RUMORS=")&&source.includes("'qa102arch'")&&source.includes("fillText('CABINE'"));
+ assert(source.includes("credit:'제작 Psyche_26 · AI 창작'")&&!source.includes("genre:'고전영화'"));
+ assert(source.includes("['license','권리 근거"));
 });

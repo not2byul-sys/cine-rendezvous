@@ -2726,7 +2726,7 @@ function qa68List(){if(QA68.list)return QA68.list;try{const v=JSON.parse(localSt
 function qa68Persist(){try{localStorage.setItem(QA68.key,JSON.stringify(QA68.list));return true}catch(e){return false}}
 function qa68Blob(src){const [h,b]=src.split(','),bin=atob(b),u=new Uint8Array(bin.length);for(let k=0;k<bin.length;k++)u[k]=bin.charCodeAt(k);return new Blob([u],{type:(h.match(/data:([^;]+)/)||[])[1]||'image/jpeg'})}
 async function qa68Download(blob){const ext=blob.type==='image/png'?'png':'jpg',name='cine-rendezvous-'+new Date().toISOString().slice(0,19).replace(/[-:T]/g,'')+'.'+ext;
- try{const file=new File([blob],name,{type:blob.type});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'씨네 랑데뷰'});return true}}catch(e){if(e&&e.name==='AbortError')return false}
+ try{const file=new File([blob],name,{type:blob.type});if(matchMedia('(pointer:coarse)').matches&&navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'씨네 랑데부'});return true}}catch(e){if(e&&e.name==='AbortError')return false}
  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},800);return true}
 function qa68Close(){const o=document.getElementById('qa68photo');if(o)o.hidden=true;const c=QA68.cur;QA68.cur=null;if(c&&c.url)URL.revokeObjectURL(c.url)}
 /* cur = {src: 화면에 띄울 주소, full: 원본 Blob(방금 찍은 사진), small: 가방 보관용 dataURL, idx: 가방 안 위치(가방에서 연 경우)} */

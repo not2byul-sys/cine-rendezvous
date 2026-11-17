@@ -4589,6 +4589,24 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  if(typeof openCine==='function'&&typeof closeCine==='function'){const oo=openCine,oc=closeCine;window.openCine=function(){const r=oo.apply(this,arguments);window.qa44Land(true);return r};window.closeCine=function(){const r=oc.apply(this,arguments);window.qa44Land(false);return r}}
 })();
 </script>
+<script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
+(function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;
+ const ok=()=>!A.muted&&A.init()&&A.ctx.state!=='suspended';
+ function bell(sec=1.8,vol=.05,f=1150){if(!ok())return;const c=A.ctx,t=c.currentTime,o=c.createOscillator(),m=c.createOscillator(),mg=c.createGain(),g=c.createGain();o.type='square';o.frequency.value=f;m.type='square';m.frequency.value=24;mg.gain.value=.5;g.gain.value=0;m.connect(mg);mg.connect(g.gain);g.gain.setValueAtTime(.5,t);const out=c.createGain(),bp=c.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f*1.6;bp.Q.value=1.2;out.gain.setValueAtTime(.0001,t);out.gain.linearRampToValueAtTime(vol,t+.02);out.gain.setValueAtTime(vol,t+sec-.08);out.gain.exponentialRampToValueAtTime(.0001,t+sec);o.connect(g);g.connect(bp);bp.connect(out);out.connect(A.master);o.start(t);m.start(t);o.stop(t+sec+.05);m.stop(t+sec+.05)}
+ function curtain(){if(!ok())return;A.noise(2.6,140,.05,.4,'curtain');A.tone(70,62,2.6,.012,.4,'curtain')}
+ /* 영사기: 낮은 웅웅 + 24fps 딸깍 */let PJ=null;
+ function pjStart(){if(PJ||!ok())return;const c=A.ctx,len=c.sampleRate,buf=c.createBuffer(1,len,c.sampleRate),d=buf.getChannelData(0);for(let i=0;i<len;i++){const ph=(i/c.sampleRate*24)%1;d[i]=(Math.random()*2-1)*(ph<.08?.9:.12)}const src=c.createBufferSource();src.buffer=buf;src.loop=true;const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;const hum=c.createOscillator();hum.type='sine';hum.frequency.value=96;const hg=c.createGain();hg.gain.value=.25;const g=c.createGain();g.gain.setValueAtTime(.0001,c.currentTime);g.gain.linearRampToValueAtTime(.022,c.currentTime+2);src.connect(lp);lp.connect(g);hum.connect(hg);hg.connect(g);g.connect(A.master);src.start();hum.start();PJ={src,hum,g}}
+ function pjStop(){if(!PJ)return;const c=A.ctx,p=PJ;PJ=null;try{p.g.gain.cancelScheduledValues(c.currentTime);p.g.gain.setValueAtTime(p.g.gain.value,c.currentTime);p.g.gain.linearRampToValueAtTime(.0001,c.currentTime+1.2);setTimeout(()=>{try{p.src.stop();p.hum.stop();p.g.disconnect()}catch(e){}},1400)}catch(e){}}
+ setInterval(()=>{if(PJ&&A.muted)pjStop()},500);
+ const oo=window.openCine,oc=window.closeCine;
+ if(typeof oo==='function'){window.openCine=function(){const r=oo.apply(this,arguments);try{A.unlock();bell();curtain();setTimeout(pjStart,2600)}catch(e){}return r};try{openCine=window.openCine}catch(e){}}
+ if(typeof oc==='function'){window.closeCine=function(){try{pjStop()}catch(e){}return oc.apply(this,arguments)};try{closeCine=window.closeCine}catch(e){}}
+ /* 공중전화: 로비에 있을 때 3~6분에 한 번, 두 번 울리고 끊김(받을 수 없음 — 소문용) */
+ function ring(){try{if(typeof curZone==='function'&&me&&curZone(me)==='L0'&&!document.hidden){bell(.9,.018,880);setTimeout(()=>bell(.9,.018,880),1500);setTimeout(()=>bell(.9,.016,880),4000)}}catch(e){}setTimeout(ring,180000+Math.random()*180000)}
+ setTimeout(ring,120000+Math.random()*120000);
+ window.QA108={bell,curtain,pjStart,pjStop,ring:()=>{bell(.9,.018,880)}};
+})();
+</script>
 <script id="qa106-static-merge">/* QA106: 움직이지 않는 가구·장식 메시를 같은 재질·같은 부모·가까운 칸(6m)끼리 합쳐 그리기 호출을 줄임.
    원본은 그대로 두고 레이어만 꺼서 숨김. 원본이 나중에 움직이거나 숨겨지거나 재질이 바뀌면 그 묶음만 자동으로 원래대로 되돌림. */
 (function(){if(typeof THREE==='undefined'||typeof S==='undefined')return;

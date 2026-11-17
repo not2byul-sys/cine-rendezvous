@@ -860,7 +860,7 @@ const curS=hid=>{const h=hallCfg(hid);return ODS[hid]||{id:'idle-'+hid,hall:h,fi
 const hallSC=h=>({id:'H'+h.id,hall:h,film:nowFilm(h),start:nowS(),end:dayEnd()});
 /* ---------- API mock (서버 연동 시 이 모듈만 교체) ----------
    ⚠ 실제 운영: 보상 지급(티켓·간식)과 티켓 검증은 서버에서 처리. 광고 승인 신호를 받은 뒤 서버에 1회성 지급 요청 → 서버가 중복·조작을 검증 */
-const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
+const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.preshow','aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
 async function qa105Push(){const data=QA105_Q;QA105_Q={};let key='';try{key=localStorage.getItem('aic.admkey')||''}catch(e){}if(!key||!Object.keys(data).length)return;try{const r=await fetch('/api/settings',{method:'PUT',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify({data})});const j=await r.json().catch(()=>({}));if(r.ok&&j.rev){try{localStorage.setItem('aic.cfgRev',String(j.rev))}catch(e){}}else if(r.status===401){try{localStorage.removeItem('aic.admkey')}catch(e){}toast('서버 저장 권한이 만료됐어요 · 다시 로그인해 주세요')}else toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}catch(e){toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}}
 
 /* QA07: lobby sound bus for effects, French ticket voice, and a persistent mute control. */
@@ -2625,7 +2625,7 @@ PANELS.adset=()=>{if(!ADM){PANELS.admlogin();return}const a=CFG.AD,u=a.units||{}
 PANELS.adfilmInfo=()=>{if(!ADM){PANELS.admlogin();return}let html='<h3>상영정보 편집</h3><p class="sub">각 작품의 안내판 정보를 편집합니다. 저장하면 두 관의 안내판에 바로 반영됩니다.</p>';CFG.HALLS.forEach(h=>{html+='<h3>'+esc(h.name)+'</h3>';h.films.forEach((f,i)=>{const info=filmBoardInfo(h,f),id='fi_'+h.id+'_'+i;html+='<div class="adh"><b>'+esc(f.title)+'</b>';[['title','영화 제목'],['credit','감독·제작 정보'],['duration','상영시간'],['syn','영화 소개'],['notice','관람 안내'],['source','출처(채널·아카이브)'],['license','권리 근거(퍼블릭 도메인·CC·공식 임베드 등)']].forEach(([k,label])=>/* QA102: 출처·라이선스 기록 칸 */{html+='<label style="display:block;margin-top:10px">'+label+'</label><textarea style="width:100%;box-sizing:border-box" id="'+id+'_'+k+'" rows="'+(k==='syn'?3:1)+'">'+esc(info[k])+'</textarea>'});html+='</div>'})});panel(html+'<button class="p" data-a="saveFilmInfo" style="width:100%">상영정보 저장</button>')};
 Object.assign(A,{adfilmInfo:()=>PANELS.adfilmInfo(),saveFilmInfo:()=>{if(!ADM)return;const data=store.get(FILM_INFO_KEY)||{};CFG.HALLS.forEach(h=>h.films.forEach((f,i)=>{const info={};['title','credit','duration','syn','notice','source','license'].forEach(k=>info[k]=($('fi_'+h.id+'_'+i+'_'+k).value||'').trim());data[filmInfoId(h,f)]=info}));store.set(FILM_INFO_KEY,data);boardDraw();toast('상영정보를 저장했어요')}});
 PANELS.adm=()=>{if(!ADM){PANELS.admlogin();return}if(!ADMD)admInit();const _pb=document.querySelector('#pn .pbox'),_st=_pb?_pb.scrollTop:0;
- let h=`<div class="admtab"><button class="p">상영작 관리</button><button data-a="txopen" data-t="txt">문구 편집</button><button data-a="layopen">배치 편집</button><button data-a="admposter">포스터</button><button data-a="admlobby">로비 컬러·조명</button><button data-a="adfilmInfo">상영정보 편집</button><button data-a="cloudsettings">영상 저장소</button><button data-a="admtest">상태 테스트</button><button data-a="siteexp">설정 내보내기</button><button data-a="siteimp">설정 가져오기</button></div>`;
+ let h=`<div class="admtab"><button class="p">상영작 관리</button><button data-a="txopen" data-t="txt">문구 편집</button><button data-a="layopen">배치 편집</button><button data-a="admposter">포스터</button><button data-a="admlobby">로비 컬러·조명</button><button data-a="adfilmInfo">상영정보 편집</button><button data-a="admpre">상영 전 순서</button><button data-a="cloudsettings">영상 저장소</button><button data-a="admtest">상태 테스트</button><button data-a="siteexp">설정 내보내기</button><button data-a="siteimp">설정 가져오기</button></div>`;
  CFG.HALLS.forEach(hl=>{const D=ADMD[hl.id];
   h+=`<div class="adh"><div style="font-weight:700;margin-bottom:4px">${hl.name} · ${hl.genre}</div>`;
   D.films.forEach((f,i)=>{h+=`<div class="rw"><div class="m"><b>${i?'':'▶ '}${esc(f.title)}</b><i>${f.src?(f.cloud?'공유 영상':f.local?'이 브라우저의 파일':'링크'):'YouTube'} · ${mmss(f.dur)}</i></div><button data-a="admv" data-h="${hl.id}" data-i="${i}" ${i?'':'disabled'}>↑</button><button data-a="addel" data-h="${hl.id}" data-i="${i}">삭제</button></div>`});
@@ -3018,7 +3018,7 @@ function qaNpcReachablePoint(target){
  }
  target.position.copy(origin);u.roamHome=origHome||origin;return null;
 }
-function showActorMenu(target,localMenu){if(!target.userData.remote&&!localMenu){npcCard(target,target.userData.displayName);return}const u_=target.userData,useLabel=u_.trayVendor?'구경하기':u_.buff?'퀴즈 풀기':u_.counterStaff?(VSTAFF.shop===target||VSTAFF.cafe===target?'주문하기':'티켓 받기'):'';let el=$('actorMenu');if(!el){el=document.createElement('div');el.id='actorMenu';el.setAttribute('role','menu');document.body.appendChild(el)}
+function showActorMenu(target,localMenu){if(!target.userData.remote&&!localMenu){npcCard(target,target.userData.displayName);return}const u_=target.userData,useLabel=u_.trayVendor?'구경하기':u_.buff?'퀴즈 풀기':u_.counterStaff?(VSTAFF.shop===target||VSTAFF.cafe===target||u_.usherOf?'간식 사기':'티켓 받기'):'';let el=$('actorMenu');if(!el){el=document.createElement('div');el.id='actorMenu';el.setAttribute('role','menu');document.body.appendChild(el)}
  el.setAttribute('aria-label',target.userData.displayName+' 선택 메뉴');const bt=(a,ic,t)=>'<button role="menuitem" data-a="'+a+'"><span>'+t+'</span></button>'/* QA20: 액션 칩은 아이콘 없이 글자만 */;const hint_=!u_.remote&&typeof QA18_GIFT!=='undefined'&&QA18_GIFT[u_.displayName];
  if(u_.buff&&!u_.remote){/* QA39: 알프레도 할아버지 — '대화하기'를 누르면 퀴즈. 일반 말걸기 없음 */el.innerHTML=(typeof hasInv==='function'&&hasInv()?bt('actorClub','','아지트 가기'):bt('actorUse','','퀴즈 풀기'))+(HELD.length?bt('actorGift','giftmenu','선물하기'):'')/* QA94: 초대장이 있으면 아지트 안내 · 들고 있으면 선물 *//* QA75: 알프레도는 퀴즈 풀기 하나만 */;{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick();return}
  el.innerHTML=(useLabel&&!u_.remote?bt('actorUse','',u_.trayVendor?'꽃 사기':useLabel):'')+/* QA75: 말걸기 삭제 */(HELD.length?bt('actorGift','giftmenu','선물하기'):'')+(hint_?bt('actorHint','','힌트 듣기'):'')+bt('actorWave','','손 흔들기')+bt('actorClap','','박수')+(u_.remote?bt('actorFollow','','따라가기'):'');{const c=$('qa17cta');if(c)c.hidden=true}actorMenuTick()}
@@ -3035,7 +3035,7 @@ function selectAvatar(target,opt={}){if(!me||!target||target===me||!target.visib
   else{
    npcCard(target,u.displayName);session.phase='greeting';
    if(u.trayVendor||u.buff||!u.counterStaff){/* QA20: 꽃 사기·퀴즈 풀기·말걸기 등은 컨텍스트 액션 바로 */session.phase='menu';showActorMenu(target,true)}
-   else if(u.counterStaff){session.phase='panel';if(VSTAFF.shop===target)opanel('shop');else if(VSTAFF.cafe===target)opanel('cafe');else openPanel('booth')}
+   else if(u.counterStaff){session.phase='panel';if(u.usherOf&&window.qa111Order)qa111Order(target);else if(VSTAFF.shop===target)opanel('shop');else if(VSTAFF.cafe===target)opanel('cafe');else openPanel('booth')}
   }hudUpd()};
  if(seatNear)session.finish();else if(Math.hypot(me.position.x-point.x,me.position.z-point.z)>.25)walkTo(me,point.x,point.z,point.zone,{avoidFurniture:true,exactTarget:true,after:session.finish});else session.finish()}
 function actorMenuTick(){const session=ACTOR_SESSION;if(!session)return;const target=session.target;
@@ -4591,6 +4591,61 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 </script>
 <script id="qa109-seated-tag">/* QA109: 앉으면 이름표를 머리 바로 위로(서 있을 때 머리와 이름표 간격을 그대로 유지) */
 (function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=Math.min(u.tagY0,u.tagY0-(1.46-V.y));if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();
+</script>
+<script id="qa110-preshow">/* QA110: 상영 전 의식 — (가상 뉴스 5초 → 예고편 5초) → 붉은 막이 열림. 뉴스·예고편은 관리자에서 켜고 끄며 링크(mp4·YouTube) 또는 파일로 관리. 기본은 꺼짐(막만) */
+(function(){const KEY='aic.preshow',DEF={news:{on:false,src:''},trailer:{on:false,src:''}};
+ const get=()=>{const o=store.get(KEY)||{};return {news:Object.assign({},DEF.news,o.news||{}),trailer:Object.assign({},DEF.trailer,o.trailer||{})}};
+ const css=document.createElement('style');css.textContent=`#qa110pre{position:absolute;inset:0;z-index:6;pointer-events:none;overflow:hidden;background:transparent}
+#qa110pre .clip{position:absolute;inset:0;background:#000;display:flex;align-items:center;justify-content:center}#qa110pre video,#qa110pre iframe{width:100%;height:100%;border:0;object-fit:contain;background:#000}
+#qa110pre .tag{position:absolute;left:12px;top:10px;font:600 12px/1 Georgia,serif;letter-spacing:.12em;color:#e9dcc0;background:rgba(0,0,0,.45);padding:5px 8px;border-radius:3px}
+#qa110pre .cur{position:absolute;top:0;bottom:0;width:51%;background:repeating-linear-gradient(90deg,#5a0d18 0 14px,#7a1424 14px 26px,#62101c 26px 40px);box-shadow:inset 0 -18px 0 #b8902f,inset 0 -22px 0 #6d4f17;transition:transform 1.7s cubic-bezier(.6,.05,.3,1)}
+#qa110pre .cur.l{left:0}#qa110pre .cur.r{right:0}#qa110pre.open .cur.l{transform:translateX(-102%)}#qa110pre.open .cur.r{transform:translateX(102%)}`;document.head.appendChild(css);
+ const ytId=u=>{const m=String(u||'').match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/);return m&&m[1]};
+ let RUN=0;
+ function clip(box,src,label){return new Promise(res=>{const c=document.createElement('div');c.className='clip';const id=ytId(src);let el;if(id){el=document.createElement('iframe');el.allow='autoplay';el.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&controls=0&modestbranding=1&rel=0&playsinline=1'}else{el=document.createElement('video');el.src=src;el.autoplay=true;el.playsInline=true;el.onended=()=>done();el.onerror=()=>done()}c.appendChild(el);const t=document.createElement('span');t.className='tag';t.textContent=label;c.appendChild(t);box.appendChild(c);let fin=0;const done=()=>{if(fin)return;fin=1;c.remove();res()};setTimeout(done,5000)})}
+ async function run(){const my=++RUN,cine=$('cine');if(!cine)return;let box=$('qa110pre');if(box)box.remove();box=document.createElement('div');box.id='qa110pre';box.innerHTML='<div class="cur l"></div><div class="cur r"></div>';cine.appendChild(box);
+  const P=get(),seq=[];if(P.news.on&&P.news.src)seq.push([P.news.src,'ACTUALITÉS']);if(P.trailer.on&&P.trailer.src)seq.push([P.trailer.src,'BANDE-ANNONCE']);
+  const film=()=>{try{if(typeof vf!=='undefined'&&!vf.hidden){vf.muted=true}else if(typeof yt!=='undefined'&&yt&&yt.mute)yt.mute()}catch(e){}};
+  if(seq.length){box.style.pointerEvents='auto';film();for(const [src,lb] of seq){if(my!==RUN)return;await clip(box,src,lb)}try{if(typeof CMODE!=='undefined'&&CMODE==='full'){if(typeof vf!=='undefined'&&!vf.hidden)vf.currentTime=0;else if(yt&&yt.seekTo)yt.seekTo(0,true)}if(typeof ytMuted!=='undefined'&&!ytMuted){if(!vf.hidden)vf.muted=false;else if(yt&&yt.unMute)yt.unMute()}}catch(e){}box.style.pointerEvents='none'}
+  if(my!==RUN)return;await new Promise(r=>setTimeout(r,350));box.classList.add('open');setTimeout(()=>{if(my===RUN)box.remove()},2000)}
+ const oo=window.openCine,oc=window.closeCine;
+ if(typeof oo==='function')window.openCine=function(){const r=oo.apply(this,arguments);try{run()}catch(e){}return r};
+ if(typeof oc==='function')window.closeCine=function(){RUN++;const b=$('qa110pre');if(b)b.remove();return oc.apply(this,arguments)};
+ /* 관리자: 상영 전 순서 */
+ PANELS.admpre=()=>{if(!ADM){PANELS.admlogin();return}const P=get(),row=(k,t)=>`<div class="adh"><div style="display:flex;align-items:center;justify-content:space-between;font-weight:700;margin-bottom:6px"><span>${t}</span><label style="display:flex;gap:6px;align-items:center;font-weight:500"><input type="checkbox" id="pre_${k}_on" ${P[k].on?'checked':''}> 켜기</label></div><input id="pre_${k}_src" value="${esc(P[k].src||'')}" placeholder="링크 (mp4 · YouTube)"><input id="pre_${k}_file" type="file" accept="video/mp4,video/webm,.mp4,.webm"><p class="sub">${window.CinemaCloud?.enabled?'파일은 공유 저장소에 올라가요.':'파일 올리기는 영상 저장소 연결 후 쓸 수 있어요. 지금은 링크로 넣어 주세요.'} 5초까지만 보여줘요.</p></div>`;
+  panel('<h3>상영 전 순서</h3><p class="sub">자리에 앉으면 항상 이 순서로 나온 뒤 막이 열려요: 가상 뉴스 → 예고편 → 막.</p>'+row('news','가상 뉴스')+row('trailer','예고편')+'<div style="display:flex;gap:8px"><button class="p" data-a="presave">저장</button><button data-a="adm">돌아가기</button></div>')};
+ Object.assign(A,{admpre:()=>PANELS.admpre(),presave:async()=>{if(!ADM)return;const P=get();for(const k of ['news','trailer']){P[k].on=!!$('pre_'+k+'_on').checked;P[k].src=($('pre_'+k+'_src').value||'').trim();const f=$('pre_'+k+'_file').files[0];if(f){if(!window.CinemaCloud?.enabled){toast('파일은 영상 저장소 연결 후 올릴 수 있어요');return}try{toast('영상 올리는 중…');const r=await window.CinemaCloud.upload(f,()=>{});P[k].src=r&&(r.url||r.src)||P[k].src}catch(e){toast(e.message||'업로드 실패');return}}if(P[k].on&&!P[k].src){toast((k==='news'?'가상 뉴스':'예고편')+' 링크를 넣어 주세요');return}}store.set(KEY,P);toast('상영 전 순서를 저장했어요');PANELS.admpre()}});
+ window.QA110={run,get};
+})();
+</script>
+<script id="qa111-usher">/* QA111: 안내원(ouvreuse) — 상영관에 들어오면 손전등으로 빈자리를 비춰 주고, 관람 전·후에는 간식 바구니를 들고 가운데 통로를 돌며 판매(누르면 매점과 같은 주문창) */
+(function(){if(typeof mk!=='function'||typeof HALLN==='undefined')return;
+ const NAMES={1:'안내원 이베트',2:'안내원 마르트'},U={};
+ const watching=id=>{try{return document.body.classList.contains('cineseat')&&typeof curSp!=='undefined'&&curSp&&curSp.hall===id&&!CINE_DONE}catch(e){return false}};
+ Object.keys(HALLN).forEach(k=>{const id=+k,h=HALLN[id];if(!h||!h.seats)return;const cx=HCX[id],base=H_BASE[id]||0;
+  const u=mk(NAMES[id]||'안내원',0x1f2238,{staff:true,skin:SK.lt,hair:0x3a2620,hs:'bun',coat:0x1f2238,skirt:0x1f2238,legs:0x2a2a2a,shirt:0xefe6d6});
+  const ud=u.userData;ud.counterStaff=true;ud.usherOf=id;ud.lvl=HL[id];ud.tgY=base;ud.home={x:cx-1.4,z:-2.3};u.position.set(ud.home.x,base,ud.home.z);u.rotation.y=Math.PI;
+  /* 간식 바구니 + 손전등 */const body=u.children[0],tr=new THREE.Group();tr.position.set(0,.8,.36);body.add(tr);const W=new THREE.MeshPhongMaterial({color:0xb58448,shininess:20,emissive:0x2a1a08});const bx=(w,h_,d,m,x,y,z)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h_,d),m);o.position.set(x,y,z);tr.add(o)};bx(.5,.03,.28,W,0,0,0);bx(.5,.1,.02,W,0,.05,.14);bx(.5,.1,.02,W,0,.05,-.14);bx(.02,.1,.28,W,-.25,.05,0);bx(.02,.1,.28,W,.25,.05,0);[[0xd94a5a,-.15],[0x2f6fb3,-.03],[0xf2c230,.09],[0xe9f0b8,.19]].forEach(([c,x])=>bx(.08,.06,.12,new THREE.MeshPhongMaterial({color:c}),x,.05,0));
+  NPCS.push(u);try{if(HALLG[id])HALLG[id].push(u);HSET.add(u);u.visible=space===id}catch(e){}/* 상영관과 함께 보이고 숨음 */VSTAFF['usher'+id]=u;MENU['usher'+id]=MENU.shop;VEN['usher'+id]={name:NAMES[id]+' · 간식 바구니',pt:{x:cx,z:-6,zone:'H'+id}};
+  U[id]={u,cx,base,leg:0,wait:0,beam:null};
+ });
+ window.qa111Order=function(u){const id=u.userData.usherOf;if(watching(id)){say(u,'상영이 끝나면 다시 들를게요.',4);dismissActor&&dismissActor();return}const v='usher'+id;VEN[v].pt={x:me.position.x,z:me.position.z,zone:curZone(me)};VEN[v].ct=[u.position.x,(U[id].base||0)+1.15,u.position.z];opanel(v)};
+ /* 손전등 빔 */
+ const BM=new THREE.MeshBasicMaterial({color:0xfff1c4,transparent:true,opacity:.16,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}),GM=new THREE.MeshBasicMaterial({color:0xfff1c4,transparent:true,opacity:.35,blending:THREE.AdditiveBlending,depthWrite:false});
+ function beam(id,seat){const o=U[id];if(!o)return;clearBeam(id);const u=o.u,a=new THREE.Vector3(u.position.x,o.base+1.05,u.position.z),b=new THREE.Vector3(seat.x,(seat.y||o.base)+.55,seat.z),len=a.distanceTo(b);const g=new THREE.Group();const cone=new THREE.Mesh(new THREE.CylinderGeometry(.03,.32,len,18,1,true),BM.clone());cone.position.copy(a).lerp(b,.5);cone.lookAt(b);cone.rotateX(Math.PI/2);g.add(cone);const spot=new THREE.Mesh(new THREE.CircleGeometry(.42,24),GM.clone());spot.position.copy(b);spot.position.y-=.05;spot.rotation.x=-Math.PI/2;g.add(spot);g.userData.qa111=1;S.add(g);HSET.add(g);u.rotation.y=Math.atan2(b.x-u.position.x,b.z-u.position.z);o.beam={g,t0:performance.now()};say(u,'이쪽 자리 비어 있어요.',4)}
+ function clearBeam(id){const o=U[id];if(o&&o.beam){S.remove(o.beam.g);o.beam.g.traverse(m=>{if(m.geometry)m.geometry.dispose();if(m.material)m.material.dispose()});o.beam=null}}
+ let lastZ='';
+ setInterval(()=>{try{if(!me)return;const z=curZone(me);
+  if(z!==lastZ){lastZ=z;const id=z==='H1'?1:z==='H2'?2:0;if(id&&U[id]&&!me.userData.seat){const h=HALLN[id],free=h.seats.filter(s=>!s.taken);if(free.length){const sp=free.sort((p,q)=>Math.hypot(p.x-me.position.x,p.z-me.position.z)-Math.hypot(q.x-me.position.x,q.z-me.position.z))[Math.min(2,free.length-1)];if(U[id].u.userData.path)U[id].u.userData.path=[];setTimeout(()=>beam(id,sp),900)}}}
+  Object.keys(U).forEach(k=>{const id=+k,o=U[id],u=o.u,ud=u.userData;
+   if(o.beam){const t=(performance.now()-o.beam.t0)/1000;if(t>6||me.userData.seat&&curZone(me)==='H'+id)clearBeam(id);else{const f=t>5?(6-t):1;o.beam.g.children[0].material.opacity=.16*f;o.beam.g.children[1].material.opacity=.35*f}return}
+   if(ACTOR_SESSION&&ACTOR_SESSION.target===u)return;
+   if(watching(id)){if(Math.hypot(u.position.x-ud.home.x,u.position.z-ud.home.z)>.4&&!(ud.path&&ud.path.length))walkTo(u,ud.home.x,ud.home.z,'H'+id);return}
+   if(ud.path&&ud.path.length)return;if(o.wait>0){o.wait--;return}
+   const pts=[[o.cx,-4.0],[o.cx,-13.0],[ud.home.x,ud.home.z]];o.leg=(o.leg+1)%pts.length;walkTo(u,pts[o.leg][0],pts[o.leg][1],'H'+id);o.wait=4})
+ }catch(e){}},1000);
+ window.QA111={U,beam,clearBeam};
+})();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

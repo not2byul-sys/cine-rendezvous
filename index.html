@@ -777,12 +777,29 @@ html body #lobbyMusic{width:36px;height:36px;padding:0;border-radius:999px!impor
 html body #lobbyMusic svg{stroke:currentColor;color:inherit}
 html body #lobbyMusic:hover{background:rgba(48,36,38,.82)!important}
 </style>
-<style id="qa122-mini">/* QA122: 상영 중 퀵메뉴는 글자만 있는 작은 막대로 */
-body.cineseat #act button svg,body.cineseat #act button .ico,body.cineseat #act button i{display:none!important}
-body.cineseat #act button{flex-direction:row!important;min-height:0!important;height:32px!important;padding:0 12px!important;font-size:13px!important;gap:0!important;opacity:.85}
+<style id="qa123-cinehud">/* QA123: 관람 화면 UI 통일 — 같은 높이(36)·같은 재질의 칩, 위 한 줄(제목 · 좋아요 · 닫기), 아래 한 줄(조작) */
+body.cineseat{--hud-bg:rgba(20,12,14,.72);--hud-bd:rgba(255,255,255,.14);--hud-fg:rgba(250,245,240,.94);--hud-top:calc(env(safe-area-inset-top,0px) + 12px)}
+body.cineseat #ctitle,body.cineseat #cx,body.cineseat #ctxbar button,body.cineseat #act,html body.cineseat #watch{background:var(--hud-bg)!important;border:1px solid var(--hud-bd)!important;color:var(--hud-fg)!important;box-shadow:0 6px 20px -8px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2)}
+body.cineseat #ctitle{top:var(--hud-top)!important;left:12px!important;height:36px!important;box-sizing:border-box;padding:0 14px!important;display:flex!important;align-items:center;border-radius:999px!important;max-width:calc(100vw - 190px)}
+body.cineseat #ctitle #cyt{font-size:13px!important;line-height:1!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+body.cineseat #ctitle #cyt svg{width:14px;height:14px;flex:none}
+body.cineseat #hb{top:var(--hud-top)!important;height:36px!important;align-items:center}
+body.cineseat #cx{width:36px!important;height:36px!important;padding:0!important;border-radius:999px!important;display:inline-flex!important;align-items:center;justify-content:center}
+body.cineseat #cx svg{width:16px;height:16px}
+body.cineseat #ctxbar{top:var(--hud-top)!important;bottom:auto!important;left:auto!important;right:56px!important;transform:none!important;padding:0!important;animation:none!important}
+body.cineseat #ctxbar button{height:36px!important;padding:0 14px!important;font:500 13px/1 'Noto Sans KR',sans-serif!important;border-radius:999px!important}
+body.cineseat #ctxbar button.on{color:#ffd6dc!important;border-color:rgba(255,190,200,.4)!important}
+body.cineseat .bar{justify-content:center!important}
+body.cineseat #act{flex:none!important;max-width:calc(100vw - 24px);width:auto!important;height:44px!important;padding:4px!important;border-radius:999px!important;gap:0!important;box-sizing:border-box}
+body.cineseat #act button{height:36px!important;min-height:0!important;padding:0 14px 1px!important;border-radius:999px!important;background:transparent!important;border:0!important;color:var(--hud-fg)!important;font:500 13px/1 'Noto Sans KR',sans-serif!important;flex-direction:row!important;gap:0!important;opacity:1!important}
+body.cineseat #act button svg,body.cineseat #act button i{display:none!important}
 body.cineseat #act button span{margin:0!important}
+body.cineseat #act button+button{position:relative}body.cineseat #act button+button::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:1px;background:rgba(255,255,255,.16)}
+body.cineseat #act button:hover{background:rgba(255,255,255,.08)!important}
+html body.cineseat #watch{height:40px!important;padding:0 18px 0 14px!important;border-radius:999px!important;display:inline-flex!important;align-items:center;gap:8px;font:600 14px/1 'Noto Sans KR',sans-serif!important}
+html body.cineseat #watch::before{content:"";width:14px;height:14px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23faf5f0' d='M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z'/%3E%3C/svg%3E") center/14px 14px no-repeat}
+@media (max-width:420px){body.cineseat #act button{padding:0 9px 1px!important;font-size:12.5px!important}body.cineseat #ctitle{max-width:calc(100vw - 226px)}}
 </style>
-<style id="qa122-watch">/* QA122: 영화 보기 앞 영사기 아이콘 16×16 */html body #watch{display:inline-flex!important;align-items:center;gap:6px}html body #watch::before{content:"";width:16px;height:16px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf5f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7 3 5'/%3E%3Cpath d='M9 6V3'/%3E%3Cpath d='m13 7 2-2'/%3E%3Ccircle cx='9' cy='13' r='3'/%3E%3Cpath d='M11.83 12H20a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h2.17'/%3E%3Cpath d='M16 16h2'/%3E%3C/svg%3E") center/16px 16px no-repeat}</style>
 <style id="qa116-ui">/* QA116: 알림은 내용 길이만큼만(가운데 작은 말풍선), 칩 글자 세로 가운데 */
 #toast{width:max-content!important;max-width:min(84vw,360px)!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;padding:9px 18px 10px!important;border-radius:20px!important;font-size:14px!important;line-height:1.4!important;text-align:center!important;font-weight:500!important}
 #ctxbar button,#actorMenu button{padding-bottom:2px!important}
@@ -3482,7 +3499,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    if((dx||dz)&&ACTOR_SESSION)dismissActor();qaManualMove(me,dx,dz,dt);}
   const p=me.position,s=u.seat,zn=curZone(me);if(window.__lzn&&window.__lzn!==zn&&!s)alignSpaceCamera(me);window.__lzn=zn;
   if(zn[0]==='H'){
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(hv.x*(1-w)+sx*w,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(H.cx,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(H.cx,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3505,7 +3522,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);if(hz&&(!s||CWIDE)){/* User-controlled orbit is also available while walking in the auditorium. */}/* 상영관: 뒤쪽 통로에서 높게 → 좌석 전체와 스크린이 한눈에 */if(hz&&!s){/* QA39: 걸을 때는 스크린 가운데를 정면으로 — 스크린 전체와 좌석이 함께 보이게 */const dz=Math.max(4,cp.z-SCZ),ty=(hz.base+SCY*.97)-cp.y,off=Math.tan(clampN((camPitch-.2)*.85,-.6,.6));lk.set(cp.x+fx*20,cp.y+20*(ty/dz-off),cp.z+fz*20)}else lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
    if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }else{
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(hv.x*(1-w)+sx*w,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(H.cx,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(H.cx,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -4617,7 +4634,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 })();
 </script>
 <script id="qa109-seated-tag">/* QA109: 앉으면 이름표를 머리 바로 위로(서 있을 때 머리와 이름표 간격을 그대로 유지) */
-(function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=Math.min(u.tagY0,u.tagY0-(1.46-V.y));if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();
+(function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=Math.min(u.tagY0,V.y+.48)/* QA123: 앉으면 머리 바로 위(.48) */;if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();
 </script>
 <script id="qa110-preshow">/* QA110: 상영 전 의식 — (가상 뉴스 5초 → 예고편 5초) → 붉은 막이 열림. 뉴스·예고편은 관리자에서 켜고 끄며 링크(mp4·YouTube) 또는 파일로 관리. 기본은 꺼짐(막만) */
 (function(){const KEY='aic.preshow',DEF={news:{on:false,src:''},trailer:{on:false,src:''}};

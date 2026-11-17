@@ -78,7 +78,7 @@ test('QA75 quick bar has no chat entry, NPC menus have no talk action, Alfredo o
  assert(source.includes("Object.assign(A,{actorGift,actorUse,actorClub});"));assert(!/A\.actorTalk|actorTalk:/.test(source));});
 test('QA78 screening view: camera approach, sconces off, replay, chip-style overlay buttons, external-link title chip, fixed-size labels',()=>{
  /* QA85: 상영 전후 같은 시점(기준 버전 de74875 방식) — 별도 관람 시점·영상 확대 없음 */assert(!source.includes('qa80View'));assert(!source.includes('QA78_Z'));assert(!source.includes('setViewOffset'));
- assert.equal(source.split("cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));").length-1,2);/* QA118: 관람 시점은 내 자리 뒤·위 */
+ assert.equal(source.split("cp.set(H.cx,hv.y+1.7,Math.min(s.z+3.4,1.5));").length-1,2);/* QA118: 관람 시점은 내 자리 뒤·위 */
  assert(source.includes("if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;"));assert(source.includes("function closeCine(){CINE_DONE=false;QA85_CINE=false;rs();"));
  {/* H열에서 스크린이 화면 가로의 약 51%(기준 버전과 동일) */const SCW=2*6.2*14.2/18.8,fov=2*Math.atan(Math.tan(32*Math.PI/180)*SCW/14.2),d=(-6.96+2)+17.55,frac=SCW/(2*d*Math.tan(fov/2)*16/9),old=14.2/(2*d*Math.tan(32*Math.PI/180)*16/9);assert(Math.abs(frac-old)<1e-9);assert(Math.abs(frac-.507)<.01)}
  assert(source.includes("HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF})"));assert(source.includes("HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k)"));

@@ -777,6 +777,12 @@ html body #lobbyMusic{width:36px;height:36px;padding:0;border-radius:999px!impor
 html body #lobbyMusic svg{stroke:currentColor;color:inherit}
 html body #lobbyMusic:hover{background:rgba(48,36,38,.82)!important}
 </style>
+<style id="qa122-mini">/* QA122: 상영 중 퀵메뉴는 글자만 있는 작은 막대로 */
+body.cineseat #act button svg,body.cineseat #act button .ico,body.cineseat #act button i{display:none!important}
+body.cineseat #act button{flex-direction:row!important;min-height:0!important;height:32px!important;padding:0 12px!important;font-size:13px!important;gap:0!important;opacity:.85}
+body.cineseat #act button span{margin:0!important}
+</style>
+<style id="qa122-watch">/* QA122: 영화 보기 앞 영사기 아이콘 16×16 */html body #watch{display:inline-flex!important;align-items:center;gap:6px}html body #watch::before{content:"";width:16px;height:16px;flex:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23faf5f0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 7 3 5'/%3E%3Cpath d='M9 6V3'/%3E%3Cpath d='m13 7 2-2'/%3E%3Ccircle cx='9' cy='13' r='3'/%3E%3Cpath d='M11.83 12H20a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h2.17'/%3E%3Cpath d='M16 16h2'/%3E%3C/svg%3E") center/16px 16px no-repeat}</style>
 <style id="qa116-ui">/* QA116: 알림은 내용 길이만큼만(가운데 작은 말풍선), 칩 글자 세로 가운데 */
 #toast{width:max-content!important;max-width:min(84vw,360px)!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;padding:9px 18px 10px!important;border-radius:20px!important;font-size:14px!important;line-height:1.4!important;text-align:center!important;font-weight:500!important}
 #ctxbar button,#actorMenu button{padding-bottom:2px!important}
@@ -3530,7 +3536,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
  /* doors */
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
  popG.rotation.y+=dt*.5;/* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
- if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE);/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.055+.40*HLF;H.pl.intensity=H.pli*(.08+.56*HLF);dl.intensity=.016+.136*HLF}else{dl.intensity=LOBBY_DL*LP_LIGHT.b;HLF=1}
+ if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE);/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.10+.355*HLF;H.pl.intensity=H.pli*(.14+.50*HLF);dl.intensity=.03+.122*HLF/* QA122: 상영 중에도 객석이 보이게 조도 +10%p */}else{dl.intensity=LOBBY_DL*LP_LIGHT.b;HLF=1}
 popAnim(dt,t);emgAnim(t);qa78Tick();/* QA15: 착석·상영 중 벽등 빛 감광, 종료·퇴석 시 복원 */if(space>0&&HALL_GLOW[space])HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF});if(space>0&&HALL_SC[space]){/* QA78: 상영이 시작되면 벽등 소등 */const k=.1+.9*HLF;HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k);HALL_SC[space][1].color.setHex(0xfffbe8).multiplyScalar(k)}Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=g.userData.alwaysVisible||LAYED||C.position.distanceTo(g.position)>4});
  if(Math.floor(t)!==Math.floor(t-dt)&&Math.floor(t)%2===0)drawScreens();
  NPCS.forEach(c=>{if(!c.userData.static)upd(c,dt,t)});buffTick(dt);if(typeof doorTick==="function"&&TRAP&&TRAP.userData.leaf)doorTick(dt);if(typeof vendTick==="function"&&typeof VENDS!=="undefined"&&VENDS&&typeof CFG!=="undefined"&&me){if(!VENDS.length&&!window.__vi){window.__vi=1;vendInit()}vendTick(dt)}if(typeof CLUBN!=='undefined'){if(me&&curZone(me)==='B')CLUBN.forEach(c=>upd(c,dt,t));clubTick(t)}if(me)upd(me,dt,t);actorMenuTick();Object.values(VSTAFF).forEach(c=>{if(!c.userData.trayVendor)upd(c,dt,t)});orderTick(dt,t);

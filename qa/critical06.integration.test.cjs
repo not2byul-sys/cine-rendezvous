@@ -201,17 +201,17 @@ test('a wrong answer provides a direct retry and stale right-answer timers canno
 
 function adminContext(values = new Map()) {
   const calls = [], input = { value: 'wrong', focus() {} };
-  const ctx = { store: { get: k => values.get(k), set: (k, v) => values.set(k, v) }, $: () => input, admInit: () => calls.push('init'), PANELS: { adm: () => calls.push('admin'), tt: () => calls.push('schedule') }, panel: () => calls.push('password'), toast() {}, setTimeout() {}, window: { CinemaCloud: { clearSecret: () => calls.push('clearSecret') } } };
+  const ctx = { store: { get: k => values.get(k), set: (k, v) => values.set(k, v) }, $: () => input, admInit: () => calls.push('init'), PANELS: { adm: () => calls.push('admin'), tt: () => calls.push('schedule') }, panel: () => calls.push('password'), toast() {}, setTimeout() {}, window: { CinemaCloud: { clearSecret: () => calls.push('clearSecret') } }, location: { protocol: 'file:' }, localStorage: { setItem() {}, removeItem() {}, getItem() { return null; } } };
   vm.createContext(ctx);
   vm.runInContext(section('const ADMIN_SESSION_KEY=', '\n') + section('PANELS.admlogin=()', '\n'), ctx);
-  const login = vm.runInContext('({' + section(' admlogin:()=>', '\n adout:') + '}).admlogin', ctx);
+  const login = vm.runInContext('({' + section(' admlogin:async()=>', '\n adout:') + '}).admlogin', ctx);
   const logoutSource = source.split('\n').find(x => x.includes('adout:()=>'));
   const logout = vm.runInContext('({' + logoutSource + '}).adout', ctx);
   return { ctx, values, calls, input, login, logout };
 }
-test('admin authentication survives refresh and clock access, without saving the password', () => {
-  const { ctx, input, login, values } = adminContext(); login(); assert.equal(values.size, 0);
-  input.value = vm.runInContext('ADMPW', ctx); login();
+test('admin authentication survives refresh and clock access, without saving the password', async () => {
+  const { ctx, input, login, values } = adminContext(); await login(); assert.equal(values.size, 0);
+  input.value = vm.runInContext('ADMPW', ctx); await login();
   assert.deepEqual([...values.values()], [true]);
   const fresh = adminContext(values); fresh.ctx.PANELS.admlogin();
   assert(fresh.calls.includes('admin')); assert(!fresh.calls.includes('password'));

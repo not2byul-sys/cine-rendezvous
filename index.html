@@ -772,6 +772,10 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 .tc3-stub{position:absolute;left:8.095238%;top:76%;width:83.809524%;height:14.4%;padding:0 3.333333cqw;border-top:1px solid #5d211c;background:#5d211c;color:#f5bcd8}
 .tc3-no{font-size:4.047619cqw}.tc3-act{font-size:3.333333cqw}
 </style>
+<style id="qa116-ui">/* QA116: 알림은 내용 길이만큼만(가운데 작은 말풍선), 칩 글자 세로 가운데 */
+#toast{width:max-content!important;max-width:min(84vw,360px)!important;left:50%!important;right:auto!important;transform:translateX(-50%)!important;padding:9px 18px 10px!important;border-radius:20px!important;font-size:14px!important;line-height:1.4!important;text-align:center!important;font-weight:500!important}
+#ctxbar button,#actorMenu button{padding-bottom:2px!important}
+</style>
 </head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
@@ -953,7 +957,7 @@ const PL=(c,i,x,y,z,d=26)=>{const l=new THREE.PointLight(c,i*.55,d);l.position.s
 PL(0xffd6a0,1.0,0,7.2,7.5,26);PL(0xffd9a8,.6,-5,3.5,4.5,14);PL(0xffd9a8,.6,5,3.5,4.5,14);PL(0xffe0b0,.45,-6,4,11.5,12);PL(0xffd0a0,.5,6.5,4,14.7,12);PL(0xffe0b0,.45,-6,4,15.5,12);PL(0xffd9a0,.55,0,6.6,-1,12);PL(0xffd9a0,.35,0,6.6,-3.2,10);
 function boxUV(g,w,h,d,t){const uv=g.attributes.uv,D=[[d,h],[d,h],[w,d],[w,d],[w,h],[w,h]];for(let f=0;f<6;f++){const [a,b]=D[f],sw=b>a*1.6;for(let k=0;k<4;k++){const i=f*4+k,u=uv.getX(i),v=uv.getY(i);sw?uv.setXY(i,v*b/t,u*a/t):uv.setXY(i,u*a/t,v*b/t)}}uv.needsUpdate=true}
 const B=(w,h,d,c,x,y,z,p=S)=>{const g=new THREE.BoxGeometry(w,h,d),mt=mat(c);if(mt.userData.tile)boxUV(g,w,h,d,mt.userData.tile);const m=new THREE.Mesh(g,mt);m.position.set(x,y,z);p.add(m);return m};
-function tag(t,bg,fg,fs,k=1,dt=false){const c=document.createElement('canvas'),x=c.getContext('2d'),f=`400 ${fs}px "Noto Sans KR",sans-serif`/* QA109: 이름표 한 단계 얇게(500→400) */;x.font=f;const w=Math.ceil(x.measureText(t).width)+28,h=fs+20;c.width=w;c.height=h;x.font=f;x.fillStyle=bg;x.beginPath();x.roundRect?x.roundRect(0,0,w,h,h/2):x.rect(0,0,w,h);x.fill();x.fillStyle=fg;x.textBaseline='middle';x.fillText(t,14,h/2+1);
+function tag(t,bg,fg,fs,k=1,dt=false){const c=document.createElement('canvas'),x=c.getContext('2d'),f=`400 ${fs}px "Noto Sans KR",sans-serif`/* QA109: 이름표 한 단계 얇게(500→400) */;x.font=f;const w=Math.ceil(x.measureText(t).width)+28,h=fs+20;c.width=w;c.height=h;x.font=f;x.fillStyle=bg;x.beginPath();x.roundRect?x.roundRect(0,0,w,h,h/2):x.rect(0,0,w,h);x.fill();x.fillStyle=fg;x.textBaseline='alphabetic';{const mt=x.measureText(t),a=mt.actualBoundingBoxAscent||fs*.8,d=mt.actualBoundingBoxDescent||fs*.1;x.fillText(t,14,h/2+(a-d)/2)}/* QA116: 글자 실제 높이로 세로 가운데 */
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:dt}));s.scale.set(k*w/(fs*3.2),k*h/(fs*3.2),1);s.renderOrder=10;return s}
 function art(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');fn(x,w,h);const t=new THREE.CanvasTexture(c);if(/Noto|Cinzel|Jost|Damion/.test(String(fn)))(window.ART_REDRAW||(window.ART_REDRAW=[])).push({c,x,fn,t,w,h});return t}
 /* QA97: 폰트 CSS를 나중에 받으므로, 웹폰트를 쓰는 캔버스 그림(포스터·간판)은 폰트가 도착하면 한 번 다시 그림 */try{if(document.fonts){let tm=0;const fam=new Set();document.fonts.addEventListener('loadingdone',e=>{(e.fontfaces||[]).forEach(f=>fam.add(String(f.family).replace(/["']/g,'')));clearTimeout(tm);tm=setTimeout(()=>{const F=[...fam];fam.clear();if(!F.length)return;(window.ART_REDRAW||[]).forEach(a=>{if((a.k||0)>=2)return;const src=a.src||(a.src=String(a.fn));if(!F.some(f=>src.includes(f)))return;a.k=(a.k||0)+1;try{a.x.save();a.x.setTransform(1,0,0,1,0,0);a.x.clearRect(0,0,a.w,a.h);a.x.restore();a.fn(a.x,a.w,a.h);a.t.needsUpdate=true}catch(err){}})},800)})}}catch(e){}/* 도착한 폰트를 쓰는 그림만, 그림당 최대 2번 */

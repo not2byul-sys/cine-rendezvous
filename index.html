@@ -2707,7 +2707,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
  if(me){
   if(selSeat&&!$('sitbox').hidden){add('sit',selSeat.label+'번 앉기',' class="ivory"');add('ctxother','다른 자리 앉기');add('sitx','취소')}
   else if(QA20.obj){add('ctxobj',QA20.obj.act.ctx);add('ctxlook','살펴보기')}
-  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike','좋아요',` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}/* QA95: 상영관에선 먹기 없음(들고 있기만) */if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
+  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike',d_.liked?'이 영화 좋아요 ♥':'이 영화 좋아요 ♡',` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}/* QA95: 상영관에선 먹기 없음(들고 있기만) */if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
   else if(!cine){
    if(ORD&&ORD.st==='ready'&&!inH)add('oget','간식받기')/* QA94: 상영관에선 숨김 */;
    if(HELD.length){if(!inH&&HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'')/* QA95: 상영관에선 들고 있기만 */;add('ctxgift','선물하기')/* QA99: 다른 칩처럼 물건 이름 없이 */;if(!inH)add('trash','버리기')}

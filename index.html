@@ -2508,10 +2508,10 @@ const closePanel=()=>{$('pn').hidden=true;$('pn').innerHTML='';if(window.lpaReve
 /* 내 티켓 카드 = 피그마 7:30 「Punch ticket」(400px · 관별 색 · 좌우 반원 노치 · 점선 꼬리표 세로 번호) — 카드 자체가 입장 버튼 *//* 상영관 티켓 v3 — Figma jzgUUNCrSDmACH3dWpoxgT 3:38 (관별 종이색 · 이중 테두리 · 번호 스텁) */
 const TCPAL={1:['#f5bcd8','#f5bcd8'],2:['#f5bcd8','#f5bcd8']};
 const tcNo=n=>String(n||'').replace(/\D/g,'').padStart(6,'0').slice(-6);
-function tc3({tag='div',attrs='',hall=1,hn,title,no,act,punched=false,punchX=50,punchY=45,cls=''}){const [paper,stubc]=TCPAL[hall]||TCPAL[1];return `<${tag} class="tc3 ${cls}" data-punched="${punched}" style="--c:${paper};--sc:${stubc}"${attrs}><i class="tc3-f1"></i><i class="tc3-f2"></i><div class="tc3-face"><div class="tc3-brand">Vintage Cinema</div><div class="tc3-hn">★ ${hn} ★</div><div class="tc3-ti">${esc(title)}</div></div><div class="tc3-stub"><span class="tc3-no">${no}</span><span class="tc3-act">${act}</span></div></${tag}>`}
+function tc3({tag='div',attrs='',hall=1,hn,title,no,act,punched=false,punchX=50,punchY=45,cls=''}){const [paper,stubc]=TCPAL[hall]||TCPAL[1];return `<${tag} class="tc3 ${cls}" data-punched="${punched}" style="--c:${paper};--sc:${stubc}"${attrs}><i class="tc3-f1"></i><i class="tc3-f2"></i><div class="tc3-face"><div class="tc3-brand">Ciné Rendez-vous</div><div class="tc3-hn">★ ${hn} ★</div><div class="tc3-ti">${esc(title)}</div></div><div class="tc3-stub"><span class="tc3-no">${no}</span><span class="tc3-act">${act}</span></div></${tag}>`}
 const tcHTML=(t,b=1)=>{const now=nowS(),can=t.end>now,on=b&&can;return `<div class="tcw">${tc3({hall:t.hall,hn:t.hn,title:t.title,no:tcNo(t.no),act:can?(b?'':'자유석'):'기간 만료',punched:t.punched,punchX:t.punchX||50,punchY:t.punchY||45,cls:can?'':'ex'})}${on?`<button type="button" class="qa88-buy" data-a="enter" data-id="${t.id}">입장하기</button>`:''}</div>`}/* QA93: 주 버튼은 티켓 아래 */;
 const tcHTML_OLD=(t,b=1)=>{const now=nowS(),can=t.end>now,on=b&&can;return `<div class="tcw"><${on?'button':'div'} class="tc ${t.punched?'pu':''} ${can?'':'ex'}" style="--c:${t.color}"${on?` data-a="enter" data-id="${t.id}"`:''}><div class="mn"><b class="hn">★ ${t.hn} ★</b><b class="ti">${t.title}</b><span class="dt">${can?(b?'입장하기':'자유석'):'기간 만료'}</span></div><div class="sb"><span>${t.no}</span></div></${on?'button':'div'}></div>`};
-/* 발권 전 티켓(매표소·관 입구 팝업): 같은 피그마 티켓 모양, 누르면 광고 → 발권 / 보유 중이면 내 티켓(입장하기) */const bkHTML=(hl,sc)=>{const t=TK.find(k=>k.hall===hl.id);if(t)return tcHTML(t);return `<div class="tcw">${tc3({hall:hl.id,hn:hl.name,title:sc.film.title,no:'ADMIT ONE',act:''})}<button type="button" class="qa88-buy" data-a="buy" data-s="${sc.id}">입장하기</button></div>`}/* QA88: 티켓 안 버튼 대신 아래 큰 버튼(초대장 버튼과 같은 모양) */;
+/* 발권 전 티켓(매표소·관 입구 팝업): 같은 피그마 티켓 모양, 누르면 광고 → 발권 / 보유 중이면 내 티켓(입장하기) */const bkHTML=(hl,sc)=>{const t=TK.find(k=>k.hall===hl.id);if(t)return tcHTML(t);return `<div class="tcw">${tc3({hall:hl.id,hn:hl.name,title:sc.film.title,no:'ENTRÉE',act:''})}<button type="button" class="qa88-buy" data-a="buy" data-s="${sc.id}">입장하기</button></div>`}/* QA88: 티켓 안 버튼 대신 아래 큰 버튼(초대장 버튼과 같은 모양) */;
 const SC={};
 const PANELS={
  booth(){let h='<h3>🎫 매표소</h3><p class="sub">관을 선택하면 티켓이 바로 발급돼요 · 상영 시간 없이 좌석에 앉으면 바로 시작 · 보유 '+TK.length+'/'+CFG.MAX_TICKETS+'장</p>';
@@ -4645,6 +4645,26 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
    const pts=[[o.cx,-4.0],[o.cx,-13.0],[ud.home.x,ud.home.z]];o.leg=(o.leg+1)%pts.length;walkTo(u,pts[o.leg][0],pts[o.leg][1],'H'+id);o.wait=4})
  }catch(e){}},1000);
  window.QA111={U,beam,clearBeam};
+})();
+</script>
+<script id="qa112-rain">/* QA112: 젖은 입구 — 문 옆 우산 꽂이, 입구에서 이어지는 젖은 발자국. (비 표현은 창밖이 눈 오는 낮 풍경이라 결정 후 적용) */
+(function(){if(typeof THREE==='undefined'||typeof S==='undefined')return;const LDZ=typeof LD!=='undefined'?LD:20;
+ const us=new THREE.Group();us.position.set(2.5,0,LDZ-.9);S.add(us);const BR_=new THREE.MeshPhongMaterial({color:0xb08a3a,shininess:60});const st=new THREE.Mesh(new THREE.CylinderGeometry(.17,.15,.55,16,1,true),BR_);st.position.y=.28;us.add(st);const bt=new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.03,16),BR_);bt.position.y=.02;us.add(bt);
+ [[0x1a1a1f,-.05,.03,.12],[0x7a1424,.06,-.02,-.1],[0x1f2a44,.0,-.06,.05]].forEach(([c,x,z,tilt])=>{const m=new THREE.MeshPhongMaterial({color:c,shininess:30}),u=new THREE.Group();u.position.set(x,.05,z);u.rotation.z=tilt;u.rotation.x=tilt*.6;us.add(u);const f=new THREE.Mesh(new THREE.ConeGeometry(.06,.62,8),m);f.position.y=.42;f.rotation.x=Math.PI;u.add(f);const sh=new THREE.Mesh(new THREE.CylinderGeometry(.008,.008,.95,6),new THREE.MeshPhongMaterial({color:0x2a2420}));sh.position.y=.5;u.add(sh);const hk=new THREE.Mesh(new THREE.TorusGeometry(.04,.01,6,12,Math.PI),new THREE.MeshPhongMaterial({color:0x3a2416}));hk.position.y=.98;u.add(hk)});
+ const FM=new THREE.MeshBasicMaterial({color:0x2a1d14,transparent:true,opacity:.18,depthWrite:false});for(let k=0;k<9;k++){const sd=k%2?1:-1,f=new THREE.Mesh(new THREE.CircleGeometry(.07,12),FM);f.scale.set(.75,1.5,1);f.rotation.x=-Math.PI/2;f.rotation.z=.08*sd;f.position.set(.35+sd*.12+k*.05,.012,LDZ-1.2-k*.42);f.renderOrder=1;S.add(f)}
+})();
+</script>
+<script id="qa113-caisse">/* QA113: 매표소 — 손글씨 회차판(SÉANCES)과 매표원이 다음 회차를 말로 알려줌 */
+(function(){if(typeof THREE==='undefined'||typeof listS!=='function')return;
+ const hm=t=>{const d=new Date(t*1000);return d.getHours()+'h'+String(d.getMinutes()).padStart(2,'0')};
+ const c=document.createElement('canvas');c.width=360;c.height=440;const x=c.getContext('2d'),tex=new THREE.CanvasTexture(c);
+ function draw(){x.fillStyle='#efe4c8';x.fillRect(0,0,360,440);x.strokeStyle='#5b2417';x.lineWidth=10;x.strokeRect(5,5,350,430);x.lineWidth=2;x.strokeRect(18,18,324,404);x.fillStyle='#5b2417';x.textAlign='center';x.font='54px Damion,cursive';x.fillText('Séances',180,82);x.fillStyle='#2a1a14';let y=128;
+  CFG.HALLS.forEach(h=>{x.font='bold 22px Georgia,serif';x.textAlign='left';x.fillText('SALLE '+h.id,38,y);y+=34;x.font='italic 30px Georgia,serif';listS(h,nowS(),3).forEach(s_=>{x.fillText(hm(s_.start),58,y);y+=36});y+=18});
+  x.textAlign='center';x.font='italic 18px Georgia,serif';x.fillStyle='#5b2417';x.fillText('Entrée permanente',180,412);tex.needsUpdate=true}
+ draw();setInterval(draw,30000);
+ const g=new THREE.Group();g.position.set(-5.78,1.42,9.85);g.rotation.y=Math.PI/2+.2;g.scale.setScalar(1.5);S.add(g);const fr=new THREE.Mesh(new THREE.BoxGeometry(.5,.6,.03),new THREE.MeshPhongMaterial({color:0x3a2416}));g.add(fr);const pl=new THREE.Mesh(new THREE.PlaneGeometry(.45,.55),new THREE.MeshBasicMaterial({map:tex}));pl.position.z=.017;g.add(pl);const leg=new THREE.Mesh(new THREE.BoxGeometry(.03,.32,.2),new THREE.MeshPhongMaterial({color:0x3a2416}));leg.position.set(0,-.36,-.08);leg.rotation.x=-.35;g.add(leg);
+ /* 매표원 안내 */const ob=PANELS.booth;if(typeof ob==='function')PANELS.booth=function(){const r=ob.apply(this,arguments);try{const t=nowS(),nx=CFG.HALLS.map(h=>[h,listS(h,t,1)[0]]).sort((a,b)=>a[1].start-b[1].start)[0];if(nx&&typeof stT!=='undefined'&&typeof say==='function'){const left=Math.round((nx[1].start-t)/60);say(stT,left<=0?'지금 상영 중이에요, 들어가셔도 돼요.':'다음 회차는 '+nx[0].name+' '+hm(nx[1].start).replace('h','시 ')+'분이에요.',6)}}catch(e){}return r};
+ window.QA113={draw};
 })();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */

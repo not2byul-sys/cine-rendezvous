@@ -2,7 +2,7 @@ const test=require('node:test');const assert=require('node:assert');const fs=req
 const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8'),fn=fs.readFileSync(path.join(__dirname,'..','functions','api','reviews.js'),'utf8');
 test('QA21 likes and one-line reviews live only in the timetable panel, gated by one minute of viewing',()=>{
   assert(source.includes('<script id="qa21-reviews">'));assert(source.includes("const watched=id=>(W[id]||0)>=60;"));
-  assert(source.includes("add('qlike',d_.liked?'이 영화 좋아요 ♥':'이 영화 좋아요 ♡',"));/* QA109: 좋아요는 수 없이 토글 */assert(source.includes('maxlength="40"'));assert(source.includes("PANELS.tt=function(keep)"));});
+  assert(source.includes("add('qlike',(d_.liked?'이 영화 좋아요 ♥ ':'이 영화 좋아요 ♡ ')+(d_.likes||0),"));/* QA109: 좋아요는 수 없이 토글 */assert(source.includes('maxlength="40"'));assert(source.includes("PANELS.tt=function(keep)"));});
 test('QA28 entrance plaque removed, tree starts on tap, single small ripple, emotes never empty',()=>{assert(source.includes('setTimeout(()=>{pull(true)},1200)/* QA28: 입구 좋아요 팻말 삭제 */'));assert(source.includes("info:'불을 끄고 점등식을 시작할 수 있는 크리스마스 트리예요. 점등 장면은 나에게만 보여요.'"));assert(source.includes('s>=6/* QA39: 전구가 다 켜지면 바로 별·산타 인사 */'));assert(source.includes('function qa30Glow(k,s=0,starOn=false)'));assert(source.includes("QA15EventAudio.speak('Merry Christmas!',.9,.55,()=>{QA15EventAudio.bells();window.__qaBellsAt=performance.now()})"));assert(source.includes('bells(){/* QA31'));assert(source.includes('/* QA28: 원 하나가 작게 퍼지는 파동 */'));assert(source.includes("qa44SayEmoji(me,kind==='wave'?'👋':'👏👏👏')"));assert(source.includes('#toast{text-align:center!important;'));});
 test('QA21 shared storage is a Pages Function on KV that refuses gracefully when unbound',()=>{
   assert(fn.includes("if (!env.REVIEWS) return json({ ok: false, error: 'storage_unbound' }, 503);"));assert(fn.includes('export async function onRequestGet'));assert(fn.includes('export async function onRequestPost'));
@@ -78,7 +78,7 @@ test('QA75 quick bar has no chat entry, NPC menus have no talk action, Alfredo o
  assert(source.includes("Object.assign(A,{actorGift,actorUse,actorClub});"));assert(!/A\.actorTalk|actorTalk:/.test(source));});
 test('QA78 screening view: camera approach, sconces off, replay, chip-style overlay buttons, external-link title chip, fixed-size labels',()=>{
  /* QA85: 상영 전후 같은 시점(기준 버전 de74875 방식) — 별도 관람 시점·영상 확대 없음 */assert(!source.includes('qa80View'));assert(!source.includes('QA78_Z'));assert(!source.includes('setViewOffset'));
- assert.equal(source.split("cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+10.65),1.5):Math.min(Math.max(s.z+2,SCZ+8.47),1.5));lk.set(H.cx,H.base+SCY,SCZ);").length-1,2);
+ assert.equal(source.split("cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));").length-1,2);/* QA118: 관람 시점은 내 자리 뒤·위 */
  assert(source.includes("if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;"));assert(source.includes("function closeCine(){CINE_DONE=false;QA85_CINE=false;rs();"));
  {/* H열에서 스크린이 화면 가로의 약 51%(기준 버전과 동일) */const SCW=2*6.2*14.2/18.8,fov=2*Math.atan(Math.tan(32*Math.PI/180)*SCW/14.2),d=(-6.96+2)+17.55,frac=SCW/(2*d*Math.tan(fov/2)*16/9),old=14.2/(2*d*Math.tan(32*Math.PI/180)*16/9);assert(Math.abs(frac-old)<1e-9);assert(Math.abs(frac-.507)<.01)}
  assert(source.includes("HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF})"));assert(source.includes("HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k)"));

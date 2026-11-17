@@ -2711,7 +2711,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
  if(me){
   if(selSeat&&!$('sitbox').hidden){add('sit',selSeat.label+'번 앉기',' class="ivory"');add('ctxother','다른 자리 앉기');add('sitx','취소')}
   else if(QA20.obj){add('ctxobj',QA20.obj.act.ctx);add('ctxlook','살펴보기')}
-  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike',d_.liked?'이 영화 좋아요 ♥':'이 영화 좋아요 ♡',` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}/* QA95: 상영관에선 먹기 없음(들고 있기만) */if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
+  else if(cine){/* QA26: 좋아요 = 컨텍스트 액션 바의 토글 칩(관람 중·종료 후) · 수 표시 */const fid=typeof QA21!=='undefined'&&(CINE_DONE?QA21.endFilm():QA21.curFilm());if(fid){const d_=QA21.data(fid);add('qlike',(d_.liked?'이 영화 좋아요 ♥ ':'이 영화 좋아요 ♡ ')+(d_.likes||0),` class="${d_.liked?'on':''}" aria-pressed="${d_.liked}"`)}/* QA95: 상영관에선 먹기 없음(들고 있기만) */if(CINE_DONE){/* QA45: 한줄평 남기기 삭제 */add('tt','상영작')}}
   else if(!cine){
    if(ORD&&ORD.st==='ready'&&!inH)add('oget','간식받기')/* QA94: 상영관에선 숨김 */;
    if(HELD.length){if(HELD.some(x=>!isFlower(x.k)))add('eatn',EAT?'먹는 중':'먹기',EAT?' disabled':'')/* QA114: 들고 있으면 어디서든 먹기(관람 좌석만 예외 — 앉을 때 묻는 방식) */;add('ctxgift','선물하기')/* QA99: 다른 칩처럼 물건 이름 없이 */;if(!inH)add('trash','버리기')}
@@ -3471,7 +3471,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    if((dx||dz)&&ACTOR_SESSION)dismissActor();qaManualMove(me,dx,dz,dt);}
   const p=me.position,s=u.seat,zn=curZone(me);if(window.__lzn&&window.__lzn!==zn&&!s)alignSpaceCamera(me);window.__lzn=zn;
   if(zn[0]==='H'){
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+10.65),1.5):Math.min(Math.max(s.z+2,SCZ+8.47),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(hv.x*(1-w)+sx*w,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3494,7 +3494,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);if(hz&&(!s||CWIDE)){/* User-controlled orbit is also available while walking in the auditorium. */}/* 상영관: 뒤쪽 통로에서 높게 → 좌석 전체와 스크린이 한눈에 */if(hz&&!s){/* QA39: 걸을 때는 스크린 가운데를 정면으로 — 스크린 전체와 좌석이 함께 보이게 */const dz=Math.max(4,cp.z-SCZ),ty=(hz.base+SCY*.97)-cp.y,off=Math.tan(clampN((camPitch-.2)*.85,-.6,.6));lk.set(cp.x+fx*20,cp.y+20*(ty/dz-off),cp.z+fz*20)}else lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
    if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }else{
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */cp.set(H.cx,H.base+SCY,CMODE==='live'?Math.min(Math.max(s.z+5.5,SCZ+10.65),1.5):Math.min(Math.max(s.z+2,SCZ+8.47),1.5));lk.set(H.cx,H.base+SCY,SCZ);H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(s.x+(H.cx-s.x)*.08,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(hv.x*(1-w)+sx*w,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -4702,4 +4702,11 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const start=()=>setTimeout(()=>{window.qa106Merge();requestAnimationFrame(tickHook)},2500);if(document.readyState==='complete')start();else addEventListener('load',start);
 })();
 </script>
+<style id="qa119-full">/* QA119: 크게 보기 — 조작 버튼은 2.5초 뒤 숨고, 화면을 누르면 다시 나타남 */
+body.cfull.qa119-idle #act,body.cfull.qa119-idle #ctxbar,body.cfull.qa119-idle #cyt,body.cfull.qa119-idle #cx,body.cfull.qa119-idle #watch,body.cfull.qa119-idle #qa17cta,body.cfull.qa119-idle .bar,body.cfull.qa119-idle #ctl{opacity:0!important;pointer-events:none!important;transition:opacity .4s}
+body.cfull #act,body.cfull #ctxbar,body.cfull #cyt,body.cfull #cx{transition:opacity .25s}
+body.cfull #cine.full video,body.cfull #cine.full iframe{object-fit:contain}
+</style>
+<script id="qa119-full-js">(function(){let tm=0;const b=document.body,arm=()=>{clearTimeout(tm);if(b.classList.contains('qa119-idle'))b.classList.remove('qa119-idle');if(b.classList.contains('cfull'))tm=setTimeout(()=>{if(b.classList.contains('cfull'))b.classList.add('qa119-idle')},2500)};
+['pointerdown','touchstart','keydown'].forEach(e=>addEventListener(e,arm,{capture:true,passive:true}));let was=false;new MutationObserver(()=>{const on=b.classList.contains('cfull');if(on!==was){was=on;arm()}}).observe(b,{attributes:true,attributeFilter:['class']});})();</script>
 </body></html>

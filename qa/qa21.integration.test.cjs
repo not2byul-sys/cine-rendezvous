@@ -138,7 +138,7 @@ test('QA95 performance and eating fixes',()=>{
  assert(!/data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]{2000,}/.test(source));
  assert(source.includes("eat1:d=>startEat(+d.i)")&&source.includes("const i=HELD.indexOf(EAT.it);"));
  assert(source.includes("if(i===eatingI()){EAT=null;"));
- assert(source.includes("if(!me||curZone(me)[0]==='H'||EAT)return;"));
+ assert(source.includes("if(!me||(me.userData.seat&&me.userData.seat.kind==='cine')||EAT)return;"));/* QA114: 상영관에서도 먹기, 관람 좌석만 예외 */
  for(const m of source.matchAll(/qa95_assets\/img-[0-9a-f]+\.(jpg|png)/g))assert(require('fs').existsSync(require('path').join(__dirname,'..',m[0])));
 });
 

@@ -6,7 +6,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const merge = (base, value) => ({...base,...value,items:{...base.items,...value.items},colors:{...base.colors,...value.colors}});
   const base = merge(defaults, baseline);
   if (!characters.some(c=>c.id===base.character)) base.character=characters[0].id;
-  let draft=merge(base,initial), active='character', busy=false;
+  let draft=merge(base,initial), active='character', busy=false, selectedPart='top';
   const previous=document.activeElement;
   const host=document.createElement('div');
   const root=host.attachShadow({mode:'open'});
@@ -17,7 +17,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const dialog=document.createElement('dialog');
   dialog.setAttribute('aria-labelledby','editor-title');
   dialog.innerHTML=`<header><div><h2 id="editor-title">복고풍 캐릭터 꾸미기</h2><p>오늘 극장에서 만날 나의 모습</p></div><button class="close" aria-label="닫기"><img alt=""></button></header>
-  <main><section class="preview"><label>닉네임 (좋아하는 영화)<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div></section>
+  <main><section class="preview"><label>닉네임<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div><div class="color-picker" aria-label="아이템 색상 선택"><div class="color-picker-title">색상 선택 <span class="color-target">상의</span></div><div class="part-picker" aria-label="색상 변경 아이템"></div><div class="color-chips"></div></div></section>
   <section class="controls"><nav aria-label="꾸미기 메뉴"></nav><div class="options"></div></section><footer><button class="reset">초기화</button><button class="save">저장</button></footer></main><output role="alert"></output>`;
   root.append(dialog); document.body.append(host);
   try {await ready;} catch(e){host.remove();throw e;}
@@ -26,7 +26,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const input=q('input'), panel=q('.options'), previewHost=q('.avatar');
   const make=(tag,cls,txt)=>{const n=document.createElement(tag);n.className=cls;if(txt)n.textContent=txt;return n;};
   const button=(label,run)=>{const n=make('button','',label);n.onclick=run;return n;};
-  const tabs={character:'캐릭터', accessory:'악세서리', color:'색상'};
+  const tabs={character:'캐릭터', accessory:'악세서리'};
   function preview(){
     if(renderPreview){renderPreview(previewHost,structuredClone(draft));return;}
     const c=characters.find(x=>x.id===draft.character);
@@ -39,10 +39,11 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
       const value=n.dataset.group==='character'?draft.character:draft[n.dataset.kind][n.dataset.group];
       n.setAttribute('aria-pressed',String(n.dataset.value===value));
     }
+    setSelectedPart(selectedPart);
     preview();
   }
   function option(grid,group,value,label,kind,imageUrl){
-    const n=button('',()=>{if(kind)draft[kind][group]=value;else draft.character=value;update();});
+    const n=button('',()=>{if(kind){draft[kind][group]=value;if(kind==='items' && selectableParts.includes(group))setSelectedPart(group);}else draft.character=value;update();});
     Object.assign(n.dataset,{group,value,kind:kind||''});
     n.setAttribute('aria-label',label);
     if(kind==='colors'){n.className='swatch';n.style.setProperty('--chip',value);n.title=value;}
@@ -53,6 +54,28 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     }
     grid.append(n);
   }
+  const colorChips=q('.color-chips');
+  for(const [key,label] of Object.entries(parts)){const part=button(label,()=>setSelectedPart(key));part.dataset.part=key;q('.part-picker').append(part);}
+  const selectableParts=['top','bottom','hat','glasses','bag','shoes'];
+  function setSelectedPart(key){
+    if(!selectableParts.includes(key))return;
+    selectedPart=key;
+    q('.color-target').textContent=parts[key];
+    for(const b of colorChips.children){
+      b.setAttribute('aria-pressed',String(draft.colors[key]?.toUpperCase()===b.dataset.hex));
+    }
+    for(const b of q('.part-picker').querySelectorAll('[data-part]')){
+      b.setAttribute('aria-pressed',String(b.dataset.part===key));
+    }
+  }
+  for(const hex of palette){
+    const chip=button('',()=>{draft.colors[selectedPart]=hex;setSelectedPart(selectedPart);update();});
+    chip.className='color-chip';chip.dataset.hex=hex.toUpperCase();
+    chip.style.setProperty('--chip',hex);
+    chip.title=hex;chip.setAttribute('aria-label',hex+' 색상 적용');
+    colorChips.append(chip);
+  }
+  setSelectedPart(selectedPart);
   function draw(){
     for(const n of q('nav').children)n.setAttribute('aria-pressed',String(n.dataset.tab===active));
     panel.replaceChildren();panel.scrollTop=0;
@@ -60,16 +83,16 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
       const grid=make('div','grid chars');panel.append(grid);
       for(const c of characters)option(grid,'character',c.id,c.label,null,c.image);
     } else {
-      const color=active==='color', kind=color?'colors':'items', shortcuts=make('div','shortcuts');
+      const color=false, kind='items', shortcuts=make('div','shortcuts');
       panel.append(shortcuts);
-      for(const key of Object.keys(color?parts:items)){
+      for(const key of Object.keys(items)){
         const label=parts[key]+(color?'색':''), section=make('section','group');
         const heading=make('h3','',label);
         const reset=button('↻',()=>{draft[kind][key]=base[kind][key];update();});
         reset.setAttribute('aria-label',label+' 초기화');heading.append(reset);
         const grid=make('div',color?'palette':'grid');
         section.append(heading,grid);panel.append(section);
-        shortcuts.append(button(label,()=>panel.scrollTo({top:section.offsetTop})));
+        shortcuts.append(button(label,()=>{setSelectedPart(key);panel.scrollTo({top:section.offsetTop});}));
         if(color){for(const hex of palette)option(grid,key,hex,label+' '+hex,kind);}
         else for(const [id,name] of items[key])option(grid,key,id,name,kind,['none','default'].includes(id)?null:asset(id+'.png'));
       }

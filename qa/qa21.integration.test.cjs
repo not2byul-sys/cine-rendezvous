@@ -130,7 +130,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto'"));
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
- const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(ed.includes("color:'색상'")&&ed.includes('닉네임 (좋아하는 영화)'));
+ const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(!ed.includes("color:'색상'")&&ed.includes('닉네임<input')&&ed.includes("className='color-chip'"));/* QA125: 색상 탭 → 왼쪽 컬러칩, 닉네임 문구 */
 });
 
 test('QA95 performance and eating fixes',()=>{

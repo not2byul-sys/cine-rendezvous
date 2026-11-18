@@ -927,7 +927,7 @@ const DURS=store.get('aic.durs')||{},SCHEDK='aic.sched';
 function applySched(){const sv=store.get(SCHEDK);CFG.HALLS.forEach(h=>{if(!h._def)h._def={films:h.films.map(f=>({...f})),anchor:h.anchor,gap:CFG.GAP};const x=sv&&sv[h.id];if(x&&x.films&&x.films.length){h.films=x.films.map(f=>({...f}));h.anchor=x.anchor||undefined}else{h.films=h._def.films.map(f=>({...f}));h.anchor=h._def.anchor}
   h.films.forEach(f=>{if(f.auto&&DURS[f.id])f.dur=DURS[f.id]})});CFG.GAP=sv&&sv.gap!=null?sv.gap:CFG.HALLS[0]._def.gap}
 applySched();
-const ROWS='ABCDEFGHIJ';
+const ROWS='ABCDE'/* QA128: 40석(5줄×4+4) — 객석을 스크린 쪽에 모아 원근감을 줄임 */;
 const SEATS_PER_SIDE=4, NSR=SEATS_PER_SIDE*2, NSEAT=ROWS.length*NSR;
 const seatLabel=i=>ROWS[Math.floor(i/NSR)]+pad(i%NSR+1);
 function hallSeatX(column){
@@ -978,7 +978,7 @@ try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.
 /* QA78: 이름표·말풍선은 원근과 상관없이 화면에서 같은 크기(px)로 보임. 이름표는 멀어지면 흐려짐 */let QA78_K=0;const QA78_TAGS=[];function qa78Fix(s,wpx,hpx){s.material.sizeAttenuation=false;s.material.needsUpdate=true;s.userData.px=[wpx,hpx];s.scale.set(wpx*QA78_K,hpx*QA78_K,1);return s}
 /* 부모(아바타)의 크기 배율이 스프라이트에 곱해지므로 그만큼 나눠 화면 크기를 맞춤 */const QA78_V=new THREE.Vector3();function qa78Scale(o){const p=o.userData.px,ps=o.parent?o.parent.getWorldScale(QA78_V).y||1:1;o.scale.set(p[0]*QA78_K/ps,p[1]*QA78_K/ps,1)}
 function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(s);qa78Scale(s)}
-let seatedHall=0,QA85_CINE=false;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?80:64):(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+let seatedHall=0,QA85_CINE=false;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?62:44)/* QA128: 관람 화각을 좁혀 원근 왜곡↓ */:(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 S.add(new THREE.HemisphereLight(0xf1eee6,0x697783,.74));
 const dl=new THREE.DirectionalLight(0xfff2dc,.26);dl.position.set(-8,20,14);S.add(dl);
 const PL=(c,i,x,y,z,d=26)=>{const l=new THREE.PointLight(c,i*.55,d);l.position.set(x,y,z);S.add(l);return l};

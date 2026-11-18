@@ -4771,6 +4771,10 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 #watch[hidden]{display:none!important}
 #qa127map{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:40;padding:9px 10px 10px;border-radius:14px;background:var(--hud-bg,rgba(28,20,22,.72));border:1px solid var(--hud-bd,rgba(255,255,255,.12));backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 8px 24px -10px rgba(0,0,0,.6);user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #qa127map[hidden]{display:none!important}
+#qa127map.min{padding:0;border-radius:999px}#qa127map.min .scr,#qa127map.min .g,#qa127map.min .x{display:none}#qa127map:not(.min) .open{display:none}
+#qa127map .open{all:unset;box-sizing:border-box;height:36px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font:500 13px/1 'Noto Sans KR',sans-serif;color:var(--hud-fg,rgba(250,245,240,.92));cursor:pointer;white-space:nowrap}
+#qa127map .hd{display:flex;align-items:center;justify-content:flex-end;margin:-3px -4px 4px 0}#qa127map.min .hd{margin:0}
+#qa127map .x{all:unset;box-sizing:border-box;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:rgba(250,245,240,.8);cursor:pointer;font:400 15px/1 sans-serif}#qa127map .x:hover{background:rgba(255,255,255,.1)}
 #qa127map .scr{display:block;height:3px;margin:0 6px 9px;border-radius:0 0 50% 50%/0 0 100% 100%;background:rgba(250,245,240,.7)}
 #qa127map .g{display:grid;grid-template-columns:repeat(4,13px) 7px repeat(4,13px);gap:4px 3px}
 #qa127map button{all:unset;box-sizing:border-box;width:13px;height:10px;border-radius:3px 3px 2px 2px;background:rgba(250,245,240,.26);cursor:pointer}
@@ -4782,13 +4786,13 @@ body.cfull #qa127map{display:none!important}
 </style>
 <script id="qa127-seatmap">
 /* QA127: 상영관 좌석표 — 입장부터 좌측 하단. 빈자리를 누르면 그 자리로(앉아 있으면 상영을 끊지 않고 바로 옮김) */
-(function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.innerHTML='<i class="scr"></i><div class="g"></div>';document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
- const build=h=>{hall=h;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
+(function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
+ const build=h=>{hall=h;el.classList.add('min');g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
   if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
   pickSeat(sp.hall,sp)};
  const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
- el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
+ el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
  const paint=()=>{const z=me?curZone(me):'';const h=z&&z[0]==='H'?+z.slice(1):0;if(!h){el.hidden=true;return}if(h!==hall)build(h);el.hidden=false;const S_=HALLN[h].seats,ms=me.userData.seat||me.userData.pendingSeat||null;S_.forEach((sp,i)=>{const b=btn[i];if(!b)return;const m=sp===ms||sp.taken===me,t=!m&&!!sp.taken;b.classList.toggle('me',m);b.classList.toggle('tk',t)})};
  setInterval(()=>{try{paint()}catch(e){}},350);window.QA127_MAP={paint,swap}})();
 </script>

@@ -4846,7 +4846,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
  /* QA135: 간식 고르기 — 체크박스 대신 눌러서 켜고 끄는 칩 */
  const start=()=>{try{if(curSp&&!$('watch').hidden)$('watch').onclick()}catch(e){}};
  const pick=ed=>{closeSheet();const sel=new Set(ed);const bg=document.createElement('div');bg.className='qa134-bg';const el=document.createElement('div');el.className='qa134';el.setAttribute('role','dialog');
-  el.innerHTML=`<p>간식을 먹으면서 볼래요?</p><span class="d">고른 간식은 영화를 보는 동안 하나씩 먹어요.</span><div class="ck">${ed.map(i=>`<label><input type="checkbox" data-k="${i}" checked><i></i><span>${IT[HELD[i].k][1]}</span></label>`).join('')}</div><div class="r"><button type="button" data-a="no">그냥 볼게요</button><button type="button" class="pri" data-a="go">먹으면서 보기</button></div>`;
+  el.innerHTML=`<p>간식을 먹으면서 볼까요?</p><span class="d">고른 간식은 영화를 보는 동안 하나씩 먹어요.</span><div class="ck">${ed.map(i=>`<label><input type="checkbox" data-k="${i}" checked><i></i><span>${IT[HELD[i].k][1]}</span></label>`).join('')}</div><div class="r"><button type="button" data-a="no">그냥 볼게요</button><button type="button" class="pri" data-a="go">먹으면서 보기</button></div>`;
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','click','touchstart','touchend'].forEach(t=>{el.addEventListener(t,stop);bg.addEventListener(t,stop)});
   el.addEventListener('change',e=>{const c=e.target;if(c.dataset.k==null)return;const k=+c.dataset.k;c.checked?sel.add(k):sel.delete(k)});
   el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;closeSheet();if(b.dataset.a==='go'){window.__qa135sel=[...sel];A.snackgo()}start()/* QA136: 고르면 바로 상영 시작 */});
@@ -4861,37 +4861,37 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
 })();
 </script>
 <style id="qa136-shadcn">
-/* QA136: 상영관 UI·모달 = shadcn/ui 다크(zinc) 토큰 — background #09090b, border #27272a, muted #a1a1aa, primary #fafafa, radius 6~8px, 버튼 size sm(h-8) */
-:root{--sc-bg:rgba(9,9,11,.88);--sc-bd:#27272a;--sc-fg:#fafafa;--sc-mu:#a1a1aa;--sc-ac:#27272a;--sc-pr:#fafafa;--sc-prf:#18181b}
-.qa134-bg{background:rgba(0,0,0,.6)!important;backdrop-filter:none!important}
-html body .qa134{left:50%!important;top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(calc(100vw - 32px),360px)!important;max-width:none!important;padding:20px!important;border-radius:8px!important;background:#09090b!important;border:1px solid var(--sc-bd)!important;box-shadow:0 10px 15px -3px rgba(0,0,0,.4),0 4px 6px -4px rgba(0,0,0,.4)!important;backdrop-filter:none!important;color:var(--sc-fg)!important;text-align:left!important;font:400 14px/1.5 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;animation:qa136in .15s ease-out!important}
+/* QA137: 버튼은 모두 캡슐형 · QA136: 상영관 UI·모달 = shadcn/ui 다크(zinc) 토큰 — background #09090b, border #27272a, muted #a1a1aa, primary #fafafa, radius 6~8px, 버튼 size sm(h-8) */
+:root{--sc-bg:var(--hud-bg,rgba(20,12,14,.72));--sc-bd:var(--hud-bd,rgba(255,255,255,.14));--sc-fg:var(--hud-fg,rgba(250,245,240,.94));--sc-mu:rgba(250,245,240,.6);--sc-ac:rgba(255,255,255,.08);--sc-pr:rgba(250,245,240,.94);--sc-prf:#2a1d1f}/* QA137: 색은 퀵바 톤(따뜻한 반투명 다크·크림), 형태는 shadcn */
+.qa134-bg{background:rgba(10,6,8,.45)!important;backdrop-filter:none!important}
+html body .qa134{left:50%!important;top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(calc(100vw - 32px),360px)!important;max-width:none!important;padding:20px!important;border-radius:8px!important;background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;box-shadow:0 10px 30px -12px rgba(0,0,0,.7)!important;backdrop-filter:blur(14px) saturate(1.2)!important;-webkit-backdrop-filter:blur(14px) saturate(1.2)!important;color:var(--sc-fg)!important;text-align:left!important;font:400 14px/1.5 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;animation:qa136in .15s ease-out!important}
 @keyframes qa136in{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 html body .qa134 p{margin:0 0 6px!important;font-size:16px!important;font-weight:600!important;line-height:1.4!important;letter-spacing:-.01em}
 html body .qa134 .d{display:block;margin:0 0 14px;color:var(--sc-mu);font-size:13px;line-height:1.5}
 html body .qa134 .r{display:flex!important;flex-wrap:wrap;justify-content:flex-end!important;gap:8px!important;margin-top:18px}
-html body .qa134 button{height:32px!important;padding:0 12px!important;border-radius:6px!important;background:transparent!important;border:1px solid var(--sc-bd)!important;color:var(--sc-fg)!important;font:500 12px/30px 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;transition:background .15s}
+html body .qa134 button{height:32px!important;padding:0 14px!important;border-radius:999px!important;background:transparent!important;border:1px solid var(--sc-bd)!important;color:var(--sc-fg)!important;font:500 12px/30px 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;transition:background .15s}
 html body .qa134 button:hover{background:var(--sc-ac)!important}
 html body .qa134 button.pri{background:var(--sc-pr)!important;color:var(--sc-prf)!important;border-color:var(--sc-pr)!important}
-html body .qa134 button.pri:hover{background:#e4e4e7!important}
+html body .qa134 button.pri:hover{background:#fff!important}
 .qa134 .ck{display:flex;flex-direction:column;border:1px solid var(--sc-bd);border-radius:6px;overflow:hidden}
 .qa134 .ck label{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:500}
 .qa134 .ck label+label{border-top:1px solid var(--sc-bd)}
-.qa134 .ck label:hover{background:rgba(39,39,42,.5)}
+.qa134 .ck label:hover{background:rgba(255,255,255,.05)}
 .qa134 .ck input{position:absolute;opacity:0;pointer-events:none}
 .qa134 .ck i{flex:none;width:16px;height:16px;box-sizing:border-box;border:1px solid var(--sc-pr);border-radius:4px;display:inline-flex;align-items:center;justify-content:center}
-.qa134 .ck input:checked+i{background:var(--sc-pr) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318181b' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat}
-.qa134 .ck input:focus-visible+i{box-shadow:0 0 0 2px #09090b,0 0 0 4px #d4d4d8}
+.qa134 .ck input:checked+i{background:var(--sc-pr) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232a1d1f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat}
+.qa134 .ck input:focus-visible+i{box-shadow:0 0 0 2px rgba(20,12,14,.9),0 0 0 4px rgba(250,245,240,.6)}
 /* 상영관 HUD */
-html body.cineseat #act{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:8px!important;height:44px!important;padding:5px!important;gap:4px!important;backdrop-filter:blur(8px)!important}
-html body.cineseat #act button{height:32px!important;padding:0 12px!important;border-radius:6px!important;font:500 13px/1 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;color:var(--sc-fg)!important}
+html body.cineseat #act{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:999px!important;height:44px!important;padding:5px!important;gap:4px!important;backdrop-filter:blur(8px)!important}
+html body.cineseat #act button{height:32px!important;padding:0 14px!important;border-radius:999px!important;font:500 13px/1 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;color:var(--sc-fg)!important}
 html body.cineseat #act button:hover{background:var(--sc-ac)!important}
 html body.cineseat #act button+button::before{display:none!important}
-html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:8px!important;color:var(--sc-fg)!important;box-shadow:none!important}
-html body.cineseat #ctxbar button{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:8px!important;color:var(--sc-fg)!important}
+html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:999px!important;color:var(--sc-fg)!important;box-shadow:none!important}
+html body.cineseat #ctxbar button{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:999px!important;color:var(--sc-fg)!important}
 html body #qa127map{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:8px!important;box-shadow:none!important}
-html body #qa127map.min{border-radius:8px!important}
-html body #qa127map .open{height:34px!important;padding:0 12px!important;font:500 13px/1 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;color:var(--sc-fg)!important}
-html body #qa127map .x{border-radius:6px!important}
+html body #qa127map{border-radius:14px!important}html body #qa127map.min{border-radius:999px!important}
+html body #qa127map .open{height:34px!important;padding:0 14px!important;font:500 13px/1 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;color:var(--sc-fg)!important}
+html body #qa127map .x{border-radius:999px!important}
 html body #qa127map button.me{background:var(--sc-pr)!important;box-shadow:none!important}
 html body #qa127map .g button{border-radius:2px!important;background:rgba(250,250,250,.22)}
 html body #qa127map .g button.tk{background:rgba(250,250,250,.07)!important}

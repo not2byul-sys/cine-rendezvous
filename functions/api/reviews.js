@@ -4,8 +4,8 @@
 const ID = /^[\w-]{1,64}$/, MAXR = 30;
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const clean = (v, n) => String(v || '').replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, n);
-const load = async (kv, id) => { try { return (await kv.get('f:' + id, 'json')) || { likes: [], rv: [] }; } catch { return { likes: [], rv: [] }; } };
-const view = (f, uid) => ({ likes: f.likes.length, liked: !!uid && f.likes.includes(uid), reviews: f.rv.slice(0, MAXR).map(r => ({ n: r.n, t: r.t, ts: r.ts, mine: !!uid && r.u === uid })) });
+const load = async (kv, id) => { try { return (await kv.get('f:' + id, 'json')) || { likes: [], no: [], rv: [] }; } catch { return { likes: [], no: [], rv: [] }; } };
+const view = (f, uid) => ({ likes: f.likes.length, liked: !!uid && f.likes.includes(uid), no: (f.no || []).length, disliked: !!uid && (f.no || []).includes(uid), reviews: f.rv.slice(0, MAXR).map(r => ({ n: r.n, t: r.t, ts: r.ts, mine: !!uid && r.u === uid })) });
 
 export async function onRequestGet({ request, env }) {
   if (!env.REVIEWS) return json({ ok: false, error: 'storage_unbound' }, 503);
@@ -19,9 +19,12 @@ export async function onRequestPost({ request, env }) {
   if (!env.REVIEWS) return json({ ok: false, error: 'storage_unbound' }, 503);
   let b; try { b = await request.json(); } catch { return json({ ok: false, error: 'bad_json' }, 400); }
   const id = String(b.id || ''), uid = clean(b.uid, 40), op = b.op;
-  if (!ID.test(id) || uid.length < 8 || !['like', 'unlike', 'review', 'unreview'].includes(op)) return json({ ok: false, error: 'bad_request' }, 400);
+  if (!ID.test(id) || uid.length < 8 || !['like', 'unlike', 'dislike', 'review', 'unreview'].includes(op)) return json({ ok: false, error: 'bad_request' }, 400);
   const f = await load(env.REVIEWS, id);
-  if (op === 'like' && !f.likes.includes(uid)) f.likes.push(uid);
+  f.no = f.no || [];
+  /* QA148: '영화가 마음에 드셨나요?' 예=like, 아니오=dislike — 만족도 = like/(like+dislike) */
+  if (op === 'like') { if (!f.likes.includes(uid)) f.likes.push(uid); f.no = f.no.filter(x => x !== uid); }
+  if (op === 'dislike') { if (!f.no.includes(uid)) f.no.push(uid); f.likes = f.likes.filter(x => x !== uid); }
   if (op === 'unlike') f.likes = f.likes.filter(x => x !== uid);
   if (op === 'review') { const t = clean(b.text, 40), n = clean(b.name, 12) || '관객'; if (!t) return json({ ok: false, error: 'empty' }, 400); f.rv = [{ u: uid, n, t, ts: Date.now() }, ...f.rv.filter(r => r.u !== uid)].slice(0, 200); }
   if (op === 'unreview') f.rv = f.rv.filter(r => r.u !== uid);

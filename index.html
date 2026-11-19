@@ -4937,8 +4937,8 @@ html body .qa134 button:not(.pri){background:rgba(255,255,255,.08)!important;bor
 /* QA145: 실제 영사기 소리(4.9초 이음매 없는 루프) — 상영관에 들어서면 조용히, 상영이 시작되면 사라짐. 아지트에서는 더 옅게. 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;let buf=null,loading=false,src=null,g=null,cur=0;
  const load=()=>{if(buf||loading||!A.init())return;loading=true;fetch('media/projector-loop.wav').then(r=>r.arrayBuffer()).then(b=>A.ctx.decodeAudioData(b)).then(d=>{buf=d}).catch(()=>{loading=false})};
- const want=()=>{try{if(!me||A.muted||document.hidden)return 0;const z=curZone(me);if(z&&z[0]==='H'){const playing=document.body.classList.contains('qa135play')||(curSp&&curSc&&!CINE_DONE&&curSp.hall===+z[1]);return playing?0:.08}if(z==='B')return .03;return 0}/* QA146: 볼륨 절반 */catch(e){return 0}};
- setInterval(()=>{const v=want();if(v>0)load();if(!buf||!A.ctx||A.ctx.state==='suspended')return;const c=A.ctx;
+ const want=()=>{try{if(!me||A.muted||document.hidden)return 0;const z=curZone(me);if(z&&z[0]==='H'){const playing=document.body.classList.contains('qa135play')||(curSp&&curSc&&!CINE_DONE&&curSp.hall===+z[1]);return playing?0:.6}if(z==='B')return .25;return 0}/* QA152: 실제 들리는 크기로(이전 값은 약 -50dB라 사실상 안 들림) — 미리듣기 절반 크기 수준 */catch(e){return 0}};
+ setInterval(()=>{const v=want();if(v>0)load();if(!buf||!A.ctx)return;if(A.ctx.state==='suspended'){try{A.ctx.resume()}catch(e){}return}const c=A.ctx;
   if(v>0&&!src){g=c.createGain();g.gain.value=0;g.connect(A.master||c.destination);src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(g);src.start();cur=0}
   if(src&&v!==cur){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(Math.max(v,.0001),c.currentTime+(v>cur?1.6:1.0));cur=v}
   if(src&&v===0&&g.gain.value<.002){try{src.stop()}catch(e){}src.disconnect();g.disconnect();src=null;g=null;cur=0}},400);

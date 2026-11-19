@@ -1006,7 +1006,7 @@ function zoneOf(x,z,l){if(l===0&&Math.abs(x-BCX)<CBW-.1&&Math.abs(z-BCZ)<CBD-.1)
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
 const ZB={L0:[-LW+.6,LW-.6,.3,LD-.6],L1:[-LW+.5,LW-.5,LB+.35,BF-.25],H1:[HCX[1]-HX+.4,HCX[1]+HX-.4,-15.3,-.3],H2:[HCX[2]-HX+.4,HCX[2]+HX-.4,-15.3,-.3],B:[BCX-CBW+.5,BCX+CBW-.5,BCZ-CBD+.5,BCZ+CBD-.5]};
 const ZL={L0:0,H1:0,L1:1,H2:1,B:0};
-const SZ0=-13.2,SP=1.3/* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-2.3/* QA135: 스크린 11.2→12.6m(드레이프 자리만 남기고 최대) */,SCH=SCW*9/16,SCY=2.1+SCW*9/32/* QA148: 스크린 아래끝을 무대 위 2.1m로 — 관객 이름표와 겹치지 않게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
+const SZ0=-13.2,SP=1.3/* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-1.3/* QA153: 스크린 12.6→13.6m */,SCH=SCW*9/16,SCY=1.9+SCW*9/32/* QA148·153: 스크린 아래끝 무대 위 1.9m — 이름표와 안 겹치고 천장 안에 들어오게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
 const WAL=0x6a3c1f,WAL2=0x7d4a28,MU=0xd69b35,MU2=0xe2b04c,ORG=0xdd6a2a,TEAL=0x3f8a86,CREAM=0xefe4cc,VEL1=0x7a1424,VEL2=0x58101c;
 /* ===== 실사 재질: 마호가니 나무결 · 회반죽 벽 · 대리석 · 카펫 · 벨벳 ===== */
 const MARB=0xe5dccb,CARP1=0x6d8273,CARP2=0x768a7b,VELG=0x5d8a86,MET=0x5e1620,PLC=0xeadfcc;
@@ -1728,8 +1728,8 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  /* 무대 + 스크린 테두리 + 버건디 벨벳 드레이프 · 스왜그 밸런스 */
  B(SCW+.7,SCH+.7,.15,0x161012,cx,base+SCY,SCZ-.12);
  B(2*hx-1.2,.45,2.2,WD,cx,base+.225,-16.75);B(2*hx-1.2,.05,.08,BRM_C,cx,base+.45,-15.68);
- const DX=SCW/2+1.4;/* QA85: 기준 버전의 좌우 드레이프 복원(폭은 상영관 비율에 맞춤) */[-1,1].forEach(sg=>{const x0=cx+sg*(SCW/2+.1),x1=cx+sg*(hx-.28);drape(Math.min(x0,x1),Math.max(x0,x1),base+2.2,base+SCY+SCH/2+.3,-17.3);const xa=cx+sg*(SCW/2+.5),xb=cx+sg*(SCW/2+1.1);drape(Math.min(xa,xb),Math.max(xa,xb),base+.45,base+2.25,-17.2);
-  const tie=B(.75,.2,.12,VEL2,cx+sg*(SCW/2+.8),base+2.1,-17.05);const tb=new THREE.Mesh(new THREE.SphereGeometry(.08,10,8),BRM);tb.position.set(cx+sg*(SCW/2+1.15),base+2.1,-16.98);S.add(tb)});
+ const DX=SCW/2+1.4;/* QA85: 기준 버전의 좌우 드레이프 복원(폭은 상영관 비율에 맞춤) */[-1,1].forEach(sg=>{const x0=cx+sg*(SCW/2+.1),x1=cx+sg*(hx-.28);drape(Math.min(x0,x1),Math.max(x0,x1),base+2.2,base+SCY+SCH/2+.3,-17.3);const xa=cx+sg*Math.min(SCW/2+.5,hx-.75),xb=cx+sg*Math.min(SCW/2+1.1,hx-.15)/* QA153: 커진 스크린에도 드레이프가 벽 안에 */;drape(Math.min(xa,xb),Math.max(xa,xb),base+.45,base+2.25,-17.2);
+  const tie=B(.75,.2,.12,VEL2,cx+sg*Math.min(SCW/2+.8,hx-.45),base+2.1,-17.05);const tb=new THREE.Mesh(new THREE.SphereGeometry(.08,10,8),BRM);tb.position.set(cx+sg*Math.min(SCW/2+1.15,hx-.1),base+2.1,-16.98);S.add(tb)});
  B(2*hx-.4,HH-(SCY+SCH/2+.3),.5,WD,cx,base+(HH+SCY+SCH/2+.3)/2,-17.2).material=new THREE.MeshLambertMaterial({map:PLAS,color:0x9c8470/* QA144: 회반죽 벽 어둡게 */});B(2*hx-.4,.08,.55,BRM_C,cx,base+SCY+SCH/2+.3,-17.2);
  B(2*hx-.6,.12,.6,BRM_C,cx,base+HH-.18,-17.2);
  const cv=document.createElement('canvas');cv.width=512;cv.height=288;const tex=new THREE.CanvasTexture(cv);const scr=new THREE.Mesh(new THREE.PlaneGeometry(SCW,SCH),new THREE.MeshBasicMaterial({map:tex}));scr.position.set(cx,base+SCY,SCZ);S.add(scr);
@@ -2875,7 +2875,7 @@ function learnDur(id,D){D=Math.ceil(D||0);if(D<5||D>6*3600)return;let ch=false;c
 function onEnded(){live(0);if(!curSc)return;CINE_DONE=true;hudUpd();cmsg('');$('cr').textContent='🎞 상영 종료';/* QA78: 끝나면 다시 보기 버튼 */if(curSp)curSp._last=curSc.film;$('watch').textContent='다시 보기';$('watch').hidden=false}
 function ytPlay(w){ytWant=w;if(!ytReady||!window.YT||!YT.Player)return;const off=Math.max(0,Math.floor(nowS()-w.start));
  if(yt&&yt.loadVideoById){yt.loadVideoById({videoId:w.id,startSeconds:off});if(ytMuted)yt.mute();return}
- if(yt)return;yt=new YT.Player('yt',{videoId:w.id,playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,iv_load_policy:3,playsinline:1,start:off,origin:location.origin},events:{onReady:e=>{e.target.mute();e.target.playVideo();cmsg('')},onError:e=>live(0)||cmsg('영상을 재생할 수 없어요 (오류 '+e.data+') · ↗ 버튼으로 유튜브에서 열 수 있어요'),onStateChange:e=>{const st=e.data;if(st===1){document.body.classList.add('qa135play');live(1);cmsg('');$('watch').hidden=true;try{learnDur(curSc&&curSc.film.id,yt.getDuration())}catch(x){}}else if(st===0){live(0);try{learnDur(curSc&&curSc.film.id,yt.getDuration())}catch(x){}onEnded()}else if(curSp&&st!==3)$('watch').hidden=false}}})}
+ if(yt)return;yt=new YT.Player('yt',{videoId:w.id,playerVars:{autoplay:1,mute:1,controls:1/* QA153: 스크린에 마우스를 올리면 유튜브 재생 막대(멈춤·소리) */,disablekb:0,fs:0,modestbranding:1,rel:0,iv_load_policy:3,playsinline:1,start:off,origin:location.origin},events:{onReady:e=>{e.target.mute();e.target.playVideo();cmsg('')},onError:e=>live(0)||cmsg('영상을 재생할 수 없어요 (오류 '+e.data+') · ↗ 버튼으로 유튜브에서 열 수 있어요'),onStateChange:e=>{const st=e.data;if(st===1){document.body.classList.add('qa135play');live(1);cmsg('');$('watch').hidden=true;try{learnDur(curSc&&curSc.film.id,yt.getDuration())}catch(x){}}else if(st===0){live(0);try{learnDur(curSc&&curSc.film.id,yt.getDuration())}catch(x){}onEnded()}else if(curSp&&st!==3)$('watch').hidden=false}}})}
 /* ---- 업로드 영상 영구 저장 (IndexedDB) ---- */
 const UC={};
 const idbO=()=>new Promise((res,rej)=>{try{const r=indexedDB.open('aic-videos',1);r.onupgradeneeded=()=>r.result.createObjectStore('v');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}});
@@ -2917,6 +2917,7 @@ function updateCurrentPoster(){const h=hallCfg(2),f=nowFilm(h),c=currentPosterCv
 setTimeout(updateCurrentPoster,0);setInterval(updateCurrentPoster,2000);
 let lastIdle=0;
 function idleScreen(hid,t){if(t-lastIdle<.07)return;lastIdle=t;const h=hallCfg(hid),H=HALLN[hid],x=H.cv.getContext('2d'),W=512,Hh=288,s=curS(hid),n=nowS(),pl=n>=s.start&&n<s.end;
+ if(document.body.classList.contains('qa135play')){x.fillStyle='#000';x.fillRect(0,0,W,Hh);H.tex.needsUpdate=true;return}/* QA154: 영상 재생 중엔 3D 스크린을 검게 — 영상 화면 옆으로 회색 띠가 비치지 않게 */
  /* QA135: 입장 시 영화 장면 대신 옛 필름 카운트다운 리더(8→2) */
  const cyc=t%9,num=8-Math.floor(cyc),fr=cyc%1,blk=cyc>=7;const fl=.92+.08*Math.random();
  if(blk){x.fillStyle='#050405';x.fillRect(0,0,W,Hh)}else{
@@ -4858,11 +4859,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
  window.QA134={sheet,closeSheet,pick,start};setInterval(()=>{document.body.classList.toggle('qa141done',!!(curSp&&CINE_DONE));if(document.body.classList.contains('qa135play'))document.body.classList.remove('qa141need')},500)/* 끝나면 '다시 보기'만 보임 */;try{vf.addEventListener('playing',()=>document.body.classList.add('qa135play'))}catch(e){}
  const leave=()=>{pausedAt=0;closePanel();const h=curSp&&curSp.hall||(me.userData.seat&&me.userData.seat.hall);if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}if(h)exitHall(+h);hudUpd()};
  const setLike=v=>{const f=fidNow();if(!f)return;try{if(!!QA21.data(f).liked!==v)QA21.toggle(f)}catch(e){}};
- A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}if(curSc&&!CINE_DONE)pause();
-  const f=fidNow();let asked={};try{asked=JSON.parse(localStorage.getItem('aic.rateAsked')||'{}')}catch(e){}
-  if(f&&!asked[f]){asked[f]=1;try{localStorage.setItem('aic.rateAsked',JSON.stringify(asked))}catch(e){}/* QA148: 영화마다 처음 그만볼 때만 묻고, 다음부터는 바로 나감 */
-   sheet('영화가 마음에 드셨나요?',[{t:'아니오',fn:()=>{try{QA21.rate(f,false)}catch(e){}leave()}},{t:'예',pri:1,fn:()=>{try{QA21.rate(f,true)}catch(e){}leave()}},{t:'그냥 나갈래요',link:1,fn:leave}],resume)}
-  else leave()};
+ A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}leave()}/* QA153: 나갈 때 묻는 창 없이 바로 나감 */;
 })();
 </script>
 <style id="qa136-shadcn">
@@ -4937,7 +4934,7 @@ html body .qa134 button:not(.pri){background:rgba(255,255,255,.08)!important;bor
 /* QA145: 실제 영사기 소리(4.9초 이음매 없는 루프) — 상영관에 들어서면 조용히, 상영이 시작되면 사라짐. 아지트에서는 더 옅게. 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;let buf=null,loading=false,src=null,g=null,cur=0;
  const load=()=>{if(buf||loading||!A.init())return;loading=true;fetch('media/projector-loop.wav').then(r=>r.arrayBuffer()).then(b=>A.ctx.decodeAudioData(b)).then(d=>{buf=d}).catch(()=>{loading=false})};
- const want=()=>{try{if(!me||A.muted||document.hidden)return 0;const z=curZone(me);if(z&&z[0]==='H'){const playing=document.body.classList.contains('qa135play')||(curSp&&curSc&&!CINE_DONE&&curSp.hall===+z[1]);return playing?0:.6}if(z==='B')return .25;return 0}/* QA152: 실제 들리는 크기로(이전 값은 약 -50dB라 사실상 안 들림) — 미리듣기 절반 크기 수준 */catch(e){return 0}};
+ const want=()=>{try{if(!me||A.muted||document.hidden)return 0;const z=curZone(me);if(z&&z[0]==='H'){const playing=document.body.classList.contains('qa135play')||(curSp&&curSc&&!CINE_DONE&&curSp.hall===+z[1]);return playing?0:.3}if(z==='B')return .12;return 0}/* QA153: 더 작게 *//* QA152: 실제 들리는 크기로(이전 값은 약 -50dB라 사실상 안 들림) — 미리듣기 절반 크기 수준 */catch(e){return 0}};
  setInterval(()=>{const v=want();if(v>0)load();if(!buf||!A.ctx)return;if(A.ctx.state==='suspended'){try{A.ctx.resume()}catch(e){}return}const c=A.ctx;
   if(v>0&&!src){g=c.createGain();g.gain.value=0;g.connect(A.master||c.destination);src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(g);src.start();cur=0}
   if(src&&v!==cur){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(Math.max(v,.0001),c.currentTime+(v>cur?1.6:1.0));cur=v}
@@ -4962,7 +4959,7 @@ html body.cineseat #act button{flex:1 1 0!important;min-width:104px!important;ju
 (function(){const el=document.createElement('div');el.id='qa148info';document.body.appendChild(el);let last='',t=0;
  setInterval(()=>{try{const z=me?curZone(me):'';if(z&&z[0]==='H'&&z!==last&&!me.userData.seat){const h=+z[1],sc=curS(h),f=sc&&sc.film;if(f){QA21.pull&&QA21.pull();const pc=f.id&&QA21.sat?QA21.sat(f.id):null;el.innerHTML=`<b>${esc(f.title)}</b>${pc!=null?`관객의 ${pc}%가 만족했어요`:''}`;el.classList.add('on');clearTimeout(t);t=setTimeout(()=>el.classList.remove('on'),5000)}}if(z!==last&&(!z||z[0]!=='H'))el.classList.remove('on');last=z}catch(e){}},400)})();
 </script>
-<style id="qa149-lock">body.cineseat #cine iframe,body.cineseat #cine video{pointer-events:none!important}/* QA149: 상영 중엔 영상 화면을 눌러도 반응 없음 */</style>
+<style id="qa149-lock">body.cineseat #cine video{pointer-events:none!important}/* QA149: 상영 중엔 영상 화면을 눌러도 반응 없음 */</style>
 <script id="qa149-lock-js">
 /* QA149: 상영 중(관람 좌석)에는 칩·버튼 말고 3D 화면을 눌러도 반응 없음 — 탭·드래그·휠 모두 */
 (function(){const block=e=>{try{if(!document.body.classList.contains('cineseat'))return;if(e.target===R.domElement){e.stopImmediatePropagation();if(e.type==='wheel')e.preventDefault()}}catch(x){}};
@@ -4987,7 +4984,7 @@ html body .qa134 .ck{display:inline-flex;flex-direction:column;align-items:flex-
  function pjStop(){if(!PJ)return;const c=A.ctx,p=PJ;PJ=null;try{p.g.gain.cancelScheduledValues(c.currentTime);p.g.gain.setValueAtTime(p.g.gain.value,c.currentTime);p.g.gain.linearRampToValueAtTime(.0001,c.currentTime+1.2);setTimeout(()=>{try{p.src.stop();p.hum.stop();p.g.disconnect()}catch(e){}},1400)}catch(e){}}
  setInterval(()=>{if(PJ&&A.muted)pjStop()},500);
  const oo=window.openCine,oc=window.closeCine;
- if(typeof oo==='function'){window.openCine=function(){const r=oo.apply(this,arguments);try{A.unlock();bell();curtain()/* QA145: 상영 중 합성 영사기 소리 없음 */}catch(e){}return r};try{openCine=window.openCine}catch(e){}}
+ if(typeof oo==='function'){window.openCine=function(){const r=oo.apply(this,arguments);try{A.unlock()/* QA153: 상영 시작 효과음(벨·막 모터) 제거 */}catch(e){}return r};try{openCine=window.openCine}catch(e){}}
  if(typeof oc==='function'){window.closeCine=function(){try{pjStop()}catch(e){}return oc.apply(this,arguments)};try{closeCine=window.closeCine}catch(e){}}
  /* 공중전화: 로비에 있을 때 3~6분에 한 번, 두 번 울리고 끊김(받을 수 없음 — 소문용) */
  function ring(){try{if(typeof curZone==='function'&&me&&curZone(me)==='L0'&&!document.hidden){bell(.9,.018,880);setTimeout(()=>bell(.9,.018,880),1500);setTimeout(()=>bell(.9,.016,880),4000)}}catch(e){}setTimeout(ring,180000+Math.random()*180000)}

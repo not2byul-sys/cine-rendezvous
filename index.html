@@ -4695,6 +4695,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const get=()=>{const o=store.get(KEY)||{};let L=Array.isArray(o.intros)?o.intros.filter(f=>f&&f.src):null;if(!L){L=[{title:'1979 뉴스',src:(o.news&&o.news.on&&o.news.src)||NEWS0}];if(o.trailer&&o.trailer.on&&o.trailer.src)L.push({title:'단편',src:o.trailer.src})}return {intros:L,v:3}};
  const css=document.createElement('style');css.textContent=`#qa110pre,#qa171end{position:absolute;inset:0;z-index:6;overflow:hidden;background:#000;transition:opacity 1.6s ease}
 #qa110pre video,#qa110pre iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:contain;background:#000;transition:opacity 1.2s ease}
+#qa175snd{all:unset;position:absolute;left:50%;bottom:14%;transform:translateX(-50%);z-index:7;height:40px;padding:0 18px;border-radius:999px;background:rgba(28,20,22,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#f6e7cc;font:600 14px/40px 'Noto Sans KR',sans-serif;cursor:pointer;pointer-events:auto!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);animation:qa175p 1.6s ease-in-out infinite}@keyframes qa175p{50%{box-shadow:0 0 0 6px rgba(246,231,204,.12)}}
 #qa171end{pointer-events:none;color:#efe6d2;font-family:Georgia,'Noto Serif KR',serif;text-align:center}
 #qa171end .roll{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;gap:2.2vh;animation:qa171roll 9s linear forwards}#qa171end .roll b{font-size:clamp(14px,2.4vh,26px);font-weight:700;letter-spacing:.04em}#qa171end .roll i{font-size:clamp(11px,1.6vh,18px);font-style:normal;opacity:.75;letter-spacing:.12em}
 #qa171end .fin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 700 clamp(40px,11vh,120px)/1 Georgia,serif;letter-spacing:.08em;opacity:0;transition:opacity 1.4s ease}
@@ -4718,7 +4719,13 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   if(my!==RUN)return;
   /* 본편 페이드인(영상·소리) */const V=VOL();try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.volume=0;if(typeof CMODE!=='undefined'&&CMODE==='full')vf.currentTime=0;vf.muted=MUTED();vf.play().catch(()=>{})}else if(typeof yt!=='undefined'&&yt&&yt.playVideo){yt.setVolume(0);if(typeof CMODE!=='undefined'&&CMODE==='full'&&yt.seekTo)yt.seekTo(0,true);if(!MUTED())yt.unMute();yt.playVideo()}}catch(e){}
   box.style.opacity=0;box.style.pointerEvents='none';await ramp(1600,k=>{try{if(typeof vf!=='undefined'&&vf&&!vf.hidden)vf.volume=V*k;else if(yt&&yt.setVolume)yt.setVolume(Math.round(V*100*k))}catch(e){}});
-  window.__qa171fade=false;if(my===RUN)box.remove()}
+  window.__qa171fade=false;if(my===RUN)box.remove();ensure(my)}
+ /* QA175: iPhone 등에서 소리 있는 자동 재생이 막히면 → 멈추지 않고 소리 없이 이어 재생 + '소리 켜기' 칩(한 번 누르면 소리) */
+ async function ensure(my){for(let i=0;i<3;i++){await wait(700);if(my!==RUN)return;if(playing())return}try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.muted=true;vf.play().catch(()=>{})}else if(yt&&yt.playVideo){yt.mute();yt.playVideo()}}catch(e){}await wait(900);if(my!==RUN)return;if(!playing()){document.body.classList.add('qa141need');try{$('watch').hidden=false}catch(e){}return}soundChip(my)}
+ function playing(){try{if(typeof vf!=='undefined'&&vf&&!vf.hidden)return !vf.paused&&(MUTED()||!vf.muted);return yt&&yt.getPlayerState&&yt.getPlayerState()===1&&(MUTED()||!(yt.isMuted&&yt.isMuted()))}catch(e){return true}}
+ function soundChip(my){const cine=$('cine');if(!cine||$('qa175snd')||MUTED())return;const b=document.createElement('button');b.id='qa175snd';b.type='button';b.textContent='🔊 소리 켜기';cine.appendChild(b);
+  b.onclick=e=>{e.stopPropagation();const V=VOL();try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.muted=false;vf.volume=V;vf.play().catch(()=>{})}else if(yt){yt.unMute();yt.setVolume(Math.round(V*100));if(yt.getPlayerState&&yt.getPlayerState()!==1)yt.playVideo()}}catch(err){}try{ytMuted=false;hudUpd()}catch(err){}b.remove()};
+  const rm=setInterval(()=>{if(my!==RUN||!b.isConnected){clearInterval(rm);b.remove()}},500)}
  /* 엔딩: 자막이 올라가고 FIN → 그 뒤에 원래 종료 처리(불이 서서히 켜짐) */
  const _oe=onEnded;onEnded=function(){const cine=$('cine');if(!cine||!curSc||$('qa171end')){return _oe.apply(this,arguments)}const f=curSc.film||{},args=arguments,me_=this;let info={};try{info=filmBoardInfo(hallCfg(curSp.hall),f)||{}}catch(e){}
   const L=[['',f.title||''],['감독·제작',info.credit||f.credit||''],['상영',(hallCfg(curSp.hall)||{}).name||''],['','Ciné Rendez-vous'],['','Paris · 1979'],['','관람해 주셔서 고맙습니다']].filter(x=>x[1]);
@@ -4737,7 +4744,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   itadd:async()=>{grab();let src=($('it_u').value||'').trim(),title=($('it_t').value||'').trim();const file=$('it_f')?.files[0];if(file){if(!window.CinemaCloud?.enabled){toast('파일은 영상 저장소 연결 후 올릴 수 있어요');return}try{toast('영상 올리는 중…');const r=await window.CinemaCloud.upload(file,()=>{});src=r&&(r.url||r.src);if(!title)title=file.name.replace(/\.[^.]+$/,'')}catch(e){toast(e.message||'업로드 실패');return}}
    if(!src||!(ytId(src)||/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(src)||/^media\/\S+\.(mp4|webm)$/i.test(src))){toast('mp4·webm 또는 YouTube 주소를 넣어 주세요');return}ED.push({title:title||'인트로 '+(ED.length+1),src});re()},
   presave:()=>{if(!ADM)return;grab();store.set(KEY,{v:3,intros:ED.map(f=>({title:f.title,src:f.src}))});toast('인트로 영화를 저장했어요');ED=null;re()}});
- window.QA110={run,get};window.QA169={skip:()=>{if(SKIP)SKIP()}};
+ window.QA110={run,get,soundChip:()=>soundChip(RUN)};window.QA169={skip:()=>{if(SKIP)SKIP()}};
 })();
 </script>
 <script id="qa113-caisse">/* QA113: 매표소 — 손글씨 회차판(SÉANCES)과 매표원이 다음 회차를 말로 알려줌 */

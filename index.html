@@ -4862,7 +4862,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
 </script>
 <style id="qa136-shadcn">
 /* QA138: 상영관 UI는 아이폰처럼 둥글게(창 26px·목록 16px·원형 체크) · QA137: 버튼은 모두 캡슐형 · QA136: 상영관 UI·모달 = shadcn/ui 다크(zinc) 토큰 — background #09090b, border #27272a, muted #a1a1aa, primary #fafafa, radius 6~8px, 버튼 size sm(h-8) */
-:root{--sc-bg:rgba(52,14,20,.72);--sc-bd:rgba(246,231,204,.14);--sc-fg:#f6e7cc;--sc-mu:rgba(246,231,204,.62);--sc-ac:rgba(246,231,204,.12);--sc-pr:#f6e7cc;--sc-prf:#5d211c;--sc-tint:rgba(246,231,204,.10)}/* QA139: 상영관 UI = 버건디 유리 + 브랜드 크림(#f6e7cc), 아이폰식 *//* QA137: 색은 퀵바 톤(따뜻한 반투명 다크·크림), 형태는 shadcn */
+:root{--sc-bg:var(--hud-bg,rgba(20,12,14,.72));--sc-bd:var(--hud-bd,rgba(255,255,255,.14));/* QA140: 배경은 기존 HUD 반투명 버건디 그대로 */--sc-fg:#f6e7cc;--sc-mu:rgba(246,231,204,.62);--sc-ac:rgba(246,231,204,.12);--sc-pr:#f6e7cc;--sc-prf:#5d211c;--sc-tint:rgba(246,231,204,.10)}/* QA139: 상영관 UI = 버건디 유리 + 브랜드 크림(#f6e7cc), 아이폰식 *//* QA137: 색은 퀵바 톤(따뜻한 반투명 다크·크림), 형태는 shadcn */
 .qa134-bg{background:rgba(10,6,8,.45)!important;backdrop-filter:none!important}
 html body .qa134{left:50%!important;top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(calc(100vw - 32px),360px)!important;max-width:none!important;padding:22px 20px 18px!important;border-radius:26px!important;background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;box-shadow:0 10px 30px -12px rgba(0,0,0,.7)!important;backdrop-filter:blur(14px) saturate(1.2)!important;-webkit-backdrop-filter:blur(14px) saturate(1.2)!important;color:var(--sc-fg)!important;text-align:left!important;font:400 14px/1.5 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;animation:qa136in .15s ease-out!important}
 @keyframes qa136in{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -4918,7 +4918,7 @@ html body #qa127map .g button{background:rgba(246,231,204,.24)!important}
 html body #qa127map .g button.tk{background:rgba(246,231,204,.07)!important}
 html body #qa127map .g button.me{background:#f6e7cc!important}
 html body #qa127map .x{color:var(--sc-fg)!important}
-html body.cineseat #watch{background:rgba(52,14,20,.72)!important;color:#f6e7cc!important;border:0!important;backdrop-filter:blur(20px) saturate(1.6)!important}
+html body.cineseat #watch{background:var(--sc-bg)!important;color:#f6e7cc!important;border:0!important;backdrop-filter:blur(20px) saturate(1.6)!important}
 </style>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

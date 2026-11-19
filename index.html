@@ -4793,7 +4793,7 @@ body.cfull #qa127map{display:none!important}
 <script id="qa127-seatmap">
 /* QA127: 상영관 좌석표 — 입장부터 좌측 하단. 빈자리를 누르면 그 자리로(앉아 있으면 상영을 끊지 않고 바로 옮김) */
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
- const build=h=>{hall=h;el.classList.add('min');g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
+ const build=h=>{hall=h;el.classList.remove('min')/* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
   if(old&&old.kind==='cine'&&old.hall===sp.hall&&!window.__qa130ok){ask(sp);return}window.__qa130ok=0;
   if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}

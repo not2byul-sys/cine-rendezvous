@@ -43,7 +43,7 @@ test('QA16 ticket checker guidance and silent punch', () => {
   assert(!punch.includes('Voici votre billet'));
 });
 test('QA16 hall: cream plaster, brick pilasters, green carpet, skyline frames', () => {
-  assert(source.includes('CARP=0x2c4634'));
+  assert(source.includes('CARP=0x4a1a1f'));/* QA144: 버건디 카펫 */
   assert(source.includes('B(.2,HH,.62,BRK,'));
   assert(source.includes('frame(skyl('));
   assert(!source.includes('hallWood('));

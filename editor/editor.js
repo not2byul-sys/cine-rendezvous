@@ -1,4 +1,4 @@
-import {palette, parts, items, asset, characters as samples, defaults} from './catalog.js';
+import {palette, parts, items, itemColors, asset, characters as samples, defaults} from './catalog.js';
 
 // renderPreview only mutates the supplied preview host. save resolves after persistence.
 export async function openAvatarEditor({initial={}, baseline={}, characters=samples, renderPreview, disposePreview, save}={}) {
@@ -43,7 +43,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     preview();
   }
   function option(grid,group,value,label,kind,imageUrl){
-    const n=button('',()=>{if(kind){draft[kind][group]=value;if(kind==='items' && selectableParts.includes(group))setSelectedPart(group);}else draft.character=value;update();});
+    const n=button('',()=>{if(kind){draft[kind][group]=value;if(kind==='items'){/* QA161: 카드에 보이는 아이템 색 그대로 */if(itemColors[value])draft.colors[group]=itemColors[value];else if(value==='default')draft.colors[group]=null;if(selectableParts.includes(group))setSelectedPart(group);}}else draft.character=value;update();});
     Object.assign(n.dataset,{group,value,kind:kind||''});
     n.setAttribute('aria-label',label);
     if(kind==='colors'){n.className='swatch';n.style.setProperty('--chip',value);n.title=value;}

@@ -4768,7 +4768,8 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 })();
 </script>
 <style id="qa127-map">
-#watch[hidden]{display:none!important}
+html body #watch[hidden],html body.cineseat #watch[hidden]{display:none!important}/* QA130: 상영 중 화면 스타일보다 우선 */
+.qa130-act{display:flex;gap:8px;margin-top:14px}.qa130-act button{flex:1}
 #qa127map{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:40;padding:9px 10px 10px;border-radius:14px;background:var(--hud-bg,rgba(28,20,22,.72));border:1px solid var(--hud-bd,rgba(255,255,255,.12));backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 8px 24px -10px rgba(0,0,0,.6);user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #qa127map[hidden]{display:none!important}
 #qa127map.min{padding:0;border-radius:999px}#qa127map.min .scr,#qa127map.min .g,#qa127map.min .x{display:none}#qa127map:not(.min) .open{display:none}
@@ -4789,12 +4790,20 @@ body.cfull #qa127map{display:none!important}
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
  const build=h=>{hall=h;el.classList.add('min');g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
+  if(old&&old.kind==='cine'&&old.hall===sp.hall&&!window.__qa130ok){ask(sp);return}window.__qa130ok=0;
   if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
   pickSeat(sp.hall,sp)};
  const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
  el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
  const paint=()=>{const z=me?curZone(me):'';const h=z&&z[0]==='H'?+z.slice(1):0;if(!h){el.hidden=true;return}if(h!==hall)build(h);el.hidden=false;const S_=HALLN[h].seats,ms=me.userData.seat||me.userData.pendingSeat||null;S_.forEach((sp,i)=>{const b=btn[i];if(!b)return;const m=sp===ms||sp.taken===me,t=!m&&!!sp.taken;b.classList.toggle('me',m);b.classList.toggle('tk',t)})};
- setInterval(()=>{try{paint()}catch(e){}},350);window.QA127_MAP={paint,swap}})();
+ setInterval(()=>{try{paint()}catch(e){}},350);/* QA130: 앉아 있을 때 다른 자리를 누르면 확인창 — 영상은 잠시 멈추고, 닫으면 이어서(멈춘 시간만큼 상영 시각도 미룸) */
+ let pend=null,pausedAt=0,watchT=0;
+ const pause=()=>{pausedAt=nowS();try{if(yt&&yt.pauseVideo)yt.pauseVideo()}catch(e){}try{vf.pause()}catch(e){}};
+ const resume=()=>{if(!pausedAt)return;const d=nowS()-pausedAt;pausedAt=0;try{const o=curSp&&ODS[curSp.hall];if(o&&d>0){o.start+=d;if(o.end!=null)o.end+=d}}catch(e){}try{if(curSc&&yt&&yt.playVideo)yt.playVideo()}catch(e){}try{if(curSc&&vf.src)vf.play().catch(()=>{})}catch(e){}};
+ const ask=sp=>{pend=sp;pause();panel(`<h3>좌석을 옮길까요?</h3><p style="margin:6px 0 0;opacity:.8;text-align:center">${seatLabel(HALLN[sp.hall].seats.indexOf(sp))} 자리로 옮겨요</p><div class="qa130-act"><button data-a="qa130no">아니요</button><button data-a="qa130yes">예</button></div>`);clearInterval(watchT);watchT=setInterval(()=>{if($('pn').hidden){clearInterval(watchT);pend=null;resume()}},300)};
+ A.qa130yes=()=>{const sp=pend;pend=null;clearInterval(watchT);closePanel();if(sp){window.__qa130ok=1;swap(sp)}resume()};
+ A.qa130no=()=>{pend=null;clearInterval(watchT);closePanel();resume()};
+ window.QA127_MAP={paint,swap}})();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

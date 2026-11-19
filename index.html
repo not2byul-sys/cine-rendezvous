@@ -4931,6 +4931,17 @@ html body .qa134 button:not(.pri){background:rgba(255,255,255,.08)!important;bor
 </style>
 <style id="qa144-mood">body.qa144hall::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:radial-gradient(ellipse 75% 70% at 50% 45%,rgba(0,0,0,0) 55%,rgba(8,3,4,.55) 100%)}/* QA144: 상영관 비네팅 */</style>
 <script>setInterval(()=>{try{const z=me?curZone(me):'';document.body.classList.toggle('qa144hall',!!z&&z[0]==='H')}catch(e){}},400)</script>
+<script id="qa145-projector">
+/* QA145: 실제 영사기 소리(4.9초 이음매 없는 루프) — 상영관에 들어서면 조용히, 상영이 시작되면 사라짐. 아지트에서는 더 옅게. 음소거를 따름 */
+(function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;let buf=null,loading=false,src=null,g=null,cur=0;
+ const load=()=>{if(buf||loading||!A.init())return;loading=true;fetch('media/projector-loop.wav').then(r=>r.arrayBuffer()).then(b=>A.ctx.decodeAudioData(b)).then(d=>{buf=d}).catch(()=>{loading=false})};
+ const want=()=>{try{if(!me||A.muted||document.hidden)return 0;const z=curZone(me);if(z&&z[0]==='H'){const playing=document.body.classList.contains('qa135play')||(curSp&&curSc&&!CINE_DONE&&curSp.hall===+z[1]);return playing?0:.16}if(z==='B')return .06;return 0}catch(e){return 0}};
+ setInterval(()=>{const v=want();if(v>0)load();if(!buf||!A.ctx||A.ctx.state==='suspended')return;const c=A.ctx;
+  if(v>0&&!src){g=c.createGain();g.gain.value=0;g.connect(A.master||c.destination);src=c.createBufferSource();src.buffer=buf;src.loop=true;src.connect(g);src.start();cur=0}
+  if(src&&v!==cur){g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(Math.max(v,.0001),c.currentTime+(v>cur?1.6:1.0));cur=v}
+  if(src&&v===0&&g.gain.value<.002){try{src.stop()}catch(e){}src.disconnect();g.disconnect();src=null;g=null;cur=0}},400);
+ window.QA145={want}})();
+</script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;
  const ok=()=>!A.muted&&A.init()&&A.ctx.state!=='suspended';
@@ -4941,7 +4952,7 @@ html body .qa134 button:not(.pri){background:rgba(255,255,255,.08)!important;bor
  function pjStop(){if(!PJ)return;const c=A.ctx,p=PJ;PJ=null;try{p.g.gain.cancelScheduledValues(c.currentTime);p.g.gain.setValueAtTime(p.g.gain.value,c.currentTime);p.g.gain.linearRampToValueAtTime(.0001,c.currentTime+1.2);setTimeout(()=>{try{p.src.stop();p.hum.stop();p.g.disconnect()}catch(e){}},1400)}catch(e){}}
  setInterval(()=>{if(PJ&&A.muted)pjStop()},500);
  const oo=window.openCine,oc=window.closeCine;
- if(typeof oo==='function'){window.openCine=function(){const r=oo.apply(this,arguments);try{A.unlock();bell();curtain();setTimeout(pjStart,2600)}catch(e){}return r};try{openCine=window.openCine}catch(e){}}
+ if(typeof oo==='function'){window.openCine=function(){const r=oo.apply(this,arguments);try{A.unlock();bell();curtain()/* QA145: 상영 중 합성 영사기 소리 없음 */}catch(e){}return r};try{openCine=window.openCine}catch(e){}}
  if(typeof oc==='function'){window.closeCine=function(){try{pjStop()}catch(e){}return oc.apply(this,arguments)};try{closeCine=window.closeCine}catch(e){}}
  /* 공중전화: 로비에 있을 때 3~6분에 한 번, 두 번 울리고 끊김(받을 수 없음 — 소문용) */
  function ring(){try{if(typeof curZone==='function'&&me&&curZone(me)==='L0'&&!document.hidden){bell(.9,.018,880);setTimeout(()=>bell(.9,.018,880),1500);setTimeout(()=>bell(.9,.016,880),4000)}}catch(e){}setTimeout(ring,180000+Math.random()*180000)}

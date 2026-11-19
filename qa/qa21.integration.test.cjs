@@ -56,7 +56,7 @@ test('QA72 each hall has 40 flat seats (4+4 by 5 rows, A01~E08), width 14.88, an
  const vm=require('vm'),ctx={pad:n=>String(n).padStart(2,'0')};vm.createContext(ctx);const i=source.indexOf("const ROWS='ABCDE'"),j=source.indexOf('const API={',i);vm.runInContext(source.slice(i,j)+';this.o={NSEAT,L:[...Array(NSEAT)].map((_,k)=>seatLabel(k)),X:[...Array(NSR)].map((_,k)=>hallSeatX(k))}',ctx);
  assert.equal(ctx.o.NSEAT,40);assert.equal(ctx.o.L[0],'A01');assert.equal(ctx.o.L[7],'A08');assert.equal(ctx.o.L[8],'B01');assert.equal(ctx.o.L[39],'E08');assert.equal(new Set(ctx.o.L).size,40);
  const X=ctx.o.X,arm=.565+.075,aisle=X[4]-X[3]-2*arm,side=7.44-(X[7]+arm);assert(Math.abs(X[0]+X[7])<1e-9);assert(aisle>.6,'aisle '+aisle);assert(side>.3&&side<2.2,'side '+side);/* QA127·128: 상영관 확장 — 옆 통로가 넓어짐 */
- const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));assert(hud.includes('data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide(\'hallDoor\')}<span>로비로 나가기</span>'));assert(hud.includes("if(inH||zc==='B'){"));assert(!hud.includes('data-a="cstand"'));assert(!hud.includes('data-a="mpchat"'));
+ const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));assert(hud.includes('data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide(\'hallDoor\')}<span>로비로 나가기</span>'));assert(hud.includes("if((inH&&!cine)||zc==='B'){"))/* QA133 */;assert(!hud.includes('data-a="cstand"'));assert(!hud.includes('data-a="mpchat"'));
  const ctxm=source.slice(source.indexOf('function qa20Ctx('),source.indexOf('function hudUpd(){'));assert(!ctxm.includes("add('exithall'"));assert(source.includes('exithall:d=>{/* QA72'));});
 test('QA73 lobby materials follow the 2026-11-14 Figma palette through lobby-only materials',()=>{
  const m=source.match(/const LP_DEF=Object\.freeze\((\{[^}]*\})\);/);assert(m);const def=JSON.parse(m[1].replace(/(\w+):"/g,'"$1":"'));
@@ -121,7 +121,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("o===HN.IB){const c2=hs.find(q=>q.object===HN.IC"));
  assert(!source.includes("쟁반에 담아 들었어요"));
  assert(source.includes("if(!hasInv()){toast('초대장이 있어야 열리는 책장이에요');return}trapShow(true)"));
- assert(source.includes('id="cx" title="닫기" aria-label="닫기"'));
+ assert(source.includes('id="cx" title="그만보기" aria-label="그만보기"'))/* QA133 */;
  assert(source.includes("GIVE_OFFER=null;closePanel();giveItem(index)}"));
  assert(source.includes("data-a=\"bagdelsel\" disabled>선택 버리기</button>"));
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
@@ -138,7 +138,7 @@ test('QA95 performance and eating fixes',()=>{
  assert(!/data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]{2000,}/.test(source));
  assert(source.includes("eat1:d=>startEat(+d.i)")&&source.includes("const i=HELD.indexOf(EAT.it);"));
  assert(source.includes("if(i===eatingI()){EAT=null;"));
- assert(source.includes("if(!me||(me.userData.seat&&me.userData.seat.kind==='cine')||EAT)return;"));/* QA114: 상영관에서도 먹기, 관람 좌석만 예외 */
+ assert(source.includes("if(!me||EAT)return;/* QA133: 관람 좌석에서도 먹기 */"));/* QA114: 상영관에서도 먹기, 관람 좌석만 예외 */
  for(const m of source.matchAll(/qa95_assets\/img-[0-9a-f]+\.(jpg|png)/g))assert(require('fs').existsSync(require('path').join(__dirname,'..',m[0])));
 });
 

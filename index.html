@@ -807,7 +807,7 @@ html body.cineseat #watch::before{content:"";width:14px;height:14px;flex:none;ba
 </head>
 <body>
 <div class="chip" id="chip" data-a="chan"><span id="chtx">CH01</span> · <span id="cnt">-</span></div>
-<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="adm">관리</button><button data-a="cstand" id="cx" title="닫기" aria-label="닫기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt" hidden></b><button id="cyt" type="button" title="유튜브에서 보기" aria-label="유튜브에서 보기"><span id="qa-yt-label"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
+<div id="hb"><button data-a="tix">내 티켓</button><button data-a="bag">가방</button><button data-a="tt">상영작</button><button data-a="bgm" id="bgmb" title="배경음악"></button><button data-a="adm">관리</button><button data-a="csnd" id="qa133snd" title="소리" aria-label="소리"></button><button data-a="cfull" id="qa133full" title="크게 보기" aria-label="크게 보기"></button><button data-a="cstop" id="cx" title="그만보기" aria-label="그만보기"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div><div class="chip" id="ctitle"><b id="ctt" hidden></b><button id="cyt" type="button" title="유튜브에서 보기" aria-label="유튜브에서 보기"><span id="qa-yt-label"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></button></div>
 <div class="hint" id="hint"></div>
 <div class="bar"><div id="act"></div><input id="msg" placeholder="채팅 입력" maxlength="40" hidden><button id="send" hidden>전송</button><button id="hi" hidden></button><button id="clap" hidden></button></div>
 <div id="aud" aria-hidden="true"><canvas></canvas></div><div id="cine" hidden><div id="yt"></div><video id="vf" hidden playsinline muted></video><div id="cmsg" hidden></div><div id="shield"></div><button class="p" id="watch" hidden>영화 보기</button></div>
@@ -3014,13 +3014,13 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  if(HELD.length&&me&&!cine){const sl=SLOW&&HELD.some(x=>x.slow),free=HELD.filter(x=>!x.slow).length;
   const tot=HELD.reduce((a,x)=>a+eatLeft(x),0);
   /* QA20: 들고 있을 때 = 컨텍스트 액션 바(먹기·선물하기·버리기) */}
- if(cine){h+=`<button data-a="csnd">${ytMuted?'소리 켜기':'소리 끄기'}</button><button data-a="cfull">${FULL?'작게 보기':'크게 보기'}</button>`/* QA132: 관람 중 일어나기 삭제 — 자리 이동은 좌석표, 나가기는 로비로 나가기 *//* QA83: 그만보기는 상단 X가 담당 */}
+ if(cine){h+=`<button data-a="ceat">먹기</button><button data-a="cstop">그만보기</button>`/* QA133: 관람 중엔 먹기·그만보기 둘만. 소리·크게 보기는 위쪽 아이콘 *//* QA132: 관람 중 일어나기 삭제 — 자리 이동은 좌석표, 나가기는 로비로 나가기 *//* QA83: 그만보기는 상단 X가 담당 */}
  else if(sp&&sp.kind==='cine'&&CWIDE){}
  qa20Ctx(zc,inH,sp,cine);
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(!cine)h+=['tix:티켓','bag:가방','tt:상영작','avatar:캐릭터'/* QA40 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
- if(inH||zc==='B'){
+ if((inH&&!cine)||zc==='B'){
    h+=`<button class="fx" data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide('hallDoor')}<span>로비로 나가기</span></button>`.replace('data-a="exithall"',zc==='B'?'data-a="goup"':'data-a="exithall"');
  }
  const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none';CinemaAudio.updateButton()}
@@ -3251,9 +3251,9 @@ function qa100Tick(){if(!me)return;const sp=me.userData.seat,inSeat=sp&&sp.kind=
  if(!inSeat){const left=SNACKW.items.splice(0);left.forEach(k=>HELD.push({k}));QA88_N=HELD.length;refreshMe();toast('남은 간식 '+left.length+'개는 가방에 넣었어요');qa100Tag();hudUpd();return}/* 상영 중 나가면 남은 간식은 가방으로 */
  const t=nowS();if(t>=SNACKW.next){const k0=SNACKW.items.shift();try{window.qa121Keep&&qa121Keep(k0)}catch(e){}SNACKW.next+=SNACKW.gap;qa100Tag();if(!SNACKW.items.length)toast('간식을 다 먹었어요')}}
 function eatingI(){return EAT&&EAT.it?HELD.indexOf(EAT.it):-1}
-function startEat(i){/* QA100: 먹기를 눌러야 먹음. 간식이 여러 개면 가방에서 고름. 하나당 약 5초 먹고 사라짐 · 상영관에선 먹지 않음 */if(!me||(me.userData.seat&&me.userData.seat.kind==='cine')||EAT)return;/* QA114: 상영관에서도 먹기 · 관람 좌석에선 앉을 때 묻는 방식만 */const ed=HELD.map((x,j)=>isFlower(x.k)?-1:j).filter(j=>j>=0);if(i==null){if(!ed.length)return;if(ed.length>1){PANELS.eatpick();return}i=ed[0]}const it=HELD[i];if(!it||isFlower(it.k)||it.slow)return;closePanel();if(i>0||QA115_OFF){if(i>0){HELD.splice(i,1);HELD.unshift(it)}QA115_OFF=false;QA88_N=HELD.length;refreshMe()}if(me.userData.carry&&me.userData.carry.ms)me.userData.carry.ms.forEach(m=>{if(m.userData.bp){m.position.copy(m.userData.bp);m.rotation.x=m.rotation.z=0}});const n=performance.now()/1000;EAT={t:0,t0:n,until:n+5,it};hudUpd()}
+function startEat(i){/* QA100: 먹기를 눌러야 먹음. 간식이 여러 개면 가방에서 고름. 하나당 약 5초 먹고 사라짐 · 상영관에선 먹지 않음 */if(!me||EAT)return;/* QA133: 관람 좌석에서도 먹기 *//* QA114: 상영관에서도 먹기 · 관람 좌석에선 앉을 때 묻는 방식만 */const ed=HELD.map((x,j)=>isFlower(x.k)?-1:j).filter(j=>j>=0);if(i==null){if(!ed.length)return;if(ed.length>1){PANELS.eatpick();return}i=ed[0]}const it=HELD[i];if(!it||isFlower(it.k)||it.slow)return;closePanel();if(i>0||QA115_OFF){if(i>0){HELD.splice(i,1);HELD.unshift(it)}QA115_OFF=false;QA88_N=HELD.length;refreshMe()}if(me.userData.carry&&me.userData.carry.ms)me.userData.carry.ms.forEach(m=>{if(m.userData.bp){m.position.copy(m.userData.bp);m.rotation.x=m.rotation.z=0}});const n=performance.now()/1000;EAT={t:0,t0:n,until:n+5,it};hudUpd()}
 function stopEat(){if(EAT)EAT.until=0;hudUpd()}
-function eatTick(dt,t){if(!me)return;qa100Tick();if(EAT&&!EAT.cancel&&me.userData.seat&&me.userData.seat.kind==='cine'){EAT.cancel=true;EAT.until=0}/* QA114: 관람 좌석에 앉을 때만 멈춤 *//* QA95·100: 상영관에 들어가면 먹기 멈춤(소모 안 함) */;const u=me.userData,cr=u.carry;if(!cr||!HELD.length){EAT=null;return}const walking=u.path&&u.path.length,sp=u.seat,cine=sp&&sp.kind==='cine';
+function eatTick(dt,t){if(!me)return;qa100Tick();/* QA114: 관람 좌석에 앉을 때만 멈춤 *//* QA95·100: 상영관에 들어가면 먹기 멈춤(소모 안 함) */;const u=me.userData,cr=u.carry;if(!cr||!HELD.length){EAT=null;return}const walking=u.path&&u.path.length,sp=u.seat,cine=sp&&sp.kind==='cine';
  const two=true/* QA96: 손엔 늘 1개 */;if(two&&!walking&&u.arms){u.arms[1].rotation.x=-1.15;if(HELD.length>1)u.arms[0].rotation.x=-1.15}
  cr.ms.forEach((m,j)=>{const L=eatLeft(HELD[j]||{});m.scale.setScalar(m.userData.b*(.62+.38*L))});
  if(!EAT)return;const nw_=performance.now()/1000;if(nw_>EAT.until){const done=EAT;EAT=null;if(!done.cancel){const k=HELD.indexOf(done.it);if(k>=0){HELD.splice(k,1);QA88_N=HELD.length;QA115_OFF=HELD.length>0;refreshMe();const nm=IT[done.it.k][1];const wr=window.qa121Keep&&qa121Keep(done.it.k);toast(nm+objectParticle(nm)+' 다 먹었어요'+(wr?(wr.rare?' · ✦ 한정판 포장지를 간직했어요':' · 포장지를 간직했어요'):''));if(!HELD.length)document.querySelectorAll('#actorMenu [data-a="actorGift"],#actorMenu .giftmenu').forEach(b=>b.remove())/* QA103: 다 먹으면 열린 메뉴의 선물하기도 정리 */}}/* QA100: 다 먹으면 사라짐 */cr.ms.forEach(m=>{if(m.userData.bp){m.position.copy(m.userData.bp);m.rotation.x=m.rotation.z=0}});if(u.arms)u.arms.forEach(a=>a.rotation.z=0);hudUpd();return}/* 먹어도 줄지 않음: 계속 먹을 수 있음 */const edibles=HELD.map((v,i)=>isFlower(v.k)?-1:i).filter(i=>i>=0);if(!edibles.length){EAT=null;return}const i=HELD.indexOf(EAT.it);if(i!==0){EAT=null;hudUpd();return}/* QA95: 고른 것만 */cr.ms.forEach((m2,j)=>{if(j!==i&&m2.userData.bp){m2.position.copy(m2.userData.bp);m2.rotation.x=m2.rotation.z=0;const a2=u.arms&&u.arms[m2.userData.bp.x>0?1:0];if(a2)a2.rotation.z=0}});
@@ -4812,6 +4812,31 @@ body.cfull #qa127map{display:none!important}
  let lt=performance.now();(function tick(){requestAnimationFrame(tick);const t=performance.now(),dt=Math.min(.1,(t-lt)/1000);lt=t;const u=me&&me.userData;if(!u||!u.qa132F)return;if(!u.path||!u.path.length||u.seat){u.qa132F=0;return}camYaw+=W(me.rotation.y-camYaw)*Math.min(1,dt*2.6);yawV=0})();
  const LINES=['음, 갓 튀긴 팝콘 냄새!','어디서 팝콘 냄새가 나는데요?','고소하다… 나도 하나 살까','팝콘 냄새 좋네요'];
  const _eat=startEat;startEat=function(i){const before=EAT;const r=_eat.apply(this,arguments);try{if(!before&&EAT&&EAT.it&&/^pop/.test(EAT.it.k)){const z=curZone(me),near=NPCS.filter(n=>n.visible!==false&&curZone(n)===z&&n.position.distanceTo(me.position)<4.5).sort((a,b)=>a.position.distanceTo(me.position)-b.position.distanceTo(me.position)).slice(0,2);near.forEach((n,k)=>setTimeout(()=>{try{say(n,LINES[(Math.random()*LINES.length)|0])}catch(e){}},700+k*1300))}}catch(e){}return r}})();
+</script>
+<style id="qa133-cine">
+#qa133snd,#qa133full{display:none}
+html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full{display:inline-flex!important;width:36px!important;height:36px!important;padding:0!important;border-radius:999px!important;align-items:center;justify-content:center}
+#qa133snd svg,#qa133full svg{width:16px;height:16px}
+html body.cineseat #ctxbar{right:144px!important}
+html body.cineseat #ctitle{max-width:calc(100vw - 280px)}
+.qa133-like{display:flex;justify-content:center;margin:12px 0 2px}.qa133-like button{min-width:180px}.qa133-like button.on{color:#b3202e}
+</style>
+<script id="qa133-cine-js">
+/* QA133: 관람 하단 = 먹기 | 그만보기. 그만보기(✕ 포함)를 누르면 '이 영화 어땠나요?' — 좋아요 후 로비로. 소리·크게 보기는 위쪽 아이콘 */
+(function(){const ic={on:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',off:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>',big:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',small:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7"/></svg>'};
+ const sb=document.getElementById('qa133snd'),fb=document.getElementById('qa133full');let ls='',lf='';
+ setInterval(()=>{const a=ytMuted?'off':'on',b=FULL?'small':'big';if(a!==ls){sb.innerHTML=ic[a];sb.title=sb.ariaLabel=ytMuted?'소리 켜기':'소리 끄기';ls=a}if(b!==lf){fb.innerHTML=ic[b];fb.title=fb.ariaLabel=FULL?'작게 보기':'크게 보기';lf=b}},300);
+ A.ceat=()=>{const ed=HELD.filter(x=>!isFlower(x.k));if(!ed.length){toast('먹을 간식이 없어요 · 매점에서 살 수 있어요');return}startEat()};
+ let pausedAt=0,wt=0;const pause=()=>{pausedAt=nowS();try{if(yt&&yt.pauseVideo)yt.pauseVideo()}catch(e){}try{vf.pause()}catch(e){}};
+ const resume=()=>{if(!pausedAt)return;const d=nowS()-pausedAt;pausedAt=0;try{const o=curSp&&ODS[curSp.hall];if(o&&d>0){o.start+=d;o.end+=d}}catch(e){}try{if(curSc&&yt&&yt.playVideo)yt.playVideo()}catch(e){}try{if(curSc&&vf.src)vf.play().catch(()=>{})}catch(e){}};
+ const fidNow=()=>{try{return CINE_DONE?QA21.endFilm():QA21.curFilm()}catch(e){return null}};
+ const draw=()=>{const f=fidNow();let like='';if(f){const d=QA21.data(f);like=`<div class="qa133-like"><button data-a="qa133like" class="${d.liked?'on':''}" aria-pressed="${!!d.liked}">${d.liked?'좋아한 영화예요':'이 영화 좋아요'}</button></div>`}
+  panel(`<h3>${CINE_DONE?'영화 어땠나요?':'그만 볼까요?'}</h3>${like}<div class="qa130-act"><button data-a="qa133stay">계속 보기</button><button data-a="qa133go">로비로 나가기</button></div>`)};
+ A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}if(curSc&&!CINE_DONE)pause();draw();clearInterval(wt);wt=setInterval(()=>{if($('pn').hidden){clearInterval(wt);resume()}},300)};
+ A.qa133like=()=>{const f=fidNow();if(!f)return;QA21.toggle(f);draw()};
+ A.qa133stay=()=>{clearInterval(wt);closePanel();resume()};
+ A.qa133go=()=>{clearInterval(wt);pausedAt=0;closePanel();const h=curSp&&curSp.hall||(me.userData.seat&&me.userData.seat.hall);if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}if(h)exitHall(+h);hudUpd()};
+})();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

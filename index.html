@@ -4708,11 +4708,15 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   if(id){el=document.createElement('iframe');el.allow='autoplay';el.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&controls=0&modestbranding=1&rel=0&playsinline=1';setTimeout(done,60000)}
   else{el=document.createElement('video');el.src=src;el.playsInline=true;el.volume=VOL();el.muted=MUTED();el.onended=done;el.onerror=done;const r=el.play();if(r&&r.catch)r.catch(()=>{el.muted=true;el.play().catch(()=>{})});setTimeout(done,180000)}
   CUR=el;box.appendChild(el)})}
+ /* QA176: 화면 지지직(흑백 노이즈+가로줄) + 아주 작은 잡음 소리 */function snow(box,ms,my){return new Promise(res=>{const cv=document.createElement('canvas');cv.width=160;cv.height=90;cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.85';box.appendChild(cv);const x=cv.getContext('2d'),im=x.createImageData(160,90),t0=performance.now();
+  try{const A_=CinemaAudio;if(A_&&!A_.muted&&!MUTED()){const c=A_.init();if(c&&A_.master){const n=c.createBuffer(1,Math.ceil(c.sampleRate*ms/1000),c.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(Math.random()<.02?1:.45);const so=c.createBufferSource();so.buffer=n;const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=1800;const gg=c.createGain();gg.gain.setValueAtTime(.0001,c.currentTime);gg.gain.linearRampToValueAtTime(.05*VOL(),c.currentTime+.08);gg.gain.setValueAtTime(.05*VOL(),c.currentTime+ms/1000-.25);gg.gain.linearRampToValueAtTime(.0001,c.currentTime+ms/1000);so.connect(hp).connect(gg).connect(A_.master);so.start()}}}catch(e){}
+  (function f(){const k=(performance.now()-t0)/ms;if(k>=1||my!==RUN){cv.remove();res();return}const D_=im.data,bar=(performance.now()/7)%90;for(let i=0;i<D_.length;i+=4){const y=(i/4/160)|0,v=Math.random()*255*(Math.abs(y-bar)<6?1.25:1);D_[i]=D_[i+1]=D_[i+2]=v;D_[i+3]=255}x.putImageData(im,0,0);cv.style.opacity=k>.8?(1-k)*4*.85:.85;requestAnimationFrame(f)})()})}
  const ramp=(ms,fn)=>new Promise(res=>{const t0=performance.now();const step=()=>{const k=Math.min(1,(performance.now()-t0)/ms);fn(k);if(k<1)requestAnimationFrame(step);else res()};step()});
  async function run(){const hall=typeof curSp!=='undefined'&&curSp?curSp.hall:1;if(SHOWN===hall)return;/* 같은 관에서 자리만 옮기면 다시 틀지 않음 */const cine=$('cine');if(!cine)return;const my=++RUN;SHOWN=hall;let box=$('qa110pre');if(box)box.remove();
   const P=get();if(!P.intros.length)return;box=document.createElement('div');box.id='qa110pre';cine.appendChild(box);window.__qa171fade=true;
   holdFilm();const hold=setInterval(()=>{if(my!==RUN){clearInterval(hold);return}holdFilm();if(CUR&&CUR.tagName==='VIDEO'){CUR.muted=MUTED();if(!CUR.__fading)CUR.volume=VOL()}},200);
   /* QA173: 간식 고르는 창이 떠 있는 동안은 아무것도 시작하지 않음 */while(my===RUN&&document.querySelector('.qa134'))await wait(150);if(my!==RUN)return;
+  await snow(box,1500,my)/* QA176: 뉴스 전에 지지직 */;if(my!==RUN)return;
   let last=null;for(const f of P.intros){if(my!==RUN)return;if(last)last.remove();last=await clip(box,f.src)}
   clearInterval(hold);if(my!==RUN)return;
   /* 인트로 페이드아웃(영상·소리) */if(last){last.__fading=1;const v0=last.tagName==='VIDEO'?last.volume:0;last.style.opacity=0;await ramp(1200,k=>{try{if(last.tagName==='VIDEO')last.volume=v0*(1-k)}catch(e){}});last.remove()}
@@ -4863,8 +4867,8 @@ body.cfull #qa127map{display:none!important}
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
  const build=h=>{hall=h;el.classList.remove('min')/* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
-  if(old&&old.kind==='cine'&&old.hall===sp.hall&&!window.__qa130ok){ask(sp);return}window.__qa130ok=0;
-  if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
+  window.__qa130ok=0;
+  if(old&&old.kind==='cine'&&old.hall===sp.hall){toast(seatLabel(HALLN[sp.hall].seats.indexOf(sp))+' 좌석으로 이동합니다')/* QA176: 확인창 없이 알림만 띄우고 바로 이동 */;old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
   pickSeat(sp.hall,sp)};
  const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
  el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
@@ -5217,6 +5221,7 @@ html body .admback:hover{opacity:1}
     m(new THREE.BoxGeometry(.1,.025,.1),BR,0,-.075,0);m(new THREE.BoxGeometry(.075,.11,.075),GL,0,0,0);[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,b])=>m(new THREE.BoxGeometry(.012,.12,.012),BR,a*.042,0,b*.042));const cap=m(new THREE.ConeGeometry(.07,.06,4),BR,0,.09,0);cap.rotation.y=Math.PI/4;m(new THREE.BoxGeometry(.03,.03,.012),BR,sd*.05,-.04,0);
     const gl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffc070,transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));gl.scale.setScalar(.42);g.add(gl);
     const pl=new THREE.Mesh(new THREE.CircleGeometry(.55,20),pool);pl.rotation.x=-Math.PI/2;pl.position.set(HCX[id]+sd*.45,base+.03,lz+.1);S.add(pl)})}
+  /* QA176: 관 뒷벽 바깥 바닥이 겹쳐 깜빡이던 것 — 검은 판으로 덮음 */{const oc=new THREE.Mesh(new THREE.PlaneGeometry(2*HX+4,16),new THREE.MeshBasicMaterial({color:0x050304}));oc.rotation.x=-Math.PI/2;oc.position.set(HCX[id],base+.03,7.85);S.add(oc)}
   const add=S.children.slice(n0);add.forEach(o=>{HALLG[id].push(o);HSET.add(o);o.visible=space===id})});
  /* ---------- 아지트 벽: 그 시절 영화 사건 신문 스크랩(가상 지면 · 사실 요약) ---------- */
  const NEWS=[
@@ -5305,7 +5310,8 @@ html body #qa127map button.open{height:46px!important;padding:0 20px!important;f
 html body #qa127map button.open:hover{background:rgba(255,255,255,.07)!important}
 html body #qa127map button.x:hover{background:rgba(255,255,255,.1)!important;border-radius:50%!important}
 html body #qa133full{display:none!important}
-html body #toast{font-size:15px!important}/* QA173: 알림 글자 1px 크게 */
+html body #toast{font-size:15px!important}
+@media (max-width:699px){html body #qa127map{zoom:.8}}/* QA176: 모바일 좌석표 20% 작게 *//* QA173: 알림 글자 1px 크게 */
 </style>
 <script id="qa172-js">
 (function(){

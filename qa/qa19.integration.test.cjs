@@ -1,7 +1,7 @@
 const test=require('node:test');const assert=require('node:assert');const fs=require('fs');
 const source=fs.readFileSync(require('path').join(__dirname,'..','index.html'),'utf8');
 test('QA19 hall follows the reference proportions: narrow room, smaller screen, larger avatars, plush seats',()=>{
-  assert(source.includes('HX=7.44/*'));assert(source.includes('SCY=1.0+SCW*9/32'));/* QA127: 상영관·스크린 20% 확장 */assert(source.includes('HSC=.9;'));
+  assert(source.includes('HX=7.44/*'));assert(source.includes('SCY=2.1+SCW*9/32'));/* QA127: 상영관·스크린 20% 확장 */assert(source.includes('HSC=.9;'));
   assert(source.includes('QA19: 레퍼런스 좌석'));assert(source.includes("walkTo(me,HCX[id],-3.4,'H'+id)"));});
 test('QA19 world cup trophy sits on the left bar cart without its pedestal',()=>{
   assert(source.includes('QA19: 좌측 바 카트(탁자) 위에 올림'));assert(source.includes('const px=X+CBW-.7,pz=Z+1.6'));});

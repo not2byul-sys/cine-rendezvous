@@ -4842,7 +4842,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
  const resume=()=>{if(!pausedAt)return;const d=nowS()-pausedAt;pausedAt=0;try{const o=curSp&&ODS[curSp.hall];if(o&&d>0){o.start+=d;o.end+=d}}catch(e){}try{if(curSc&&yt&&yt.playVideo)yt.playVideo()}catch(e){}try{if(curSc&&vf.src)vf.play().catch(()=>{})}catch(e){}};
  const fidNow=()=>{try{return CINE_DONE?QA21.endFilm():QA21.curFilm()}catch(e){return null}};
  /* QA134: 브랜드 팝업 대신 퀵바 톤의 어두운 시트 — 바깥을 누르면 닫고 이어서 보기 */
- const sheet=(q,btns,onCancel)=>{closeSheet();const bg=document.createElement('div');bg.className='qa134-bg';const el=document.createElement('div');el.className='qa134';el.setAttribute('role','dialog');el.innerHTML=`<p>${q}</p><div class="r${btns.length>2?' v':''}">${btns.map((b,i)=>`<button type="button" data-i="${i}"${b.pri?' class="pri"':''}>${b.t}</button>`).join('')}</div>`;
+ const sheet=(q,btns,onCancel)=>{closeSheet();const bg=document.createElement('div');bg.className='qa134-bg';const el=document.createElement('div');el.className='qa134';el.setAttribute('role','dialog');el.innerHTML=`<p>${q}</p><div class="r">${btns.map((b,i)=>b.link?'':`<button type="button" data-i="${i}"${b.pri?' class="pri"':''}>${b.t}</button>`).join('')}</div>${btns.map((b,i)=>b.link?`<button type="button" class="lnk" data-i="${i}">${b.t}</button>`:'').join('')}`/* QA150: 선택 버튼은 내용 폭만큼 가운데, 빠져나가기는 아래 글자 링크 */;
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','click','touchstart','touchend'].forEach(t=>{el.addEventListener(t,stop);bg.addEventListener(t,stop)});
   el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;closeSheet();btns[+b.dataset.i].fn()});bg.addEventListener('click',()=>{closeSheet();onCancel&&onCancel()});document.body.append(bg,el);window.__qa134=[bg,el]};
  const closeSheet=()=>{(window.__qa134||[]).forEach(x=>x.remove());window.__qa134=null};
@@ -4861,7 +4861,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
  A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}if(curSc&&!CINE_DONE)pause();
   const f=fidNow();let asked={};try{asked=JSON.parse(localStorage.getItem('aic.rateAsked')||'{}')}catch(e){}
   if(f&&!asked[f]){asked[f]=1;try{localStorage.setItem('aic.rateAsked',JSON.stringify(asked))}catch(e){}/* QA148: 영화마다 처음 그만볼 때만 묻고, 다음부터는 바로 나감 */
-   sheet('영화가 마음에 드셨나요?',[{t:'예',pri:1,fn:()=>{try{QA21.rate(f,true)}catch(e){}leave()}},{t:'아니오',fn:()=>{try{QA21.rate(f,false)}catch(e){}leave()}},{t:'그냥 나갈래요',fn:leave}],resume)}
+   sheet('영화가 마음에 드셨나요?',[{t:'아니오',fn:()=>{try{QA21.rate(f,false)}catch(e){}leave()}},{t:'예',pri:1,fn:()=>{try{QA21.rate(f,true)}catch(e){}leave()}},{t:'그냥 나갈래요',link:1,fn:leave}],resume)}
   else leave()};
 })();
 </script>
@@ -4968,6 +4968,15 @@ html body.cineseat #act button{flex:1 1 0!important;min-width:104px!important;ju
 (function(){const block=e=>{try{if(!document.body.classList.contains('cineseat'))return;if(e.target===R.domElement){e.stopImmediatePropagation();if(e.type==='wheel')e.preventDefault()}}catch(x){}};
  ['pointerdown','pointermove','pointerup','click','dblclick','wheel','touchstart','touchmove','touchend','contextmenu'].forEach(t=>window.addEventListener(t,block,{capture:true,passive:false}))})();
 </script>
+<style id="qa150-modal">
+/* QA150: 모달 = 내용 크기만큼(가운데). 버튼은 선택지라 내용 폭 캡슐을 가운데에 나란히, '그냥 나갈래요' 같은 빠져나가기는 아래 작은 글자 */
+html body .qa134{width:auto!important;min-width:248px!important;max-width:min(calc(100vw - 48px),320px)!important;padding:22px 22px 16px!important;border-radius:28px!important}
+html body .qa134 .r,html body .qa134 .r.v{flex-direction:row!important;justify-content:center!important;gap:8px!important;margin-top:16px!important}
+html body .qa134 .r button{flex:none!important;height:36px!important;min-width:76px!important;padding:0 18px!important;font-size:14px!important;line-height:34px!important}
+html body .qa134 button.lnk{display:block!important;margin:10px auto 0!important;height:auto!important;min-width:0!important;padding:4px 8px!important;background:transparent!important;border:0!important;color:rgba(246,231,204,.62)!important;font:500 13px/1.3 'Noto Sans KR',sans-serif!important;box-shadow:none!important}
+html body .qa134 button.lnk:hover{color:#f6e7cc!important;background:transparent!important}
+html body .qa134 .ck{display:inline-flex;flex-direction:column;align-items:flex-start;margin:4px auto 0}
+</style>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;
  const ok=()=>!A.muted&&A.init()&&A.ctx.state!=='suspended';

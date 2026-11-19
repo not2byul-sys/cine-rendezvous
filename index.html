@@ -893,7 +893,7 @@ const curS=hid=>{const h=hallCfg(hid);return ODS[hid]||{id:'idle-'+hid,hall:h,fi
 const hallSC=h=>({id:'H'+h.id,hall:h,film:nowFilm(h),start:nowS(),end:dayEnd()});
 /* ---------- API mock (서버 연동 시 이 모듈만 교체) ----------
    ⚠ 실제 운영: 보상 지급(티켓·간식)과 티켓 검증은 서버에서 처리. 광고 승인 신호를 받은 뒤 서버에 1회성 지급 요청 → 서버가 중복·조작을 검증 */
-const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.clubFilms','aic.grade','aic.preshow','aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
+const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.menuEdit','aic.clubFilms','aic.grade','aic.preshow','aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
 async function qa105Push(){const data=QA105_Q;QA105_Q={};let key='';try{key=localStorage.getItem('aic.admkey')||''}catch(e){}if(!key||!Object.keys(data).length)return;try{const r=await fetch('/api/settings',{method:'PUT',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify({data})});const j=await r.json().catch(()=>({}));if(r.ok&&j.rev){try{localStorage.setItem('aic.cfgRev',String(j.rev))}catch(e){}}else if(r.status===401){try{localStorage.removeItem('aic.admkey')}catch(e){}toast('서버 저장 권한이 만료됐어요 · 다시 로그인해 주세요')}else toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}catch(e){toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}}
 
 /* QA07: lobby sound bus for effects, French ticket voice, and a persistent mute control. */
@@ -919,7 +919,7 @@ addEventListener('pointerdown',()=>CinemaAudio.unlock(),{passive:true});
 /* ===== 사이트 설정 파일(site-config.json): GitHub 저장소에 올린 관리자 설정을 모든 방문자의 기본값으로 적용 =====
    관리 → 「설정 내보내기」로 받은 site-config.json 을 index.html 과 같은 폴더에 올리면 됩니다.
    파일의 rev 가 바뀌었을 때만 덮어쓰므로, 새 파일을 올리면 모든 방문자에게 다시 적용됩니다. */
-const SITE_KEYS=['aic.clubFilms','aic.clubfilmRevision','aic.sched','aic.layout','aic.txt','aic.posters','aic.filmInfo','aic.theme','aic.clubfilm','aic.ad','aic.durs','aic.lobbyPalette','aic.lobbyLighting'];
+const SITE_KEYS=['aic.menuEdit','aic.clubFilms','aic.clubfilmRevision','aic.sched','aic.layout','aic.txt','aic.posters','aic.filmInfo','aic.theme','aic.clubfilm','aic.ad','aic.durs','aic.lobbyPalette','aic.lobbyLighting'];
 (function loadSiteConfig(){if(location.protocol==='file:')return;try{const x=new XMLHttpRequest();x.open('GET','site-config.json?t='+Date.now(),false);x.send();if(x.status!==200)return;const c=JSON.parse(x.responseText);if(!c||!c.rev||!c.data)return;
  if(localStorage.getItem('aic.siteRev')===String(c.rev))return;SITE_KEYS.forEach(k=>{if(k in c.data){if(c.data[k]==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(c.data[k]))}});localStorage.setItem('aic.siteRev',String(c.rev))}catch(e){}})();
 function siteExport(){const data={};SITE_KEYS.forEach(k=>{const v=store.get(k);if(v!=null)data[k]=v});const rev=new Date().toISOString();const blob=new Blob([JSON.stringify({rev,note:'빈티지 시네마 관리자 설정 · GitHub 저장소의 index.html 옆에 올리세요',data},null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='site-config.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
@@ -4695,6 +4695,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const get=()=>{const o=store.get(KEY)||{};let L=Array.isArray(o.intros)?o.intros.filter(f=>f&&f.src):null;if(!L){L=[{title:'1979 뉴스',src:(o.news&&o.news.on&&o.news.src)||NEWS0}];if(o.trailer&&o.trailer.on&&o.trailer.src)L.push({title:'단편',src:o.trailer.src})}return {intros:L,v:3}};
  const css=document.createElement('style');css.textContent=`#qa110pre,#qa171end{position:absolute;inset:0;z-index:6;overflow:hidden;background:#000;transition:opacity 1.6s ease}
 #qa110pre video,#qa110pre iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:contain;background:#000;transition:opacity 1.2s ease}
+#qa175snd{all:unset;position:absolute;left:50%;bottom:14%;transform:translateX(-50%);z-index:7;height:40px;padding:0 18px;border-radius:999px;background:rgba(28,20,22,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#f6e7cc;font:600 14px/40px 'Noto Sans KR',sans-serif;cursor:pointer;pointer-events:auto!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6);animation:qa175p 1.6s ease-in-out infinite}@keyframes qa175p{50%{box-shadow:0 0 0 6px rgba(246,231,204,.12)}}
 #qa171end{pointer-events:none;color:#efe6d2;font-family:Georgia,'Noto Serif KR',serif;text-align:center}
 #qa171end .roll{position:absolute;left:0;right:0;top:100%;display:flex;flex-direction:column;gap:2.2vh;animation:qa171roll 9s linear forwards}#qa171end .roll b{font-size:clamp(14px,2.4vh,26px);font-weight:700;letter-spacing:.04em}#qa171end .roll i{font-size:clamp(11px,1.6vh,18px);font-style:normal;opacity:.75;letter-spacing:.12em}
 #qa171end .fin{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:italic 700 clamp(40px,11vh,120px)/1 Georgia,serif;letter-spacing:.08em;opacity:0;transition:opacity 1.4s ease}
@@ -4707,18 +4708,28 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   if(id){el=document.createElement('iframe');el.allow='autoplay';el.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&controls=0&modestbranding=1&rel=0&playsinline=1';setTimeout(done,60000)}
   else{el=document.createElement('video');el.src=src;el.playsInline=true;el.volume=VOL();el.muted=MUTED();el.onended=done;el.onerror=done;const r=el.play();if(r&&r.catch)r.catch(()=>{el.muted=true;el.play().catch(()=>{})});setTimeout(done,180000)}
   CUR=el;box.appendChild(el)})}
+ /* QA176: 화면 지지직(흑백 노이즈+가로줄) + 아주 작은 잡음 소리 */function snow(box,ms,my){return new Promise(res=>{const cv=document.createElement('canvas');cv.width=160;cv.height=90;cv.style.cssText='position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;opacity:.85';box.appendChild(cv);const x=cv.getContext('2d'),im=x.createImageData(160,90),t0=performance.now();
+  try{const A_=CinemaAudio;if(A_&&!A_.muted&&!MUTED()){const c=A_.init();if(c&&A_.master){const n=c.createBuffer(1,Math.ceil(c.sampleRate*ms/1000),c.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(Math.random()<.02?1:.45);const so=c.createBufferSource();so.buffer=n;const hp=c.createBiquadFilter();hp.type='highpass';hp.frequency.value=1800;const gg=c.createGain();gg.gain.setValueAtTime(.0001,c.currentTime);gg.gain.linearRampToValueAtTime(.05*VOL(),c.currentTime+.08);gg.gain.setValueAtTime(.05*VOL(),c.currentTime+ms/1000-.25);gg.gain.linearRampToValueAtTime(.0001,c.currentTime+ms/1000);so.connect(hp).connect(gg).connect(A_.master);so.start()}}}catch(e){}
+  (function f(){const k=(performance.now()-t0)/ms;if(k>=1||my!==RUN){cv.remove();res();return}const D_=im.data,bar=(performance.now()/7)%90;for(let i=0;i<D_.length;i+=4){const y=(i/4/160)|0,v=Math.random()*255*(Math.abs(y-bar)<6?1.25:1);D_[i]=D_[i+1]=D_[i+2]=v;D_[i+3]=255}x.putImageData(im,0,0);cv.style.opacity=k>.8?(1-k)*4*.85:.85;requestAnimationFrame(f)})()})}
  const ramp=(ms,fn)=>new Promise(res=>{const t0=performance.now();const step=()=>{const k=Math.min(1,(performance.now()-t0)/ms);fn(k);if(k<1)requestAnimationFrame(step);else res()};step()});
  async function run(){const hall=typeof curSp!=='undefined'&&curSp?curSp.hall:1;if(SHOWN===hall)return;/* 같은 관에서 자리만 옮기면 다시 틀지 않음 */const cine=$('cine');if(!cine)return;const my=++RUN;SHOWN=hall;let box=$('qa110pre');if(box)box.remove();
   const P=get();if(!P.intros.length)return;box=document.createElement('div');box.id='qa110pre';cine.appendChild(box);window.__qa171fade=true;
   holdFilm();const hold=setInterval(()=>{if(my!==RUN){clearInterval(hold);return}holdFilm();if(CUR&&CUR.tagName==='VIDEO'){CUR.muted=MUTED();if(!CUR.__fading)CUR.volume=VOL()}},200);
   /* QA173: 간식 고르는 창이 떠 있는 동안은 아무것도 시작하지 않음 */while(my===RUN&&document.querySelector('.qa134'))await wait(150);if(my!==RUN)return;
+  await snow(box,1500,my)/* QA176: 뉴스 전에 지지직 */;if(my!==RUN)return;
   let last=null;for(const f of P.intros){if(my!==RUN)return;if(last)last.remove();last=await clip(box,f.src)}
   clearInterval(hold);if(my!==RUN)return;
   /* 인트로 페이드아웃(영상·소리) */if(last){last.__fading=1;const v0=last.tagName==='VIDEO'?last.volume:0;last.style.opacity=0;await ramp(1200,k=>{try{if(last.tagName==='VIDEO')last.volume=v0*(1-k)}catch(e){}});last.remove()}
   if(my!==RUN)return;
   /* 본편 페이드인(영상·소리) */const V=VOL();try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.volume=0;if(typeof CMODE!=='undefined'&&CMODE==='full')vf.currentTime=0;vf.muted=MUTED();vf.play().catch(()=>{})}else if(typeof yt!=='undefined'&&yt&&yt.playVideo){yt.setVolume(0);if(typeof CMODE!=='undefined'&&CMODE==='full'&&yt.seekTo)yt.seekTo(0,true);if(!MUTED())yt.unMute();yt.playVideo()}}catch(e){}
   box.style.opacity=0;box.style.pointerEvents='none';await ramp(1600,k=>{try{if(typeof vf!=='undefined'&&vf&&!vf.hidden)vf.volume=V*k;else if(yt&&yt.setVolume)yt.setVolume(Math.round(V*100*k))}catch(e){}});
-  window.__qa171fade=false;if(my===RUN)box.remove()}
+  window.__qa171fade=false;if(my===RUN)box.remove();ensure(my)}
+ /* QA175: iPhone 등에서 소리 있는 자동 재생이 막히면 → 멈추지 않고 소리 없이 이어 재생 + '소리 켜기' 칩(한 번 누르면 소리) */
+ async function ensure(my){for(let i=0;i<3;i++){await wait(700);if(my!==RUN)return;if(playing())return}try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.muted=true;vf.play().catch(()=>{})}else if(yt&&yt.playVideo){yt.mute();yt.playVideo()}}catch(e){}await wait(900);if(my!==RUN)return;if(!playing()){document.body.classList.add('qa141need');try{$('watch').hidden=false}catch(e){}return}soundChip(my)}
+ function playing(){try{if(typeof vf!=='undefined'&&vf&&!vf.hidden)return !vf.paused&&(MUTED()||!vf.muted);return yt&&yt.getPlayerState&&yt.getPlayerState()===1&&(MUTED()||!(yt.isMuted&&yt.isMuted()))}catch(e){return true}}
+ function soundChip(my){const cine=$('cine');if(!cine||$('qa175snd')||MUTED())return;const b=document.createElement('button');b.id='qa175snd';b.type='button';b.textContent='🔊 소리 켜기';cine.appendChild(b);
+  b.onclick=e=>{e.stopPropagation();const V=VOL();try{if(typeof vf!=='undefined'&&vf&&!vf.hidden){vf.muted=false;vf.volume=V;vf.play().catch(()=>{})}else if(yt){yt.unMute();yt.setVolume(Math.round(V*100));if(yt.getPlayerState&&yt.getPlayerState()!==1)yt.playVideo()}}catch(err){}try{ytMuted=false;hudUpd()}catch(err){}b.remove()};
+  const rm=setInterval(()=>{if(my!==RUN||!b.isConnected){clearInterval(rm);b.remove()}},500)}
  /* 엔딩: 자막이 올라가고 FIN → 그 뒤에 원래 종료 처리(불이 서서히 켜짐) */
  const _oe=onEnded;onEnded=function(){const cine=$('cine');if(!cine||!curSc||$('qa171end')){return _oe.apply(this,arguments)}const f=curSc.film||{},args=arguments,me_=this;let info={};try{info=filmBoardInfo(hallCfg(curSp.hall),f)||{}}catch(e){}
   const L=[['',f.title||''],['감독·제작',info.credit||f.credit||''],['상영',(hallCfg(curSp.hall)||{}).name||''],['','Ciné Rendez-vous'],['','Paris · 1979'],['','관람해 주셔서 고맙습니다']].filter(x=>x[1]);
@@ -4737,7 +4748,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   itadd:async()=>{grab();let src=($('it_u').value||'').trim(),title=($('it_t').value||'').trim();const file=$('it_f')?.files[0];if(file){if(!window.CinemaCloud?.enabled){toast('파일은 영상 저장소 연결 후 올릴 수 있어요');return}try{toast('영상 올리는 중…');const r=await window.CinemaCloud.upload(file,()=>{});src=r&&(r.url||r.src);if(!title)title=file.name.replace(/\.[^.]+$/,'')}catch(e){toast(e.message||'업로드 실패');return}}
    if(!src||!(ytId(src)||/^https:\/\/.+\.(mp4|webm)(\?.*)?$/i.test(src)||/^media\/\S+\.(mp4|webm)$/i.test(src))){toast('mp4·webm 또는 YouTube 주소를 넣어 주세요');return}ED.push({title:title||'인트로 '+(ED.length+1),src});re()},
   presave:()=>{if(!ADM)return;grab();store.set(KEY,{v:3,intros:ED.map(f=>({title:f.title,src:f.src}))});toast('인트로 영화를 저장했어요');ED=null;re()}});
- window.QA110={run,get};window.QA169={skip:()=>{if(SKIP)SKIP()}};
+ window.QA110={run,get,soundChip:()=>soundChip(RUN)};window.QA169={skip:()=>{if(SKIP)SKIP()}};
 })();
 </script>
 <script id="qa113-caisse">/* QA113: 매표소 — 손글씨 회차판(SÉANCES)과 매표원이 다음 회차를 말로 알려줌 */
@@ -4761,7 +4772,8 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   const m=itemMesh(k);m.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(m),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),r=Math.max(sz.x,sz.y,sz.z);m.position.sub(c);m.rotation.y=-.5;const g=new THREE.Group();g.add(m);g.rotation.x=.18;sc.add(g);
   const rad=sz.length()/2,dist=rad/Math.sin(15*Math.PI/180)*1.08,cam=new THREE.PerspectiveCamera(30,1,.01,50);cam.position.set(0,dist*.18,dist);cam.lookAt(0,0,0);RR.render(sc,cam);CACHE[k]=RR.domElement.toDataURL('image/png');
   sc.traverse(o=>{if(o.isMesh){o.geometry.dispose()}})}catch(e){CACHE[k]=''}return CACHE[k]}
- window.qa115Card=function(k,q,full){const img=thumb(k);return `<div class="qa115-c" role="listitem"><div class="qa115-im">${img?`<img alt="" src="${img}">`:`<span>${IT[k][0]}</span>`}</div><b class="qa115-n">${IT[k][1]}</b><p class="qa115-d">${DESC[k]||''}</p><div class="qa115-q"><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기">−</button><b>${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${full?'disabled':''} aria-label="더하기">+</button></div></div>`};
+ window.QA115_DESC=DESC;window.qa115Thumb=thumb;window.qa115Reset=()=>{for(const k in CACHE)delete CACHE[k]};
+ window.qa115Card=function(k,q,full){const img=thumb(k);return `<div class="qa115-c" role="listitem"><div class="qa115-im">${img?`<img alt="" src="${img}">`:`<span>${IT[k][0]}</span>`}</div><b class="qa115-n">${IT[k][1]}</b><p class="qa115-d">${(window.QA177&&QA177.desc(k))||DESC[k]||''}</p><div class="qa115-q"><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기">−</button><b>${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${full?'disabled':''} aria-label="더하기">+</button></div></div>`};
  const st=document.createElement('style');st.textContent=`.qa115-car{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;margin:0 -2px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .qa115-c{flex:0 0 min(62%,190px);scroll-snap-align:start;background:#fbf3e2;border:1px solid rgba(122,31,61,.35);border-radius:10px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 0 rgba(122,31,61,.12)}
 .qa115-im{aspect-ratio:1/1;border-radius:8px;background:radial-gradient(circle at 50% 42%,#fffaf0 0,#f1e2c4 70%,#e6d2ad 100%);display:flex;align-items:center;justify-content:center;overflow:hidden}.qa115-im img{width:100%;height:100%;object-fit:contain}.qa115-im span{font-size:56px}
@@ -4785,7 +4797,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}},put=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
  window.qa121Keep=function(k){if(!D[k])return null;const rare=Math.random()<RARE,id=k+':'+(rare?1:0),o=get();o[id]=(o[id]||0)+1;put(o);return {id,rare}};
  const CACHE={};
- function draw(k,vi){const id=k+':'+vi;if(CACHE[id])return CACHE[id];const v=D[k].v[vi],c=document.createElement('canvas');c.width=c.height=360;const x=c.getContext('2d'),W=360,H=360;
+ function draw(k,vi){if(window.QA177&&QA177.img(k))return QA177.img(k)/* QA177: 관리자가 올린 포장지 이미지 */;const id=k+':'+vi;if(CACHE[id])return CACHE[id];const v=D[k].v[vi],c=document.createElement('canvas');c.width=c.height=360;const x=c.getContext('2d'),W=360,H=360;
   x.fillStyle=v.bg;x.fillRect(0,0,W,H);
   if(v.foil){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.45,'rgba(255,255,255,0)');g.addColorStop(.6,'rgba(255,255,255,.12)');g.addColorStop(1,'rgba(0,0,0,.1)');x.fillStyle=g;x.fillRect(0,0,W,H);for(let i=0;i<22;i++){x.strokeStyle='rgba(255,255,255,'+(.05+Math.random()*.08)+')';x.lineWidth=1;x.beginPath();x.moveTo(Math.random()*W,0);x.lineTo(Math.random()*W,H);x.stroke()}}
   if(v.stripe){for(let i=-H;i<W;i+=34){x.fillStyle='rgba(0,0,0,.05)';x.beginPath();x.moveTo(i,0);x.lineTo(i+17,0);x.lineTo(i+17+H,H);x.lineTo(i+H,H);x.fill()}}
@@ -4856,8 +4868,8 @@ body.cfull #qa127map{display:none!important}
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
  const build=h=>{hall=h;el.classList.remove('min')/* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
-  if(old&&old.kind==='cine'&&old.hall===sp.hall&&!window.__qa130ok){ask(sp);return}window.__qa130ok=0;
-  if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
+  window.__qa130ok=0;
+  if(old&&old.kind==='cine'&&old.hall===sp.hall){toast(seatLabel(HALLN[sp.hall].seats.indexOf(sp))+' 좌석으로 이동합니다')/* QA176: 확인창 없이 알림만 띄우고 바로 이동 */;old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
   pickSeat(sp.hall,sp)};
  const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
  el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
@@ -5123,7 +5135,7 @@ html body .admback:hover{opacity:1}
 <script id="qa158-adm-js">
 /* QA158: 관리자 창 — 크게 + 왼쪽 LNB 메뉴. 미리보기가 필요한 로비 컬러·전체 톤은 화면을 가리지 않게 오른쪽에 붙고 '관리자 메뉴'로 돌아감 */
 (function(){
- const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
+ const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admmenu','매점 메뉴'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
  const WIDE=['adm','admclub','adfilmInfo','admpre','admposter','cloudsettings','admtest'],DOCK=['admlobby','admgrade'];
  function deco(k,st){const p=$('pn');if(!ADM||!p||p.hidden)return;const box=p.querySelector('.pbox');if(!box)return;
   if(DOCK.includes(k)){box.classList.add('lpa');const pin=box.querySelector('.pin')||box;if(!pin.querySelector('.admback')){const b=document.createElement('button');b.type='button';b.className='admback';b.dataset.a='adm';b.textContent='← 관리자 메뉴';pin.prepend(b)}return}
@@ -5131,6 +5143,7 @@ html body .admback:hover{opacity:1}
   const main=document.createElement('div');main.className='admmain';[...box.childNodes].forEach(n=>{if(!(n.classList&&n.classList.contains('x')))main.appendChild(n)});
   const nav=document.createElement('nav');nav.className='admnav';nav.innerHTML='<b>관리자</b>'+NAV.map(n=>n===0?'<hr>':n===1?'<i class="sp"></i>':`<button type="button" data-a="${n[0]}"${n[2]||''}${n[0]===k?' aria-current="true"':''}>${n[1]}</button>`).join('');
   box.append(nav,main);if(st)main.scrollTop=st}
+ window.QA158={deco};
  [...WIDE,...DOCK].forEach(k=>{const f=PANELS[k];if(!f&&k!=='admclub')return;PANELS[k]=(...a)=>{const m=document.querySelector('#pn.admw .admmain'),st=m&&$('pn').dataset.admk===k?m.scrollTop:0;$('pn').classList.remove('admw');if(WIDE.includes(k))PLEG++;try{(PANELS['_'+k]||f)(...a)}finally{if(WIDE.includes(k))PLEG--}$('pn').dataset.admk=k;deco(k,st)}});
  /* 닫힐 때 관리자 모양 해제 */const _cp=closePanel;new MutationObserver(()=>{const p=$('pn');if(p.hidden)p.classList.remove('admw')}).observe($('pn'),{attributes:true,attributeFilter:['hidden']});
  /* ---- 아지트 영화 관리 ---- */
@@ -5210,6 +5223,7 @@ html body .admback:hover{opacity:1}
     m(new THREE.BoxGeometry(.1,.025,.1),BR,0,-.075,0);m(new THREE.BoxGeometry(.075,.11,.075),GL,0,0,0);[[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,b])=>m(new THREE.BoxGeometry(.012,.12,.012),BR,a*.042,0,b*.042));const cap=m(new THREE.ConeGeometry(.07,.06,4),BR,0,.09,0);cap.rotation.y=Math.PI/4;m(new THREE.BoxGeometry(.03,.03,.012),BR,sd*.05,-.04,0);
     const gl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffc070,transparent:true,opacity:.45,depthWrite:false,blending:THREE.AdditiveBlending}));gl.scale.setScalar(.42);g.add(gl);
     const pl=new THREE.Mesh(new THREE.CircleGeometry(.55,20),pool);pl.rotation.x=-Math.PI/2;pl.position.set(HCX[id]+sd*.45,base+.03,lz+.1);S.add(pl)})}
+  /* QA176: 관 뒷벽 바깥 바닥이 겹쳐 깜빡이던 것 — 검은 판으로 덮음 */{const oc=new THREE.Mesh(new THREE.PlaneGeometry(2*HX+4,16),new THREE.MeshBasicMaterial({color:0x050304}));oc.rotation.x=-Math.PI/2;oc.position.set(HCX[id],base+.03,7.85);S.add(oc)}
   const add=S.children.slice(n0);add.forEach(o=>{HALLG[id].push(o);HSET.add(o);o.visible=space===id})});
  /* ---------- 아지트 벽: 그 시절 영화 사건 신문 스크랩(가상 지면 · 사실 요약) ---------- */
  const NEWS=[
@@ -5298,7 +5312,8 @@ html body #qa127map button.open{height:46px!important;padding:0 20px!important;f
 html body #qa127map button.open:hover{background:rgba(255,255,255,.07)!important}
 html body #qa127map button.x:hover{background:rgba(255,255,255,.1)!important;border-radius:50%!important}
 html body #qa133full{display:none!important}
-html body #toast{font-size:15px!important}/* QA173: 알림 글자 1px 크게 */
+html body #toast{font-size:15px!important}
+@media (max-width:699px){html body #qa127map{zoom:.8}}/* QA176: 모바일 좌석표 20% 작게 *//* QA173: 알림 글자 1px 크게 */
 </style>
 <script id="qa172-js">
 (function(){
@@ -5333,6 +5348,34 @@ html body #toast{font-size:15px!important}/* QA173: 알림 글자 1px 크게 */
   cp.set(H.cx,yc,zc);lk.set(H.cx,yc,zc-10);ST=sh;FOVT=2*Math.atan(t)*180/Math.PI;window.QA173ON=performance.now();
   window.__fzP=(window.__fzP||new THREE.Vector3()).copy(C.position);window.__fzL=(window.__fzL||new THREE.Vector3()).copy(look)};
  (function shift(){requestAnimationFrame(shift);const on=performance.now()-(window.QA173ON||0)<300,tgt=on?ST:0;S_+=(tgt-S_)*.06;if(Math.abs(S_)<.002&&!on){if(C.view&&C.view.enabled){C.clearViewOffset()}S_=0;return}const W=innerWidth,Hh=innerHeight;C.setViewOffset(W,Hh,0,S_*Hh/2,W,Hh)})();
+})();
+</script>
+<script id="qa177-menu">
+/* QA177: 관리자 › 매점 메뉴 — 모든 매점(로비 매점·우브뢰즈·2층 카페·아지트 카페·와인 바·스낵 바·꽃 파는 소녀)의 메뉴 이름·소개·포장지 이미지를 고쳐 올림. 저장값 aic.menuEdit {k:{n,d,img}} (서버 동기화) */
+(function(){const KEY='aic.menuEdit',SHOPS=[['shop','로비 매점'],['ouv','상영관 우브뢰즈'],['cafe','2층 카페'],['cbcafe','아지트 카페'],['cbwine','아지트 와인 바'],['cbsnack','아지트 스낵 바'],['vendor','꽃 파는 소녀']];
+ const N0={};Object.keys(IT).forEach(k=>N0[k]=IT[k][1]);const get=()=>store.get(KEY)||{},TEX={};
+ const LB=new Set(['glacier','bebert','rivoli','fruitc','lemon']);
+ function tex(k){const o=get()[k];if(!o||!o.img)return null;if(TEX[k]&&TEX[k].src===o.img)return TEX[k].t;const t=new THREE.TextureLoader().load(o.img,()=>{try{qa115Reset()}catch(e){}});TEX[k]={src:o.img,t};return t}
+ function apply(){const M=get();Object.keys(IT).forEach(k=>{IT[k][1]=(M[k]&&M[k].n)||N0[k]});Object.keys(M).forEach(k=>{if(M[k].img)tex(k)});try{qa115Reset()}catch(e){}}
+ window.QA177={desc:k=>{const o=get()[k];return o&&o.d||''},img:k=>{const o=get()[k];return o&&o.img||''},apply};
+ /* 모델에 반영: 라벨이 있는 간식은 라벨 그림을 교체, 그 밖의 메뉴는 앞면에 포장지 이미지를 붙임 */
+ const _l=window.qa163Lab;window.qa163Lab=k=>tex(k)||_l(k);const _t=window.qa172Tex;window.qa172Tex=k=>{const m={cornet:'fruitc',etoile:'lemon'}[k];return (m&&tex(m))||_t(k)};
+ const _im=itemMesh;itemMesh=function(k){const g=_im(k);try{const t=!LB.has(k)&&tex(k);if(t){g.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(g),sz=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());const w=Math.max(.04,sz.x*.8),h=Math.max(.04,Math.min(sz.y*.8,w*1.4));const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshLambertMaterial({map:t,transparent:true}));p.position.set(c.x-g.position.x,c.y-g.position.y,b.max.z-g.position.z+.002);g.add(p)}}catch(e){}return g};
+ apply();
+ /* 관리자 화면 */let ED=null;const esc_=v=>esc(String(v||''));
+ const render=()=>{if(!ADM){PANELS.admlogin();return}if(!ED)ED=JSON.parse(JSON.stringify(get()));const seen=new Set();
+  let h='<h3>매점 메뉴</h3><div class="qa177"><p class="sub">메뉴 이름·소개·포장지 이미지를 바꿀 수 있어요. 비워 두면 기본값이 나와요. 같은 메뉴가 여러 매점에 있으면 함께 바뀌어요.</p>';
+  SHOPS.forEach(([sk,sn])=>{const L=(MENU[sk]||[]).filter(k=>IT[k]);if(!L.length)return;h+=`<h4>${sn}</h4>`;L.forEach(k=>{const e=ED[k]||{},dup=seen.has(k);seen.add(k);let th='';try{th=e.img||qa115Thumb(k)}catch(err){}
+   if(dup){h+=`<div class="qa177-r dup"><div class="im">${th?`<img alt="" src="${th}">`:IT[k][0]}</div><div class="f"><b>${esc_(e.n||N0[k])}</b><i style="font-size:12px;opacity:.7">위 ${esc_(e.n||N0[k])}와 같은 메뉴라 함께 바뀌어요</i></div></div>`;return}h+=`<div class="qa177-r"><div class="im">${th?`<img alt="" src="${th}">`:IT[k][0]}</div><div class="f"><input data-mk="${k}" data-f="n" value="${esc_(e.n||'')}" placeholder="${esc_(N0[k])}" maxlength="30" aria-label="이름"><textarea data-mk="${k}" data-f="d" rows="2" maxlength="120" placeholder="${esc_((window.QA115_DESC||{})[k]||'소개')}" aria-label="소개">${esc_(e.d||'')}</textarea><div class="b"><label class="up">포장지 이미지<input type="file" accept="image/*" data-mimg="${k}" hidden></label>${e.img?`<button data-a="mimgdel" data-k="${k}">기본 이미지로</button>`:''}${dup?'<i>위와 같은 메뉴</i>':''}</div></div></div>`})});
+  h+='<div style="display:flex;gap:8px;margin-top:14px"><button class="p" data-a="menusave">저장</button><button data-a="menureset">모두 기본값으로</button></div></div>';panel(h);
+  document.querySelectorAll('#pn [data-mimg]').forEach(i=>i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=480,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);grab();const k=i.dataset.mimg;ED[k]=Object.assign(ED[k]||{},{img:c.toDataURL('image/jpeg',.84)});re()};im.src=r.result};r.readAsDataURL(f)})};
+ const grab=()=>{if(!ED)return;document.querySelectorAll('#pn [data-mk]').forEach(i=>{const k=i.dataset.mk,o=ED[k]=ED[k]||{};const v=i.value.trim();if(v)o[i.dataset.f]=v;else delete o[i.dataset.f]})};
+ PANELS.admmenu=()=>{const p=$('pn');p.classList.remove('admw');PLEG++;try{render()}finally{PLEG--}p.dataset.admk='admmenu';try{QA158.deco('admmenu',0)}catch(e){}};
+ const re=()=>{const m=document.querySelector('#pn .admmain'),st=m?m.scrollTop:0;PANELS.admmenu();const m2=document.querySelector('#pn .admmain');if(m2)m2.scrollTop=st};
+ Object.assign(A,{admmenu:()=>{ED=null;PANELS.admmenu()},mimgdel:d=>{grab();if(ED[d.k])delete ED[d.k].img;re()},menureset:()=>{ED={};re();toast('기본값을 불러왔어요 · 저장해야 적용돼요')},
+  menusave:()=>{if(!ADM)return;grab();Object.keys(ED).forEach(k=>{const o=ED[k];if(!o||!(o.n||o.d||o.img))delete ED[k]});store.set(KEY,ED);apply();toast('매점 메뉴를 저장했어요');ED=null;re()}});
+ const st=document.createElement('style');st.textContent=`.qa177 h4{margin:18px 0 8px;font-size:14px;opacity:.85}.qa177-r{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);margin-bottom:8px}.qa177-r.dup{opacity:.6}.qa177-r .im{flex:none;width:76px;height:76px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:30px}.qa177-r .im img{width:100%;height:100%;object-fit:cover}.qa177-r .f{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}.qa177-r input,.qa177-r textarea{margin:0!important;width:100%;box-sizing:border-box;font-size:14px;padding:6px 8px;resize:vertical}.qa177-r .b{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.qa177-r .up{cursor:pointer;font-size:13px;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.2)}.qa177-r .b button{font-size:12px!important;padding:4px 10px!important}.qa177-r .b i{font-size:12px;opacity:.7}`;document.head.appendChild(st);
+ /* 다른 기기에서 저장값이 들어오면 다시 반영 */let last=JSON.stringify(get());setInterval(()=>{const now=JSON.stringify(get());if(now!==last){last=now;apply()}},3000);
 })();
 </script>
 </body></html>

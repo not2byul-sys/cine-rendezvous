@@ -733,9 +733,9 @@ svg.lucide, #act button svg { stroke-width:1.5!important; width:22px!important; 
 #join .jt2-f1{left:26px;top:21.3689px;width:388px;height:253px;right:auto;bottom:auto;border-width:1.4667px}
 #join .jt2-f2{left:30px;top:26.3689px;width:380px;height:244px;right:auto;bottom:auto;border-width:.62857px}
 #join .jt2-face{position:relative;display:block;flex:none;width:362.4762px;height:230px;padding:0;overflow:hidden}
-#join .jt2 .jt-q{position:absolute;left:79.2381px;top:16.3689px;font:700 17px/1.5 'Noto Serif KR',serif!important;letter-spacing:-.17px;margin:0;padding:0}
+#join .jt2 .jt-q{position:absolute;left:0;right:0;text-align:center;top:16.3689px;font:700 17px/1.5 'Noto Serif KR',serif!important;letter-spacing:-.17px;margin:0;padding:0}
 #join .jt2-field{position:absolute;left:29.3333px;top:61.3689px;width:303.8095px;height:60.0952px;padding:12.5714px 0 10.4762px;border-bottom:1.04762px solid #5d211c;display:flex;align-items:center;justify-content:center;overflow:hidden}
-#join #nick,#join .jt2 .jt-in{height:36.1429px;width:auto;min-width:24px;max-width:303.8095px;font:700 24.0952px/1.5 'Noto Serif KR',serif!important;letter-spacing:0;text-align:left;margin:0;padding:0;caret-color:#5d211c}
+#join #nick,#join .jt2 .jt-in{height:36.1429px;width:100%!important;min-width:24px;max-width:303.8095px;font:700 24.0952px/1.5 'Noto Serif KR',serif!important;letter-spacing:0;text-align:center!important;margin:0;padding:0;caret-color:#5d211c}
 #join #nick::placeholder{color:#5d211c;opacity:.2}
 #jt14-measure{position:absolute;visibility:hidden;pointer-events:none;font:700 24.0952px/1.5 'Noto Serif KR',serif;white-space:pre;left:0;top:0}
 #join .jt2-opts{position:absolute;left:91.0476px;top:133.3689px;height:48px;min-height:0;display:flex;gap:20px;align-items:flex-start;padding:12px 0;margin:0}
@@ -927,7 +927,7 @@ const DURS=store.get('aic.durs')||{},SCHEDK='aic.sched';
 function applySched(){const sv=store.get(SCHEDK);CFG.HALLS.forEach(h=>{if(!h._def)h._def={films:h.films.map(f=>({...f})),anchor:h.anchor,gap:CFG.GAP};const x=sv&&sv[h.id];if(x&&x.films&&x.films.length){h.films=x.films.map(f=>({...f}));h.anchor=x.anchor||undefined}else{h.films=h._def.films.map(f=>({...f}));h.anchor=h._def.anchor}
   h.films.forEach(f=>{if(f.auto&&DURS[f.id])f.dur=DURS[f.id]})});CFG.GAP=sv&&sv.gap!=null?sv.gap:CFG.HALLS[0]._def.gap}
 applySched();
-const ROWS='ABCDEFGHIJ';
+const ROWS='ABCDE'/* QA128: 40석(5줄×4+4) — 객석을 스크린 쪽에 모아 원근감을 줄임 */;
 const SEATS_PER_SIDE=4, NSR=SEATS_PER_SIDE*2, NSEAT=ROWS.length*NSR;
 const seatLabel=i=>ROWS[Math.floor(i/NSR)]+pad(i%NSR+1);
 function hallSeatX(column){
@@ -978,7 +978,7 @@ try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.
 /* QA78: 이름표·말풍선은 원근과 상관없이 화면에서 같은 크기(px)로 보임. 이름표는 멀어지면 흐려짐 */let QA78_K=0;const QA78_TAGS=[];function qa78Fix(s,wpx,hpx){s.material.sizeAttenuation=false;s.material.needsUpdate=true;s.userData.px=[wpx,hpx];s.scale.set(wpx*QA78_K,hpx*QA78_K,1);return s}
 /* 부모(아바타)의 크기 배율이 스프라이트에 곱해지므로 그만큼 나눠 화면 크기를 맞춤 */const QA78_V=new THREE.Vector3();function qa78Scale(o){const p=o.userData.px,ps=o.parent?o.parent.getWorldScale(QA78_V).y||1:1;o.scale.set(p[0]*QA78_K/ps,p[1]*QA78_K/ps,1)}
 function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(s);qa78Scale(s)}
-let seatedHall=0,QA85_CINE=false;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?80:64):(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+let seatedHall=0,QA85_CINE=false;function rs(){R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?62:44)/* QA128: 관람 화각을 좁혀 원근 왜곡↓ */:(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 S.add(new THREE.HemisphereLight(0xf1eee6,0x697783,.74));
 const dl=new THREE.DirectionalLight(0xfff2dc,.26);dl.position.set(-8,20,14);S.add(dl);
 const PL=(c,i,x,y,z,d=26)=>{const l=new THREE.PointLight(c,i*.55,d);l.position.set(x,y,z);S.add(l);return l};
@@ -996,7 +996,7 @@ function sign(txt,w,h,x,y,z,ry=0,bg='#f1e1b9',fg='#3a1f33',p=S){const fs=Math.mi
 /* ---------- palette ---------- */
 const AM=0xf0dc9a,OR=0xe9a8b4,PK=0xe9a8b4,PKD=0xdc8da2,SG=0x9db58a,SGD=0x6f9470,HW=0xd29a2e,WD=0x6b3a20,WD2=0x8a5a34,BG=0x7a1830,GN=0x2f5b45,CR=0xf6ecc8,TL=0x8fae8a,BR=0xc9a24a,DK=0x2a1418;
 /* ---------- geometry constants (1 unit = 1 m, 도면 X-16 = world x, 도면 Z = world z) ---------- */
-const LW=9,LD=20,ST={x0:-8.8,x1:-6.2,x2:6.2,x3:8.8,z0:2.0,z1:6.4},STX=7.5,DOORX={1:0,2:0},HCX={1:200,2:300,3:400},HZ={H1:1,H2:2},H_BASE={1:0,2:4.2},HL={1:0,2:1},HX=6.20;/* QA19: 레퍼런스 비율 — 좌석 블록 바로 옆에 벽 */
+const LW=9,LD=20,ST={x0:-8.8,x1:-6.2,x2:6.2,x3:8.8,z0:2.0,z1:6.4},STX=7.5,DOORX={1:0,2:0},HCX={1:200,2:300,3:400},HZ={H1:1,H2:2},H_BASE={1:0,2:4.2},HL={1:0,2:1},HX=7.44/* QA127: 상영관 폭 20% 확장(스크린도 비례 20% — 좌석 블록보다 넓게) */;/* QA19: 레퍼런스 비율 — 좌석 블록 바로 옆에 벽 */
 const BF=2.0,BW=BF,LB=-4,GATE={1:{x:0,z:BF+1.2,tz:BF-.15,zone:'L0'},2:{x:0,z:LB+1.3,tz:LB+.05,zone:'L1'}},EXIT={1:{x:0,z:BF+2.4,l:0},2:{x:0,z:LB+2.0,l:1}};/* LB: 로비 뒷벽(2층 복도 깊이 BF-LB = 6m, 그 아래 1층은 1관 내부) */
 /* 왼쪽 계단 제거(11/7) → 계단은 오른쪽 하나 */const inStair=(x,z)=>z>=ST.z0&&z<=ST.z1&&x>=ST.x2&&x<=ST.x3;
 const stairY=z=>Math.max(0,Math.min(4.2,4.2*(ST.z1-z)/(ST.z1-ST.z0)));
@@ -1006,7 +1006,7 @@ function zoneOf(x,z,l){if(l===0&&Math.abs(x-BCX)<CBW-.1&&Math.abs(z-BCZ)<CBD-.1)
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
 const ZB={L0:[-LW+.6,LW-.6,.3,LD-.6],L1:[-LW+.5,LW-.5,LB+.35,BF-.25],H1:[HCX[1]-HX+.4,HCX[1]+HX-.4,-15.3,-.3],H2:[HCX[2]-HX+.4,HCX[2]+HX-.4,-15.3,-.3],B:[BCX-CBW+.5,BCX+CBW-.5,BCZ-CBD+.5,BCZ+CBD-.5]};
 const ZL={L0:0,H1:0,L1:1,H2:1,B:0};
-const SZ0=-14.8,SP=1.12,SCW=2*HX*14.2/18.8/* QA85: 기준 버전(de74875)과 같은 비율 — 상영관 폭의 75.5% */,SCH=SCW*9/16,SCY=3.5,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
+const SZ0=-14.8,SP=1.12,SCW=2*HX*14.2/18.8/* QA85: 기준 버전(de74875)과 같은 비율 — 상영관 폭의 75.5% */,SCH=SCW*9/16,SCY=1.0+SCW*9/32/* QA127: 스크린 아래끝이 무대 위 1m */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
 const WAL=0x6a3c1f,WAL2=0x7d4a28,MU=0xd69b35,MU2=0xe2b04c,ORG=0xdd6a2a,TEAL=0x3f8a86,CREAM=0xefe4cc,VEL1=0x7a1424,VEL2=0x58101c;
 /* ===== 실사 재질: 마호가니 나무결 · 회반죽 벽 · 대리석 · 카펫 · 벨벳 ===== */
 const MARB=0xe5dccb,CARP1=0x6d8273,CARP2=0x768a7b,VELG=0x5d8a86,MET=0x5e1620,PLC=0xeadfcc;
@@ -1722,7 +1722,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  B(.2,3.6,.4,WOOD,cx-1.9,base+1.8,-.25);B(.2,3.6,.4,WOOD,cx+1.9,base+1.8,-.25);B(4,.2,.4,WOOD,cx,base+3.7,-.25);blackout(cx,base,-.2,3.6,3.6);trashCan(cx+2.8,base,-.9,zn,cx+2.2,-1.9);/* QA102 이스터에그: 상영관 뒤쪽 'CABINE' 영사실 문 — 잠겨 있음 */{const X=cx-3.3,Z=-.32;B(.9,2.0,.06,0x2e1a14,X,base+1.0,Z);B(.06,.16,.05,0xb08d3c,X+.3,base+1.0,Z-.05);plane(.44,.12,art(180,50,(c,W,H)=>{c.fillStyle='#b08d3c';c.fillRect(0,0,W,H);c.fillStyle='#2a2116';c.font='bold 24px serif';c.textAlign='center';c.textBaseline='middle';c.fillText('CABINE',W/2,H/2+1)}),X,base+1.7,Z-.04,Math.PI);hitbox(X,base+1.0,Z-.25,1.0,2.0,.4,{ctx:'문 살펴보기',info:'영사실로 이어지는 문 같아요.',fn:()=>toast('잠겨 있어요. 문 너머에서 영사기 돌아가는 소리만 들려요'),pt:{x:X,z:Z-1.3,zone:zn}})}
   const DW=S.children.slice(dwn);
  hitbox(cx,base+1.8,-.38,3.6,3.6,.3,{fn:()=>exitHall(id),pt:{x:cx,z:-1.2,zone:zn}}).userData.exitH=1;sign('🚪 로비로 나가기',2.6,.44,cx,base+4.15,-.43,Math.PI,'#f6ecd0','#3a1f33');
- const dtx=FLOORT.clone();dtx.needsUpdate=true;dtx.repeat.set(4.2,3.5);const op=B(3.6,.1,3,0xffffff,cx,base-.05,1.5);op.material.map=dtx;B(2*hx,HH,.2,PLC,cx,base+HH/2,3.3);
+ const dtx=FLOORT.clone();dtx.needsUpdate=true;dtx.repeat.set(4.2,3.5);const op=B(3.6,.1,3,0xffffff,cx,base-.05,1.5);op.material.map=dtx;DW.push(B(2*hx,HH,.2,PLC,cx,base+HH/2,3.3))/* QA127: 세로 화면에서 카메라가 뒷벽 밖으로 물러날 때 함께 숨김 */;
  /* 천장 + 유백색 펜던트 */
  B(2*hx,.2,21.3,0xf6e6c8,cx,base+HH+.1,-7.35).material=new THREE.MeshLambertMaterial({map:PLAS,color:0xeadfca,emissive:0x4a3c2c});
  /* 무대 + 스크린 테두리 + 버건디 벨벳 드레이프 · 스왜그 밸런스 */
@@ -2143,7 +2143,7 @@ function clsPoster(i,W=300,H=440){const [t,bg,fg,kind,tag_]=VPOST[i%VPOST.length
  /* CINE_QA_BATCH04_20261111: clock tap opens the existing admin password prompt. */
     const clockHit=new THREE.Mesh(new THREE.CircleGeometry(.62,32),new THREE.MeshBasicMaterial({visible:false,side:THREE.DoubleSide}));
     clockHit.position.z=.165;
-    clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X+3.6,z:Z,zone:'L0'}};
+    clockHit.userData.prio=1;/* QA127: 트리 히트박스보다 우선 */clockHit.userData.act={now:1,fn:()=>PANELS.admlogin(),pt:{x:X+3.6,z:Z,zone:'L0'}};
     g.add(clockHit);INTER.push(clockHit);
     layEnd(m_,'clock','벽시계',0,{wall:'x',lo:BF+.8,hi:LD-.8});window.__clockG=g}
 /* QA18: 현관 WELCOME 발판 삭제 */
@@ -2826,7 +2826,7 @@ function qa19TapTick(dt){const m=QA19_TM;if(!m.g||m.t<0)return;m.t+=dt;const k=M
 R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>8||performance.now()-pd.t>500)return;
  QA20.obj=null;QA20.follow=null;mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(mv,C);
  const az=curZone(me),objs=[...AVATAR_HITS.filter(h=>h.userData.giftAvatar!==me&&h.userData.giftAvatar.visible&&curZone(h.userData.giftAvatar)===az),...INTER,...spotMeshes,...floors.filter(f=>!f.userData.zone||f.userData.zone[0]!=='H'||f.userData.zone===az),...CFG.HALLS.filter(h=>'H'+h.id===az).flatMap(h=>[HALLN[h.id].IC,HALLN[h.id].IB])];
- const hs=rc.intersectObjects(objs.filter(o=>!(o.userData.exitH&&C.position.z>-.7)),false);if(!hs.length)return;if(!$('sitbox').hidden&&!(hs[0].object.isInstancedMesh))hideSit();const h=hs[0],o=h.object,ud=o.userData;
+ const hs=rc.intersectObjects(objs.filter(o=>!(o.userData.exitH&&C.position.z>-.7)),false);if(!hs.length)return;if(!$('sitbox').hidden&&!(hs[0].object.isInstancedMesh))hideSit();const h=hs.find(q=>q.object.userData.prio)||hs[0],o=h.object,ud=o.userData;
  const ah=hs.find(q=>q.object.userData.giftAvatar&&q.distance<=h.distance+.65);if(ah){selectAvatar(ah.object.userData.giftAvatar);return}
  if(ud.act){if(ud.act.avatar){selectAvatar(ud.act.avatar);return}if(ud.act.ctx){qa20Obj(ud.act,o,az);return}if(az==='L0'||az==='L1'){approachObject(ud.act,o);return}if(ud.act.now){ud.act.fn();return}walkTo(me,ud.act.pt.x,ud.act.pt.z,ud.act.pt.zone,{after:ud.act.fn});return}
  if(o.isInstancedMesh){let id=h.instanceId;{const HN=HALLN[ud.hall];if(HN&&o===HN.IB){const c2=hs.find(q=>q.object===HN.IC&&q.instanceId!==id&&q.distance-h.distance<1.2);if(c2)id=c2.instanceId}}/* QA94: 앞줄 등받이 윗단을 스쳐 뒷좌석 방석에 닿으면 방석 쪽 좌석 */pickSeat(ud.hall,HALLN[ud.hall].seats[id]);return}
@@ -2903,7 +2903,7 @@ $('stand').onclick=()=>{if(me)standUp(me)};
 let FULL=0;function setFull(on){FULL=on?1:0;$('cine').classList.toggle('full',!!FULL);document.body.classList.toggle('cfull',!!FULL);$('full').textContent=FULL?'⤡ 작게 보기':'⛶ 크게 보기';try{if(FULL&&!document.fullscreenElement&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});else if(!FULL&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
 $('full').onclick=()=>setFull(!FULL);document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&FULL)setFull(0)});
 $('cyt').onclick=()=>$('ext').onclick();$('ext').onclick=()=>{const s=curSc||curS(curSp?curSp.hall:1);window.open((s.film.src&&(UC[s.film.src]||s.film.src))||('https://www.youtube.com/watch?v='+s.film.id),'_blank')};
-function place(){if(!me||!curSp)return;if(FULL){const e=$('cine').style;e.left=e.top='0px';e.width='100vw';e.height='100vh';return}const H=HALLN[curSp.hall],sp=H.scr.position,h=[[-SCW/2,SCH/2],[SCW/2,-SCH/2]].map(([dx,dy])=>{const v=new THREE.Vector3(dx,dy,0).add(sp).project(C);return[(v.x+1)/2*innerWidth,(1-v.y)/2*innerHeight]});const e=$('cine').style;e.left=Math.min(h[0][0],h[1][0])+'px';e.top=Math.min(h[0][1],h[1][1])+'px';e.width=Math.abs(h[1][0]-h[0][0])+'px';e.height=Math.abs(h[1][1]-h[0][1])+'px'}
+function place(){if(!me||!curSp)return;if(FULL){const e=$('cine').style;e.left=e.top='0px';e.width='100vw';e.height='100vh';return}const H=HALLN[curSp.hall],sp=H.scr.position,h=[[-SCW/2,SCH/2],[SCW/2,-SCH/2]].map(([dx,dy])=>{const v=new THREE.Vector3(dx,dy,0).add(sp).project(C);return[(v.x+1)/2*innerWidth,(1-v.y)/2*innerHeight]});const e=$('cine').style;e.left=Math.min(h[0][0],h[1][0])+'px';e.top=Math.min(h[0][1],h[1][1])+'px';e.width=Math.abs(h[1][0]-h[0][0])+'px';e.height=Math.abs(h[1][1]-h[0][1])+'px';/* QA126: 스크린 일부가 화면 밖이면 '영화 보기'를 보이는 부분 가운데로 */{const L=Math.min(h[0][0],h[1][0]),T=Math.min(h[0][1],h[1][1]),W=Math.abs(h[1][0]-h[0][0]),Hh=Math.abs(h[1][1]-h[0][1]),x0=Math.max(L,8),x1=Math.min(L+W,innerWidth-8),y0=Math.max(T,64),y1=Math.min(T+Hh,innerHeight-90),w_=$('watch').style;if(W>0&&Hh>0&&x1>x0&&y1>y0){w_.left=((x0+x1)/2-L)/W*100+'%';w_.top=((y0+y1)/2-T)/Hh*100+'%'}else{w_.left=w_.top=''}}}
 /* ---------- canvases (screens, timetable board) ---------- */
 function drawScreens(){const t=nowS();CFG.HALLS.forEach(h=>{const H=HALLN[h.id],s=scrAt(h,t),pl=t<s.end;
   const n=listS(h,t,2)[pl?1:0];H.posters.forEach((p,i)=>{const c=p.material.map.image.getContext('2d');c.fillStyle=`hsl(${h.hue},45%,72%)`;c.fillRect(0,0,200,300);c.fillStyle=`hsl(${h.hue},40%,45%)`;c.beginPath();c.arc(100,105,48,0,7);c.fill();c.fillStyle='#3a1f33';c.textAlign='center';c.font='bold 17px sans-serif';const L=i?n:s;c.fillText(i?'NEXT':'NOW',100,196);c.font='13px sans-serif';c.fillText(L.film.title.slice(0,16),100,226);c.fillText('좌석에 앉으면 상영',100,250);p.material.map.needsUpdate=true})});
@@ -3503,13 +3503,18 @@ function qaManualMove(c,dx,dz,dt){const u=c.userData,pressed=!!(dx||dz);
 /* ---------- loop ---------- */
 const clk=new THREE.Clock(),look=new THREE.Vector3(0,1,18),cp=new THREE.Vector3(),lk=new THREE.Vector3();let ac=0,CLOST=0;
 function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러보기',L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉기',H2:'의자를 눌러 앉기',B:'영화클럽 아지트'})[z]||''}
+/* QA127: 관람 카메라 — 방향은 고정(정면, 살짝 내려봄), 거리만 내 자리가 화면에 들어올 때까지 뒤로 */
+function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY-.6,SCZ),P0=new THREE.Vector3(H.cx,H.base+3.9,-11),d=L.clone().sub(P0).normalize(),r=new THREE.Vector3(1,0,0),u=new THREE.Vector3().crossVectors(r,d),tv=Math.tan(C.fov*Math.PI/360),th=tv*C.aspect,pts=[hv,new THREE.Vector3(hv.x,hv.y-.4,hv.z)],v=new THREE.Vector3(),cam=new THREE.Vector3();
+ let D=Math.max(L.distanceTo(P0),SCW/2/(.97*th)+.01*0);const ok=()=>pts.every(p=>{v.copy(p).sub(cam);const z=v.dot(d);if(z<.6)return false;const x=v.dot(r)/(z*th),y=v.dot(u)/(z*tv);return Math.abs(x)<=.8&&y>=-.72&&y<=.85});
+ const ZM=C.aspect<1?14:2.6/* 세로 화면은 뒷벽 밖까지 물러나야 가장자리 좌석이 들어옴 */;for(let k=0;k<240;k++){cam.copy(L).addScaledVector(d,-D);if(cam.z>ZM)break;if(ok())break;D+=.15}
+ if(cam.z>ZM){const t=(ZM-L.z)/(-d.z);cam.copy(L).addScaledVector(d,-t)}cp.copy(cam);lk.copy(cam).add(d)}
 (function loop(){requestAnimationFrame(loop);const dt=Math.min(clk.getDelta(),.1),t=clk.elapsedTime;if(window.__wx)__wx(dt,t);if(space>0)idleScreen(space,t);
  if(me){const u=me.userData;u.manualMoving=false;
   if(!u.seat&&!u.flowerPurchase){{if(K.q)camYaw+=dt*1.8;if(K.e)camYaw-=dt*1.8}const fw=(K.w||K.arrowup?1:0)-(K.s||K.arrowdown?1:0),sd=(K.d||K.arrowright?1:0)-(K.a||K.arrowleft?1:0),cfx=Math.sin(camYaw),cfz=Math.cos(camYaw),dx=cfx*fw-cfz*sd,dz=cfz*fw+cfx*sd;
    if((dx||dz)&&ACTOR_SESSION)dismissActor();qaManualMove(me,dx,dz,dt);}
   const p=me.position,s=u.seat,zn=curZone(me);if(window.__lzn&&window.__lzn!==zn&&!s)alignSpaceCamera(me);window.__lzn=zn;
   if(zn[0]==='H'){
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(H.cx,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(H.cx,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3532,7 +3537,7 @@ function hintFor(z){return({L0:'바닥을 눌러 이동 · 드래그로 둘러�
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);if(hz&&(!s||CWIDE)){/* User-controlled orbit is also available while walking in the auditorium. */}/* 상영관: 뒤쪽 통로에서 높게 → 좌석 전체와 스크린이 한눈에 */if(hz&&!s){/* QA39: 걸을 때는 스크린 가운데를 정면으로 — 스크린 전체와 좌석이 함께 보이게 */const dz=Math.max(4,cp.z-SCZ),ty=(hz.base+SCY*.97)-cp.y,off=Math.tan(clampN((camPitch-.2)*.85,-.6,.6));lk.set(cp.x+fx*20,cp.y+20*(ty/dz-off),cp.z+fz*20)}else lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
    if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }else{
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA118: 관람 시점을 내 자리 바로 뒤·위로 — 내 뒷모습(간식 먹는 모습)과 스크린이 함께 보임 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);const port=C.aspect<1;cp.set(H.cx,hv.y+1.7,Math.min(s.z+3.4,1.5));{const sx=H.cx,sy=H.base+SCY,w=port?.42:.4;lk.set(H.cx,hv.y*(1-w)+sy*w,hv.z*(1-w)+SCZ*w)}}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -4761,6 +4766,35 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const st=document.createElement('style');st.textContent='.qa124-pre{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.qa124-pre button{padding:7px 12px;font-size:13px}.qa124-row{margin:0 0 10px}.qa124-h{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px}html body #pn .qa124-row input[type=range]{width:100%!important;margin:0!important;padding:0!important;min-height:0!important;height:24px!important;border:0!important;background:transparent!important;box-shadow:none!important;accent-color:var(--acc)}.qa124-h b{font-weight:700}.qa124-act{display:flex;gap:8px}.qa124-act button{flex:1}';document.head.appendChild(st);
  window.QA124={get:()=>G,set:g=>{G=Object.assign({},DEF,g)},PRE};
 })();
+</script>
+<style id="qa127-map">
+#watch[hidden]{display:none!important}
+#qa127map{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:40;padding:9px 10px 10px;border-radius:14px;background:var(--hud-bg,rgba(28,20,22,.72));border:1px solid var(--hud-bd,rgba(255,255,255,.12));backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 8px 24px -10px rgba(0,0,0,.6);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#qa127map[hidden]{display:none!important}
+#qa127map.min{padding:0;border-radius:999px}#qa127map.min .scr,#qa127map.min .g,#qa127map.min .x{display:none}#qa127map:not(.min) .open{display:none}
+#qa127map .open{all:unset;box-sizing:border-box;height:36px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font:500 13px/1 'Noto Sans KR',sans-serif;color:var(--hud-fg,rgba(250,245,240,.92));cursor:pointer;white-space:nowrap}
+#qa127map .hd{display:flex;align-items:center;justify-content:flex-end;margin:-3px -4px 4px 0}#qa127map.min .hd{margin:0}
+#qa127map .x{all:unset;box-sizing:border-box;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:rgba(250,245,240,.8);cursor:pointer;font:400 15px/1 sans-serif}#qa127map .x:hover{background:rgba(255,255,255,.1)}
+#qa127map .scr{display:block;height:3px;margin:0 6px 9px;border-radius:0 0 50% 50%/0 0 100% 100%;background:rgba(250,245,240,.7)}
+#qa127map .g{display:grid;grid-template-columns:repeat(4,13px) 7px repeat(4,13px);gap:4px 3px}
+#qa127map button{all:unset;box-sizing:border-box;width:13px;height:10px;border-radius:3px 3px 2px 2px;background:rgba(250,245,240,.26);cursor:pointer}
+#qa127map button.tk{background:rgba(250,245,240,.08);cursor:default}
+#qa127map button.me{background:#e8c27a;box-shadow:0 0 0 2px rgba(232,194,122,.35)}
+#qa127map button:not(.tk):not(.me):hover{background:rgba(250,245,240,.55)}
+body.cfull #qa127map{display:none!important}
+@media (max-width:420px){#qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 66px);left:10px}}
+</style>
+<script id="qa127-seatmap">
+/* QA127: 상영관 좌석표 — 입장부터 좌측 하단. 빈자리를 누르면 그 자리로(앉아 있으면 상영을 끊지 않고 바로 옮김) */
+(function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g');let hall=0,btn=[];
+ const build=h=>{hall=h;el.classList.add('min');g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
+ const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
+  if(old&&old.kind==='cine'&&old.hall===sp.hall){old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
+  pickSeat(sp.hall,sp)};
+ const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
+ el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
+ const paint=()=>{const z=me?curZone(me):'';const h=z&&z[0]==='H'?+z.slice(1):0;if(!h){el.hidden=true;return}if(h!==hall)build(h);el.hidden=false;const S_=HALLN[h].seats,ms=me.userData.seat||me.userData.pendingSeat||null;S_.forEach((sp,i)=>{const b=btn[i];if(!b)return;const m=sp===ms||sp.taken===me,t=!m&&!!sp.taken;b.classList.toggle('me',m);b.classList.toggle('tk',t)})};
+ setInterval(()=>{try{paint()}catch(e){}},350);window.QA127_MAP={paint,swap}})();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

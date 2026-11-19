@@ -3244,9 +3244,9 @@ Object.assign(A,{
 document.addEventListener('change',e=>{if(e.target&&e.target.classList&&e.target.classList.contains('qa100-ck')){const b=document.querySelector('#pn [data-a=bagdelsel]');if(b)b.disabled=!document.querySelector('#pn .qa100-ck:checked')}});
 const SNACKW={items:[],hid:0,gap:0,next:0,asked:null};
 function qa100Tag(){if(!me)return;const t=me.getObjectByName('avatar-tag');if(!t)return;const nm=me.userData.displayName||'',em=SNACKW.items.map(k=>IT[k][0]).join('');const ns=tag(em?nm+' '+em:nm,'rgba(42,20,28,.88)','#fff',24,.62),im=ns.material.map.image;const old=t.material.map;t.material.map=ns.material.map;t.material.needsUpdate=true;try{old&&old.dispose()}catch(e){}qa78Fix(t,im.width*.54,im.height*.54);try{qa78Scale(t)}catch(e){}}
-function qa100Ask(){const ed=HELD.map((x,i)=>isFlower(x.k)?-1:i).filter(i=>i>=0);if(!ed.length)return;if(window.QA134&&QA134.pick){QA134.pick(ed);return}/* QA135: 상영관 모달은 어두운 시트 */panel('<h3>간식을 먹으면서 영화를 볼까요?</h3><p class="sub">고른 간식은 영화를 보는 동안 하나씩 먹어요.</p>'+ed.map(i=>`<div class="rw qa100-row"><label class="qa100-l"><input type="checkbox" class="qa100-sn" data-i="${i}" checked><b>${IT[HELD[i].k][0]} ${IT[HELD[i].k][1]}</b></label></div>`).join('')+'<div class="qa100-act"><button type="button" data-a="snackno">그냥 볼게요</button><button type="button" class="p" data-a="snackgo">먹으면서 보기</button></div>')}
+function qa100Ask(){const ed=HELD.map((x,i)=>isFlower(x.k)?-1:i).filter(i=>i>=0);if(!ed.length){if(window.QA134&&QA134.start)QA134.start();return}if(window.QA134&&QA134.pick){QA134.pick(ed);return}/* QA135: 상영관 모달은 어두운 시트 */panel('<h3>간식을 먹으면서 영화를 볼까요?</h3><p class="sub">고른 간식은 영화를 보는 동안 하나씩 먹어요.</p>'+ed.map(i=>`<div class="rw qa100-row"><label class="qa100-l"><input type="checkbox" class="qa100-sn" data-i="${i}" checked><b>${IT[HELD[i].k][0]} ${IT[HELD[i].k][1]}</b></label></div>`).join('')+'<div class="qa100-act"><button type="button" data-a="snackno">그냥 볼게요</button><button type="button" class="p" data-a="snackgo">먹으면서 보기</button></div>')}
 function qa100Tick(){if(!me)return;const sp=me.userData.seat,inSeat=sp&&sp.kind==='cine'&&curZone(me)[0]==='H';
- if(inSeat&&SNACKW.asked!==sp){SNACKW.asked=sp;if(!SNACKW.items.length)setTimeout(()=>{if(me.userData.seat===sp&&$('pn').hidden)qa100Ask()},700)}
+ if(inSeat&&SNACKW.asked!==sp){SNACKW.asked=sp;if(!SNACKW.items.length)setTimeout(()=>{if(me.userData.seat===sp&&$('pn').hidden)qa100Ask()},700);else setTimeout(()=>{if(me.userData.seat===sp&&window.QA134)QA134.start()},700)/* QA141 */}
  if(!inSeat)SNACKW.asked=null;
  if(!SNACKW.items.length)return;
  if(!inSeat){const left=SNACKW.items.splice(0);left.forEach(k=>HELD.push({k}));QA88_N=HELD.length;refreshMe();toast('남은 간식 '+left.length+'개는 가방에 넣었어요');qa100Tag();hudUpd();return}/* 상영 중 나가면 남은 간식은 가방으로 */
@@ -4844,14 +4844,15 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
   el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;closeSheet();btns[+b.dataset.i].fn()});bg.addEventListener('click',()=>{closeSheet();onCancel&&onCancel()});document.body.append(bg,el);window.__qa134=[bg,el]};
  const closeSheet=()=>{(window.__qa134||[]).forEach(x=>x.remove());window.__qa134=null};
  /* QA135: 간식 고르기 — 체크박스 대신 눌러서 켜고 끄는 칩 */
- const start=()=>{try{if(curSp&&!$('watch').hidden)$('watch').onclick()}catch(e){}};
+ /* QA141: '영화 보기' 버튼 없이 착석하면 자동 상영. 브라우저가 자동 재생을 막으면 2.5초 뒤에만 버튼을 보여줌 */
+ let needT=0;const start=()=>{document.body.classList.remove('qa141need');try{if(curSp&&!CINE_DONE)$('watch').onclick()}catch(e){}clearTimeout(needT);needT=setTimeout(()=>{if(curSp&&!document.body.classList.contains('qa135play')&&!CINE_DONE)document.body.classList.add('qa141need')},2500)};
  const pick=ed=>{closeSheet();const sel=new Set(ed);const bg=document.createElement('div');bg.className='qa134-bg';const el=document.createElement('div');el.className='qa134';el.setAttribute('role','dialog');
   el.innerHTML=`<p>간식을 먹으면서 볼까요?</p><span class="d">고른 간식은 영화를 보는 동안 하나씩 먹어요.</span><div class="ck">${ed.map(i=>`<label><input type="checkbox" data-k="${i}" checked><i></i><span>${IT[HELD[i].k][1]}</span></label>`).join('')}</div><div class="r"><button type="button" data-a="no">그냥 볼게요</button><button type="button" class="pri" data-a="go">먹으면서 보기</button></div>`;
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','click','touchstart','touchend'].forEach(t=>{el.addEventListener(t,stop);bg.addEventListener(t,stop)});
   el.addEventListener('change',e=>{const c=e.target;if(c.dataset.k==null)return;const k=+c.dataset.k;c.checked?sel.add(k):sel.delete(k)});
   el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;closeSheet();if(b.dataset.a==='go'){window.__qa135sel=[...sel];A.snackgo()}start()/* QA136: 고르면 바로 상영 시작 */});
   bg.addEventListener('click',()=>{closeSheet();start()});document.body.append(bg,el);window.__qa134=[bg,el]};
- window.QA134={sheet,closeSheet,pick};try{vf.addEventListener('playing',()=>document.body.classList.add('qa135play'))}catch(e){}
+ window.QA134={sheet,closeSheet,pick,start};setInterval(()=>{document.body.classList.toggle('qa141done',!!(curSp&&CINE_DONE));if(document.body.classList.contains('qa135play'))document.body.classList.remove('qa141need')},500)/* 끝나면 '다시 보기'만 보임 */;try{vf.addEventListener('playing',()=>document.body.classList.add('qa135play'))}catch(e){}
  const leave=()=>{pausedAt=0;closePanel();const h=curSp&&curSp.hall||(me.userData.seat&&me.userData.seat.hall);if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}if(h)exitHall(+h);hudUpd()};
  const setLike=v=>{const f=fidNow();if(!f)return;try{if(!!QA21.data(f).liked!==v)QA21.toggle(f)}catch(e){}};
  A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}if(curSc&&!CINE_DONE)pause();
@@ -4918,6 +4919,7 @@ html body #qa127map .g button{background:rgba(246,231,204,.24)!important}
 html body #qa127map .g button.tk{background:rgba(246,231,204,.07)!important}
 html body #qa127map .g button.me{background:#f6e7cc!important}
 html body #qa127map .x{color:var(--sc-fg)!important}
+html body.cineseat:not(.qa141need):not(.qa141done) #watch{display:none!important}/* QA141: 영화 보기 버튼 숨김(자동 상영) */
 html body.cineseat #watch{background:var(--sc-bg)!important;color:#f6e7cc!important;border:0!important;backdrop-filter:blur(20px) saturate(1.6)!important}
 </style>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */

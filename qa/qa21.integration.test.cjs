@@ -61,7 +61,7 @@ test('QA72 each hall has 48 flat seats (3+3 by 8 rows, A01~H06), width 14.88, an
 test('QA73 lobby materials follow the 2026-11-14 Figma palette through lobby-only materials',()=>{
  const m=source.match(/const LP_DEF=Object\.freeze\((\{[^}]*\})\);/);assert(m);const def=JSON.parse(m[1].replace(/(\w+):"/g,'"$1":"'));
  assert.deepEqual(def,{floorCream:'#E2DCC1',floorPink:'#D2BDA3',wallWood:'#865A32',wallDark:'#563115',carpetA:'#E7BFC2',carpetB:'#CCA4A6',railing:'#37110B',railingBase:'#170702',goldTrim:'#DEB967',sidePanel:'#643817',counterTop:'#784B21',counterBody:'#602415',glass:'#A6BDB0'});assert(!source.includes('LPFL.grout'));assert.deepEqual(0,0);
- assert(source.includes("B(w-.5,.03,.03,GOLDT,"));assert(source.includes("B(.05,h,d+.01,'lpSide',x0-.02,h/2,zc)"));assert(source.includes("cyl(r,r,1.05,.6,TM.lpBody)"));assert(source.includes("B(.9,HB,L,'lpBody',cx,HB/2,zc)"));assert(source.includes("hc(.45,HB,TM.lpBody,HB/2);hc(.48,.04,TM.lpTop,HB+.02);"));
+ assert(source.includes("B(w-.5,.03,.03,GOLDT,"));assert(source.includes("B(.05,h,d+.01,'lpSide',x0-.02,h/2,zc)"));assert(source.includes("cyl(r,r,1.05,.6,TM.lpBody)"));assert(source.includes('03 REFRESHMENTS: QA179'));assert(source.includes("BUVETTE"));
  assert(source.includes("const LP_GLASS=glassM.clone()"));assert(source.includes("new THREE.BoxGeometry(w,h,.02),LP_GLASS)"));
  /* 다른 공간과 공유하는 마호가니·황동 재질 정의는 그대로 */assert(source.includes("WD=0x6b3a20,WD2=0x8a5a34"));assert(source.includes("BR=0xc9a24a"));assert(source.includes("const glassM=new THREE.MeshPhongMaterial({color:0xdde8ea,transparent:true,opacity:.14"));
  assert(source.includes("LP_DRAW.floor=(c,W,H)=>"));assert(source.includes("LP_DRAW.wall=(c,W,H)=>"));assert(source.includes("LP_DRAW.frame=(c,W,H)=>"));});

@@ -3014,7 +3014,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  if(HELD.length&&me&&!cine){const sl=SLOW&&HELD.some(x=>x.slow),free=HELD.filter(x=>!x.slow).length;
   const tot=HELD.reduce((a,x)=>a+eatLeft(x),0);
   /* QA20: 들고 있을 때 = 컨텍스트 액션 바(먹기·선물하기·버리기) */}
- if(cine){h+=`<button data-a="csnd">${ytMuted?'소리 켜기':'소리 끄기'}</button><button data-a="cfull">${FULL?'작게 보기':'크게 보기'}</button><button data-a="cineup">일어나기</button>`/* QA109: 관람 중 하단에서 바로 일어나기(상영관에 남음) *//* QA83: 그만보기는 상단 X가 담당 */}
+ if(cine){h+=`<button data-a="csnd">${ytMuted?'소리 켜기':'소리 끄기'}</button><button data-a="cfull">${FULL?'작게 보기':'크게 보기'}</button>`/* QA132: 관람 중 일어나기 삭제 — 자리 이동은 좌석표, 나가기는 로비로 나가기 *//* QA83: 그만보기는 상단 X가 담당 */}
  else if(sp&&sp.kind==='cine'&&CWIDE){}
  qa20Ctx(zc,inH,sp,cine);
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(!cine)h+=['tix:티켓','bag:가방','tt:상영작','avatar:캐릭터'/* QA40 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
@@ -4804,6 +4804,14 @@ body.cfull #qa127map{display:none!important}
  A.qa130yes=()=>{const sp=pend;pend=null;clearInterval(watchT);closePanel();if(sp){window.__qa130ok=1;swap(sp)}resume()};
  A.qa130no=()=>{pend=null;clearInterval(watchT);closePanel();resume()};
  window.QA127_MAP={paint,swap}})();
+</script>
+<script id="qa132-quick">
+/* QA132: ① 다른 층 바닥을 누르면 계단으로 걸어가는 동안 카메라가 아바타 뒤를 따라감 ② 팝콘을 먹으면 주변 사람들이 냄새에 반응 */
+(function(){const W=v=>Math.atan2(Math.sin(v),Math.cos(v));const _walk=walkTo;
+ walkTo=function(c,x,z,zone,opt){const r=_walk.apply(this,arguments);try{if(c===me&&zone&&/^L[01]$/.test(zone)&&+zone[1]!==(me.userData.lvl|0))me.userData.qa132F=1}catch(e){}return r};
+ let lt=performance.now();(function tick(){requestAnimationFrame(tick);const t=performance.now(),dt=Math.min(.1,(t-lt)/1000);lt=t;const u=me&&me.userData;if(!u||!u.qa132F)return;if(!u.path||!u.path.length||u.seat){u.qa132F=0;return}camYaw+=W(me.rotation.y-camYaw)*Math.min(1,dt*2.6);yawV=0})();
+ const LINES=['음, 갓 튀긴 팝콘 냄새!','어디서 팝콘 냄새가 나는데요?','고소하다… 나도 하나 살까','팝콘 냄새 좋네요'];
+ const _eat=startEat;startEat=function(i){const before=EAT;const r=_eat.apply(this,arguments);try{if(!before&&EAT&&EAT.it&&/^pop/.test(EAT.it.k)){const z=curZone(me),near=NPCS.filter(n=>n.visible!==false&&curZone(n)===z&&n.position.distanceTo(me.position)<4.5).sort((a,b)=>a.position.distanceTo(me.position)-b.position.distanceTo(me.position)).slice(0,2);near.forEach((n,k)=>setTimeout(()=>{try{say(n,LINES[(Math.random()*LINES.length)|0])}catch(e){}},700+k*1300))}}catch(e){}return r}})();
 </script>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

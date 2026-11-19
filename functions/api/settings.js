@@ -3,7 +3,7 @@
    1) Functions > KV namespace bindings : 변수명 SETTINGS 로 KV 연결 (없으면 REVIEWS KV를 함께 사용)
    2) Environment variables : ADMIN_KEY = 관리자 비밀번호(새로 정한 값, Encrypt 권장)
    ADMIN_KEY 가 없으면 읽기만 되고 저장은 거절(503). 클라이언트는 이 브라우저 저장으로 계속 동작한다. */
-const KEYS = ['aic.grade', 'aic.preshow', 'aic.sched', 'aic.filmInfo', 'aic.layout', 'aic.posters', 'aic.theme', 'aic.txt', 'aic.lobbyPalette', 'aic.lobbyLighting'];
+const KEYS = ['aic.clubFilms', 'aic.grade', 'aic.preshow', 'aic.sched', 'aic.filmInfo', 'aic.layout', 'aic.posters', 'aic.theme', 'aic.txt', 'aic.lobbyPalette', 'aic.lobbyLighting'];
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const kvOf = env => env.SETTINGS || env.REVIEWS || null;
 const load = async kv => { try { return (await kv.get('cfg', 'json')) || { rev: 0, data: {} }; } catch { return { rev: 0, data: {} }; } };

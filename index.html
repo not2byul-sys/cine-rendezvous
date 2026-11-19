@@ -893,7 +893,7 @@ const curS=hid=>{const h=hallCfg(hid);return ODS[hid]||{id:'idle-'+hid,hall:h,fi
 const hallSC=h=>({id:'H'+h.id,hall:h,film:nowFilm(h),start:nowS(),end:dayEnd()});
 /* ---------- API mock (서버 연동 시 이 모듈만 교체) ----------
    ⚠ 실제 운영: 보상 지급(티켓·간식)과 티켓 검증은 서버에서 처리. 광고 승인 신호를 받은 뒤 서버에 1회성 지급 요청 → 서버가 중복·조작을 검증 */
-const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.clubFilms','aic.grade','aic.preshow','aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
+const mem={},store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]||null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}};/* QA105: 관리자 설정은 서버에도 저장(관리자 키가 있을 때만) */const QA105_SYNC=new Set(['aic.menuEdit','aic.clubFilms','aic.grade','aic.preshow','aic.sched','aic.filmInfo','aic.layout','aic.posters','aic.theme','aic.txt','aic.lobbyPalette','aic.lobbyLighting']);let QA105_Q={},QA105_T=0;{const _set=store.set;store.set=function(k,v){_set.call(store,k,v);let adm=false;try{adm=ADM}catch(e){}if(adm&&QA105_SYNC.has(k)){let key=null;try{key=localStorage.getItem('aic.admkey')}catch(e){}if(!key)return;QA105_Q[k]=v;clearTimeout(QA105_T);QA105_T=setTimeout(qa105Push,800)}}}
 async function qa105Push(){const data=QA105_Q;QA105_Q={};let key='';try{key=localStorage.getItem('aic.admkey')||''}catch(e){}if(!key||!Object.keys(data).length)return;try{const r=await fetch('/api/settings',{method:'PUT',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify({data})});const j=await r.json().catch(()=>({}));if(r.ok&&j.rev){try{localStorage.setItem('aic.cfgRev',String(j.rev))}catch(e){}}else if(r.status===401){try{localStorage.removeItem('aic.admkey')}catch(e){}toast('서버 저장 권한이 만료됐어요 · 다시 로그인해 주세요')}else toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}catch(e){toast('서버 저장에 실패해 이 브라우저에만 저장했어요')}}
 
 /* QA07: lobby sound bus for effects, French ticket voice, and a persistent mute control. */
@@ -919,7 +919,7 @@ addEventListener('pointerdown',()=>CinemaAudio.unlock(),{passive:true});
 /* ===== 사이트 설정 파일(site-config.json): GitHub 저장소에 올린 관리자 설정을 모든 방문자의 기본값으로 적용 =====
    관리 → 「설정 내보내기」로 받은 site-config.json 을 index.html 과 같은 폴더에 올리면 됩니다.
    파일의 rev 가 바뀌었을 때만 덮어쓰므로, 새 파일을 올리면 모든 방문자에게 다시 적용됩니다. */
-const SITE_KEYS=['aic.clubFilms','aic.clubfilmRevision','aic.sched','aic.layout','aic.txt','aic.posters','aic.filmInfo','aic.theme','aic.clubfilm','aic.ad','aic.durs','aic.lobbyPalette','aic.lobbyLighting'];
+const SITE_KEYS=['aic.menuEdit','aic.clubFilms','aic.clubfilmRevision','aic.sched','aic.layout','aic.txt','aic.posters','aic.filmInfo','aic.theme','aic.clubfilm','aic.ad','aic.durs','aic.lobbyPalette','aic.lobbyLighting'];
 (function loadSiteConfig(){if(location.protocol==='file:')return;try{const x=new XMLHttpRequest();x.open('GET','site-config.json?t='+Date.now(),false);x.send();if(x.status!==200)return;const c=JSON.parse(x.responseText);if(!c||!c.rev||!c.data)return;
  if(localStorage.getItem('aic.siteRev')===String(c.rev))return;SITE_KEYS.forEach(k=>{if(k in c.data){if(c.data[k]==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(c.data[k]))}});localStorage.setItem('aic.siteRev',String(c.rev))}catch(e){}})();
 function siteExport(){const data={};SITE_KEYS.forEach(k=>{const v=store.get(k);if(v!=null)data[k]=v});const rev=new Date().toISOString();const blob=new Blob([JSON.stringify({rev,note:'빈티지 시네마 관리자 설정 · GitHub 저장소의 index.html 옆에 올리세요',data},null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='site-config.json';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
@@ -4772,7 +4772,8 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
   const m=itemMesh(k);m.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(m),c=b.getCenter(new THREE.Vector3()),sz=b.getSize(new THREE.Vector3()),r=Math.max(sz.x,sz.y,sz.z);m.position.sub(c);m.rotation.y=-.5;const g=new THREE.Group();g.add(m);g.rotation.x=.18;sc.add(g);
   const rad=sz.length()/2,dist=rad/Math.sin(15*Math.PI/180)*1.08,cam=new THREE.PerspectiveCamera(30,1,.01,50);cam.position.set(0,dist*.18,dist);cam.lookAt(0,0,0);RR.render(sc,cam);CACHE[k]=RR.domElement.toDataURL('image/png');
   sc.traverse(o=>{if(o.isMesh){o.geometry.dispose()}})}catch(e){CACHE[k]=''}return CACHE[k]}
- window.qa115Card=function(k,q,full){const img=thumb(k);return `<div class="qa115-c" role="listitem"><div class="qa115-im">${img?`<img alt="" src="${img}">`:`<span>${IT[k][0]}</span>`}</div><b class="qa115-n">${IT[k][1]}</b><p class="qa115-d">${DESC[k]||''}</p><div class="qa115-q"><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기">−</button><b>${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${full?'disabled':''} aria-label="더하기">+</button></div></div>`};
+ window.QA115_DESC=DESC;window.qa115Thumb=thumb;window.qa115Reset=()=>{for(const k in CACHE)delete CACHE[k]};
+ window.qa115Card=function(k,q,full){const img=thumb(k);return `<div class="qa115-c" role="listitem"><div class="qa115-im">${img?`<img alt="" src="${img}">`:`<span>${IT[k][0]}</span>`}</div><b class="qa115-n">${IT[k][1]}</b><p class="qa115-d">${(window.QA177&&QA177.desc(k))||DESC[k]||''}</p><div class="qa115-q"><button data-a="oq" data-k="${k}" data-d="-1" ${q?'':'disabled'} aria-label="빼기">−</button><b>${q}</b><button data-a="oq" data-k="${k}" data-d="1" ${full?'disabled':''} aria-label="더하기">+</button></div></div>`};
  const st=document.createElement('style');st.textContent=`.qa115-car{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 14px;margin:0 -2px 14px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .qa115-c{flex:0 0 min(62%,190px);scroll-snap-align:start;background:#fbf3e2;border:1px solid rgba(122,31,61,.35);border-radius:10px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:6px;box-shadow:0 2px 0 rgba(122,31,61,.12)}
 .qa115-im{aspect-ratio:1/1;border-radius:8px;background:radial-gradient(circle at 50% 42%,#fffaf0 0,#f1e2c4 70%,#e6d2ad 100%);display:flex;align-items:center;justify-content:center;overflow:hidden}.qa115-im img{width:100%;height:100%;object-fit:contain}.qa115-im span{font-size:56px}
@@ -4796,7 +4797,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  const get=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){return {}}},put=o=>{try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}};
  window.qa121Keep=function(k){if(!D[k])return null;const rare=Math.random()<RARE,id=k+':'+(rare?1:0),o=get();o[id]=(o[id]||0)+1;put(o);return {id,rare}};
  const CACHE={};
- function draw(k,vi){const id=k+':'+vi;if(CACHE[id])return CACHE[id];const v=D[k].v[vi],c=document.createElement('canvas');c.width=c.height=360;const x=c.getContext('2d'),W=360,H=360;
+ function draw(k,vi){if(window.QA177&&QA177.img(k))return QA177.img(k)/* QA177: 관리자가 올린 포장지 이미지 */;const id=k+':'+vi;if(CACHE[id])return CACHE[id];const v=D[k].v[vi],c=document.createElement('canvas');c.width=c.height=360;const x=c.getContext('2d'),W=360,H=360;
   x.fillStyle=v.bg;x.fillRect(0,0,W,H);
   if(v.foil){const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(255,255,255,.18)');g.addColorStop(.45,'rgba(255,255,255,0)');g.addColorStop(.6,'rgba(255,255,255,.12)');g.addColorStop(1,'rgba(0,0,0,.1)');x.fillStyle=g;x.fillRect(0,0,W,H);for(let i=0;i<22;i++){x.strokeStyle='rgba(255,255,255,'+(.05+Math.random()*.08)+')';x.lineWidth=1;x.beginPath();x.moveTo(Math.random()*W,0);x.lineTo(Math.random()*W,H);x.stroke()}}
   if(v.stripe){for(let i=-H;i<W;i+=34){x.fillStyle='rgba(0,0,0,.05)';x.beginPath();x.moveTo(i,0);x.lineTo(i+17,0);x.lineTo(i+17+H,H);x.lineTo(i+H,H);x.fill()}}
@@ -5134,7 +5135,7 @@ html body .admback:hover{opacity:1}
 <script id="qa158-adm-js">
 /* QA158: 관리자 창 — 크게 + 왼쪽 LNB 메뉴. 미리보기가 필요한 로비 컬러·전체 톤은 화면을 가리지 않게 오른쪽에 붙고 '관리자 메뉴'로 돌아감 */
 (function(){
- const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
+ const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admmenu','매점 메뉴'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
  const WIDE=['adm','admclub','adfilmInfo','admpre','admposter','cloudsettings','admtest'],DOCK=['admlobby','admgrade'];
  function deco(k,st){const p=$('pn');if(!ADM||!p||p.hidden)return;const box=p.querySelector('.pbox');if(!box)return;
   if(DOCK.includes(k)){box.classList.add('lpa');const pin=box.querySelector('.pin')||box;if(!pin.querySelector('.admback')){const b=document.createElement('button');b.type='button';b.className='admback';b.dataset.a='adm';b.textContent='← 관리자 메뉴';pin.prepend(b)}return}
@@ -5142,6 +5143,7 @@ html body .admback:hover{opacity:1}
   const main=document.createElement('div');main.className='admmain';[...box.childNodes].forEach(n=>{if(!(n.classList&&n.classList.contains('x')))main.appendChild(n)});
   const nav=document.createElement('nav');nav.className='admnav';nav.innerHTML='<b>관리자</b>'+NAV.map(n=>n===0?'<hr>':n===1?'<i class="sp"></i>':`<button type="button" data-a="${n[0]}"${n[2]||''}${n[0]===k?' aria-current="true"':''}>${n[1]}</button>`).join('');
   box.append(nav,main);if(st)main.scrollTop=st}
+ window.QA158={deco};
  [...WIDE,...DOCK].forEach(k=>{const f=PANELS[k];if(!f&&k!=='admclub')return;PANELS[k]=(...a)=>{const m=document.querySelector('#pn.admw .admmain'),st=m&&$('pn').dataset.admk===k?m.scrollTop:0;$('pn').classList.remove('admw');if(WIDE.includes(k))PLEG++;try{(PANELS['_'+k]||f)(...a)}finally{if(WIDE.includes(k))PLEG--}$('pn').dataset.admk=k;deco(k,st)}});
  /* 닫힐 때 관리자 모양 해제 */const _cp=closePanel;new MutationObserver(()=>{const p=$('pn');if(p.hidden)p.classList.remove('admw')}).observe($('pn'),{attributes:true,attributeFilter:['hidden']});
  /* ---- 아지트 영화 관리 ---- */
@@ -5346,6 +5348,34 @@ html body #toast{font-size:15px!important}
   cp.set(H.cx,yc,zc);lk.set(H.cx,yc,zc-10);ST=sh;FOVT=2*Math.atan(t)*180/Math.PI;window.QA173ON=performance.now();
   window.__fzP=(window.__fzP||new THREE.Vector3()).copy(C.position);window.__fzL=(window.__fzL||new THREE.Vector3()).copy(look)};
  (function shift(){requestAnimationFrame(shift);const on=performance.now()-(window.QA173ON||0)<300,tgt=on?ST:0;S_+=(tgt-S_)*.06;if(Math.abs(S_)<.002&&!on){if(C.view&&C.view.enabled){C.clearViewOffset()}S_=0;return}const W=innerWidth,Hh=innerHeight;C.setViewOffset(W,Hh,0,S_*Hh/2,W,Hh)})();
+})();
+</script>
+<script id="qa177-menu">
+/* QA177: 관리자 › 매점 메뉴 — 모든 매점(로비 매점·우브뢰즈·2층 카페·아지트 카페·와인 바·스낵 바·꽃 파는 소녀)의 메뉴 이름·소개·포장지 이미지를 고쳐 올림. 저장값 aic.menuEdit {k:{n,d,img}} (서버 동기화) */
+(function(){const KEY='aic.menuEdit',SHOPS=[['shop','로비 매점'],['ouv','상영관 우브뢰즈'],['cafe','2층 카페'],['cbcafe','아지트 카페'],['cbwine','아지트 와인 바'],['cbsnack','아지트 스낵 바'],['vendor','꽃 파는 소녀']];
+ const N0={};Object.keys(IT).forEach(k=>N0[k]=IT[k][1]);const get=()=>store.get(KEY)||{},TEX={};
+ const LB=new Set(['glacier','bebert','rivoli','fruitc','lemon']);
+ function tex(k){const o=get()[k];if(!o||!o.img)return null;if(TEX[k]&&TEX[k].src===o.img)return TEX[k].t;const t=new THREE.TextureLoader().load(o.img,()=>{try{qa115Reset()}catch(e){}});TEX[k]={src:o.img,t};return t}
+ function apply(){const M=get();Object.keys(IT).forEach(k=>{IT[k][1]=(M[k]&&M[k].n)||N0[k]});Object.keys(M).forEach(k=>{if(M[k].img)tex(k)});try{qa115Reset()}catch(e){}}
+ window.QA177={desc:k=>{const o=get()[k];return o&&o.d||''},img:k=>{const o=get()[k];return o&&o.img||''},apply};
+ /* 모델에 반영: 라벨이 있는 간식은 라벨 그림을 교체, 그 밖의 메뉴는 앞면에 포장지 이미지를 붙임 */
+ const _l=window.qa163Lab;window.qa163Lab=k=>tex(k)||_l(k);const _t=window.qa172Tex;window.qa172Tex=k=>{const m={cornet:'fruitc',etoile:'lemon'}[k];return (m&&tex(m))||_t(k)};
+ const _im=itemMesh;itemMesh=function(k){const g=_im(k);try{const t=!LB.has(k)&&tex(k);if(t){g.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(g),sz=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());const w=Math.max(.04,sz.x*.8),h=Math.max(.04,Math.min(sz.y*.8,w*1.4));const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshLambertMaterial({map:t,transparent:true}));p.position.set(c.x-g.position.x,c.y-g.position.y,b.max.z-g.position.z+.002);g.add(p)}}catch(e){}return g};
+ apply();
+ /* 관리자 화면 */let ED=null;const esc_=v=>esc(String(v||''));
+ const render=()=>{if(!ADM){PANELS.admlogin();return}if(!ED)ED=JSON.parse(JSON.stringify(get()));const seen=new Set();
+  let h='<h3>매점 메뉴</h3><div class="qa177"><p class="sub">메뉴 이름·소개·포장지 이미지를 바꿀 수 있어요. 비워 두면 기본값이 나와요. 같은 메뉴가 여러 매점에 있으면 함께 바뀌어요.</p>';
+  SHOPS.forEach(([sk,sn])=>{const L=(MENU[sk]||[]).filter(k=>IT[k]);if(!L.length)return;h+=`<h4>${sn}</h4>`;L.forEach(k=>{const e=ED[k]||{},dup=seen.has(k);seen.add(k);let th='';try{th=e.img||qa115Thumb(k)}catch(err){}
+   if(dup){h+=`<div class="qa177-r dup"><div class="im">${th?`<img alt="" src="${th}">`:IT[k][0]}</div><div class="f"><b>${esc_(e.n||N0[k])}</b><i style="font-size:12px;opacity:.7">위 ${esc_(e.n||N0[k])}와 같은 메뉴라 함께 바뀌어요</i></div></div>`;return}h+=`<div class="qa177-r"><div class="im">${th?`<img alt="" src="${th}">`:IT[k][0]}</div><div class="f"><input data-mk="${k}" data-f="n" value="${esc_(e.n||'')}" placeholder="${esc_(N0[k])}" maxlength="30" aria-label="이름"><textarea data-mk="${k}" data-f="d" rows="2" maxlength="120" placeholder="${esc_((window.QA115_DESC||{})[k]||'소개')}" aria-label="소개">${esc_(e.d||'')}</textarea><div class="b"><label class="up">포장지 이미지<input type="file" accept="image/*" data-mimg="${k}" hidden></label>${e.img?`<button data-a="mimgdel" data-k="${k}">기본 이미지로</button>`:''}${dup?'<i>위와 같은 메뉴</i>':''}</div></div></div>`})});
+  h+='<div style="display:flex;gap:8px;margin-top:14px"><button class="p" data-a="menusave">저장</button><button data-a="menureset">모두 기본값으로</button></div></div>';panel(h);
+  document.querySelectorAll('#pn [data-mimg]').forEach(i=>i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const M=480,sc=Math.min(1,M/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);grab();const k=i.dataset.mimg;ED[k]=Object.assign(ED[k]||{},{img:c.toDataURL('image/jpeg',.84)});re()};im.src=r.result};r.readAsDataURL(f)})};
+ const grab=()=>{if(!ED)return;document.querySelectorAll('#pn [data-mk]').forEach(i=>{const k=i.dataset.mk,o=ED[k]=ED[k]||{};const v=i.value.trim();if(v)o[i.dataset.f]=v;else delete o[i.dataset.f]})};
+ PANELS.admmenu=()=>{const p=$('pn');p.classList.remove('admw');PLEG++;try{render()}finally{PLEG--}p.dataset.admk='admmenu';try{QA158.deco('admmenu',0)}catch(e){}};
+ const re=()=>{const m=document.querySelector('#pn .admmain'),st=m?m.scrollTop:0;PANELS.admmenu();const m2=document.querySelector('#pn .admmain');if(m2)m2.scrollTop=st};
+ Object.assign(A,{admmenu:()=>{ED=null;PANELS.admmenu()},mimgdel:d=>{grab();if(ED[d.k])delete ED[d.k].img;re()},menureset:()=>{ED={};re();toast('기본값을 불러왔어요 · 저장해야 적용돼요')},
+  menusave:()=>{if(!ADM)return;grab();Object.keys(ED).forEach(k=>{const o=ED[k];if(!o||!(o.n||o.d||o.img))delete ED[k]});store.set(KEY,ED);apply();toast('매점 메뉴를 저장했어요');ED=null;re()}});
+ const st=document.createElement('style');st.textContent=`.qa177 h4{margin:18px 0 8px;font-size:14px;opacity:.85}.qa177-r{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:12px;background:rgba(255,255,255,.04);margin-bottom:8px}.qa177-r.dup{opacity:.6}.qa177-r .im{flex:none;width:76px;height:76px;border-radius:10px;overflow:hidden;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:30px}.qa177-r .im img{width:100%;height:100%;object-fit:cover}.qa177-r .f{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}.qa177-r input,.qa177-r textarea{margin:0!important;width:100%;box-sizing:border-box;font-size:14px;padding:6px 8px;resize:vertical}.qa177-r .b{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.qa177-r .up{cursor:pointer;font-size:13px;padding:5px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.2)}.qa177-r .b button{font-size:12px!important;padding:4px 10px!important}.qa177-r .b i{font-size:12px;opacity:.7}`;document.head.appendChild(st);
+ /* 다른 기기에서 저장값이 들어오면 다시 반영 */let last=JSON.stringify(get());setInterval(()=>{const now=JSON.stringify(get());if(now!==last){last=now;apply()}},3000);
 })();
 </script>
 </body></html>

@@ -95,7 +95,7 @@ test('QA84 lobby: chandelier bulbs glow, Champs-Elysees street outside, NPC spot
  assert(source.includes("if(zn==='L0'&&x< -4.9&&z>12.6&&z<16.9)continue"));});
 test('QA86 ticket issue walks into the hall with a notice, club board says not ready, bubbles back to world size',()=>{
  assert(source.includes('<button type="button" class="qa88-buy" data-a="buy" data-s="${sc.id}">입장하기</button>'));
- const buy=source.slice(source.indexOf('buy:async d=>{const s=SC[d.s]'),source.indexOf(' fl:d=>PANELS._sel(d.i),'));assert(buy.includes('await showPunch(r.ok);API.punch(r.ok.id);'));assert(buy.includes("toast(`${s.hall.name}으로 입장합니다`)"));assert(buy.includes("walkTo(me,HCX[hid],-3.3,'H'+hid,{after:qa142View})"));assert(!buy.includes('me.position.set('));
+ const buy=source.slice(source.indexOf('buy:async d=>{const s=SC[d.s]'),source.indexOf(' fl:d=>PANELS._sel(d.i),'));assert(buy.includes('await punchHere(r.ok);API.punch(r.ok.id);'));assert(buy.includes("toast(`${s.hall.name}으로 입장합니다`)"));assert(buy.includes("walkTo(me,HCX[hid],-3.3,'H'+hid,{after:qa142View})"));assert(!buy.includes('me.position.set('));
  assert(source.includes("const fresh=QA86_JUST===tk.id;"));
  assert(source.includes("hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{fn:()=>toast('준비 중입니다'),pt:{x:X+x-1.2,z:Z-1.6,zone:'B'}})"));
  assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});

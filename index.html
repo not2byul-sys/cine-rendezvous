@@ -4289,6 +4289,9 @@ function migrateWallLayout(saved){if(!saved||saved.wallStyleRev===1)return saved
  cyl(1.12,1.08,.08,.04,mat(0x3a2416));cyl(1.15,1.12,.34,.25,VM);const top_=cyl(1.12,1.15,.06,.44,VM);cyl(.42,.5,.62,.75,VM);cyl(.5,.5,.05,.42,mat(0xc9a24a),40);cyl(.32,.36,.5,1.31,VM);cyl(.36,.36,.05,1.58,mat(0xc9a24a));
  for(let k=0;k<6;k++){const a=k/6*Math.PI*2+Math.PI/6,sx=x+Math.sin(a)*.82,sz=z+Math.cos(a)*.82,seat=new THREE.Mesh(new THREE.BoxGeometry(.5,.47,.5),new THREE.MeshBasicMaterial({visible:false}));seat.position.set(sx,.235,sz);seat.rotation.y=a;S.add(seat);addSpot({x:sx,y:0,z:sz,rot:a,zone:'L0',kind:'sofa',taken:null},seat)}
  layEnd(m_,'borne'+bi,'원형 소파 '+(bi+1),0)});
+/* QA178: 로비 아이템 전체 10% 축소 — 바닥 물건은 바닥 기준, 벽 물건은 제자리 중심 기준, 천장 물건은 천장 기준으로 줄임(구조물·비밀문·매표 부스·입장 위치 제외) */
+(function(){const EX=new Set(['spawn','club-mini-tree','bookshelf','qa102arch','booth']),k=.9;LAYI.forEach(it=>{if(EX.has(it.id)||it.dup)return;const bb=new THREE.Box3();it.objs.forEach(e=>{if(!e.o.isSprite&&!e.o.isLight)bb.expandByObject(e.o)});if(bb.isEmpty())return;const ay=it.ceil?bb.max.y:it.wall?(bb.min.y+bb.max.y)/2:bb.min.y,ax=it.cx,az=it.cz;
+ it.objs.forEach(e=>{e.p.set(ax+(e.p.x-ax)*k,ay+(e.p.y-ay)*k,az+(e.p.z-az)*k);e.o.position.copy(e.p);if(!e.o.isLight)e.o.scale.multiplyScalar(k)});it.spots.forEach(q=>{q.x=ax+(q.x-ax)*k;q.z=az+(q.z-az)*k;q.y=ay+(q.y-ay)*k;q.s.x=q.x;q.s.z=q.z;q.s.y=q.y})})})();
 laySet(migrateWallLayout(store.get(LAYK))||DEF_LAYOUT||{});
 /* 문 앞을 막는 화분은 옆으로 비켜 배치(상영관 입구 1·2관, 정문) */LAYI.filter(it=>!it.del&&/^plant/.test(it.dup||it.id)).forEach(it=>{const x=it.cx+it.dx,z=it.cz+it.dz,up=((it.lvl0||0)+(it.dl||0))>=1;let nx=null,nz=null;
  if(!up&&Math.abs(x)<2.4&&z<BF+3.2){nx=x<0?-3.1:3.1;nz=BF+.5}else if(up&&Math.abs(x)<2.4&&z<LB+2.6){nx=x<0?-2.9:2.9;nz=LB+.5}else if(!up&&Math.abs(x)<2.6&&z>LD-2.6){nx=x<0?-3.4:3.4;nz=LD-.75}

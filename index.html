@@ -4859,7 +4859,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
  window.QA134={sheet,closeSheet,pick,start};setInterval(()=>{document.body.classList.toggle('qa141done',!!(curSp&&CINE_DONE));if(document.body.classList.contains('qa135play'))document.body.classList.remove('qa141need')},500)/* 끝나면 '다시 보기'만 보임 */;try{vf.addEventListener('playing',()=>document.body.classList.add('qa135play'))}catch(e){}
  const leave=()=>{pausedAt=0;closePanel();const h=curSp&&curSp.hall||(me.userData.seat&&me.userData.seat.hall);if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}if(h)exitHall(+h);hudUpd()};
  const setLike=v=>{const f=fidNow();if(!f)return;try{if(!!QA21.data(f).liked!==v)QA21.toggle(f)}catch(e){}};
- A.cstop=()=>{if(!curSp){try{A.cstand&&A.cstand()}catch(e){}return}leave()}/* QA153: 나갈 때 묻는 창 없이 바로 나감 */;
+ A.cstop=()=>{try{A.cstand()}catch(e){}}/* QA155: 그만보기 = 영화가 꺼지고 불이 켜짐. 자리·상영관에 그대로 남음(나가기는 퀵바 '로비로 나가기') */;
 })();
 </script>
 <style id="qa136-shadcn">

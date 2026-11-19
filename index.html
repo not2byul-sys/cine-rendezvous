@@ -3569,7 +3569,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY-.6,SCZ),
  /* doors */
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
  popG.rotation.y+=dt*.5;/* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
- if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE);/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.10+.355*HLF;H.pl.intensity=H.pli*(.14+.50*HLF);dl.intensity=.03+.122*HLF/* QA122: 상영 중에도 객석이 보이게 조도 +10%p */}else{dl.intensity=LOBBY_DL*LP_LIGHT.b;HLF=1}
+ if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE);/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.035+.42*HLF;H.pl.intensity=H.pli*(.05+.59*HLF);dl.intensity=.008+.144*HLF/* QA122: 상영 중에도 객석이 보이게 조도 +10%p *//* QA139: 상영 중엔 벽·천장은 어둡게, 스크린 빛이 객석에만 번지게 */;if(!H.qa139){const L=new THREE.SpotLight(0xfff0d8,0,22,.6,.75,1);L.position.set(H.cx,H.base+SCY,SCZ+.8);L.target.position.set(H.cx,H.base+.5,SEAT_Z(3.5));S.add(L,L.target);H.qa139=L}{const dk=1-HLF;H.qa139.intensity=dk*(1.55+.12*Math.sin(t*1.7)+.08*Math.sin(t*5.3));H.qa139.visible=dk>.02}}else{dl.intensity=LOBBY_DL*LP_LIGHT.b;HLF=1}
 popAnim(dt,t);emgAnim(t);qa78Tick();/* QA15: 착석·상영 중 벽등 빛 감광, 종료·퇴석 시 복원 */if(space>0&&HALL_GLOW[space])HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF});if(space>0&&HALL_SC[space]){/* QA78: 상영이 시작되면 벽등 소등 */const k=.1+.9*HLF;HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k);HALL_SC[space][1].color.setHex(0xfffbe8).multiplyScalar(k)}Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=g.userData.alwaysVisible||LAYED||C.position.distanceTo(g.position)>4});
  if(Math.floor(t)!==Math.floor(t-dt)&&Math.floor(t)%2===0)drawScreens();
  NPCS.forEach(c=>{if(!c.userData.static)upd(c,dt,t)});buffTick(dt);if(typeof doorTick==="function"&&TRAP&&TRAP.userData.leaf)doorTick(dt);if(typeof vendTick==="function"&&typeof VENDS!=="undefined"&&VENDS&&typeof CFG!=="undefined"&&me){if(!VENDS.length&&!window.__vi){window.__vi=1;vendInit()}vendTick(dt)}if(typeof CLUBN!=='undefined'){if(me&&curZone(me)==='B')CLUBN.forEach(c=>upd(c,dt,t));clubTick(t)}if(me)upd(me,dt,t);actorMenuTick();Object.values(VSTAFF).forEach(c=>{if(!c.userData.trayVendor)upd(c,dt,t)});orderTick(dt,t);
@@ -4862,7 +4862,7 @@ body.cineseat:not(.qa135play) #cine iframe,body.cineseat:not(.qa135play) #cine v
 </script>
 <style id="qa136-shadcn">
 /* QA138: 상영관 UI는 아이폰처럼 둥글게(창 26px·목록 16px·원형 체크) · QA137: 버튼은 모두 캡슐형 · QA136: 상영관 UI·모달 = shadcn/ui 다크(zinc) 토큰 — background #09090b, border #27272a, muted #a1a1aa, primary #fafafa, radius 6~8px, 버튼 size sm(h-8) */
-:root{--sc-bg:var(--hud-bg,rgba(20,12,14,.72));--sc-bd:var(--hud-bd,rgba(255,255,255,.14));--sc-fg:var(--hud-fg,rgba(250,245,240,.94));--sc-mu:rgba(250,245,240,.6);--sc-ac:rgba(255,255,255,.08);--sc-pr:rgba(250,245,240,.94);--sc-prf:#2a1d1f}/* QA137: 색은 퀵바 톤(따뜻한 반투명 다크·크림), 형태는 shadcn */
+:root{--sc-bg:rgba(52,14,20,.72);--sc-bd:rgba(246,231,204,.14);--sc-fg:#f6e7cc;--sc-mu:rgba(246,231,204,.62);--sc-ac:rgba(246,231,204,.12);--sc-pr:#f6e7cc;--sc-prf:#5d211c;--sc-tint:rgba(246,231,204,.10)}/* QA139: 상영관 UI = 버건디 유리 + 브랜드 크림(#f6e7cc), 아이폰식 *//* QA137: 색은 퀵바 톤(따뜻한 반투명 다크·크림), 형태는 shadcn */
 .qa134-bg{background:rgba(10,6,8,.45)!important;backdrop-filter:none!important}
 html body .qa134{left:50%!important;top:50%!important;bottom:auto!important;transform:translate(-50%,-50%)!important;width:min(calc(100vw - 32px),360px)!important;max-width:none!important;padding:22px 20px 18px!important;border-radius:26px!important;background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;box-shadow:0 10px 30px -12px rgba(0,0,0,.7)!important;backdrop-filter:blur(14px) saturate(1.2)!important;-webkit-backdrop-filter:blur(14px) saturate(1.2)!important;color:var(--sc-fg)!important;text-align:left!important;font:400 14px/1.5 'Noto Sans KR',ui-sans-serif,system-ui,sans-serif!important;animation:qa136in .15s ease-out!important}
 @keyframes qa136in{from{opacity:0;transform:translate(-50%,-48%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -4879,7 +4879,7 @@ html body .qa134 button.pri:hover{background:#fff!important}
 .qa134 .ck label:hover{background:rgba(255,255,255,.05)}
 .qa134 .ck input{position:absolute;opacity:0;pointer-events:none}
 .qa134 .ck i{flex:none;width:20px;height:20px;box-sizing:border-box;border:1.5px solid rgba(250,245,240,.55);border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-.qa134 .ck input:checked+i{background:var(--sc-pr) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232a1d1f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--sc-pr)}
+.qa134 .ck input:checked+i{background:var(--sc-pr) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235d211c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--sc-pr)}
 .qa134 .ck input:focus-visible+i{box-shadow:0 0 0 2px rgba(20,12,14,.9),0 0 0 4px rgba(250,245,240,.6)}
 /* 상영관 HUD */
 html body.cineseat #act{background:var(--sc-bg)!important;border:1px solid var(--sc-bd)!important;border-radius:999px!important;height:44px!important;padding:5px!important;gap:4px!important;backdrop-filter:blur(8px)!important}
@@ -4895,6 +4895,30 @@ html body #qa127map .x{border-radius:999px!important}
 html body #qa127map button.me{background:var(--sc-pr)!important;box-shadow:none!important}
 html body #qa127map .g button{border-radius:4px!important;background:rgba(250,250,250,.22)}
 html body #qa127map .g button.tk{background:rgba(250,250,250,.07)!important}
+</style>
+<style id="qa139-ios">
+/* QA139: 아이폰 스타일 — 반투명 버건디 유리(블러), 크림 글자, 보조 버튼은 테두리 없는 틴트 채움 */
+html body .qa134,html body.cineseat #act,html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full,html body #qa127map{backdrop-filter:blur(20px) saturate(1.6)!important;-webkit-backdrop-filter:blur(20px) saturate(1.6)!important;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Noto Sans KR',sans-serif!important}
+html body .qa134 button{border:0!important;background:var(--sc-tint)!important;font-weight:600!important;letter-spacing:-.01em}
+html body .qa134 button:hover{background:var(--sc-ac)!important}
+html body .qa134 button.pri{background:var(--sc-pr)!important;color:var(--sc-prf)!important}
+html body .qa134 button.pri:hover{background:#fbf1de!important}
+html body .qa134 p{color:var(--sc-fg)!important}
+.qa134 .ck i{border-color:rgba(246,231,204,.5)!important}
+html body.cineseat #act{border:0!important;box-shadow:0 8px 24px -10px rgba(0,0,0,.6)!important;height:46px!important;padding:5px!important}
+html body.cineseat #act button{height:36px!important;padding:0 18px!important;font-weight:600!important;letter-spacing:-.01em}
+html body.cineseat #act button:hover{background:var(--sc-tint)!important}
+html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full{border:0!important;box-shadow:0 6px 18px -10px rgba(0,0,0,.6)!important}
+html body.cineseat #ctitle #cyt{font-weight:600!important;color:var(--sc-fg)!important}
+html body.cineseat #cx svg,html body.cineseat #hb #qa133snd svg,html body.cineseat #hb #qa133full svg{color:var(--sc-fg)}
+html body #qa127map{border:0!important;box-shadow:0 10px 28px -12px rgba(0,0,0,.65)!important}
+html body #qa127map .open{font-weight:600!important}
+html body #qa127map .scr{background:rgba(246,231,204,.75)!important}
+html body #qa127map .g button{background:rgba(246,231,204,.24)!important}
+html body #qa127map .g button.tk{background:rgba(246,231,204,.07)!important}
+html body #qa127map .g button.me{background:#f6e7cc!important}
+html body #qa127map .x{color:var(--sc-fg)!important}
+html body.cineseat #watch{background:rgba(52,14,20,.72)!important;color:#f6e7cc!important;border:0!important;backdrop-filter:blur(20px) saturate(1.6)!important}
 </style>
 <script id="qa108-sounds">/* QA108: 1979 극장 소리 — 상영 벨(따르르릉)·막 모터, 상영 중 영사기 소리(낮게), 로비 공중전화가 가끔 혼자 울림. 모두 음소거를 따름 */
 (function(){const A=window.CinemaAudio||(typeof CinemaAudio!=='undefined'?CinemaAudio:null);if(!A)return;

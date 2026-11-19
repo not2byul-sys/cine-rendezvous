@@ -1433,7 +1433,7 @@ const LPERM=AUDK.slice().sort(()=>Math.random()-.5);let LOOKN=0;
 function npcLook(){const i=LOOKN++,k=LPERM[i%10],o={ch:k};if(i>=10){const r=(i/10|0),c1=ERA[(i*5+r*3)%ERA.length],c2=ERA[(i*7+r+4)%ERA.length],pt=PATS[(i*3+r)%PATS.length];o.coat=c1;o.pat=pt?[pt,c1,c2===c1?0x2a1c14:c2]:null;o.pants=[0x262c42,0x4a3020,0x6e6a66,0xbfa98a,0x5a4a2a][(i+r)%5];if(CHAR[k].hatc)o.hatc=ERA[(i*11+2)%ERA.length];if(CHAR[k].skirt)o.skirt=ERA[(i*13+5)%ERA.length]}return o}
 /* 등장인물별 극중 의상·성별·나이(스타일라이즈) */
 const LK_D=0x2a1c16,LK_G=0x9a9590;
-const LOOK={
+const LOOK={/* QA168: 1979 파리 오리지널 캐릭터 */'앙드레':{hair:0x2e201c,hs:'slick',coat:0x1a1718,dbl:1,btn:0xc9c9c9,shirt:0xe9dcc3,pants:0x3a3a40,hat:'flat',hatc:0x4a3a2a,stache:0x2e201c},'쥘리에트':{hair:0x6b4632,hs:'pony',coat:0x2a3a5e,open:0,shirt:0xf3ecdc,skirt:0xb3202e,legs:0x1c1c1e,shoe:0x1c1c1e,hat:'beret',hatc:0x1c1c1e,bag:'cross',ear:1},'마르셀':{hair:0x1e1a1a,hs:'slick',vest:0x1c1c1e,shirt:0xf6f2ea,bow:0x1c1c1e,apron:0xf6f2ea,pants:0x1c1c1e,shoe:0x1c1c1e,stache:0x1e1a1a},'시몬':{hair:0x9a9590,hs:'bun',coat:0x6c4a6f,open:0,shirt:0xe9dcc3,skirt:0x4a3a2a,legs:0x5a4a3a,shoe:0x4a2a1a,glasses:0x7a3e1a,scarf:0xd9822b},'가스통':{hair:0xc9c4bc,hs:'short',coat:0x2a3a5e,dbl:1,btn:0xc9a24a,shirt:0xe9dcc3,pants:0x2a3a5e,shoe:0x1c1c1e,hat:'flat',hatc:0x2a3a5e,stache:0xc9c4bc},'이베트':{hair:0x1e1610,hs:'flip',dress:0x2f5a44,legs:0x1c1c1e,shoe:0x1c1c1e,scarf:0xc9a24a,ear:1},
  '앨런':{hair:0x4d342b,hs:'wavy',coat:0x4b5b52,shirt:0xe9dfcc,pants:0x4a3b37,glasses:0x837059},  '셜록 영사기사':{hair:0x302c2b,hs:'short',coat:0x5e4739,shirt:0xf1e7d9,vest:0x78644b,pants:0x443c38,hat:'cap',hatc:0x4a3c32},  '마커스 교수':{skin:0xe0c9ae,hair:0x6f6860,hs:'short',coat:0x433b32,shirt:0xe5dfcc,tie:0x43352a,pants:0x39352f,hat:'fedora',hatc:0x3b332b,scarf:0x8d8070,marcus:true},
  '세실리아':{hair:0x5a3a24,hs:'bob',coat:0x8a7a62,open:0,belt:0x4a3020,skirt:0x6a5a48,legs:0xe9c4a2,hat:'cloche',hatc:0x5a4a3a,ear:1},
  '토토':{hair:0x2a1c16,hs:'short',coat:0x6a6e72,open:0,pants:0x3a3a40,kid:1},
@@ -1495,7 +1495,7 @@ let NPCB=null;function npcCard(g,name){
 }
 function npcCardTick(){if(!NPCB||NPCB.hidden)return;const g=NPCB._g;if(!g||performance.now()>NPCB._t||!g.visible){NPCB.hidden=true;return}const v=new THREE.Vector3(0,2.42,0);g.localToWorld(v);v.project(C);if(v.z>1){NPCB.style.display='none';return}NPCB.style.display='block';const hw=NPCB.offsetWidth/2,x=(v.x+1)/2*innerWidth,y=(1-v.y)/2*innerHeight;NPCB.style.left=x+'px';NPCB.style.top=y+'px'}
 (function npcLoop(){try{npcCardTick()}catch(e){}requestAnimationFrame(npcLoop)})();
-const CHARINFO={
+const CHARINFO={'앙드레':'몽마르트르 언덕을 30년째 달리는 택시 운전사 앙드레예요. 손님을 극장 앞에 내려 주다가 결국 저도 표를 사고 말았죠.','쥘리에트':'보자르에서 그림을 공부하는 미대생 쥘리에트예요. 극장 포스터를 스케치하러 왔다가 매주 오게 됐어요.','마르셀':'길 건너 카페에서 일하는 웨이터 마르셀이에요. 마지막 손님을 보내고 나면 심야 상영을 보러 오죠.','시몬':'센강 변 오래된 서점의 주인 시몬이에요. 영화로 만들어진 소설만 모아 둔 서가가 따로 있답니다.','가스통':'은퇴한 우체부 가스통이오. 40년 동안 이 동네 편지를 날랐지. 극장 영사기사에게 온 팬레터도 다 내가 전했다오.','이베트':'피갈의 작은 재즈 클럽에서 노래하는 가수 이베트예요. 무대에 오르기 전엔 늘 이 극장에서 옛 뮤지컬을 봐요.',
  '앨런':'나는 영화를 보고 나서 장면보다 그날의 공기를 더 오래 기억해요. 다음 상영이 끝나면 함께 이야기해요.',  '셜록 영사기사':'나는 오래된 필름의 빛과 소리를 돌보는 영사기사예요. 화면 뒤에서 어떤 일이 일어나는지 궁금한가요?',  '마커스 교수':'〈레이디킬러〉(1955)의 마커스 교수예요. 알렉 기네스가 연기했죠. 음악가 행세로 하숙집에 모였지만, 실은 엉뚱한 계획을 꾸미고 있었답니다.',
  '세실리아':'〈카이로의 붉은 장미〉(1985)의 세실리아예요. 대공황 시절 고단한 하루를 영화관에서 견뎠죠. 어느 날 스크린 속 주인공이 저를 보고 걸어 나왔어요.',
  '토토':'〈시네마 천국〉(1988)의 토토예요. 시칠리아 작은 마을 극장의 영사실을 드나들며 알프레도 할아버지에게 영화를 배웠어요.',
@@ -2427,10 +2427,10 @@ const NICK={t:['타이어닉','해리포토','어벙져스','겨울왕궁','기�
 const genNick=()=>{const k=['t','c','g'][Math.random()*3|0],a=NICK[k];return a[Math.random()*a.length|0]};
 const NPCS=[],NPCF={};
 /* 레트로 패션 NPC 관객 6명 (이름 = 랜덤 영화 제목) */
-{const NAMES=['버드 백스터','프랜 큐벨릭','찰스 포스터 케인','이브 해링턴','로레인 베인스','돈 록우드','수잔 밴스','마리옹 슈타이너','노마 데즈먼드','프레더 프레데르센','조니 그레이','존 심스','해리 라임','레이 킨셀라','테스 맥길','테리 맬로이','조 길리스','샘 스페이드','스카티 퍼거슨','조지 베일리','벤자민 브래독','일사 런드','조 브래들리','필리스 디트릭슨','제프리스'].sort(()=>Math.random()-.5);
+{const NAMES=['버드 백스터','프랜 큐벨릭','찰스 포스터 케인','이브 해링턴','로레인 베인스','돈 록우드','수잔 밴스','마리옹 슈타이너','노마 데즈먼드','프레더 프레데르센','조니 그레이','존 심스','해리 라임','레이 킨셀라','테스 맥길','테리 맬로이','조 길리스','샘 스페이드','스카티 퍼거슨','조지 베일리','벤자민 브래독','일사 런드','조 브래들리','필리스 디트릭슨','제프리스','앙드레','쥘리에트','마르셀','시몬','가스통','이베트'].sort(()=>Math.random()-.5);
  const FASH=AUDK.map(k=>({ch:k}));NPCF.n=NAMES;NPCF.f=FASH;
  /* 로비 NPC 6명: 문 앞·동선(입구→상영관·매표·매점·계단)을 피해 한적한 자리에 흩어 배치. 2명은 2층 카페 테이블에 앉음 */
- const QUIET=[[-4.5,13.2,-Math.PI/2]/* QA84: 트리 뒤·옆 자리를 트리 앞쪽으로 */,[-6.3,8.2,Math.PI*.8],[4.1,4.5,-Math.PI*.6],[-4.6,11.0,Math.PI/2],[-6.7,5.6,Math.PI/2],[7.4,6.3,-Math.PI/2],[-3.2,17.0,Math.PI]],cafes=SPOTS.filter(q=>q.kind==='cafe');
+ const QUIET=[[-5.6,16.9,Math.PI*.6]/* QA164: 원형 소파 자리 피함 *//* QA84: 트리 뒤·옆 자리를 트리 앞쪽으로 */,[-6.3,8.2,Math.PI*.8],[4.1,4.5,-Math.PI*.6],[-4.6,11.0,Math.PI/2],[-6.7,5.6,Math.PI/2],[7.4,6.3,-Math.PI/2],[-3.2,17.0,Math.PI]],cafes=SPOTS.filter(q=>q.kind==='cafe');
  [0,1,2,3,4].forEach((fi,i)=>{const f=LOOK[NAMES[i]]||npcLook(),c=mk(NAMES[i],0,f);c.userData.npc=1;NPCS.push(c);
   if(i<2&&cafes[i]){const pick=cafes[i];c.position.set(pick.x,pick.y||0,pick.z);c.userData.home=pick;pick.taken=c;setTimeout(()=>{pick.taken=null;sit(c,pick)},0)}
   else{const q=QUIET[(i-2)%QUIET.length];c.position.set(q[0],0,q[1]);c.rotation.y=q[2];c.userData.roamHome=c.position.clone()}})}
@@ -3130,7 +3130,7 @@ function confirmGift(index){const target=GIFT_TARGET,it=HELD[index];if(!target||
 function acceptGift(){const offer=GIVE_OFFER;GIVE_OFFER=null;if(!offer)return;const index=HELD.indexOf(offer.item);if(index<0){closePanel();toast('이미 전달한 선물이에요');return}GIFT_TARGET=offer.target;giveItem(index)}
 /* QA18: NPC마다 다른 말투·캐릭터다운 힌트(감사, 힌트, 꽃 받을 때) */
 /* QA19: 선물 → 캐릭터다운 리액션(인사+몸짓) → 비밀 영화클럽·무지개 팝콘 이야기를 슬쩍 */
-const QA18_GIFT={
+const QA18_GIFT={'앙드레':['고맙소. 오늘 손님은 운이 좋구려.','손님들 얘기로는 이 극장 지하에 밤마다 불이 켜진대요. 비밀 영화클럽이라던데, 알프레도 영감님이 뭘 아는 눈치예요.','꽃이라니, 택시 백미러에 꽂아 둬야겠소.','bow'],'쥘리에트':['어머, 고마워요! 다음 스케치에 당신을 그려 넣을게요.','비밀 영화클럽 벽엔 옛날 신문이 잔뜩 붙어 있대요. 언젠가 꼭 그려 보고 싶어요.','꽃이네요! 정물화로 그려야겠어요.','hop'],'마르셀':['메르시! 오늘 받은 팁 중에 최고네요.','쉿, 2층 카페 직원이 그러는데 서가 뒤로 사라지는 손님들이 있대요. 비밀 클럽이 있나 봐요.','꽃이라니, 카페 테이블에 꽂아 둘게요.','ser'],'시몬':['고마워요. 책 사이에 끼워 둘 추억이 하나 늘었네요.','이 극장 책장 중 하나는 책보다 문이 더 중요하대요. 비밀 영화클럽 초대장이 있어야 열린다지요.','꽃이라니, 시집 옆에 두면 딱 좋겠어요.','bow'],'가스통':['허허, 고맙네. 편지 대신 선물을 받는 날도 오는구먼.','옛날에 지하로 가는 편지를 배달한 적이 있지. 받는 사람이 「영화클럽」이라고만 적혀 있었다네.','꽃이라… 아내 무덤에 가져가야겠군.','bow'],'이베트':['어머, 메르시! 오늘 밤 노래는 당신에게 바칠게요.','지하 영화클럽에서 레코드랑 필름 소리가 같이 들린대요. 거기서 한 곡 부르고 싶어요.','꽃이라니, 무대 위에 던져 줄 사람이 생겼네요.','hop'],
 '앨런':['오, 이거 나 주는 거야? 고마워, 진짜로.','잠깐, 혹시 무지개 팝콘 먹어 봤어? 친구한테 주면 걔가 무지개색이 된대. 진짜야, 내 정신과 의사도 놀랄걸.','꽃이라니… 다음 데이트 장면에 쓰면 딱이겠다.','bow'],
 '셜록 영사기사':['흥미롭군요. 이 선물에서 당신의 친절이 추리됩니다.','추리 하나 더. 책장 앞에서 사람들이 사라지는 건 우연이 아닙니다. 비밀 영화클럽이 그 아래에 있지요.','장미의 향으로 미루어 보아, 방금 꽃 파는 소녀를 만나셨군요.','bow'],
 '마커스 교수':['허허, 참 사려 깊군요. 감사히 받겠습니다.','여담입니다만, 이 극장엔 강의 계획서에 없는 장소가 하나 있어요. 비밀 영화클럽이라고 들어 보셨나요?','꽃이라… 시티 라이트의 마지막 장면이 떠오르는군요.','bow'],

@@ -1948,7 +1948,7 @@ function popMachine(x,z,rot,col=0xb3202e,cols,label='POP-CORN',lc='#b3202e'){con
  return g}
 const sm_=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
 function popAnim(dt,t){POPS.forEach(p=>{const ph=((t+p.o)%p.per)/p.per,m=p.m;m.position.set(p.vx*ph,1.98-.85*ph+p.h*4*ph*(1-ph),p.vz*ph);const k=sm_(.05,.4,ph);m.scale.setScalar((.03+.065*k)*(1+.7*Math.max(0,1-Math.abs(ph-.22)*9)));m.material.color.copy(K0).lerp(K1,k);m.visible=ph<.96})}
-const popG=new THREE.Group();popG.position.set(6.1,1.15,8.4);popG.scale.setScalar(.5);S.add(popG);popG.visible=false;
+/* QA193: 안 쓰던 숨은 팝콘 그룹(매 프레임 회전만 하던 것) 제거 */
 /* 매점↔자판기 자리 교체(11/7): 매점은 정문 쪽으로 +1.0(문쪽 화분과 안 겹치게), 자판기는 계단 쪽 */const _mShop=shMark();
 /* 03 REFRESHMENTS: QA179 — 레퍼런스(BUVETTE) 매점 — 버건디 원목 카운터·금색 몰딩·대리석 상판·금테 유리 진열장 4칸, 뒤쪽 버건디 선반장(사탕 병·선물 상자·레모네이드 병), 가격 타일, BUVETTE 간판·구형 램프, 무지개 팝콘 기계, 꽃병·금전등록기·탁상 램프. 손님은 -x 쪽에서 봄 */
 {const cx=6.1,z0=10.2,z1=14.5,L=z1-z0,zc=(z0+z1)/2;
@@ -2027,7 +2027,7 @@ const popG=new THREE.Group();popG.position.set(6.1,1.15,8.4);popG.scale.setScala
   fl(170,H/2+6,1.25);fl(W-170,H/2+6,1.25)}),LW-.37,3.72,zc,-Math.PI/2);
  /* QA181: 옆 포스터 제거 */
  /* QA182: 팝콘 기계 — 레퍼런스처럼 버건디 받침장 위 금테 유리장, 버건디 머리판 ARC-EN-CIEL, 금 장식, 흰·노란 팝콘, 따뜻한 조명 + 받침장 앞 줄무늬 컵 2 */{const z=zc+1.65,y0=1.47;bx(BW,1.45,1.1,BUR,BX,.725,z);bx(BW+.04,.04,1.14,GOLD,BX,y0,z);/* QA185: 팝콘 기계를 선반 높이로 */for(let k=0;k<2;k++)plane(.4,.62,PNL,BX-BW/2-.005,.5,z-.25+k*.5,-Math.PI/2);
-  const W_=.88,H_=.88,D_=.53,/* QA187: 10% 더 */xm=BX-.02,/* QA186: 레퍼런스처럼 크게 */gm=new THREE.Mesh(new THREE.BoxGeometry(D_,H_,W_),glassM);gm.position.set(xm,y0+.04+H_/2,z);S.add(gm);
+  const W_=.88,H_=.88,D_=.53,/* QA187: 10% 더 */xm=BX-.02,gm=new THREE.Mesh(new THREE.BoxGeometry(D_,H_,W_),glassM);gm.position.set(xm,y0+.04+H_/2,z);S.add(gm);
   [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,b])=>bx(.025,H_,.025,GOLD,xm+a*D_/2,y0+.04+H_/2,z+b*W_/2));[0,1].forEach(t=>[-1,1].forEach(a=>bx(.025,.025,W_,GOLD,xm+a*D_/2,y0+.04+t*H_,z)));bx(D_,.03,W_,BUR,xm,y0+.055,z);
   const pg=new THREE.Group();pg.position.set(xm,y0+.07,z);S.add(pg);for(let k=0;k<240;k++){const m_=new THREE.Mesh(new THREE.IcosahedronGeometry(.026,0),pm(k%5?0xfff3d6:0xf2d27a));m_.position.set((Math.random()-.5)*D_*.9,Math.random()*.3*(1-Math.abs(Math.random()-.5)),(Math.random()-.5)*W_*.9);m_.rotation.set(Math.random()*3,Math.random()*3,0);pg.add(m_)}
   cy(.09,.06,.06,new THREE.MeshPhongMaterial({color:0xd5d8dc,shininess:110}),xm,y0+H_-.08,z,16);halo(xm,y0+H_-.12,z,0xffe0a8,.8,.6);/* QA188: 기존 팝콘 기계처럼 솥에서 팝콘이 튀겨져 떨어지는 애니메이션 */{const gp=new THREE.Group(),s_=.7;gp.scale.setScalar(s_);gp.rotation.y=Math.PI/2;gp.position.set(xm,y0+H_-.11-1.98*s_,z);S.add(gp);for(let i=0;i<22;i++){const m=new THREE.Mesh(puffG,new THREE.MeshLambertMaterial({color:0xe8b73a}));gp.add(m);const a_=Math.random()*6.28;POPS.push({m,per:.7+Math.random()*.9,o:Math.random()*3,h:.2+Math.random()*.35,vx:Math.cos(a_)*(.15+Math.random()*.4),vz:Math.sin(a_)*(.1+Math.random()*.22)})}}
@@ -3575,7 +3575,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    if((dx||dz)&&ACTOR_SESSION)dismissActor();qaManualMove(me,dx,dz,dt);}
   const p=me.position,s=u.seat,zn=curZone(me);if(window.__lzn&&window.__lzn!==zn&&!s)alignSpaceCamera(me);window.__lzn=zn;
   if(zn[0]==='H'){
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3598,7 +3598,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);if(hz&&(!s||CWIDE)){/* User-controlled orbit is also available while walking in the auditorium. */}/* 상영관: 뒤쪽 통로에서 높게 → 좌석 전체와 스크린이 한눈에 */if(hz&&!s){/* QA39: 걸을 때는 스크린 가운데를 정면으로 — 스크린 전체와 좌석이 함께 보이게 */const dz=Math.max(4,cp.z-SCZ),ty=(hz.base+SCY*.97)-cp.y,off=Math.tan(clampN((camPitch-.2)*.85,-.6,.6));lk.set(cp.x+fx*20,cp.y+20*(ty/dz-off),cp.z+fz*20)}else lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
    if(!s||CWIDE){/* 상영관: 망원 시점(먼 거리 + 좁은 화각) → 투시 왜곡이 적은 정면 구도 */const tf=inH&&(!s||CWIDE)?(C.aspect<1?86:50):(C.aspect<1?74:65)+(inH?10:0);if(Math.abs(C.fov-tf)>.05){C.fov+=(tf-C.fov)*Math.min(1,dt*4);C.updateProjectionMatrix()}}}
   }else{
-  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);if(false){const v=lk.clone().sub(cp).applyQuaternion(new THREE.Quaternion().setFromEuler(new THREE.Euler(sPitch,sYaw,0,'YXZ')));lk.copy(cp).add(v)}}
+  if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
    const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
@@ -3628,7 +3628,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
   cp.set(P_.x+ox_*tt,1.0+camDist*sq*tt,P_.z+oz_*tt);lk.set(cp.x+fx*Math.cos(.17)*20,cp.y-Math.sin(.17)*20,cp.z+fz*Math.cos(.17)*20);if(!LAYED)cutApply(cp,P_,0,'L0');C.position.copy(cp);look.copy(lk);C.lookAt(look);const tf=C.aspect<1?74:65;if(Math.abs(C.fov-tf)>.01){C.fov=tf;C.updateProjectionMatrix()}}
  /* doors */
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
- popG.rotation.y+=dt*.5;/* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
+ /* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
  if(space>0&&HALLN[space]){const H=HALLN[space],on=!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE);/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.03+.27*HLF;H.pl.intensity=H.pli*(.05+.38*HLF);dl.intensity=.008+.092*HLF/* QA147: 입장 시 더 어둡게 *//* QA142: 상영관 조명 20% 낮춤 *//* QA122: 상영 중에도 객석이 보이게 조도 +10%p *//* QA139: 상영 중엔 벽·천장은 어둡게, 스크린 빛이 객석에만 번지게 */;if(!H.qa139){const L=new THREE.SpotLight(0xfff0d8,0,24,.68,.7,1);L.position.set(H.cx,H.base+SCY,SCZ+.8);L.target.position.set(H.cx,H.base+.5,SEAT_Z(3.5));S.add(L,L.target);H.qa139=L}{const cm=HALL_CEIL[space];if(cm){cm.emissive.setHex(0x4a3c2c).multiplyScalar(.08+.92*HLF);cm.color.setHex(0xeadfca).multiplyScalar(.35+.65*HLF)}/* QA157: 상영 중 천장도 어둡게 */}{const dk=1-HLF;H.qa139.intensity=dk*(2.6+.2*Math.sin(t*1.7)+.12*Math.sin(t*5.3))/* QA147: 객석에 번지는 스크린 빛 강조 */;H.qa139.visible=dk>.02}}else{dl.intensity=LOBBY_DL*LP_LIGHT.b;HLF=1}
 popAnim(dt,t);emgAnim(t);qa78Tick();/* QA15: 착석·상영 중 벽등 빛 감광, 종료·퇴석 시 복원 */if(space>0&&HALL_GLOW[space])HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF});if(space>0&&HALL_SC[space]){/* QA78: 상영이 시작되면 벽등 소등 */const k=.1+.9*HLF;HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k);HALL_SC[space][1].color.setHex(0xfffbe8).multiplyScalar(k)}Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'||z_==='P'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=g.userData.alwaysVisible||LAYED||C.position.distanceTo(g.position)>4});
  if(Math.floor(t)!==Math.floor(t-dt)&&Math.floor(t)%2===0)drawScreens();
@@ -4494,7 +4494,7 @@ function qa13SetupTree(){
  if(s>=6.6&&!active.gathered)gather();
  if(active.gathered&&active.greetingAt===null)active.guests.forEach(({c,goal})=>{if(!(c.userData.path||[]).length&&(curZone(c)!=='L0'||Math.hypot(c.position.x-goal.x,c.position.z-goal.z)>.5)){walkTo(c,goal.x,goal.z,'L0')}});
  if(active.gathered&&active.greetingAt===null&&s>=6/* QA39: 전구가 다 켜지면 바로 별·산타 인사 */){active.greetingAt=s;qa14TreeAudio('greet');active.guests.forEach(({c},i)=>{c.rotation.y=Math.atan2(tree.position.x-c.position.x,tree.position.z-c.position.z);sayB(c,['메리 크리스마스!','따뜻한 크리스마스 보내세요.','함께해서 행복한 밤이에요.'][i%3],10)})}
- if(false){active.clapped=true;active.guests.forEach(({c},i)=>{setTimeout(()=>{if(active)sayB(c,'짝짝짝!',9)},i*120)})}
+ 
  if(active.clapped&&s<39.5)active.guests.forEach(({c},i)=>{const u=c.userData;if(!(u.path||[]).length&&!(u.hop>0)&&Math.random()<.04)u.hop=.6})
  const since=active.greetingAt===null?0:s-active.greetingAt,dim=s>=endS-3.2?Math.min(1,p.dim+(s-(endS-3.2))/3.2*(1-p.dim))/* QA39·58: 종소리가 끝나면 3초에 걸쳐 서서히 밝아짐 */:p.dim;active.lights.forEach(([l,i])=>l.intensity=i*dim);active.glow.forEach(e=>e.h.material.opacity=active.opacity.get(e)*dim);active.mats.forEach(([k,c],m)=>m[k].copy(c).multiplyScalar(Math.max(.1,dim)));setBulbs(p.bulbs,s,p.sparkle);star.material.emissiveIntensity=p.star?1.25:0;starLight.intensity=p.star?.55:0;qa30Glow(p.bulbs,s,p.star);if(s>=endS-3.2){/* QA63: 끝날 때 트리 조명(전구 빛·별빛)도 서서히 꺼짐 */const f=Math.max(0,1-(s-(endS-3.2))/3.2);GL.pts.material.opacity*=f;GL.l.intensity*=f;GL.l2.intensity*=f;if(GL.sh)GL.sh.material.opacity*=f}if(s>=(window.__qaBellsAt&&window.__qaBellsAt>active.at?(window.__qaBellsAt-active.at)/1000+6.0:18.6))finish()/* QA39: 종소리 후 종료 */};
  document.addEventListener('visibilitychange',()=>{if(document.hidden)finish()});

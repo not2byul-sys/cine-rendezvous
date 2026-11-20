@@ -1007,7 +1007,7 @@ function zoneOf(x,z,l){if(l===0&&Math.abs(x-PCX)<PW-.1&&Math.abs(z-PCZ)<PD-.1)re
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
 const ZB={L0:[-LW+.6,LW-.6,.3,LD-.6],L1:[-LW+.5,LW-.5,LB+.35,BF-.25],H1:[HCX[1]-HX+.4,HCX[1]+HX-.4,-15.3,-.3],H2:[HCX[2]-HX+.4,HCX[2]+HX-.4,-15.3,-.3],B:[BCX-CBW+.5,BCX+CBW-.5,BCZ-CBD+.5,BCZ+CBD-.5],P:[PCX-PW+.45,PCX+PW-.45,PCZ-PD+1.75,PCZ+PD-.45]};
 const ZL={L0:0,H1:0,L1:1,H2:1,B:0,P:0};
-const SZ0=-13.2,SP=1.3/* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-1.3/* QA153: 스크린 12.6→13.6m */,SCH=SCW*9/16,SCY=1.9+SCW*9/32/* QA148·153: 스크린 아래끝 무대 위 1.9m — 이름표와 안 겹치고 천장 안에 들어오게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
+const SZ0=-14.0/* QA224: 객석만 0.8m 앞으로(퀵바와 덜 겹치게), 시점은 그대로 */,SP=1.3/* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-1.3/* QA153: 스크린 12.6→13.6m */,SCH=SCW*9/16,SCY=1.9+SCW*9/32/* QA148·153: 스크린 아래끝 무대 위 1.9m — 이름표와 안 겹치고 천장 안에 들어오게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
 const WAL=0x6a3c1f,WAL2=0x7d4a28,MU=0xd69b35,MU2=0xe2b04c,ORG=0xdd6a2a,TEAL=0x3f8a86,CREAM=0xefe4cc,VEL1=0x7a1424,VEL2=0x58101c;
 /* ===== 실사 재질: 마호가니 나무결 · 회반죽 벽 · 대리석 · 카펫 · 벨벳 ===== */
 const MARB=0xe5dccb,CARP1=0x6d8273,CARP2=0x768a7b,VELG=0x5d8a86,MET=0x5e1620,PLC=0xeadfcc;
@@ -5388,7 +5388,7 @@ html body #qa127map button.open:hover{background:rgba(255,255,255,.07)!important
 html body #qa127map button.x:hover{background:rgba(255,255,255,.1)!important;border-radius:50%!important}
 html body #qa133full{display:none!important}
 html body #toast{font-size:15px!important}
-@media (max-width:699px){html body #qa127map{zoom:.8}}/* QA176: 모바일 좌석표 20% 작게 *//* QA173: 알림 글자 1px 크게 */
+@media (max-width:699px){html body #qa127map{zoom:.64/* QA224: 20% 더 작게 */}}/* QA176: 모바일 좌석표 20% 작게 *//* QA173: 알림 글자 1px 크게 */
 </style>
 <script id="qa172-js">
 (function(){
@@ -5416,8 +5416,8 @@ html body #toast{font-size:15px!important}
 <script id="qa173-cam">
 /* QA173: 관람 시점 — 카메라는 수평(기울지 않음)으로 두고 렌즈만 아래로 옮겨(시프트) 스크린을 화면 위쪽에 크게, 그 아래 객석이 맨 뒷줄까지 보이게. 사다리꼴 왜곡 없음 */
 (function(){let S_=0,ST=0;const v=new THREE.Vector3();
- qa127Cam=function(H,hv,cp,lk){hv=v.set(H.cx,H.base+1.2,SEAT_Z(ROWS.length-1))/* QA219: 자리와 상관없이 늘 같은 상영 뷰(맨 뒷줄 기준), 상영 전·중·후 시점 동일 */;
-  const a=C.aspect,port=a<1,fw=port?.94:.64,topT=port?.8:.9,yc=H.base+(port?4.2:3.2),top=H.base+SCY+SCH/2,back=SEAT_Z(ROWS.length-1),head=H.base+1.15;
+ qa127Cam=function(H,hv,cp,lk){hv=v.set(H.cx,H.base+1.2,-4.1)/* QA224: 시점 기준은 예전 맨 뒷줄 위치로 고정 *//* QA219: 자리와 상관없이 늘 같은 상영 뷰(맨 뒷줄 기준), 상영 전·중·후 시점 동일 */;
+  const a=C.aspect,port=a<1,fw=port?.94:.64,topT=port?.8:.9,yc=H.base+(port?4.2:3.2),top=H.base+SCY+SCH/2,back=-4.1,head=H.base+1.15;
   let zc=port?Math.max(6,hv.z+2):Math.max(4,hv.z+2),t=0,sh=0;
   for(let k=0;k<40;k++){t=SCW/(2*(zc-SCZ)*fw*a);if(t>1.1){zc+=1;continue}sh=topT-(top-yc)/((zc-SCZ)*t);const nb=(head-yc)/((zc-back)*t)+sh,nm=(hv.y-.4-yc)/((zc-hv.z)*t)+sh;const lim=port?-.62:-.8/* 퀵바에 가리지 않게 */;if(nb>=lim&&nm>=lim)break;zc+=.5}
   cp.set(H.cx,yc,zc);lk.set(H.cx,yc,zc-10);ST=sh;FOVT=2*Math.atan(t)*180/Math.PI;window.QA173ON=performance.now();
@@ -5567,7 +5567,7 @@ html body #toast{font-size:15px!important}
  const V=new THREE.Vector3();let LZ='',SN=0;(function tick(){requestAnimationFrame(tick);try{const z=me?curZone(me):'';if(z!==LZ){LZ=z;if(z[0]==='H'){SN=6;snapCam=true}}document.body.classList.toggle('qa220h',!!(me&&curZone(me)[0]==='H'));if(SN>0&&window.FOVT){SN--;C.fov=FOVT;C.updateProjectionMatrix();window.QA219SNAP=3}}catch(e){}/* 입장하자마자 상영 뷰 그대로(줌 애니메이션 없이) */let show=false;try{const sp=seat(),pn=$('pn');show=!!sp&&!curSp&&!(pn&&!pn.hidden)&&!document.querySelector('.qa134');if(show){const H=HALLN[sp.hall];V.copy(H.scr.position);V.y+=0;V.project(C);b.style.left=((V.x+1)/2*innerWidth)+'px';b.style.top=Math.max(90,(1-V.y)/2*innerHeight)+'px'}}catch(e){show=false}if(b.hidden===show)b.hidden=!show})();
  const css=document.createElement('style');css.textContent=`#qa219play{position:fixed;z-index:30;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;height:56px;padding:0 28px 0 22px;border-radius:999px;border:1px solid rgba(243,215,154,.55);background:rgba(28,14,18,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#f3d79a;font:600 17px 'Noto Sans KR',sans-serif;cursor:pointer;box-shadow:0 12px 34px -12px rgba(0,0,0,.7)}#qa219play[hidden]{display:none}#qa219play:hover{background:rgba(60,22,32,.85)}
 html body.cineseat #hb #qa133full,html body #hb #qa133full,html body.cineseat #hb #cx,html body #hb #cx,#full{display:none!important}/* QA219: 크게 보기·작게 보기·우측 상단 X 삭제 */
-html body.qa220h #act button svg,html body.qa220h #act button i{display:none!important}html body.qa220h #act{background:rgba(28,20,22,.6)!important}html body.qa220h #act button{width:auto!important;min-width:0!important;padding:8px 15px!important}/* QA221: 메뉴 사이 간격 절반 */html body.qa220h #act button,html body.qa220h #act button span{font-size:11px!important}/* QA222: 글자 1px 작게(12→11) *//* QA220: 상영관 퀵바 — 아이콘 없이 글자만, 배경 60% 불투명 */
+html body.qa220h #act button svg,html body.qa220h #act button i{display:none!important}html body.qa220h #act{background:rgba(28,20,22,.6)!important}@media (min-width:700px){html body #qa127map{zoom:.8}}/* QA224: 좌석표 20% 작게 */html body.qa220h #act button{width:auto!important;min-width:0!important;padding:6.5px 6.5px!important}/* QA221·223: 메뉴 사이 간격 절반의 절반, 퀵바 높이 3px 줄임(41→38) */html body.qa220h #act button,html body.qa220h #act button span{font-size:11px!important}/* QA222: 글자 1px 작게(12→11) *//* QA220: 상영관 퀵바 — 아이콘 없이 글자만, 배경 60% 불투명 */
 `;document.body.appendChild(css)/* 문서 맨 끝에 — 앞선 !important 규칙보다 뒤 */;
  /* 상영 중에도 퀵바는 아이콘 있는 기본 모양 그대로 — 관람용 작은 알약 바 스타일 걷어냄 */try{for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules}catch(e){continue}for(let k=rs.length-1;k>=0;k--){const r=rs[k];if(!r.selectorText||!/body\.cineseat #act/.test(r.selectorText))continue;const keep=r.selectorText.split(',').filter(x=>!/#act/.test(x));if(!keep.length)sh.deleteRule(k);else r.selectorText=keep.join(',')}}}catch(e){}
 })();

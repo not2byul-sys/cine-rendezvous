@@ -5624,6 +5624,14 @@ html body #toast{font-size:16px!important}/* QA230: 모든 알림 1px 크게 */
   bg.addEventListener('click',close);document.body.append(bg,el);window.__qa134=[bg,el]};
  A.obuy=(...a)=>{if(ORD&&ORD.v==='ouv'&&me&&curZone(me)[0]==='H'){const items=[];Object.entries(ORD.q).forEach(([k,q])=>{for(let i=0;i<q;i++)items.push(k)});if(!items.length)return;items.forEach(k=>HELD.push({k}));QA88_N=HELD.length;ORD=null;closePanel();refreshMe();hudUpd();pick(items);return}return _ob(...a)};
  window.QA234PICK=pick})();
+/* QA244: 첫 입장 때 퀵바 '캐릭터' 위에 검정 말풍선 안내(한 번만) */
+(function(){const K='aic.tipAvatar';let seen=false;try{seen=!!localStorage.getItem(K)}catch(e){}if(seen)return;
+ const st=document.createElement('style');st.textContent="#qa244tip{position:fixed;z-index:40;transform:translate(-50%,-100%);padding:8px 12px;border-radius:10px;background:rgba(18,12,14,.92);color:#fff;font:500 13px/18px 'Noto Sans KR',sans-serif;letter-spacing:-.13px;white-space:nowrap;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .35s}#qa244tip.on{opacity:1}#qa244tip::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(18,12,14,.92)}";document.head.appendChild(st);
+ let el=null,t0=0;const btn=()=>[...document.querySelectorAll('#act button[data-a="avatar"]')].find(b=>b.offsetParent);
+ const close=()=>{if(el){el.classList.remove('on');const e_=el;setTimeout(()=>e_.remove(),400);el=null}};
+ (function loop(){if(seen&&!el)return;requestAnimationFrame(loop);const b=btn();
+  if(!el){if(!b||!me||(document.getElementById('join')&&!document.getElementById('join').hidden))return;seen=true;try{localStorage.setItem(K,'1')}catch(e){}el=document.createElement('div');el.id='qa244tip';el.textContent='의상을 바꿔보세요';document.body.appendChild(el);t0=performance.now();requestAnimationFrame(()=>el&&el.classList.add('on'));b.addEventListener('click',close,{once:true})}
+  if(!b||performance.now()-t0>10000){close();return}const r=b.getBoundingClientRect(),bar=document.getElementById('act'),bt=bar?bar.getBoundingClientRect().top:r.top;el.style.left=(r.left+r.width/2)+'px';el.style.top=(bt-12)+'px'})()})();
 /* QA234: 이름표 옆에 먹고 있는 간식 이모지 */
 (function(){let last='';setInterval(()=>{try{if(!me)return;const em=SNACKW.items.map(k=>IT[k][0]).join('')+(EAT&&EAT.it&&IT[EAT.it.k]?IT[EAT.it.k][0]:'');if(em===last)return;last=em;const _s=SNACKW.items;if(EAT&&EAT.it&&IT[EAT.it.k]&&!_s.includes(EAT.it.k)){SNACKW.items=_s.concat([EAT.it.k]);qa100Tag();SNACKW.items=_s}else qa100Tag()}catch(e){}},500)})();
 /* QA231: 간식구매 — 우브뢰즈가 내 자리 옆 복도로 와서 메뉴판을 열어 줌. 상영 중이면 먼저 잠시 중단할지 묻고, 불이 켜진 뒤에 옴 */

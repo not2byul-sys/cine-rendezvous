@@ -5534,4 +5534,21 @@ html body #toast{font-size:15px!important}
 .qa194bump{animation:qa194bump .5s ease}
 .qa194-grid .qa194-th{background:#fff}.qa194-grid .qa194-th img{object-fit:contain;background:#fff}
 </style>
+<script id="qa212-clay">/* QA212: 소프트 클레이 질감(테스트) — 주소에 ?clay=1 일 때만 켜짐. 색은 그대로, 반사 제거(무광)·작은 상자 모서리 둥글게·옅은 손자국 요철·아바타 발밑 부드러운 그림자(PC). ?clay=0 이면 끔 */
+(function(){let on=false;try{const q=new URLSearchParams(location.search).get('clay');if(q==='1')localStorage.setItem('aic.clay','1');if(q==='0')localStorage.removeItem('aic.clay');on=localStorage.getItem('aic.clay')==='1'}catch(e){}if(!on)return;
+ const PC=matchMedia('(pointer:fine)').matches&&innerWidth>900;
+ const nc=document.createElement('canvas');nc.width=nc.height=48;{const x=nc.getContext('2d'),id=x.createImageData(48,48);for(let i=0;i<id.data.length;i+=4){const v=128+(Math.random()-.5)*90;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255}x.putImageData(id,0,0)}const BUMP=new THREE.CanvasTexture(nc);BUMP.wrapS=BUMP.wrapT=THREE.RepeatWrapping;BUMP.repeat.set(2,2);
+ const GC=new Map(),MC=new Map();
+ const rbox=(w,h,d)=>{const r=Math.min(w,h,d)*.3,g=new THREE.BoxGeometry(w,h,d,3,3,3),p=g.attributes.position,v=new THREE.Vector3(),c=new THREE.Vector3(),hx=w/2-r,hy=h/2-r,hz=d/2-r;for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i);c.set(Math.max(-hx,Math.min(hx,v.x)),Math.max(-hy,Math.min(hy,v.y)),Math.max(-hz,Math.min(hz,v.z)));v.sub(c);if(v.lengthSq()>1e-12)v.normalize().multiplyScalar(r);v.add(c);p.setXYZ(i,v.x,v.y,v.z)}g.computeVertexNormals();return g};
+ const matOf=m0=>{let m=MC.get(m0);if(m)return m;if(m0.type!=='MeshPhongMaterial'&&m0.type!=='MeshLambertMaterial'){MC.set(m0,m0);return m0}
+  m=new THREE.MeshPhongMaterial({color:m0.color?m0.color.clone():0xffffff,map:m0.map||null,emissive:m0.emissive?m0.emissive.clone():0x000000,emissiveMap:m0.emissiveMap||null,specular:0x000000,shininess:0,bumpMap:m0.map?null:BUMP,bumpScale:.0016,side:m0.side,transparent:m0.transparent,opacity:m0.opacity,depthWrite:m0.depthWrite,alphaTest:m0.alphaTest||0,vertexColors:m0.vertexColors,blending:m0.blending});
+  /* 색이 그대로 보이도록: 반사광만 빼고 확산색·텍스처는 원본 그대로 */MC.set(m0,m);MC.set(m,m);return m};
+ const BLOB=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d'),g=x.createRadialGradient(32,32,2,32,32,30);g.addColorStop(0,'rgba(40,24,14,.42)');g.addColorStop(1,'rgba(40,24,14,0)');x.fillStyle=g;x.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+ const pass=()=>{try{S.traverse(o=>{if(!o.isMesh||o.isSprite||o.userData.qa212)return;o.userData.qa212=1;const m0=o.material;if(Array.isArray(m0)){o.material=m0.map(x=>x&&x.visible!==false?matOf(x):x)}else if(m0&&m0.visible!==false)o.material=matOf(m0);
+   const ge=o.geometry;if(ge&&ge.type==='BoxGeometry'&&m0&&m0.visible!==false&&!Array.isArray(m0)){const q=ge.parameters;if(Math.max(q.width,q.height,q.depth)<2.6&&Math.min(q.width,q.height,q.depth)>.012){let g2=GC.get(ge);if(!g2){g2=rbox(q.width,q.height,q.depth);GC.set(ge,g2)}o.geometry=g2}}});
+  if(PC){const L=[];try{if(me)L.push(me)}catch(e){}try{NPCS.forEach(n=>L.push(n))}catch(e){}L.forEach(a=>{if(!a||a.userData.qa212b)return;a.userData.qa212b=1;const b=new THREE.Mesh(new THREE.PlaneGeometry(1.1,1.1),new THREE.MeshBasicMaterial({map:BLOB,transparent:true,depthWrite:false}));b.rotation.x=-Math.PI/2;b.position.y=.012;b.renderOrder=-1;b.userData.qa212=1;a.add(b)})}}catch(e){console.warn('QA212',e)}};
+ let n=0;(function loop(){pass();setTimeout(loop,n++<10?600:2500)})();
+ try{const tag=document.createElement('div');tag.textContent='클레이 테스트';tag.style.cssText='position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:90;background:rgba(42,20,28,.8);color:#f3d79a;font:600 12px "Noto Sans KR",sans-serif;padding:4px 10px;border-radius:12px;pointer-events:none';document.body.appendChild(tag)}catch(e){}
+})();
+</script>
 </body></html>

@@ -1853,7 +1853,7 @@ const currentPosterCv=document.createElement('canvas');currentPosterCv.width=512
 /* 벽등 */
 [[LW-.24,6.65,-Math.PI/2],[LW-.24,LD-.8,-Math.PI/2]].forEach(([x,z,r],i)=>{const m_=layBeg();sconce(x,2.9,z,r);halo(x+(x<0?.3:-.3),3.15,z,0xffd9a0,1.3,.5);layEnd(m_,'scs'+i,'벽등 (옆벽)',0,{wall:'x',lo:BF+.5,hi:LD-.5})});
 const _lB=layBeg();/* 02 매표소: 둥근 마호가니 유리 부스 (TICKETS · ADMISSION · 황동 벨) */
-{const cx=-7.5,cz=11.2,r=1.55,a0=0,al=Math.PI,MT=TM[WAL];const cyl=(rt,rb,h,y,m,open=true)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,40,1,open,a0,al),m);o.position.set(cx,y,cz);S.add(o);return o};
+{const cx=-8.1/* QA196: 매표소를 벽 쪽으로 0.6 들임 */,cz=11.2,r=1.55,a0=0,al=Math.PI,MT=TM[WAL];const cyl=(rt,rb,h,y,m,open=true)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,40,1,open,a0,al),m);o.position.set(cx,y,cz);S.add(o);return o};
  const wm=new THREE.MeshPhongMaterial({map:MAHO.clone(),shininess:30,specular:0x2a2018,side:THREE.DoubleSide});wm.map.needsUpdate=true;wm.map.repeat.set(4,1);
  cyl(r,r,1.05,.6,TM.lpBody);cyl(r+.02,r+.02,.12,.06,BRM);cyl(r+.06,r+.06,.06,1.1,new THREE.MeshPhongMaterial({map:WMARB,shininess:50,side:THREE.DoubleSide}));
  /* Split glazing leaves a genuine ticket exchange opening at the counter. */
@@ -1891,10 +1891,10 @@ const _lB=layBeg();/* 02 매표소: 둥근 마호가니 유리 부스 (TICKETS �
    B(.06,.74,.68,WD,x-.02,y,z);plane(.62,.69,tx,x+.025,y,z,Math.PI/2);
   });
  }
- globalThis.QA17_BOOTH=hitbox(cx+.7,1.5,cz,1.8,3,3.2,{fn:()=>openPanel('booth'),pt:{x:-5.3,z:cz,zone:'L0'}})}
+ globalThis.QA17_BOOTH=hitbox(cx+.7,1.5,cz,1.8,3,3.2,{fn:()=>openPanel('booth'),pt:{x:-5.9,z:cz,zone:'L0'}})}
 /* Staff sits behind a small internal desk on a tall wooden chair. */
 const stT=mk('미시즈 퍼재컬리',SGD,{staff:true,ch:'S01'});stT.userData.counterStaff=true;stT.userData.static=1;
-{const x=-6.99,z=11.20,wood=new THREE.MeshPhongMaterial({color:0x493023,shininess:35});
+{const x=-7.59,z=11.20,wood=new THREE.MeshPhongMaterial({color:0x493023,shininess:35});
  const seat=new THREE.Mesh(new THREE.CylinderGeometry(.23,.23,.055,32),wood);seat.position.set(x,1.285,z)/* QA195: 의자 0.18 올려 상반신이 창 안에 보이게 */;S.add(seat);
  [-1,1].forEach(a=>[-1,1].forEach(b=>{const leg=new THREE.Mesh(new THREE.CylinderGeometry(.022,.03,1.22,12),wood);leg.position.set(x+a*.15,.65,z+b*.15);S.add(leg)}));
  B(.06,.45,.42,0x493023,x-.20,1.54,z);B(.035,.035,.42,0x856144,x-.19,1.73,z);
@@ -1951,12 +1951,12 @@ function popAnim(dt,t){POPS.forEach(p=>{const ph=((t+p.o)%p.per)/p.per,m=p.m;m.p
 /* QA193: 안 쓰던 숨은 팝콘 그룹(매 프레임 회전만 하던 것) 제거 */
 /* 매점↔자판기 자리 교체(11/7): 매점은 정문 쪽으로 +1.0(문쪽 화분과 안 겹치게), 자판기는 계단 쪽 */const _mShop=shMark();
 /* 03 REFRESHMENTS: QA179 — 레퍼런스(BUVETTE) 매점 — 버건디 원목 카운터·금색 몰딩·대리석 상판·금테 유리 진열장 4칸, 뒤쪽 버건디 선반장(사탕 병·선물 상자·레모네이드 병), 가격 타일, BUVETTE 간판·구형 램프, 무지개 팝콘 기계, 꽃병·금전등록기·탁상 램프. 손님은 -x 쪽에서 봄 */
-{const cx=6.1,z0=10.2,z1=14.5,L=z1-z0,zc=(z0+z1)/2;
- const BUR=new THREE.MeshPhongMaterial({color:0x3f2618,shininess:45,specular:0x2a1a10}),BUR2=new THREE.MeshPhongMaterial({color:0x2c1a10,shininess:30})/* QA191: 버건디 → 어두운 원목색 */,GOLD=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0x8a6a30}),MARB=new THREE.MeshPhongMaterial({color:0xece3d3,shininess:70,specular:0x777777}),CRM=new THREE.MeshPhongMaterial({color:0xf3e8d2,shininess:20});
+{const cx=7.0/* QA196: 카운터를 선반 쪽으로 0.9 들여 직원 통로를 좁힘 */,z0=10.2,z1=14.5,L=z1-z0,zc=(z0+z1)/2;
+ const BUR=TM[WAL],BUR2=TM[WAL2]/* QA196: 매표소와 같은 마호가니 원목 */,GOLD=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0x8a6a30}),MARB=new THREE.MeshPhongMaterial({color:0xece3d3,shininess:70,specular:0x777777}),CRM=new THREE.MeshPhongMaterial({color:0xf3e8d2,shininess:20});
  const bx=(w,h,d,m,x,y,z,p=S)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);p.add(o);return o},cy=(rt,rb,h,m,x,y,z,seg=18,p=S)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(rt,rb,h,seg),m);o.position.set(x,y,z);p.add(o);return o},sp=(r,m,x,y,z,sy=1)=>{const o=new THREE.Mesh(new THREE.SphereGeometry(r,14,10),m);o.position.set(x,y,z);o.scale.y=sy;S.add(o);return o},pm=c=>new THREE.MeshPhongMaterial({color:c,shininess:40});
  const lab=(t,w,h,font,bg,ink,bd)=>art(w,h,(c,W,H)=>{c.fillStyle=bg;c.fillRect(0,0,W,H);if(bd){c.strokeStyle=bd;c.lineWidth=Math.max(3,H*.06);c.strokeRect(c.lineWidth,c.lineWidth,W-2*c.lineWidth,H-2*c.lineWidth)}c.fillStyle=ink;c.textAlign='center';c.textBaseline='middle';c.font=font;String(t).split('\n').forEach((l,i,a)=>c.fillText(l,W/2,H/2+(i-(a.length-1)/2)*H*.36))});
  /* 카운터 */const HB=.92,TOP=HB+.05;bx(.9,HB,L,BUR,cx,HB/2,zc);bx(.96,.09,L+.04,GOLD,cx,.045,zc);bx(1.02,.05,L+.12,MARB,cx,HB+.025,zc);bx(.94,.03,L+.06,GOLD,cx,HB-.02,zc);
- const PNL=art(256,160,(c,W,H)=>{c.fillStyle='#3f2618';c.fillRect(0,0,W,H);c.strokeStyle='#c9a24a';c.lineWidth=6;c.strokeRect(16,16,W-32,H-32);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=2;c.strokeRect(26,26,W-52,H-52)});
+ const PNL=art(256,160,(c,W,H)=>{c.fillStyle='#5b2417';c.fillRect(0,0,W,H);try{c.drawImage(MAHO.image,0,0,W,H)}catch(e){}c.strokeStyle='#c9a24a';c.lineWidth=6;c.strokeRect(16,16,W-32,H-32);c.strokeStyle='rgba(0,0,0,.35)';c.lineWidth=2;c.strokeRect(26,26,W-52,H-52)});
  for(let k=0;k<4;k++)plane(L/4-.16,.56,PNL,cx-.452,.46,z0+L/8+k*L/4,-Math.PI/2);
  /* 금테 유리 진열장 4칸 */const c0=z0+.75,c1=z1-.45,CL=(c1-c0)/4,GH=.34;
  /* QA186: 진열장 4개를 각각 따로 — 칸마다 금색 받침·기둥·윗테·아래테, 사이 간격 */for(let i=0;i<4;i++){const z=c0+CL*(i+.5),Lz=CL-.08,hx=.39,hz=Lz/2;bx(.82,.035,Lz+.04,GOLD,cx,TOP+.017,z);const g=new THREE.Mesh(new THREE.BoxGeometry(.76,GH-.02,Lz-.02),glassM);g.position.set(cx,TOP+.035+(GH-.02)/2,z);S.add(g);[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(([a,b])=>bx(.028,GH,.028,GOLD,cx+a*hx,TOP+GH/2+.02,z+b*hz));[-1,1].forEach(a=>{bx(.028,.028,Lz,GOLD,cx+a*hx,TOP+GH+.02,z);bx(.028,.028,Lz,GOLD,cx+a*hx,TOP+.05,z)});[-1,1].forEach(b=>{bx(2*hx,.028,.028,GOLD,cx,TOP+GH+.02,z+b*hz);bx(2*hx,.028,.028,GOLD,cx,TOP+.05,z+b*hz)});bx(.7,.02,Lz-.1,new THREE.MeshPhongMaterial({color:0xd9dcde,shininess:90}),cx,TOP+.045,z)}
@@ -2039,7 +2039,7 @@ function popAnim(dt,t){POPS.forEach(p=>{const ph=((t+p.o)%p.per)/p.per,m=p.m;m.p
  {const z=8.45;sconce(LW-.24,3.0,z,-Math.PI/2,2);halo(LW-.54,3.25,z,0xffe3c2,1.3,.4);const lamp=new THREE.PointLight(0xffe3c2,.16,5,2);lamp.position.set(LW-.55,3.22,z);S.add(lamp)}
  var TOPY=TOP+GH,GT=TOP;
 }
-const stM=mk('미스 모지',0xd9691f,{staff:true,ch:'S02'});stM.userData.counterStaff=true;stM.userData.floorOffset=.3;stM.position.set(7.15,.3,12.2)/* QA195: 직원 단 위(0.3) */;stM.rotation.y=-Math.PI/2;VSTAFF.shop=stM;/* 매대와 점원 어느 쪽을 눌러도 주문창 열기 */hitbox(6.1,.65,12.35,1.15,1.3,4.4,{now:1,fn:()=>openPanel('shop'),pt:{x:5.1,z:12.2,zone:'L0'}});hitbox(7.45,1.05,12.2,1.0,2.1,1.0,{now:1,fn:()=>openPanel('shop'),pt:{x:5.1,z:12.2,zone:'L0'}});shTo(_mShop,0,1.0);
+const stM=mk('미스 모지',0xd9691f,{staff:true,ch:'S02'});stM.userData.counterStaff=true;stM.userData.floorOffset=.3;stM.position.set(7.85,.3,12.2)/* QA195: 직원 단 위(0.3) */;stM.rotation.y=-Math.PI/2;VSTAFF.shop=stM;/* 매대와 점원 어느 쪽을 눌러도 주문창 열기 */hitbox(7.0,.65,12.35,1.15,1.3,4.4,{now:1,fn:()=>openPanel('shop'),pt:{x:6.0,z:12.2,zone:'L0'}});hitbox(7.85,1.05,12.2,1.0,2.1,1.0,{now:1,fn:()=>openPanel('shop'),pt:{x:6.0,z:12.2,zone:'L0'}});shTo(_mShop,0,1.0);
 function retroBox(x,z,w,h,col,label,lc,rot=-Math.PI/2){/* 50~60년대 자판기(레퍼런스): 둥근 모서리 본체 · 상단 라이트박스 · 크롬 띠 · 레터 타일 · 투입구 · 세로 크롬 바 */
  const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot;S.add(g);const W=w*.95,H=2.05,D=.66,BODY=new THREE.MeshPhongMaterial({color:0xd8cdb0,shininess:35,specular:0x333333}),CHR=new THREE.MeshPhongMaterial({color:0xd5d8dc,shininess:110,specular:0xffffff}),DK_=mat(0x2a2a2a);
  const bx=(w_,h_,d_,m,px,py,pz)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w_,h_,d_),m);o.position.set(px,py,pz);g.add(o);return o};

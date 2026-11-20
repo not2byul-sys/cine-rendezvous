@@ -60,7 +60,7 @@ test('the original ticket booth initializes after the trim rollback and retains 
 });
 test('the original curved booth keeps its ticket opening without the added front frame', () => {
   const x = sceneContext(); vm.runInContext(part('const _lB=layBeg();', '/* Staff sits behind'), x.ctx);
-  const faceX = -7.5 + 1.55 + .10;
+  const faceX = -8.1 + 1.55 + .10;
   assert(!x.boxes.some(([w, h, d, , px]) => px === faceX && h >= 1.9 && d > 3));
   const edgeFrames = x.boxes.filter(([w, h, d, , px]) => px === faceX && h === 2 && d === .13);
   assert.equal(edgeFrames.length, 0); assert(source.includes("pt:{x:cx+r+.7,z:cz,zone:'L0'}"));

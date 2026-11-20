@@ -1001,7 +1001,7 @@ const LW=9,LD=20,ST={x0:-8.8,x1:-6.2,x2:6.2,x3:8.8,z0:2.0,z1:6.4},STX=7.5,DOORX=
 const BF=2.0,BW=BF,LB=-4,GATE={1:{x:0,z:BF+1.2,tz:BF-.15,zone:'L0'},2:{x:0,z:LB+1.3,tz:LB+.05,zone:'L1'}},EXIT={1:{x:0,z:BF+2.4,l:0},2:{x:0,z:LB+2.0,l:1}};/* LB: 로비 뒷벽(2층 복도 깊이 BF-LB = 6m, 그 아래 1층은 1관 내부) */
 /* 왼쪽 계단 제거(11/7) → 계단은 오른쪽 하나 */const inStair=(x,z)=>z>=ST.z0&&z<=ST.z1&&x>=ST.x2&&x<=ST.x3;
 const stairY=z=>Math.max(0,Math.min(4.2,4.2*(ST.z1-z)/(ST.z1-ST.z0)));
-const BCX=500,BCZ=0,CBW=9,CBD=7.5,CBH=6.4;const PCX=700,PCZ=0,PW=3.4,PD=2.6,PH=3.3;/* QA166: 1관 영사실(별도 좌표 공간, 아지트에서 문으로) *//* 지하 영화클럽 아지트(별도 좌표 공간) */
+const BCX=500,BCZ=0,CBW=9,CBD=7.5,CBH=6.4;const PCX=700,PCZ=0,PW=4.2,PD=3.4,PH=3.6/* QA199: 영사실을 넓혀 카메라가 머리에 붙지 않게 */;/* QA166: 1관 영사실(별도 좌표 공간, 아지트에서 문으로) *//* 지하 영화클럽 아지트(별도 좌표 공간) */
 function zoneOf(x,z,l){if(l===0&&Math.abs(x-PCX)<PW-.1&&Math.abs(z-PCZ)<PD-.1)return'P';if(l===0&&Math.abs(x-BCX)<CBW-.1&&Math.abs(z-BCZ)<CBD-.1)return'B';if(inStair(x,z))return'S';
  for(const k of[1,2])if(Math.abs(x-HCX[k])<HX-.2&&z<0&&z>-18.5&&l===HL[k])return'H'+k;
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
@@ -2906,9 +2906,9 @@ addEventListener('pointermove',e=>{if(!me||!PTR.has(e.pointerId))return;if(e.poi
  const o=PTR.get(e.pointerId);if(PTR.size>=2)o.on=true;
  if(!o.on){if(Math.hypot(e.clientX-o.sx,e.clientY-o.sy)<8)return;o.on=true;o.x=e.clientX;o.y=e.clientY;camDrag=true;releaseSeatCamera();return}
  const dx=e.clientX-o.x,dy=e.clientY-o.y;o.x=e.clientX;o.y=e.clientY;camDrag=true;
- if(PTR.size>=2){const ps=[...PTR.values()],pe=PTR.get(e.pointerId);const other=ps.find(q=>q!==pe),d1=Math.hypot(pe.x-other.x,pe.y-other.y),d0=Math.hypot(pe.x-dx-other.x,pe.y-dy-other.y);if(!(me.userData.seat&&me.userData.seat.kind==='cine'))camDistT=clampN(camDistT-(d1-d0)*.02,3.5,13);return}
+ if(PTR.size>=2){const ps=[...PTR.values()],pe=PTR.get(e.pointerId);const other=ps.find(q=>q!==pe),d1=Math.hypot(pe.x-other.x,pe.y-other.y),d0=Math.hypot(pe.x-dx-other.x,pe.y-dy-other.y);if(!(me.userData.seat&&me.userData.seat.kind==='cine'))camDistT=clampN(camDistT*(d0/Math.max(1,d1)),2.4,14)/* QA199: 두 손가락 벌린 비율만큼 바로 줌(더 가깝게·멀리) */;return}
  if(me.userData.seat&&me.userData.seat.kind==='cine'){sYaw=clampN(sYaw-dx*.004,-1.1,1.1);sPitch=clampN(sPitch-dy*.003,-.6,.6)}else{if(e.pointerType==='touch'){/* QA19: 일반 모바일 게임식 — 한 손가락 드래그 = 아바타 중심 궤도 회전(화면 너비 한 번 = 약 200°), 위아래 = 시점 높이, 두 손가락 = 확대/축소 */const kx=3.4/Math.max(320,Math.min(innerWidth,innerHeight*1.2)),ky=2.2/Math.max(480,innerHeight);camYaw-=dx*kx;yawV=0;camPitchT=clampN(camPitchT+dy*ky,-.12,.95)}else{camYaw+=dx*.0034;yawV=clampN(dx*.0034*60,-2.2,2.2);camPitchT=clampN(camPitchT+dy*.0035,-.05,.75)}}});
-addEventListener('wheel',e=>{if(!me)return;if(e.target.closest&&e.target.closest('#pn,#txpg,#layui,#ad'))return;releaseSeatCamera();if(me.userData.seat&&me.userData.seat.kind==='cine'&&!CWIDE){/* QA15: 착석 후 스크린 중심 고정 — 확대/축소 차단 */}else camDistT=clampN(camDistT+e.deltaY*.006,3.5,13);e.preventDefault()},{passive:false});
+addEventListener('wheel',e=>{if(!me)return;if(e.target.closest&&e.target.closest('#pn,#txpg,#layui,#ad'))return;releaseSeatCamera();if(me.userData.seat&&me.userData.seat.kind==='cine'&&!CWIDE){/* QA15: 착석 후 스크린 중심 고정 — 확대/축소 차단 */}else camDistT=clampN(camDistT*Math.exp(e.deltaY*.0015),2.4,14);e.preventDefault()},{passive:false});
 const K={};addEventListener('keydown',e=>{if(document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){K[e.key.toLowerCase()]=1;if(['w','a','s','d','q','e','arrowup','arrowdown','arrowleft','arrowright','+','-','='].includes(e.key.toLowerCase()))releaseSeatCamera()}});addEventListener('keyup',e=>K[e.key.toLowerCase()]=0);
 const send=()=>{const v=$('msg').value.trim();if(me&&v){say(me,v,1);$('msg').value=''}};
 $('send').onclick=send;$('msg').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();send()}};
@@ -3093,6 +3093,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(!cine)h+=['tix:티켓','bag:가방','tt:상영작','avatar:캐릭터'/* QA40 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
+ if(zc==='P')h+=`<button class="fx" data-a="qa199out" aria-label="아지트로 나가기">${lucide('hallDoor')}<span>아지트로 나가기</span></button>`/* QA199: 영사실에서 바로 나가기 */;
  if((inH&&!cine)||zc==='B'){
    h+=`<button class="fx" data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide('hallDoor')}<span>로비로 나가기</span></button>`.replace('data-a="exithall"',zc==='B'?'data-a="goup"':'data-a="exithall"');
  }
@@ -3591,8 +3592,8 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
   if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
-   const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
-   if(K['=']||K['+'])camDistT=clampN(camDistT-dt*6,CMIN,13);if(K['-'])camDistT=clampN(camDistT+dt*6,CMIN,13);camDist+=(camDistT-camDist)*Math.min(1,dt*9);
+   const CMIN=2.4,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
+   if(K['=']||K['+'])camDistT=clampN(camDistT-dt*6,CMIN,14);if(K['-'])camDistT=clampN(camDistT+dt*6,CMIN,14);camDist+=(camDistT-camDist)*Math.min(1,dt*9);
    if(Math.abs(yawV)>.01){camYaw+=yawV*dt;yawV*=Math.pow(.006,dt)}else yawV=0;
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
@@ -3603,7 +3604,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,s?-.35:16)}
-   else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}
+   else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}else if(zn==='P'){/* QA199: 영사실 — 로비 경계로 계산돼 카메라가 머리에 붙거나 방 밖(3D 상자처럼)으로 나가던 문제 */lim(p.x,ox,PCX-PW+.3,PCX+PW-.3);lim(p.z,oz,PCZ-PD+.3,PCZ+PD-.3);lim(hy,oy,-99,PH-.25)}
    else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
    tt=Math.max(tt,.03);
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
@@ -3614,8 +3615,8 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
   if(s&&s.kind==='cine'&&!CWIDE){const H=HALLN[s.hall];/* 관람 시점: 스크린 정중앙 높이에서 정면(직사각형). live = 뒤로 물러나 앞줄 관객이 함께 보임 */{/* QA127: 모든 좌석이 같은 정면 시점 — 스크린은 늘 정면 직사각형, 내 자리가 보일 만큼만 같은 축으로 줌아웃 */const hv=new THREE.Vector3(),u_=me&&me.userData;if(u_&&u_.head)u_.head.getWorldPosition(hv);else hv.set(s.x,H.base+1.2,s.z);qa127Cam(H,hv,cp,lk)}H.dw.forEach(m=>m.visible=cp.z<-.7);}
   else{
    /* 산사식 3인칭 추적 시점: 아바타 등 뒤에서 따라감 */
-   const CMIN=3.5,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
-   if(K['=']||K['+'])camDistT=clampN(camDistT-dt*6,CMIN,13);if(K['-'])camDistT=clampN(camDistT+dt*6,CMIN,13);camDist+=(camDistT-camDist)*Math.min(1,dt*9);
+   const CMIN=2.4,inH=zn[0]==='H',HH_H=17.5;/* 산사식 카메라: 낮고 가까운 3인칭(3.5~13m) */
+   if(K['=']||K['+'])camDistT=clampN(camDistT-dt*6,CMIN,14);if(K['-'])camDistT=clampN(camDistT+dt*6,CMIN,14);camDist+=(camDistT-camDist)*Math.min(1,dt*9);
    if(Math.abs(yawV)>.01){camYaw+=yawV*dt;yawV*=Math.pow(.006,dt)}else yawV=0;
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
@@ -3626,7 +3627,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,s?-.35:16)}
-   else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}
+   else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}else if(zn==='P'){/* QA199: 영사실 — 로비 경계로 계산돼 카메라가 머리에 붙거나 방 밖(3D 상자처럼)으로 나가던 문제 */lim(p.x,ox,PCX-PW+.3,PCX+PW-.3);lim(p.z,oz,PCZ-PD+.3,PCZ+PD-.3);lim(hy,oy,-99,PH-.25)}
    else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
    tt=Math.max(tt,.03);
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
@@ -5274,7 +5275,7 @@ html body .admback:hover{opacity:1}
    const fr=art(256,340,(c,W,H)=>{c.fillStyle='#efe9dc';c.fillRect(0,0,W,H);c.fillStyle='#111';c.textAlign='center';c.font='bold 30px Georgia,serif';c.fillText('PARIS-ÉCRAN',W/2,38);c.fillRect(12,46,W-24,2);c.font='10px Georgia,serif';c.fillText('Mardi 4 décembre 1979 · 2 F',W/2,60);c.fillRect(12,66,W-24,1);c.font='bold 19px Georgia,serif';c.fillText('LA NOUVELLE VAGUE',W/2,90);c.fillText('A VINGT ANS',W/2,112);c.fillStyle='#8a8478';c.fillRect(16,124,W*.55,92);c.fillStyle='#5a554c';c.fillRect(30,140,40,60);c.fillRect(80,150,50,50);c.fillStyle='#333';for(let y=124;y<330;y+=7){c.fillRect(W*.6+6,y,W*.4-22,2)}for(let y=226;y<330;y+=7){c.fillRect(16,y,W*.55-6,2)}}),
     bk=art(256,340,(c,W,H)=>{c.fillStyle='#e6dfd0';c.fillRect(0,0,W,H);c.fillStyle='#333';for(let col=0;col<3;col++)for(let y=20;y<330;y+=7)c.fillRect(14+col*80,y,68,2);c.fillStyle='#7a7468';c.fillRect(14,120,148,70)});
    const pw=.36*H_/1.4,ph=.48*H_/1.4,np=new THREE.Group();np.position.set(0,H_*.74,.42*H_/1.4);g.add(np);[[-1,fr],[1,bk]].forEach(([sd,tx])=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(pw,ph),new THREE.MeshLambertMaterial({map:tx,side:THREE.DoubleSide}));m.position.set(sd*pw*.48,0,0);m.rotation.y=sd*-.22;np.add(m)});np.rotation.y=Math.PI/* 앞면(제호)이 바깥쪽을 보게 */}
-  const hb=new THREE.Mesh(new THREE.BoxGeometry(.8,2.2,.8),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.1;g.add(hb);let li=0;hb.userData.act={now:1,fn:()=>{try{say(g,P.lines[li++%P.lines.length],5,1)}catch(e){}},pt:{x:P.p[0],z:P.p[1]-1.1,zone:'L0'}/* QA173: 로비 안쪽(갈 수 있는 곳)에서 말 걸기 */};INTER.push(hb)});
+  const hb=new THREE.Mesh(new THREE.BoxGeometry(.8,2.2,.8),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.1;g.add(hb);let li=0;const NM_=['파리지앵 장','파리지앵 미셸','파리지앵 클레르','파리지앵 나디아','파리지앵 앙리'][PAR.indexOf(P)]||'파리지앵';hb.userData.act={now:1,fn:()=>{try{say(g,P.lines[li++%P.lines.length],5,1)}catch(e){}try{window.qa194Award&&setTimeout(()=>qa194Award(g,NM_),900)}catch(e){}/* QA200: 터치하면 대사 + 영화 카드 */},pt:{x:P.p[0],z:P.p[1]-1.1,zone:'L0'}/* QA173: 로비 안쪽(갈 수 있는 곳)에서 말 걸기 */};INTER.push(hb)});
  const V=new THREE.Vector3();(function smk(){requestAnimationFrame(smk);if(!SMK.length)return;const t=performance.now()/1000,on=space===0;SMK.forEach(s=>{s.sp.visible=on;if(!on)return;const q=(t*.22+s.ph)%1;s.hand.getWorldPosition(V);s.sp.position.set(V.x+Math.sin(t+s.ph*9)*.08*q,V.y+.05+q*.9,V.z+Math.cos(t*.7+s.ph*5)*.06*q);s.sp.scale.setScalar(.06+q*.38);s.sp.material.opacity=.32*(1-q)*Math.min(1,q*6)})})();
  /* ---------- 상영관: 객석 뒤 왼쪽(예전 검표원 자리)에 서서 대기하는 우브뢰즈 ---------- */
  CFG.HALLS.forEach(h=>{const id=h.id;if(!HALLN[id])return;const base=H_BASE[id],x=HCX[id]-1.45,z=-2.95,n0=S.children.length;/* QA171: 가운데 복도 바로 왼쪽, 맨 뒷줄 뒤 — 입장하면 바로 보임 */
@@ -5359,16 +5360,20 @@ html body .admback:hover{opacity:1}
   {const bl=new THREE.Mesh(new THREE.SphereGeometry(.07,12,8),new THREE.MeshBasicMaterial({color:0xfff0c8}));bl.position.set(PX,PH-.5,PZ);S.add(bl);const cd=BOX(.01,.45,.01,0x1a1a1a);cd.position.set(PX,PH-.22,PZ);S.add(cd);const pl=new THREE.PointLight(0xffd9a8,1.9,11,1.2);pl.position.set(PX,PH-.6,PZ);pl.userData.i=1.9;S.add(pl);const pl2=new THREE.PointLight(0xffe0b0,1.0,6);pl2.position.set(PX,2.4,PZ-PD+1.6);pl2.userData.i=1.0;S.add(pl2)}
   {const fr=new THREE.Mesh(new THREE.PlaneGeometry(1.2,2.4),mat(0x2a1810));fr.position.set(PX+1.2,1.2,PZ+PD-.02);fr.rotation.y=Math.PI;S.add(fr);const d=new THREE.Mesh(new THREE.PlaneGeometry(1.0,2.2),mat(0x3f4c40));d.position.set(PX+1.2,1.1,PZ+PD-.04);d.rotation.y=Math.PI;S.add(d);const kn=new THREE.Mesh(new THREE.SphereGeometry(.035,10,8),mat(0xc9a24a));kn.position.set(PX+.85,1.05,PZ+PD-.07);S.add(kn);const sg=art(256,72,(c,W,H)=>{c.fillStyle='#1c1418';c.fillRect(0,0,W,H);c.fillStyle='#e9c46a';c.textAlign='center';c.font='600 24px "Noto Sans KR",sans-serif';c.fillText('↓ 아지트로',W/2,46)});const s=new THREE.Mesh(new THREE.PlaneGeometry(.8,.22),new THREE.MeshBasicMaterial({map:sg}));s.position.set(PX+1.2,2.5,PZ+PD-.07);s.rotation.y=Math.PI;S.add(s);
    const hb=new THREE.Mesh(new THREE.BoxGeometry(1.2,2.4,.5),new THREE.MeshBasicMaterial({visible:false}));hb.position.set(PX+1.2,1.2,PZ+PD-.25);S.add(hb);hb.userData.act={fn:()=>booth(false),pt:{x:PX+1.2,z:PZ+PD-.9,zone:'P'}};INTER.push(hb)}
+  /* QA200: 영사기사 — A기 옆에서 릴을 지켜보는 1979년 영사기사(회색 작업 가운·안경) */{const nm='영사기사 로베르',g=mk(nm,0x6f6a5e,{skin:SK.lt,hair:0x9a948a,hs:'slick',coat:0x6f6a5e,shirt:0xf0ece2,tie:0x3a2a22,pants:0x2e2c2a,shoe:0x1c1c1e,glasses:0x1a1a1a});g.position.set(PX+.3,0,PZ-PD+1.7);g.rotation.y=Math.atan2(-1.15-.3,(-PD+1.0)-(-PD+1.7))+.5;g.userData.static=1;g.userData.lvl=0;try{const a_=g.userData.arms;a_[1].rotation.x=-.9;a_[1].rotation.z=-.15}catch(e){}
+   const L=['쉿, 지금 2번 릴이 돌아가요. 화면 오른쪽 위에 동그라미가 뜨면 B기로 넘겨야 해요.','필름은 초당 24프레임. 이 덜컥거리는 소리가 제겐 음악이에요.','영사실에서 30년. 관객 얼굴은 못 봐도 웃음소리는 다 들려요.','렌즈 초점이 반 바퀴만 틀어져도 관객은 다 알아요. 그래서 한시도 못 떠나요.'];let li=0;
+   const hb=new THREE.Mesh(new THREE.BoxGeometry(.8,2.2,.8),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.1;g.add(hb);hb.userData.act={now:1,fn:()=>{try{say(g,L[li++%L.length],5,1)}catch(e){}try{window.qa194Award&&setTimeout(()=>qa194Award(g,nm),900)}catch(e){}},pt:{x:PX+.3+.6,z:PZ-PD+2.5,zone:'P'}};INTER.push(hb);
+   try{CHARINFO[nm]='1관 영사실을 지키는 영사기사. 영사기 두 대로 릴을 번갈아 이어 트는 체인지오버의 달인이에요.'}catch(e){}}
   (function spin(){requestAnimationFrame(spin);if(curZoneSafe()!=='P')return;const t=performance.now()/1000;RE.forEach(o=>{if(o.on)o.r.rotation.x-=.035});if(((t*10)|0)%2===0)pvDraw(t)})()}
  function curZoneSafe(){try{return me?curZone(me):''}catch(e){return ''}}
  S.children.slice(n0).forEach(o=>{if(!CLUBG.includes(o))CLUBG.push(o);HSET.add(o);o.visible=space==='B';if(o.isLight){if(o.userData.i==null)o.userData.i=o.intensity;o.intensity=space==='B'?o.userData.i:0}});
  CL.forEach(o=>{CLUBG.push(o);HSET.add(o);o.visible=space==='B'});
  function fade(){const f=$('fade');if(!f)return;f.style.transition='none';f.style.opacity=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity .7s';f.style.opacity=0}))}
  function booth(enter){if(!me)return;fade();me.userData.path=[];me.userData.after=null;me.userData.lvl=0;
-  if(enter){me.position.set(PCX-.6,0,PCZ+PD-.9);me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;camPitch=camPitchT=.3;camDist=camDistT=3.4;try{say(me,'여기가 1관 영사실이구나',3)}catch(e){}}
+  if(enter){me.position.set(PCX-.6,0,PCZ+PD-2.3)/* QA199: 문에서 조금 들어온 곳(뒤에 카메라 자리) */;me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;camPitch=camPitchT=.35;camDist=camDistT=3.0;try{say(me,'여기가 1관 영사실이구나',3)}catch(e){}}
   else{me.position.set(BCX+CBW-1.3,0,BCZ+2.5);me.rotation.y=-Math.PI/2;camYaw=camYawS=-Math.PI/2;camPitch=camPitchT=.4;camDist=camDistT=5.5}
   snapCam=true;OBS=null;try{hudUpd()}catch(e){}}
- window.QA166={booth};
+ window.QA166={booth};A.qa199out=()=>booth(false);
 })();
 </script>
 <style id="qa172-css">
@@ -5485,7 +5490,7 @@ html body #toast{font-size:15px!important}
   cg.updateMatrixWorld(true);let ty=bb.min.y+Hh*.8;if(hd){const hp=new THREE.Vector3();hd.getWorldPosition(hp);ty=hp.y+.02}/* 앉은 NPC도 얼굴 기준으로 */const cam=new THREE.PerspectiveCamera(30,360/420,.05,50);cam.position.set(.28,ty+.06,3.1);cam.lookAt(0,ty-.12,0);PR.setClearColor(0x000000,0);PR.render(sc,cam);PR.render(sc,cam)/* 새 화면에서 첫 장이 비는 경우 대비해 한 번 더 */;const url=PR.domElement.toDataURL('image/png');sc.remove(cg);return url}
  const BGS=['#9fc3b8','#e8c08a','#b9c7e0','#e3a9a2','#c6d39a','#d7b8dd','#a9d0d6','#efd28a'];
  function hash(s){let h=7;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h}
- function compose(name,por,no){return new Promise(res=>{const W=600,H=840,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
+ function compose(name,por,no,place){return new Promise(res=>{const W=600,H=840,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
   c.fillStyle='#ffffff';c.fillRect(0,0,W,H);/* 둥근 모서리는 화면(CSS)에서 */
   const info=(window.CHARINFO&&CHARINFO[name])||'',fm=(info.match(/《([^》]+)》/)||[])[1]||'',yr=(info.match(/(1[89]\d\d)년/)||[])[1]||'1979';
   c.fillStyle='#111';c.textBaseline='alphabetic';c.font='italic 800 46px "Helvetica Neue",Arial,sans-serif';const ns=String(no).padStart(2,'0')+'a';c.fillText(ns,34,72);const nx=34+c.measureText(ns).width+24;
@@ -5493,14 +5498,15 @@ html body #toast{font-size:15px!important}
   const px=34,py=130,pw=W-68,ph=420;c.fillStyle=BGS[hash(name)%BGS.length];c.fillRect(px,py,pw,ph);
   const im=new Image();im.onload=()=>{const r=Math.min(pw/im.width,ph/im.height)*1.02,w=im.width*r,h=im.height*r;c.save();c.beginPath();c.rect(px,py,pw,ph);c.clip();c.drawImage(im,px+(pw-w)/2,py+ph-h+6,w,h);c.restore();
    c.fillStyle='#222';c.font='400 18px "Noto Sans KR",Arial,sans-serif';c.fillText('그림: 씨네 랑데뷰 영사실',px,py+ph+30);c.textAlign='right';c.fillText(yr,W-34,py+ph+30);c.textAlign='left';
-   const d=new Date(),rows=[['만난 곳','씨네 랑데뷰 로비'],['처음 만난 날',d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')],['출연',fm||'단골 관객'],['카드 번호','No.'+String(no).padStart(2,'0')],['희귀도',['★☆☆','★★☆','★★★'][hash(name)%3]]];
+   const d=new Date(),rows=[['만난 곳',place||'씨네 랑데뷰 로비'],['처음 만난 날',d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')],['출연',fm||(/영사기사|모지|퍼재컬리|우브뢰즈|직원/.test(name)?'씨네 랑데뷰 식구':'씨네 랑데뷰 단골')],['카드 번호','No.'+String(no).padStart(2,'0')],['희귀도',['★☆☆','★★☆','★★★'][hash(name)%3]]];
    let y=py+ph+52;rows.forEach(([a,b])=>{c.strokeStyle='#222';c.lineWidth=1.4;c.beginPath();c.moveTo(px,y);c.lineTo(W-34,y);c.stroke();c.fillStyle='#111';c.font='400 24px "Noto Sans KR",Arial,sans-serif';c.fillText(a,px,y+33);c.textAlign='right';c.fillText(b,W-34,y+33);c.textAlign='left';y+=46});c.beginPath();c.moveTo(px,y);c.lineTo(W-34,y);c.stroke();
    res(cv.toDataURL('image/jpeg',.86))};im.onerror=()=>res(cv.toDataURL('image/jpeg',.86));im.src=por})}
  function bagBtn(){return [...document.querySelectorAll('button,[data-a]')].find(b=>b.offsetParent&&b.textContent.trim()==='가방')}
- function fly(src){const o=document.createElement('div');o.className='qa194fly';o.innerHTML='<img alt="영화 카드" src="'+src+'">';document.body.appendChild(o);const img=o.firstChild;
-  requestAnimationFrame(()=>o.classList.add('in'));setTimeout(()=>{const b=bagBtn(),r=img.getBoundingClientRect();let tx=innerWidth/2,ty=innerHeight-40;if(b){const q=b.getBoundingClientRect();tx=q.left+q.width/2;ty=q.top+q.height/2}o.classList.add('go');img.style.transform=`translate(${tx-(r.left+r.width/2)}px,${ty-(r.top+r.height/2)}px) scale(.08) rotate(-12deg)`;img.style.opacity='.3';
-   setTimeout(()=>{o.remove();if(b){b.classList.remove('qa194bump');void b.offsetWidth;b.classList.add('qa194bump')}try{toast('영화 카드를 가방에 넣었어요')}catch(e){}},760)},1500)}
- const BUSY=new Set();async function award(g,name){if(!g||!name||g===me||g.userData.remote)return;const L=list();if(L.some(x=>x.n===name)||BUSY.has(name))return;BUSY.add(name);try{const por=portrait(g),src=await compose(name,por,L.length+1);L.push({n:name,src,t:Date.now()});save();fly(src)}catch(e){console.warn('QA194 card',e)}finally{BUSY.delete(name)}}
+ function fly(src,onTake,onClose){/* QA200: 카드가 뜨면 「카드 획득」을 눌러야 가방에 들어감(바깥을 누르면 닫힘) */const o=document.createElement('div');o.className='qa194fly ask';o.innerHTML='<div class="qa200c"><img alt="영화 카드" src="'+src+'"><button type="button" class="qa200b">카드 획득</button></div>';document.body.appendChild(o);const img=o.querySelector('img'),btn=o.querySelector('button');
+  requestAnimationFrame(()=>o.classList.add('in'));let done=false;o.addEventListener('pointerdown',e=>{if(e.target===o&&!done){done=true;try{onClose&&onClose()}catch(_){}o.classList.remove('in');setTimeout(()=>o.remove(),300)}});btn.addEventListener('click',e=>{e.stopPropagation();if(done)return;done=true;try{onTake&&onTake()}catch(_){}btn.remove();o.classList.remove('ask');go()});
+  const go=()=>{const b=bagBtn(),r=img.getBoundingClientRect();let tx=innerWidth/2,ty=innerHeight-40;if(b){const q=b.getBoundingClientRect();tx=q.left+q.width/2;ty=q.top+q.height/2}o.classList.add('go');img.style.transform=`translate(${tx-(r.left+r.width/2)}px,${ty-(r.top+r.height/2)}px) scale(.08) rotate(-12deg)`;img.style.opacity='.3';
+   setTimeout(()=>{o.remove();if(b){b.classList.remove('qa194bump');void b.offsetWidth;b.classList.add('qa194bump')}try{toast('영화 카드를 가방에 넣었어요')}catch(e){}},760)}}
+ const BUSY=new Set();async function award(g,name){if(!g||!name||g===me||g.userData.remote)return;const L=list();if(L.some(x=>x.n===name)||BUSY.has(name))return;BUSY.add(name);try{const por=portrait(g),src=await compose(name,por,L.length+1,(()=>{try{return '씨네 랑데뷰 '+({L0:'로비',L1:'2층',P:'1관 영사실',B:'아지트',H1:'1관',H2:'2관',S:'계단'}[curZone(me)]||'로비')}catch(e){return ''}})());BUSY.add(name);fly(src,()=>{if(!list().some(x=>x.n===name)){list().push({n:name,src,t:Date.now()});save()}BUSY.delete(name)},()=>BUSY.delete(name))}catch(e){console.warn('QA194 card',e);BUSY.delete(name)}}
  window.qa194Award=award;window.qa194Portrait=portrait;
  const _nc=window.npcCard;if(typeof _nc==='function')window.npcCard=function(g,name){const r=_nc.apply(this,arguments);setTimeout(()=>award(g,name),900);return r};
  const _sec=window.qa121Section;window.qa121Section=function(){const a=typeof _sec==='function'?_sec():'',L=list();return a+'<div class="ph-h"><b>영화 카드</b><i>'+L.length+'장</i></div>'+(L.length?'<div class="ph-grid qa194-grid">'+L.map((x,i)=>'<button type="button" class="ph-th qa194-th" data-a="qa194open" data-i="'+i+'" aria-label="'+x.n+' 카드"><img alt="" src="'+x.src+'"></button>').join('')+'</div>':'<p>NPC와 이야기하면 영화 카드를 받아요.</p>')};
@@ -5509,6 +5515,8 @@ html body #toast{font-size:15px!important}
 </script>
 <style id="qa194-css">
 .qa194fly{position:fixed;inset:0;z-index:95;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.qa194fly.ask{pointer-events:auto;background:rgba(20,10,14,.45);transition:background .3s}.qa194fly:not(.in).ask{background:rgba(20,10,14,0)}
+.qa200c{display:flex;flex-direction:column;align-items:center;gap:14px}.qa200b{pointer-events:auto;min-width:160px;height:46px;border-radius:23px;border:0;background:#f3d79a;color:#2a141c;font:600 16px 'Noto Sans KR',sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.3);opacity:0;transform:translateY(8px);transition:opacity .3s .25s,transform .3s .25s}.qa194fly.in .qa200b{opacity:1;transform:none}
 .qa194fly img{width:min(56vw,230px);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.35);transform:scale(.5) rotate(-6deg);opacity:0;transition:transform .45s cubic-bezier(.2,1.4,.4,1),opacity .3s}
 .qa194fly.in img{transform:scale(1) rotate(0);opacity:1}
 .qa194fly.go img{transition:transform .72s cubic-bezier(.55,0,.75,.4),opacity .72s}

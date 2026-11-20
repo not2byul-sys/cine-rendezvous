@@ -90,7 +90,7 @@ test('QA78 screening view: camera approach, sconces off, replay, chip-style over
  assert(source.includes("s.material.sizeAttenuation=false"));/* QA86: 말풍선은 다시 월드 크기 */assert(source.includes("f=`500 ${fs}px \"Noto Sans KR\",sans-serif`;"));assert(source.includes("sprite.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1)/* QA86"));});
 test('QA84 lobby: chandelier bulbs glow, Champs-Elysees street outside, NPC spots clear of the tree',()=>{
  assert(source.includes("const flame=new THREE.MeshBasicMaterial({color:0xfff6d6,toneMapped:false});"));assert(source.includes("bulb.parent.add(h);EMG.push({h,b:.8,f:1.2+Math.random()})"));
- assert(source.includes("['CAFÉ DE PARIS','#7a1f2b']"));assert(!source.includes("['PHARMACY'"));assert(!source.includes("철제 비상계단(지그재그)"));assert(source.includes("QA84 파리 스카이라인: 에펠탑 · 개선문 실루엣"));assert(!source.includes("vcar(0xf2c230"));
+ assert(source.includes("['CAFÉ DU COIN · TABAC','#7a1f2b','cafe']"));assert(!source.includes("['PHARMACY'"));assert(!source.includes("철제 비상계단(지그재그)"));assert(source.includes("QA84 파리 스카이라인: 에펠탑 · 개선문 실루엣"));assert(!source.includes("vcar(0xf2c230"));
  const q=source.match(/const QUIET=(\[\[[^;]*?\]\]),cafes=/);assert(q);const spots=eval(q[1].replace(/\/\*.*?\*\//g,''));spots.forEach(([x,z])=>assert(!(x<-4.9&&z>12.6&&z<16.9),'spot near tree '+x+','+z));
  assert(source.includes("if(zn==='L0'&&x< -4.9&&z>12.6&&z<16.9)continue"));});
 test('QA86 ticket issue walks into the hall with a notice, club board says not ready, bubbles back to world size',()=>{

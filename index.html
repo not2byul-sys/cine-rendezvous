@@ -5490,7 +5490,7 @@ html body #toast{font-size:15px!important}
   cg.updateMatrixWorld(true);let ty=bb.min.y+Hh*.8;if(hd){const hp=new THREE.Vector3();hd.getWorldPosition(hp);ty=hp.y+.02}/* 앉은 NPC도 얼굴 기준으로 */const cam=new THREE.PerspectiveCamera(30,360/420,.05,50);cam.position.set(.28,ty+.06,3.1);cam.lookAt(0,ty-.12,0);PR.setClearColor(0x000000,0);PR.render(sc,cam);PR.render(sc,cam)/* 새 화면에서 첫 장이 비는 경우 대비해 한 번 더 */;const url=PR.domElement.toDataURL('image/png');sc.remove(cg);return url}
  const BGS=['#9fc3b8','#e8c08a','#b9c7e0','#e3a9a2','#c6d39a','#d7b8dd','#a9d0d6','#efd28a'];
  function hash(s){let h=7;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h}
- function compose(name,por,no,place){return new Promise(res=>{const W=600,H=840,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
+ function compose(name,por,no,place){return new Promise(res=>{const W=600,H=868/* QA202: 정보표 아래 여백(화면 기준 약 10px) */,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
   c.fillStyle='#ffffff';c.fillRect(0,0,W,H);/* 둥근 모서리는 화면(CSS)에서 */
   const info=(window.CHARINFO&&CHARINFO[name])||'',fm=(info.match(/《([^》]+)》/)||[])[1]||'',yr=(info.match(/(1[89]\d\d)년/)||[])[1]||'1979';
   c.fillStyle='#111';c.textBaseline='alphabetic';c.font='italic 800 46px "Helvetica Neue",Arial,sans-serif';const ns=String(no).padStart(2,'0')+'a';c.fillText(ns,34,72);const nx=34+c.measureText(ns).width+24;

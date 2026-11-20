@@ -2808,7 +2808,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
    if(QA17_NOTK&&(zc==='L0'||zc==='L1')){add('ctxbooth','매표소 가기');add('tt','상영작')}
    if(inH&&!sp){const sd=qa20Side(zc);if(sd)add('ctxside',sd.name+' 옆자리 앉기')/* QA135: 하단 퀵바와 겹치던 상영작 칩 삭제 */}
    if(zc==='B'){/* QA91: 나가기는 퀵바 오른쪽 끝 */add('clubstop',CLUBSTOP?'영상 재생':'영상 멈추기')}
-   if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto','사진 찍기')/* QA94: 앉아서도 */;
+   if(zc==='L0'&&(qa20Near('qa13-tree-click',5.2)||me.position.z>LD-2.4/* QA194: 정문 창가에 다가가도 */))add('ctxphoto','사진 찍기')/* QA94: 앉아서도 */;
    if(QA20.follow)add('ctxunfollow','따라가기 멈추기')}}
  let cb=$('ctxbar');if(!cb){cb=document.createElement('div');cb.id='ctxbar';cb.setAttribute('role','toolbar');cb.setAttribute('aria-label','지금 할 수 있는 일');document.body.appendChild(cb)}
  const html=X.join('');if(cb._h!==html){cb.innerHTML=html;cb._h=html}cb.hidden=!X.length||!!$('actorMenu')||(typeof LAYED!=='undefined'&&LAYED)}
@@ -2843,7 +2843,7 @@ function qa68Show(cur){QA68.cur=cur;let o=document.getElementById('qa68photo');
  const inBag=cur.idx!=null;o.querySelector('#qa68-title').textContent=inBag?'가방 속 사진':'사진을 찍었어요';o.querySelector('#qa68-desc').textContent=inBag?'내려받거나 버릴 수 있어요.':'가방에 넣어두거나, 내려받거나, 버릴 수 있어요.';
  o.querySelector('img').src=cur.src;o.querySelector('[data-ph=keep]').hidden=inBag;o.hidden=false;try{o.querySelector(inBag?'[data-ph=down]':'[data-ph=keep]').focus()}catch(e){}}
 async function qa20Photo(){try{const fl=document.createElement('div');fl.style.cssText='position:fixed;inset:0;background:#fff;opacity:.85;z-index:90;pointer-events:none;transition:opacity .5s';document.body.appendChild(fl);requestAnimationFrame(()=>{fl.style.opacity='0'});setTimeout(()=>fl.remove(),600);
- try{CinemaAudio.effect&&CinemaAudio.effect('click')}catch(e){}window.qa124Render?qa124Render():R.render(S,C);const cv=R.domElement,full=await new Promise(r=>cv.toBlob(r,'image/png'));if(!full){toast('사진을 찍지 못했어요');return}
+ try{CinemaAudio.effect&&CinemaAudio.effect('click')}catch(e){}const cv=R.domElement;let full=null;/* QA194: 캐릭터가 잘 보이게 클로즈업해서 찍음 */const shoot=()=>{window.qa124Render?qa124Render():R.render(S,C);return new Promise(r=>cv.toBlob(r,'image/png'))};full=await (window.qa194CloseCam?qa194CloseCam(shoot):shoot());if(!full){toast('사진을 찍지 못했어요');return}
  /* QA102: 즉석 카메라 인화 — 정사각 사진 + 하얀 테두리(아래가 두꺼움) + 색 바랜 톤 + 손글씨 날짜 */const im=await createImageBitmap(full),side=Math.min(im.width,im.height),sx=(im.width-side)/2,sy=(im.height-side)/2;const pr=document.createElement('canvas');pr.width=1080;pr.height=1320;const g=pr.getContext('2d');g.fillStyle='#f7f3ea';g.fillRect(0,0,1080,1320);try{g.filter='sepia(.28) saturate(.82) contrast(.92) brightness(1.05)'}catch(e){}g.drawImage(im,sx,sy,side,side,55,55,970,970);try{g.filter='none'}catch(e){}try{im.close()}catch(e){}g.globalCompositeOperation='soft-light';g.fillStyle='rgba(255,214,150,.35)';g.fillRect(55,55,970,970);g.globalCompositeOperation='source-over';const vg=g.createRadialGradient(540,540,330,540,540,720);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(40,20,0,.28)');g.fillStyle=vg;g.fillRect(55,55,970,970);g.fillStyle='#8a7d6b';g.font='italic 46px Damion, cursive';g.textAlign='center';g.fillText('Paris · déc. 1979',540,1215);const print=await new Promise(r=>pr.toBlob(r,'image/jpeg',.92));if(!print){toast('사진을 찍지 못했어요');return}const sm=document.createElement('canvas');sm.width=600;sm.height=733;sm.getContext('2d').drawImage(pr,0,0,600,733);const url=URL.createObjectURL(print);qa68Show({src:url,url,full:print,small:sm.toDataURL('image/jpeg',.85),idx:null})}catch(e){toast('사진을 찍지 못했어요')}}
 Object.assign(A,{qa68open:d=>{const p=qa68List()[+d.i];if(!p)return;closePanel();qa68Show({src:p.src,small:p.src,idx:+d.i})}});
 Object.assign(A,{
@@ -5427,4 +5427,75 @@ html body #toast{font-size:15px!important}
  /* 다른 기기에서 저장값이 들어오면 다시 반영 */let last=JSON.stringify(get());setInterval(()=>{const now=JSON.stringify(get());if(now!==last){last=now;apply()}},3000);
 })();
 </script>
+<script id="qa194-js">/* QA194: 말풍선 정리(내 앞을 지나는 큰 말풍선 숨김·화면 크기 상한·겹치면 위로 비켜 쌓기) · 입구 분홍 발판 · 창가 사진 찍기+캐릭터 클로즈업 · NPC 대화 시 영화 카드 획득 */
+(function(){
+ /* 1) 말풍선 */
+ const BUBS=new Set(),_bub=window.bubble;if(typeof _bub==='function')window.bubble=function(t){const s=_bub(t);try{BUBS.add(s)}catch(e){}return s};
+ const V1=new THREE.Vector3(),V2=new THREE.Vector3(),V3=new THREE.Vector3(),WS=new THREE.Vector3();
+ function tick(){try{if(typeof C==='undefined'||!C)return;const H=innerHeight,W=innerWidth,tf=2*Math.tan(C.fov*Math.PI/360),cam=C.position,dMe=me?cam.distanceTo(me.getWorldPosition(V3)):1e9,L=[];
+  BUBS.forEach(s=>{if(!s.parent){BUBS.delete(s);return}const o=s.parent,u=s.userData;if(u.s0==null){u.s0=[s.scale.x,s.scale.y];u.cy0=s.center.y}
+   if(o!==me&&me&&cam.distanceTo(o.getWorldPosition(V2))<dMe-.6){s.visible=false;return}/* 내 앞(카메라와 나 사이)을 지나는 아바타의 말풍선은 숨김 */
+   s.getWorldPosition(V1);const d=cam.distanceTo(V1);V2.copy(V1).project(C);if(V2.z>1||d<.05){s.visible=false;return}s.visible=true;
+   const ps=o.getWorldScale(WS).y||1;let hpx;if(!u.px){const h0=u.s0[1]*ps,cap=(s.material.map&&s.material.map.image?s.material.map.image.height:120)*.62,raw=h0/(d*tf)*H,k=raw>cap?cap/raw:1;s.scale.set(u.s0[0]*k,u.s0[1]*k,1);hpx=Math.min(raw,cap)}else hpx=s.scale.y*ps/(d*tf)*H;
+   const wpx=hpx*(s.scale.x/(s.scale.y||1)),sx=(V2.x+1)/2*W,sy=(1-V2.y)/2*H;L.push({s,u,d,hpx,x0:sx-wpx/2,x1:sx+wpx/2,top:sy-(1-u.cy0)*hpx,bot:sy+u.cy0*hpx})});
+  L.sort((a,b)=>a.d-b.d);const P=[];L.forEach(b=>{let off=0;for(let it=0;it<6;it++){let mv=0;for(const q of P){if(b.x1<q.x0||b.x0>q.x1)continue;const t=b.top-off,bo=b.bot-off;if(bo<=q.top||t>=q.bot)continue;mv=Math.max(mv,bo-q.top+6)}if(!mv)break;off+=mv}
+   const tg=b.u.cy0-off/Math.max(1,b.hpx);b.s.center.y+=(tg-b.s.center.y)*.3;const eff=(b.u.cy0-b.s.center.y)*b.hpx;P.push({x0:b.x0,x1:b.x1,top:b.top-eff,bot:b.bot-eff})})/* 연달아 생긴 말풍선이 겹치면 먼 쪽을 위로 비켜 쌓음 */
+ }catch(e){}finally{requestAnimationFrame(tick)}}requestAnimationFrame(tick);
+
+ /* 2) 입구 분홍 발판 — 불어 「Ciné Rendez-vous」 + 바깥 테두리 무늬 */
+ try{const cv=document.createElement('canvas');cv.width=1024;cv.height=512;const c=cv.getContext('2d'),W=1024,H=512;
+  c.fillStyle='#e7a3b6';c.fillRect(0,0,W,H);for(let k=0;k<2400;k++){c.fillStyle=k%2?'rgba(255,255,255,.05)':'rgba(120,40,60,.05)';c.fillRect(Math.random()*W,Math.random()*H,2,2)}
+  c.fillStyle='#7a1f30';c.fillRect(18,18,W-36,H-36);c.fillStyle='#e7a3b6';c.fillRect(30,30,W-60,H-60);
+  /* 테두리 무늬: 크림 마름모 + 버건디 점 띠 */const band=(x0,y0,x1,y1)=>{const hz=Math.abs(x1-x0)>Math.abs(y1-y0),len=hz?x1-x0:y1-y0,n=Math.round(len/44);for(let i=0;i<n;i++){const t=(i+.5)/n,x=hz?x0+len*t:x0,y=hz?y0:y0+len*t;c.fillStyle='#f6e9dc';c.beginPath();c.moveTo(x,y-14);c.lineTo(x+14,y);c.lineTo(x,y+14);c.lineTo(x-14,y);c.closePath();c.fill();c.fillStyle='#7a1f30';c.beginPath();c.arc(x,y,4,0,7);c.fill();if(i<n-1){c.fillStyle='#f6e9dc';const xx=hz?x0+len*(i+1)/n:x,yy=hz?y:y0+len*(i+1)/n;c.beginPath();c.arc(xx,yy,3,0,7);c.fill()}}};
+  band(64,62,W-64,62);band(64,H-62,W-64,H-62);band(62,64,62,H-64);band(W-62,64,W-62,H-64);c.strokeStyle='#7a1f30';c.lineWidth=4;c.strokeRect(92,92,W-184,H-184);c.strokeStyle='#f6e9dc';c.lineWidth=2;c.strokeRect(100,100,W-200,H-200);
+  c.fillStyle='#7a1f30';c.textAlign='center';c.textBaseline='middle';c.font='italic 700 112px Georgia,"Times New Roman",serif';c.fillText('Ciné Rendez-vous',W/2,H/2-6);c.font='600 30px Georgia,serif';try{c.letterSpacing='10px'}catch(e){}c.fillText('BIENVENUE · PARIS',W/2,H/2+84);try{c.letterSpacing='0px'}catch(e){}
+  const tx=new THREE.CanvasTexture(cv);tx.anisotropy=4;const side=new THREE.MeshLambertMaterial({color:0x7a1f30}),top=new THREE.MeshLambertMaterial({map:tx});const mat_=new THREE.Mesh(new THREE.BoxGeometry(2.8,.022,1.4),[side,side,top,side,side,side]);mat_.position.set(0,.011,LD-1.15);mat_.rotation.y=Math.PI/* 로비 안에서 정문을 볼 때 바로 읽히게 */;mat_.name='qa194-doormat';S.add(mat_)}catch(e){console.warn('QA194 mat',e)}
+
+ /* 3) 창가 사진 — 클로즈업 */
+ window.qa194CloseCam=function(fn){if(!me)return fn();const sv={p:C.position.clone(),q:C.quaternion.clone(),f:C.fov,vo:C.view?Object.assign({},C.view):null};try{const u=me.userData,hd=new THREE.Vector3();if(u.head)u.head.getWorldPosition(hd);else{me.getWorldPosition(hd);hd.y+=1.4}const v=sv.p.clone().sub(hd);v.y=0;if(v.lengthSq()<1e-4)v.set(0,0,1);v.normalize();C.clearViewOffset&&C.clearViewOffset();C.fov=38;C.position.copy(hd).addScaledVector(v,2.3);C.position.y=hd.y+.15;C.lookAt(hd.x,hd.y-.45,hd.z);C.updateProjectionMatrix();C.updateMatrixWorld(true);return fn()}finally{C.position.copy(sv.p);C.quaternion.copy(sv.q);C.fov=sv.f;if(sv.vo&&sv.vo.enabled)C.setViewOffset(sv.vo.fullWidth,sv.vo.fullHeight,sv.vo.offsetX,sv.vo.offsetY,sv.vo.width,sv.vo.height);C.updateProjectionMatrix();C.updateMatrixWorld(true)}};
+
+ /* 4) 영화 카드 */
+ const KEY='aic.cards';let CARDS=null;const list=()=>{if(CARDS)return CARDS;try{const v=JSON.parse(localStorage.getItem(KEY)||'[]');CARDS=Array.isArray(v)?v.filter(x=>x&&x.n&&typeof x.src==='string'):[]}catch(e){CARDS=[]}return CARDS},save=()=>{try{localStorage.setItem(KEY,JSON.stringify(CARDS))}catch(e){}};
+ let PR=null;function portrait(g){if(!PR){PR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});PR.setSize(360,420,false);PR.setPixelRatio(1)}
+  const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x8a7a6a,1.05));const dl=new THREE.DirectionalLight(0xffffff,.55);dl.position.set(1.5,3,4);sc.add(dl);
+  const ol=[],cl=[],ud=[];g.traverse(o=>{ud.push([o,o.userData]);o.userData={}});let cg;try{cg=g.clone(true)}finally{ud.forEach(([o,d])=>o.userData=d)}/* userData(서로 참조)는 복제하지 않음 */g.traverse(o=>ol.push(o));cg.traverse(o=>cl.push(o));const rm=[];cg.traverse(o=>{if(o.isSprite||o.isLight)rm.push(o)});rm.forEach(o=>o.parent&&o.parent.remove(o));
+  cg.position.set(0,0,0);cg.rotation.set(0,0,0);const s0=cg.scale.x;cg.scale.setScalar(1);sc.add(cg);
+  const u=g.userData,arm=u.arms&&u.arms[1]?cl[ol.indexOf(u.arms[1])]:null;try{if(u.seatedLegs){const sl=cl[ol.indexOf(u.seatedLegs)];if(sl)sl.visible=false;(u.legs||[]).forEach(l=>{const c_=cl[ol.indexOf(l)];if(c_){c_.visible=true;c_.rotation.set(0,0,0)}})}}catch(e){}
+  cg.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(cg),Hh=bb.max.y-bb.min.y;
+  if(arm){arm.rotation.set(-2.45,0,-.18);const sk=new THREE.MeshPhongMaterial({color:0xf0c9a4,shininess:10});[-1,1].forEach(sd=>{const f=new THREE.Mesh(new THREE.CylinderGeometry(.022,.024,.16,8),sk);f.position.set(sd*.03,-.6,0);f.rotation.z=sd*.3;arm.add(f);const tip=new THREE.Mesh(new THREE.SphereGeometry(.023,8,6),sk);tip.position.set(sd*.055,-.675,0);arm.add(tip)})}/* 브이 */
+  const hd=u.head?cl[ol.indexOf(u.head)]:null;if(hd)hd.rotation.set(0,0,-.08);
+  cg.updateMatrixWorld(true);let ty=bb.min.y+Hh*.8;if(hd){const hp=new THREE.Vector3();hd.getWorldPosition(hp);ty=hp.y+.02}/* 앉은 NPC도 얼굴 기준으로 */const cam=new THREE.PerspectiveCamera(30,360/420,.05,50);cam.position.set(.28,ty+.06,3.1);cam.lookAt(0,ty-.12,0);PR.setClearColor(0x000000,0);PR.render(sc,cam);PR.render(sc,cam)/* 새 화면에서 첫 장이 비는 경우 대비해 한 번 더 */;const url=PR.domElement.toDataURL('image/png');sc.remove(cg);return url}
+ const BGS=['#9fc3b8','#e8c08a','#b9c7e0','#e3a9a2','#c6d39a','#d7b8dd','#a9d0d6','#efd28a'];
+ function hash(s){let h=7;for(const ch of s)h=(h*31+ch.charCodeAt(0))>>>0;return h}
+ function compose(name,por,no){return new Promise(res=>{const W=600,H=840,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');
+  c.fillStyle='#ffffff';c.fillRect(0,0,W,H);/* 둥근 모서리는 화면(CSS)에서 */
+  const info=(window.CHARINFO&&CHARINFO[name])||'',fm=(info.match(/《([^》]+)》/)||[])[1]||'',yr=(info.match(/(1[89]\d\d)년/)||[])[1]||'1979';
+  c.fillStyle='#111';c.textBaseline='alphabetic';c.font='italic 800 46px "Helvetica Neue",Arial,sans-serif';const ns=String(no).padStart(2,'0')+'a';c.fillText(ns,34,72);const nx=34+c.measureText(ns).width+24;
+  c.font='italic 700 36px "Noto Sans KR","Helvetica Neue",Arial,sans-serif';c.fillText(name,nx,70);c.font='italic 400 24px "Noto Sans KR",Arial,sans-serif';c.fillStyle='#333';c.fillText(fm?'《'+fm+'》':'파리 · 씨네 랑데뷰',nx,106);c.textAlign='right';c.font='400 26px Arial,sans-serif';c.fillText('PAR',W-34,70);c.textAlign='left';
+  const px=34,py=130,pw=W-68,ph=420;c.fillStyle=BGS[hash(name)%BGS.length];c.fillRect(px,py,pw,ph);
+  const im=new Image();im.onload=()=>{const r=Math.min(pw/im.width,ph/im.height)*1.02,w=im.width*r,h=im.height*r;c.save();c.beginPath();c.rect(px,py,pw,ph);c.clip();c.drawImage(im,px+(pw-w)/2,py+ph-h+6,w,h);c.restore();
+   c.fillStyle='#222';c.font='400 18px "Noto Sans KR",Arial,sans-serif';c.fillText('그림: 씨네 랑데뷰 영사실',px,py+ph+30);c.textAlign='right';c.fillText(yr,W-34,py+ph+30);c.textAlign='left';
+   const d=new Date(),rows=[['만난 곳','씨네 랑데뷰 로비'],['처음 만난 날',d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')],['출연',fm||'단골 관객'],['카드 번호','No.'+String(no).padStart(2,'0')],['희귀도',['★☆☆','★★☆','★★★'][hash(name)%3]]];
+   let y=py+ph+52;rows.forEach(([a,b])=>{c.strokeStyle='#222';c.lineWidth=1.4;c.beginPath();c.moveTo(px,y);c.lineTo(W-34,y);c.stroke();c.fillStyle='#111';c.font='400 24px "Noto Sans KR",Arial,sans-serif';c.fillText(a,px,y+33);c.textAlign='right';c.fillText(b,W-34,y+33);c.textAlign='left';y+=46});c.beginPath();c.moveTo(px,y);c.lineTo(W-34,y);c.stroke();
+   res(cv.toDataURL('image/jpeg',.86))};im.onerror=()=>res(cv.toDataURL('image/jpeg',.86));im.src=por})}
+ function bagBtn(){return [...document.querySelectorAll('button,[data-a]')].find(b=>b.offsetParent&&b.textContent.trim()==='가방')}
+ function fly(src){const o=document.createElement('div');o.className='qa194fly';o.innerHTML='<img alt="영화 카드" src="'+src+'">';document.body.appendChild(o);const img=o.firstChild;
+  requestAnimationFrame(()=>o.classList.add('in'));setTimeout(()=>{const b=bagBtn(),r=img.getBoundingClientRect();let tx=innerWidth/2,ty=innerHeight-40;if(b){const q=b.getBoundingClientRect();tx=q.left+q.width/2;ty=q.top+q.height/2}o.classList.add('go');img.style.transform=`translate(${tx-(r.left+r.width/2)}px,${ty-(r.top+r.height/2)}px) scale(.08) rotate(-12deg)`;img.style.opacity='.3';
+   setTimeout(()=>{o.remove();if(b){b.classList.remove('qa194bump');void b.offsetWidth;b.classList.add('qa194bump')}try{toast('영화 카드를 가방에 넣었어요')}catch(e){}},760)},1500)}
+ const BUSY=new Set();async function award(g,name){if(!g||!name||g===me||g.userData.remote)return;const L=list();if(L.some(x=>x.n===name)||BUSY.has(name))return;BUSY.add(name);try{const por=portrait(g),src=await compose(name,por,L.length+1);L.push({n:name,src,t:Date.now()});save();fly(src)}catch(e){console.warn('QA194 card',e)}finally{BUSY.delete(name)}}
+ window.qa194Award=award;window.qa194Portrait=portrait;
+ const _nc=window.npcCard;if(typeof _nc==='function')window.npcCard=function(g,name){const r=_nc.apply(this,arguments);setTimeout(()=>award(g,name),900);return r};
+ const _sec=window.qa121Section;window.qa121Section=function(){const a=typeof _sec==='function'?_sec():'',L=list();return a+'<div class="ph-h"><b>영화 카드</b><i>'+L.length+'장</i></div>'+(L.length?'<div class="ph-grid qa194-grid">'+L.map((x,i)=>'<button type="button" class="ph-th qa194-th" data-a="qa194open" data-i="'+i+'" aria-label="'+x.n+' 카드"><img alt="" src="'+x.src+'"></button>').join('')+'</div>':'<p>NPC와 이야기하면 영화 카드를 받아요.</p>')};
+ A.qa194open=d=>{const x=list()[+d.i];if(!x)return;panel('<h3>'+esc(x.n)+'</h3><div style="text-align:center"><img alt="" src="'+x.src+'" style="width:min(74vw,300px);border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,.28)"></div><button type="button" data-a="bag" style="width:100%;margin-top:14px">가방으로 돌아가기</button>')};
+})();
+</script>
+<style id="qa194-css">
+.qa194fly{position:fixed;inset:0;z-index:95;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.qa194fly img{width:min(56vw,230px);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.35);transform:scale(.5) rotate(-6deg);opacity:0;transition:transform .45s cubic-bezier(.2,1.4,.4,1),opacity .3s}
+.qa194fly.in img{transform:scale(1) rotate(0);opacity:1}
+.qa194fly.go img{transition:transform .72s cubic-bezier(.55,0,.75,.4),opacity .72s}
+@keyframes qa194bump{0%{transform:scale(1)}35%{transform:scale(1.22)}70%{transform:scale(.94)}100%{transform:scale(1)}}
+.qa194bump{animation:qa194bump .5s ease}
+.qa194-grid .qa194-th{background:#fff}.qa194-grid .qa194-th img{object-fit:contain;background:#fff}
+</style>
 </body></html>

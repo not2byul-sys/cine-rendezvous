@@ -127,7 +127,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
  assert(source.includes("/* QA95: 상영관에선 먹기 없음(들고 있기만) */"));
  assert(source.includes("ORD.st==='ready'&&!inH)add('oget'"));
- assert(source.includes("if(zc==='L0'&&qa20Near('qa13-tree-click',5.2))add('ctxphoto'"));
+ assert(source.includes("if(zc==='L0'&&(qa20Near('qa13-tree-click',5.2)||me.position.z>LD-2.4"));
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
  const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(!ed.includes("color:'색상'")&&ed.includes('닉네임<input')&&ed.includes("className='color-chip'"));/* QA125: 색상 탭 → 왼쪽 컬러칩, 닉네임 문구 */

@@ -105,7 +105,7 @@ test('a shared cafe approach target moves exactly once even if two hitboxes refe
 });
 test('the ticket side table registers two facing usable seats in the same layout item', () => {
   const seats = [], items = [], ctx = sceneContext();
-  Object.assign(ctx, { layBeg: () => [], layEnd: (...x) => items.push(x), bentwoodChair: (...x) => seats.push(x), B() {}, wallTex() {}, hitbox() {}, plane: () => ({ rotation: {} }) });
+  Object.assign(ctx, { layBeg: () => [], layEnd: (...x) => items.push(x), bentwoodChair: (...x) => seats.push(x), B() {}, wallTex() {}, hitbox() {}, plane: () => ({ rotation: {} }), art: () => ({ image: {} }), setTimeout() {} });
   vm.runInContext(part('/* QA11: a leaflet table beside', '/* 발코니 카페 테이블 */'), ctx);
   assert.equal(seats.length, 2); assert(seats[0][1] < 16.6 && seats[1][1] > 16.6); assert.equal(seats[0][2], 0); assert.equal(seats[1][2], Math.PI);
   assert.equal(items[0][1], 'ticket-side-table'); assert(seats.every(p => p[1] > 13.3));

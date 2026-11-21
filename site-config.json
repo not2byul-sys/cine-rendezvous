@@ -1,0 +1,39 @@
+{
+ "rev": "2026-11-21T09:05:34.810Z",
+ "note": "빈티지 시네마 관리자 설정 · GitHub 저장소의 index.html 옆에 올리세요",
+ "data": {
+  "aic.clubfilmRevision": 5,
+  "aic.layout": {
+   "v": 2,
+   "wallStyleRev": 1,
+   "items": {
+    "trash0": {
+     "dx": 2.146,
+     "dz": 0.352,
+     "dr": 0
+    },
+    "ticket-side-table": {
+     "dx": 0.342,
+     "dz": -0.89,
+     "dr": 0
+    },
+    "lobby-table-2": {
+     "dx": 2.009,
+     "dz": -0.005,
+     "dr": 0
+    },
+    "borne1": {
+     "dx": 0.221,
+     "dz": -0.141,
+     "dr": 0
+    },
+    "christmas-display": {
+     "dx": -0.669,
+     "dz": 0.004,
+     "dr": 0
+    }
+   },
+   "dups": []
+  }
+ }
+}

@@ -3680,7 +3680,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,-.35)/* QA216: 뒷벽 밖으로 안 나가게 */}
    else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}else if(zn==='P'){/* QA199: 영사실 — 로비 경계로 계산돼 카메라가 머리에 붙거나 방 밖(3D 상자처럼)으로 나가던 문제 */lim(p.x,ox,PCX-PW+.3,PCX+PW-.3);lim(p.z,oz,PCZ-PD+.3,PCZ+PD-.3);lim(hy,oy,-99,PH-.25)}
    else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
-   tt=Math.max(tt,.03);
+   tt=Math.max(tt,.03);if(typeof qa279Arm==='function')tt=qa279Arm(p,hy,ox,oy,oz,tt);/* QA279: 캐릭터와 카메라 사이에 벽·사물이 끼면 그 앞으로 당김 */
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
    const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:.0)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
@@ -4023,7 +4023,7 @@ function clubPlay(){
  store.set('aic.clubfilm',value);clubVid(!!(me&&curZone(me)==='B'));toast('아지트 영상을 저장했어요');PANELS.adm()
  }catch(e){toast(e.message);PANELS.adm()}}});
 function clubEnter(){if(!me)return;qa39ClubLoading();/* QA17: 첫 시점 — 영사기 오른쪽 뒤에서 스크린·책장·필름벽이 함께 보이는 사선 구도 */me.position.set(BCX-.1,0,BCZ+1.8);me.userData.lvl=0;me.userData.path=[];me.rotation.y=Math.PI+.3;camYaw=camYawS=Math.PI+.3;camPitch=camPitchT=.46;camDist=camDistT=6.2;snapCam=true;hudUpd();setTimeout(()=>{const m=CLUBN[0];if(m)sayB(m,'어서 와요, 새 회원님! 🎞',5)},900)}
-function clubExit(){if(!me)return;DOOR_T=-1;clubDoorPose(0);me.position.set(TRAP.x+1.8,0,Math.max(TRAP.z+.8,4.2));me.userData.lvl=0;me.userData.path=[];me.rotation.y=Math.PI*.75;camYaw=camYawS=Math.PI*.75;snapCam=true;hudUpd()}
+function clubExit(){if(!me)return;DOOR_T=-1;clubDoorPose(0);me.position.set(TRAP.x+1.8,0,Math.max(TRAP.z+.8,4.2));if(typeof qa279Free==='function'){const q=qa279Free(me.position.x,me.position.z,0);me.position.x=q.x;me.position.z=q.z}/* QA279: 나오는 자리가 소파 등에 막히면 가까운 빈자리로 */me.userData.lvl=0;me.userData.path=[];me.rotation.y=Math.PI*.75;camYaw=camYawS=Math.PI*.75;snapCam=true;hudUpd()}
 /* 아지트 문: 왼쪽 벽(발코니 앞, 옛 벽등 자리). 초대장을 수락한 사람에게만 보이고, 수락하면 서서히 열림 */
 var TRAP=new THREE.Group();TRAP.position.set(-LW+.2,0,6.65);TRAP.rotation.y=Math.PI/2;S.add(TRAP);TRAP.x=-LW+1.25;TRAP.z=6.65;
 {const g=TRAP,bb=(w,h,d,c,x,y,z,p=g)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),typeof c==='number'?mat(c):c);o.position.set(x,y,z);p.add(o);return o};
@@ -6109,5 +6109,18 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
   if(edge>.08&&edge<f0-.05)sp.seatFront=edge;else sp.seatFront=f0};
  const _sit=sit;sit=function(c,sp,opt){try{fix(c,sp)}catch(e){}return _sit.apply(this,arguments)};
  /* 이미 앉아 있는 NPC도 다시 맞춤 */setTimeout(()=>{try{NPCS.forEach(c=>{const sp=c.userData.seat;if(sp&&sp.kind!=='cine'&&!c.userData.sitAnim){const h=sp.seatFront;fix(c,sp);if(sp.seatFront!==h){sp.taken=null;c.userData.seat=null;_sit(c,sp,{instant:true})}}})}catch(e){}},2500)})();
+</script>
+<script id="qa279-cam">/* QA279: 카메라 스프링 암 — 캐릭터 머리에서 카메라 쪽으로 광선을 쏴 벽·기둥·큰 사물에 막히면 그 앞으로 당김(가까워질 땐 바로, 멀어질 땐 부드럽게) · 막힌 자리에 갇히면 가까운 빈자리로 */
+(function(){let ARM=null,ARMT=0,LAST=1;const rc=new THREE.Raycaster(),vO=new THREE.Vector3(),vD=new THREE.Vector3(),bb=new THREE.Box3(),sz=new THREE.Vector3();
+ const skip=o=>{for(let x=o;x;x=x.parent){if(x.userData&&(x.userData.legs||x.userData.displayName||x.userData.buff))return true}return false};
+ const build=()=>{ARM=[];S.traverse(o=>{if(!o.isMesh||o.isSprite||!o.material)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||m.visible===false||(m.transparent&&m.opacity<.5))return;if(skip(o))return;bb.setFromObject(o);if(bb.isEmpty())return;bb.getSize(sz);if(Math.max(sz.x,sz.y,sz.z)<.35)return;if(sz.y<.06&&bb.max.y<.12)return/* 바닥 */;ARM.push(o)});ARMT=performance.now()};
+ const vis=o=>{for(let x=o;x;x=x.parent)if(!x.visible)return false;const m=Array.isArray(o.material)?o.material[0]:o.material;return !(m&&m.visible===false)};
+ window.qa279Arm=(p,hy,ox,oy,oz,tt)=>{try{if(LAYED||!S)return tt;if(!ARM||performance.now()-ARMT>6000)build();const full=Math.hypot(ox,oy,oz),len=full*tt;if(len<.6){LAST=tt;return tt}
+  vO.set(p.x,hy,p.z);vD.set(ox,oy,oz).multiplyScalar(1/full);rc.set(vO,vD);rc.near=.3;rc.far=len+.25;let d=Infinity;const hs=rc.intersectObjects(ARM,false);for(const h of hs){if(vis(h.object)){d=h.distance;break}}
+  let t=tt;if(d<len+.25)t=Math.max(.03,Math.min(tt,(d-.28)/full));const now=performance.now(),dt=Math.min(.5,(now-(window.__qa279t||now))/1000);window.__qa279t=now;if(t<LAST)LAST=t;else LAST+=(t-LAST)*(1-Math.exp(-dt*5));return Math.min(tt,LAST)}catch(e){return tt}};
+ /* 막힌 자리 → 가까운 빈자리 */const ok=(x,z,l)=>!blocked(x,z,l)&&![[.28,0],[-.28,0],[0,.28],[0,-.28]].some(([a,b])=>blocked(x+a,z+b,l));
+ window.qa279Free=(x,z,l=0)=>{if(ok(x,z,l))return {x,z};for(let r=.3;r<=4;r+=.3)for(let i=0;i<20;i++){const a=i/20*Math.PI*2,X=x+Math.cos(a)*r,Z=z+Math.sin(a)*r;if(typeof zoneOf==='function'&&zoneOf(X,Z,l)!==zoneOf(x,z,l))continue;if(ok(X,Z,l))return {x:X,z:Z}}return {x,z}};
+ let stuck=0;setInterval(()=>{try{if(!me||LAYED)return;const u=me.userData,zn=curZone(me);if(u.seat||u.sitAnim||!/^L/.test(zn)||(u.path&&u.path.length)){stuck=0;return}const l=u.lvl||0;if(blocked(me.position.x,me.position.z,l)){if(++stuck>=3){const q=qa279Free(me.position.x,me.position.z,l);me.position.x=q.x;me.position.z=q.z;stuck=0}}else stuck=0}catch(e){}},500);
+})();
 </script>
 </body></html>

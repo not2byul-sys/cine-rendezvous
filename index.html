@@ -6096,9 +6096,11 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
    if(a.userData.seat)standUp(a,true);if(b.userData.seat)standUp(b,true);move(a,tb);setTimeout(()=>move(b,ta),500);window.QA276SW=[a.userData.displayName,b.userData.displayName];return}}catch(e){console.warn(e)}}
  window.qa276Swap=swap;(function loop(){setTimeout(()=>{swap();loop()},40000+Math.random()*30000)})();
  /* QA276: 속도 — 프레임이 무거우면 렌더 해상도를 자동으로 낮추고, 여유가 생기면 다시 올림 */
- const MAXPR=Math.min(devicePixelRatio||1,2),MINPR=Math.min(1,MAXPR);let pr=R.getPixelRatio(),acc=0,n=0,good=0,last=0,t0=performance.now();
- (function f(now){requestAnimationFrame(f);if(!last){last=now;return}const dt=now-last;last=now;if(dt>250||document.hidden)return;acc+=dt;n++;if(now-t0<2000)return;const avg=acc/n;acc=0;n=0;t0=now;
-  if(avg>24&&pr>MINPR){pr=Math.max(MINPR,+(pr-.25).toFixed(2));R.setPixelRatio(pr);good=0}else if(avg<17.5&&pr<MAXPR){if(++good>=3){pr=Math.min(MAXPR,+(pr+.25).toFixed(2));R.setPixelRatio(pr);good=0}}else good=0;window.QA276PR=pr})(performance.now());
+ const MAXPR=Math.min(devicePixelRatio||1,2),MINPR=Math.min(1,MAXPR);let pr=R.getPixelRatio(),acc=0,n=0,good=0,bad=0,ups=0,last=0,t0=0,cool=0,spike=false;
+ /* QA280: 첫 진입 깜빡임 — 들어온 직후(셰이더 준비로 프레임이 튐)엔 조정하지 않고, 바꿀 땐 바로 한 장 다시 그려 빈 화면이 보이지 않게, 올리기는 최대 2번 */
+ const apply=v=>{pr=v;R.setPixelRatio(v);try{window.qa124Render?qa124Render():R.render(S,C)}catch(e){}cool=performance.now()+8000;good=bad=0};
+ (function f(now){requestAnimationFrame(f);if(!me||document.hidden){last=0;t0=0;return}if(!t0){t0=now+10000;last=now;acc=n=0;return}const dt=now-last;last=now;if(now<t0||now<cool)return;if(dt>120){spike=true;return}acc+=dt;n++;if(acc<2500)return;const avg=acc/n;acc=0;n=0;const sp=spike;spike=false;if(sp&&avg<28)return;
+  if(avg>28&&pr>MINPR){if(++bad>=2)apply(Math.max(MINPR,+(pr-.25).toFixed(2)))}else if(avg<17.5&&pr<MAXPR&&ups<2){if(++good>=5){ups++;apply(Math.min(MAXPR,+(pr+.25).toFixed(2)))}}else{good=0;bad=0}window.QA276PR=pr})(performance.now());
 })();
 </script>
 <script id="qa277-seat">/* QA277: 앉을 때 쿠션 앞 끝을 실제로 재서 엉덩이를 쿠션 위에 놓음(둥근 소파에서 다리가 파묻혀 보이던 문제) */
@@ -6113,9 +6115,9 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
 <script id="qa279-cam">/* QA279: 카메라 스프링 암 — 캐릭터 머리에서 카메라 쪽으로 광선을 쏴 벽·기둥·큰 사물에 막히면 그 앞으로 당김(가까워질 땐 바로, 멀어질 땐 부드럽게) · 막힌 자리에 갇히면 가까운 빈자리로 */
 (function(){let ARM=null,ARMT=0,LAST=1;const rc=new THREE.Raycaster(),vO=new THREE.Vector3(),vD=new THREE.Vector3(),bb=new THREE.Box3(),sz=new THREE.Vector3();
  const skip=o=>{for(let x=o;x;x=x.parent){if(x.userData&&(x.userData.legs||x.userData.displayName||x.userData.buff))return true}return false};
- const build=()=>{ARM=[];S.traverse(o=>{if(!o.isMesh||o.isSprite||!o.material)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||m.visible===false||(m.transparent&&m.opacity<.5))return;if(skip(o))return;bb.setFromObject(o);if(bb.isEmpty())return;bb.getSize(sz);if(Math.max(sz.x,sz.y,sz.z)<.35)return;if(sz.y<.06&&bb.max.y<.12)return/* 바닥 */;ARM.push(o)});ARMT=performance.now()};
+ const build=()=>{ARM=[];S.traverse(o=>{if(!o.isMesh||o.isSprite||!o.material)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||m.visible===false||(m.transparent&&m.opacity<.5))return;if(skip(o))return;bb.setFromObject(o);if(bb.isEmpty())return;bb.getSize(sz);if(Math.max(sz.x,sz.y,sz.z)<.35)return;if(sz.y<.06&&bb.max.y<.12)return/* 바닥 */;ARM.push(o)});ARMT=performance.now()};setTimeout(()=>{ARMT=-1},20000);let wasLay=false;setInterval(()=>{if(wasLay&&!LAYED)ARMT=-1;wasLay=!!LAYED},1000)/* QA280: 가림 판정 목록은 한 번만(배치 편집 뒤에만 다시) — 6초마다 전체 순회하던 끊김 제거 */;
  const vis=o=>{for(let x=o;x;x=x.parent)if(!x.visible)return false;const m=Array.isArray(o.material)?o.material[0]:o.material;return !(m&&m.visible===false)};
- window.qa279Arm=(p,hy,ox,oy,oz,tt)=>{try{if(LAYED||!S)return tt;if(!ARM||performance.now()-ARMT>6000)build();const full=Math.hypot(ox,oy,oz),len=full*tt;if(len<.6){LAST=tt;return tt}
+ window.qa279Arm=(p,hy,ox,oy,oz,tt)=>{try{if(LAYED||!S)return tt;if(!ARM||(ARMT<0))build();const full=Math.hypot(ox,oy,oz),len=full*tt;if(len<.6){LAST=tt;return tt}
   vO.set(p.x,hy,p.z);vD.set(ox,oy,oz).multiplyScalar(1/full);rc.set(vO,vD);rc.near=.3;rc.far=len+.25;let d=Infinity;const hs=rc.intersectObjects(ARM,false);for(const h of hs){if(vis(h.object)){d=h.distance;break}}
   let t=tt;if(d<len+.25)t=Math.max(.03,Math.min(tt,(d-.28)/full));const now=performance.now(),dt=Math.min(.5,(now-(window.__qa279t||now))/1000);window.__qa279t=now;if(t<LAST)LAST=t;else LAST+=(t-LAST)*(1-Math.exp(-dt*5));return Math.min(tt,LAST)}catch(e){return tt}};
  /* 막힌 자리 → 가까운 빈자리 */const ok=(x,z,l)=>!blocked(x,z,l)&&![[.28,0],[-.28,0],[0,.28],[0,-.28]].some(([a,b])=>blocked(x+a,z+b,l));

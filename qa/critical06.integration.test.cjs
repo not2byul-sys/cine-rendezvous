@@ -64,9 +64,9 @@ test('a new selection cancels the previous approach and its stale completion cal
 test('NPC touch introduces the character directly, without a social tooltip', () => {
   const { ctx, calls, nodes, arrive } = actorContext(), target = actor('이자벨');
   ctx.selectAvatar(target); assert.equal(calls.some(x => x[0] === 'talk'), false);
-  arrive(); assert(!calls.some(x => x[0] === 'talk' && x[1] === target));
-  /* QA263: 탭하면 메뉴만 — 자기소개는 '첫인사하기'를 눌렀을 때 */
-  assert(nodes.get('actorMenu').innerHTML.includes('첫인사하기')); assert(nodes.get('actorMenu').innerHTML.includes('같이 사진찍기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
+  arrive(); assert(calls.some(x => x[0] === 'talk' && x[1] === target));
+  /* QA271: 탭하면 자기소개 + 메뉴(말걸기·같이 사진찍기) */
+  assert(nodes.get('actorMenu').innerHTML.includes('말걸기')); assert(nodes.get('actorMenu').innerHTML.includes('같이 사진찍기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {

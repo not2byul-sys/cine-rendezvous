@@ -5475,6 +5475,13 @@ html body #toast{font-size:16px!important}/* QA230: 모든 알림 1px 크게 */
  try{const sv=store.get(LAYK);if(sv){const items=sv.v?sv.items||{}:sv;LAYI.forEach(it=>{const v=it.dup?(sv.dups||[]).find(q=>q.id===it.id):items[it.id];if(v&&v.dy){it.dy=+v.dy;layApply(it)}})}}catch(e){}
 })();
 </script>
+<script id="qa253-itemtone">/* QA253: 로비 아이템(가구·소품)도 NPC처럼 살짝 톤업 — 흰색 7% */
+(function(){if(typeof LAYI==='undefined')return;const W=new THREE.Color(0xffffff),K=.07,done=new Set();
+ const tone=m=>{if(!m||done.has(m)||m.isMeshBasicMaterial||!m.color)return;done.add(m);m.color.lerp(W,K);const u=m.userData&&m.userData.lp;if(u&&u.c)u.c.lerp(W,K)};
+ window.qa253Tone=()=>LAYI.forEach(it=>it.objs.forEach(e=>e.o.traverse(o=>{if(o.isSprite||o.isLight)return;for(let x=o;x;x=x.parent)if(x.userData&&(x.userData.legs||x.userData.displayName))return;(Array.isArray(o.material)?o.material:[o.material]).forEach(tone)})));
+ qa253Tone();
+})();
+</script>
 <script id="qa252-walladd">/* QA252: 관리자 → 포스터 → 지금 보고 있는 벽에 포스터·액자 추가(이미지 올리기·배치 편집으로 옮기기·삭제) */
 (function(){if(typeof THREE==='undefined'||typeof PSLOT==='undefined')return;
  const KEY='aic.wallAdds',get=()=>{const v=store.get(KEY);return Array.isArray(v)?v:[]},SZ={poster:[.7,1],frame:[.9,.68]};

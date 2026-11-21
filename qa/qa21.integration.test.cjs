@@ -146,7 +146,7 @@ test('QA100 snack rules, unified bag discard, hall snacks',()=>{
  assert(source.includes("EAT={t:0,t0:n,until:n+5,it}")&&source.includes("toast(nm+objectParticle(nm)+' 다 먹었어요'+(wr?"));
  assert(source.includes("data-a=\"bagdelall\">모두 버리기</button>")&&source.includes("bagdelallyes:"));
  assert(source.includes("간식을 먹으면서 영화를 볼까요?")&&source.includes("function qa100Tag(){"));
- assert(source.includes("cap=Math.min(5,MAXH-HELD.length)"));
+ assert(source.includes("const MAXH=Infinity;")&&!source.includes("cap=Math.min(5,MAXH-HELD.length)"));
 });
 
 test('QA102 first concept batch: tests, boards, free seating, light rhythm, instant photo, easter eggs, credits, licence fields',()=>{

@@ -110,16 +110,9 @@ test('an unreachable object never opens remotely or walks into a blocked locatio
   ctx.approachObject({ pt: { x: 0, z: 0, zone: 'L0' }, fn: () => opened = true }, null);
   assert.equal(opened, false); assert.equal(walks.length, 0); assert.equal(calls.length, 1);
 });
-test('the wall clock approaches from in front of the ticket booth rather than behind its counter', () => {
-  const { ctx, walks } = objectContext((x, z) => x < -5.55 && z > 9.1 && z < 13.3);
-  ctx.bounds = () => [-8.5, 8.5, .45, 21]; ctx.me.position.x = 0; ctx.me.position.z = 10.8;
-  let opened = 0;
-  Object.assign(ctx, { X: -8.84, Z: 11.2, clockHit: { userData: {} }, PANELS: { admlogin: () => opened++ } });
-  vm.runInContext(source.split('\n').find(l => l.includes('clockHit.userData.act=')), ctx);
-  ctx.approachObject(ctx.clockHit.userData.act, { getWorldPosition: () => ({ x: -8.84, z: 11.2 }) });
-  assert.equal(walks.length, 1); assert.equal(opened, 0);
-  const [me, x, z, zone, opts] = walks[0]; assert(x > -5.55); assert.equal(ctx.blocked(x, z), false);
-  me.position.x = x; me.position.z = z; opts.after(); assert.equal(opened, 1);
+test('QA276: the wall clock no longer opens the admin login; admin lives on its own address', () => {
+  assert(!source.includes('clockHit.userData.act='));
+  assert(source.includes('ADM_ROUTE=/^\\/admin19791020\\/?$/.test(location.pathname)'));
 });
 
 function audioContext(muted = false) {

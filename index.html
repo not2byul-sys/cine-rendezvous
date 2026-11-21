@@ -5280,7 +5280,7 @@ html body .admback:hover{opacity:1}
 <script id="qa158-adm-js">
 /* QA158: 관리자 창 — 크게 + 왼쪽 LNB 메뉴. 미리보기가 필요한 로비 컬러·전체 톤은 화면을 가리지 않게 오른쪽에 붙고 '관리자 메뉴'로 돌아감 */
 (function(){
- const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admmenu','매점 메뉴'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['admtone','캐릭터 색 보정'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
+ const NAV=[['adm','상영작 관리'],['admclub','아지트 영화'],['adfilmInfo','상영정보 편집'],['admpre','인트로 영화'],['admmenu','매점 메뉴'],['admposter','포스터'],['admlobby','로비 컬러·조명'],['admgrade','전체 톤'],['admtone','캐릭터 색 보정'],['txopen','문구 편집',' data-t="txt"'],['layopen','배치 편집'],['cloudsettings','영상 저장소'],['admtest','상태 테스트'],['admfresh','첫 입장 유저 모드'],0,['siteexp','설정 내보내기'],['siteimp','설정 가져오기'],1,['adout','나가기']];
  const WIDE=['adm','admclub','adfilmInfo','admpre','admposter','cloudsettings','admtest','admtone'],DOCK=['admlobby','admgrade'];
  function deco(k,st){const p=$('pn');if(!ADM||!p||p.hidden)return;const box=p.querySelector('.pbox');if(!box)return;
   if(DOCK.includes(k)){box.classList.add('lpa');const pin=box.querySelector('.pin')||box;if(!pin.querySelector('.admback')){const b=document.createElement('button');b.type='button';b.className='admback';b.dataset.a='adm';b.textContent='← 관리자 메뉴';pin.prepend(b)}return}
@@ -5854,6 +5854,18 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
   const hand=!QA115_OFF&&HELD[0]&&!isFlower(HELD[0].k);if(hand){run(sp,[HELD[0]]);return}ask(sp,ed)};
  Object.assign(A,{siteat:()=>{const sp=NEARSP;hudUpd();sitEat(sp)},qa263siteat:()=>{const s_=QA255.sel;QA255.sel=null;hudUpd();if(s_&&s_.sp)sitEat(s_.sp)}});
  window.qa263SitEat=sitEat;window.qa263Table=tableSpot;
+})();
+</script>
+<script id="qa264-fresh">/* QA264: 관리자 '첫 입장 유저 모드' — 내 활동 기록을 따로 보관하고 처음 들어온 사람처럼 열기 · 끝내면 그대로 복원 */
+(function(){const F='aic.fresh',B='aic.fresh.bak';
+ const keep=k=>SITE_KEYS.includes(k)||QA105_SYNC.has(k)||['aic.siteRev','aic.cfgRev','aic.admpw','aic.admkey','aic.charTone','aic.wallrev',F,B].includes(k);
+ const userKeys=()=>{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&!keep(k))L.push(k)}return L};
+ const start=()=>{try{const bak={};userKeys().forEach(k=>{bak[k]=localStorage.getItem(k)});localStorage.setItem(B,JSON.stringify(bak));Object.keys(bak).forEach(k=>localStorage.removeItem(k));localStorage.setItem(F,'1');try{sessionStorage.clear()}catch(e){}}catch(e){toast('저장 공간이 부족해요');return}location.reload()};
+ const end=()=>{try{const bak=JSON.parse(localStorage.getItem(B)||'{}');userKeys().forEach(k=>localStorage.removeItem(k));Object.entries(bak).forEach(([k,v])=>{if(v!=null)localStorage.setItem(k,v)});localStorage.removeItem(B);localStorage.removeItem(F);try{sessionStorage.clear()}catch(e){}}catch(e){}location.reload()};
+ Object.assign(A,{admfresh:()=>{if(!ADM)return;closePanel();notice('첫 입장 유저 모드','처음 들어온 상태로 다시 열어요.<br>끝내면 지금 기록으로 돌아와요.',[['시작',start],['취소',()=>{}]])},qa264end:end});
+ let on=false;try{on=localStorage.getItem(F)==='1'}catch(e){}if(!on)return;
+ const st=document.createElement('style');st.textContent="#qa264{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:999px;background:rgba(18,12,14,.82);color:#fff;font:500 12px/1 'Noto Sans KR',sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.3)}#qa264 button{all:unset;cursor:pointer;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14)}#qa264 button:hover{background:rgba(255,255,255,.24)}";document.head.appendChild(st);
+ const b=document.createElement('div');b.id='qa264';b.innerHTML='<span>첫 입장 모드</span><button type="button" data-a="qa264end">끝내기</button>';document.body.appendChild(b);
 })();
 </script>
 </body></html>

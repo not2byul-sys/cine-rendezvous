@@ -1488,7 +1488,7 @@ let NPCB=null;function npcCard(g,name){
   '미시즈 퍼재컬리':'저는 매표소의 미시즈 퍼재컬리예요. 오늘의 상영작을 고르고 티켓을 받아 가세요.',
   '미스 모지':'저는 매점 직원 미스 모지예요. 따뜻한 팝콘과 달콤한 간식을 준비해 드려요.',
   '알프레도 할아버지':'《시네마 천국》의 영사기사 알프레도라네. 영화 퀴즈를 풀면 비밀 클럽에 대한 이야기를 들려주지.'
- },info=CHARINFO[name]||staff[name]||('저는 '+name+'예요. 이 영화관에서 함께 영화를 즐기고 있어요.');
+ },hallTalk=(()=>{try{const u=g.userData;return String(curZone(g))[0]==='H'&&!staff[name]&&!u.counterStaff&&!u.trayVendor&&!u.buff&&!(typeof STAFF!=='undefined'&&Object.values(STAFF).includes(g))&&typeof hallLine==='function'}catch(e){return false}})()/* QA254: 상영관에서는 자기소개 대신 상영관 대화 */,info=hallTalk?hallLine(g):(CHARINFO[name]||staff[name]||('저는 '+name+'예요. 이 영화관에서 함께 영화를 즐기고 있어요.'));
  const text='“'+info+'”',duration=Math.max(8,Math.min(20,info.length/8));sayB(g,text,duration);
  g.userData.introUntil=performance.now()/1000+duration;g.userData.storyUntil=g.userData.introUntil;
  let live=$('npcSpeech');if(!live){live=document.createElement('div');live.id='npcSpeech';live.setAttribute('role','status');live.setAttribute('aria-live','polite');live.style.cssText='position:fixed;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:pre-wrap';document.body.appendChild(live)}live.textContent=text;
@@ -2481,7 +2481,15 @@ const NPCLN={};function npcLines(name){if(NPCLN[name])return NPCLN[name];let inf
  if(fm){out.push(`《${fm}》 이야기라면 밤새도 할 수 있어요.`,`《${fm}》, 다들 보셨어요?`)}
  let h=0;for(const ch of name)h=(h*31+ch.charCodeAt(0))>>>0;for(let k=0;out.length<10&&k<NPC_MOOD.length*2;k++){const t=NPC_MOOD[(h+k*5)%NPC_MOOD.length];if(!out.includes(t))out.push(t)}
  return NPCLN[name]=out.slice(0,10)}
-function npcTalkLine(c){const nm=c.userData.displayName||'';return Math.random()<.35?THEATER_INFO[Math.random()*THEATER_INFO.length|0]:(Math.random()<.1&&curZone(c)==='L0'?RUMORS[Math.random()*RUMORS.length|0]:(()=>{const L=npcLines(nm);return L[Math.random()*L.length|0]})())}
+/* QA254: 숨은 설정 — 이 극장의 사장은 아무도 본 적 없는 대부호. 영화를 좋아하던 첫사랑을 기다리며 지은 극장. 로비에서 드문드문 소문으로만 흘림 */const OWNER_RUMORS=['이 극장 사장님, 실제로 본 사람이 아무도 없대요.','사장님이 영화를 좋아하던 첫사랑을 기다리면서 이 극장을 지었대요.','첫사랑이 언젠가 표를 사러 올 거라고, 매표소 불은 밤새 안 끈대요.','토요일 밤마다 2층 발코니 끝에서 강 건너 초록 불빛을 오래 바라보는 신사가 있대요.','개관 파티 때 샴페인 탑이 천장까지 닿았는데, 정작 사장님은 안 나타났대요.','사장님 재산이 어디서 났는지는 아무도 몰라요. 바다 건너에서 왔다는 말만 있어요.','맨 뒷줄 가운데 자리는 늘 비워 둔대요. 그 사람이 오면 앉을 자리라고.','그 첫사랑이 제일 좋아하던 영화가 걸리는 날엔 극장 전체에 하얀 꽃이 놓인대요.','매표소에 가끔 이름 없는 흰 봉투가 놓여 있대요. 안에는 초대장 한 장.'];
+const ODD_RUMORS=['비 오는 밤엔 상영이 끝난 뒤에도 박수 소리가 한 번 더 들린대요.','1관 커튼은 아무도 안 만졌는데 혼자 살짝 흔들릴 때가 있대요.','로비 시계는 가끔 1분씩 거꾸로 간대요. 아무도 안 고쳐요.','영사실 고양이가 좋아하는 영화가 걸리면 스크린 앞에 와서 앉는대요.','매점 팝콘 레시피는 금고에 들어 있대요. 미스 모지만 비밀번호를 알고요.','2층 카페 커피를 마시면 그날 밤 꿈이 흑백으로 나온대요.','크리스마스 트리 꼭대기 별은 진짜 별똥별 조각이라던데요.','공중전화로 아무 번호나 누르면 가끔 옛날 영화 대사가 들린대요.','이 극장 의자 하나엔 유명한 배우 이름이 몰래 새겨져 있대요.','계단 난간을 끝까지 손으로 짚고 올라가면 소원이 이뤄진대요.'];
+/* QA254: 상영관 안에서는 로비 이야기 대신 — 지금 영화 기대감·상영관 분위기·간식 추천 */function hallLine(c){const hid=+String(curZone(c)).slice(1),h=CFG.HALLS.find(x=>x.id===hid);let t='',on=false;try{const now=nowS(),sc=scrAt(h,now);on=!!(sc&&sc.start<=now&&now<sc.end&&curSp&&curSp.hall===hid);const n=sc&&sc.end>now?sc:listS(h,now,1)[0];t=n&&n.film&&n.film.title||''}catch(e){}
+ const T=t?['《'+t+'》 드디어 보네요. 오래 기다렸어요.','《'+t+'》, 큰 화면으로 보는 건 처음이에요.','《'+t+'》 마지막 장면이 그렇게 좋대요. 설레요.','이번 《'+t+'》 필름 상태가 아주 좋다던데요.','《'+t+'》 보고 나면 한동안 여운이 길 것 같아요.']:[];
+ const P=['쉿, 지금 제일 좋은 장면이에요.','이 장면, 숨도 못 쉬겠어요.','소리 낮춰서 얘기할게요. 영화 좋죠?'];
+ const R=['불이 꺼지기 직전 이 순간이 제일 설레요.','커튼이 열릴 때 그 소리, 정말 좋지 않아요?','가운데 줄이 명당이에요. 고개도 안 아프고요.','영사기 돌아가는 소리가 들리면 마음이 편해져요.','상영 중엔 조용히 부탁드려요. 다 같이 보는 거니까요.'];
+ const K=['상영 전에 우브뢰즈한테 글라시에 노르 하나 사 두세요. 녹기 전에 먹는 게 포인트예요.','카라멜 베베르는 소리가 안 나서 상영 중에 먹기 딱 좋아요.','쇼콜라 리볼리는 은박지 소리 조심! 불 꺼지기 전에 까 두세요.','팝콘은 로비 매점에서 미리 챙겨 오면 좋아요.'];
+ const L=on?P.concat(T.slice(0,2)):T.concat(R,K);return L[Math.random()*L.length|0]}
+function npcTalkLine(c){const nm=c.userData.displayName||'',z=String(curZone(c));if(z[0]==='H')return hallLine(c);if((z==='L0'||z==='L1')&&Math.random()<.16){const r=Math.random(),P=r<.3?OWNER_RUMORS:r<.7?ODD_RUMORS:RUMORS;return P[Math.random()*P.length|0]}return Math.random()<.35?THEATER_INFO[Math.random()*THEATER_INFO.length|0]:(()=>{const L=npcLines(nm);return L[Math.random()*L.length|0]})()}
 const RUMORS=/* QA102: 떠도는 소문(설명 없이 흘리기만) */['영사실 문은 왜 늘 잠겨 있지? 밤에도 영사기 소리가 난대요','이 극장 지하에 개관 때 필름이 아직 남아 있다던데','옥상에서 개선문이 보인다는 얘기 들었어요','라탱 지구에 이 극장이랑 같은 포스터를 거는 작은 극장이 있대요','계단 밑 철문, 열려 있는 거 본 적 있어요?'];
 const LINES=['안녕하세요!','오늘 상영작 기대돼요','팝콘 사야겠다 🍿','여기 자리 있나요?','👏','처음 와봤어요','다들 반가워요 👋'];
 /* ---------- nicknames (영화 패러디, 실존 인물 이름 제외) ---------- */

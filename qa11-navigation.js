@@ -42,5 +42,8 @@ function qa11SeatExit(c,sp){
   if(!b||zoneOf(x,z,level)!==sp.zone||x<b[0]||x>b[1]||z<b[2]||z>b[3]||blocked(x,z,level))continue;
   const steps=Math.ceil(radius/.04);let clear=true;for(let k=1;k<=steps&&clear;k++){const px=origin.x+(x-origin.x)*k/steps,pz=origin.z+(z-origin.z)*k/steps;if(rects.some(r=>px>r[0]&&px<r[1]&&pz>r[2]&&pz<r[3]))clear=false}
   if(clear){c.position.x=x;c.position.z=z;return true}
- }return false;
+ }
+ /* QA252: 앞이 막혀도 가구 안에 갇히지 않게 — 실제 가구를 통과하지 않는 가장 가까운 빈 바닥으로 */
+ for(const radius of [.9,1.2,1.5,1.9,2.4])for(let k=0;k<24;k++){const angle=sp.rot+k*Math.PI/12,x=sp.x+Math.sin(angle)*radius,z=sp.z+Math.cos(angle)*radius,b=bounds(sp.zone,x,z);if(b&&zoneOf(x,z,level)===sp.zone&&x>=b[0]&&x<=b[1]&&z>=b[2]&&z<=b[3]&&!blocked(x,z,level)){const n=Math.ceil(radius/.04);let ok=true;for(let i=1;i<=n&&ok;i++){const px=sp.x+(x-sp.x)*i/n,pz=sp.z+(z-sp.z)*i/n;if(rects.some(r=>{const q=r[5]||r;return px>q[0]&&px<q[1]&&pz>q[2]&&pz<q[3]}))ok=false}if(ok){c.position.x=x;c.position.z=z;return true}}}
+ return false;
 }

@@ -33,6 +33,7 @@ function qa11ChristmasDisplay(){
  const packs=[[-.82,-.72,.5,.36,0xc9a46a],[.6,-.74,.44,.42,0x1f4a36],[1.02,-.12,.36,.34,0x9e1f2a],[-1.0,.1,.38,.3,0xc9a46a],[.66,.72,.48,.3,0x9e1f2a],[-.36,.84,.4,.44,0x1f4a36],[.18,-.98,.34,.24,0xb02a30],[-.1,-.55,.3,.2,0xd9bf86]];
  for(const [x,z,w,h,color] of packs){const paper=mat(color),ribbon=color===0x9e1f2a||color===0xb02a30?gold:new THREE.MeshPhongMaterial({color:0xb3202e,shininess:40});add(new THREE.BoxGeometry(w,h,w*.85),paper,x,h/2,z);add(new THREE.BoxGeometry(w+.025,.045,w*.85+.025),paper,x,h+.015,z);add(new THREE.BoxGeometry(.045,h+.06,w*.85+.035),ribbon,x,h/2+.015,z);add(new THREE.BoxGeometry(w+.035,h+.06,.045),ribbon,x,h/2+.015,z);[-1,1].forEach(side=>{const bow=add(new THREE.TorusGeometry(.065,.011,5,12),ribbon,x+side*.06,h+.07,z);bow.rotation.x=Math.PI/2;bow.scale.y=.6})}
  const lamp=new THREE.PointLight(0xffd597,.55,5,2);lamp.position.set(0,1.9,.35);g.add(lamp);layEnd(mark,'christmas-display','크리스마스 트리 · 선물상자',0);OBS=null;
+ /* QA248: 이 트리는 저장된 배치를 불러온 뒤에 만들어지므로, 저장된 위치를 여기서 한 번 더 적용 */try{const L=migrateWallLayout(store.get(LAYK))||DEF_LAYOUT||{},items=L.v?L.items||{}:L,v=items['christmas-display'],it=LAYI.find(i=>i.id==='christmas-display');if(v&&it){it.dx=+v.dx||0;it.dz=+v.dz||0;it.dr=+v.dr||0;it.dl=+v.dl||0;it.del=!!v.del;layApply(it)}}catch(e){}
  return g;
 }
 

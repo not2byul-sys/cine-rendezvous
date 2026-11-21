@@ -66,7 +66,7 @@ test('QA73 lobby materials follow the 2026-11-14 Figma palette through lobby-onl
  /* 다른 공간과 공유하는 마호가니·황동 재질 정의는 그대로 */assert(source.includes("WD=0x6b3a20,WD2=0x8a5a34"));assert(source.includes("BR=0xc9a24a"));assert(source.includes("const glassM=new THREE.MeshPhongMaterial({color:0xdde8ea,transparent:true,opacity:.14"));
  assert(source.includes("LP_DRAW.floor=(c,W,H)=>"));assert(source.includes("LP_DRAW.wall=(c,W,H)=>"));assert(source.includes("LP_DRAW.frame=(c,W,H)=>"));});
 test('QA74 admin can edit lobby colours and lighting (50-150%, 2700-6500K opt-in) with preview, save and reset',()=>{
- assert(source.includes("['admlobby','로비 컬러·조명']"));assert(source.includes("PANELS.admlobby=()=>{if(!ADM){PANELS.admlogin();return}"));
+ assert(source.includes("['admlobby','로비 컬러·조명·톤']"));assert(source.includes("PANELS.admlobby=()=>{if(!ADM){PANELS.admlogin();return}"));
  assert(source.includes('id="lpa_b" min="50" max="150" step="5"'));assert(source.includes('id="lpa_k" min="2700" max="6500" step="100"'));assert(source.includes("lpasave:()=>{if(!ADM)return;"));assert(source.includes("lpareset:()=>{if(!ADM)return;localStorage.removeItem('aic.lobbyPalette');localStorage.removeItem('aic.lobbyLighting')"));
  assert(source.includes("if(window.lpaRevert)window.lpaRevert()"));assert(source.includes("'aic.lobbyPalette','aic.lobbyLighting','aic.wallAdds','aic.charTone','aic.donate','aic.uiColors'];"));
  assert(source.includes("HEMI.intensity=k==='B'?.3145:k>0?.28:LOBBY_HEMI*LP_LIGHT.b;"));assert(source.includes("dl.intensity=LOBBY_DL*LP_LIGHT.b"));assert(source.includes("const LOBBY_HEMI=.756,LOBBY_DL=.1575;"));
@@ -146,7 +146,7 @@ test('QA100 snack rules, unified bag discard, hall snacks',()=>{
  assert(source.includes("EAT={t:0,t0:n,until:n+5,it}")&&source.includes("toast(nm+objectParticle(nm)+' 다 먹었어요'+(wr?"));
  assert(source.includes("data-a=\"bagdelall\">모두 버리기</button>")&&source.includes("bagdelallyes:"));
  assert(source.includes("간식을 먹으면서 영화를 볼까요?")&&source.includes("function qa100Tag(){"));
- assert(source.includes("cap=Math.min(5,MAXH-HELD.length)"));
+ assert(source.includes("const MAXH=Infinity;")&&!source.includes("cap=Math.min(5,MAXH-HELD.length)"));
 });
 
 test('QA102 first concept batch: tests, boards, free seating, light rhythm, instant photo, easter eggs, credits, licence fields',()=>{

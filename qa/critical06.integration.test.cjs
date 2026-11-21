@@ -201,7 +201,7 @@ test('a wrong answer provides a direct retry and stale right-answer timers canno
 
 function adminContext(values = new Map()) {
   const calls = [], input = { value: 'wrong', focus() {} };
-  const ctx = { store: { get: k => values.get(k), set: (k, v) => values.set(k, v) }, $: () => input, admInit: () => calls.push('init'), PANELS: { adm: () => calls.push('admin'), tt: () => calls.push('schedule') }, panel: () => calls.push('password'), toast() {}, setTimeout() {}, window: { CinemaCloud: { clearSecret: () => calls.push('clearSecret') } }, location: { protocol: 'file:' }, localStorage: { setItem() {}, removeItem() {}, getItem() { return null; } } };
+  const ctx = { store: { get: k => values.get(k), set: (k, v) => values.set(k, v) }, $: () => input, admInit: () => calls.push('init'), PANELS: { adm: () => calls.push('admin'), tt: () => calls.push('schedule') }, panel: () => calls.push('password'), toast() {}, setTimeout() {}, window: { CinemaCloud: { clearSecret: () => calls.push('clearSecret') } }, location: { protocol: 'file:', pathname: '/admin19791020' }, localStorage: { setItem() {}, removeItem() {}, getItem() { return null; } } };
   vm.createContext(ctx);
   vm.runInContext(section('const ADMIN_SESSION_KEY=', '\n') + section('PANELS.admlogin=()', '\n'), ctx);
   const login = vm.runInContext('({' + section(' admlogin:async()=>', '\n adout:') + '}).admlogin', ctx);

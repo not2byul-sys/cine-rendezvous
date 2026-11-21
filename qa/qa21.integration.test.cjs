@@ -68,7 +68,7 @@ test('QA73 lobby materials follow the 2026-11-14 Figma palette through lobby-onl
 test('QA74 admin can edit lobby colours and lighting (50-150%, 2700-6500K opt-in) with preview, save and reset',()=>{
  assert(source.includes("['admlobby','로비 컬러·조명']"));assert(source.includes("PANELS.admlobby=()=>{if(!ADM){PANELS.admlogin();return}"));
  assert(source.includes('id="lpa_b" min="50" max="150" step="5"'));assert(source.includes('id="lpa_k" min="2700" max="6500" step="100"'));assert(source.includes("lpasave:()=>{if(!ADM)return;"));assert(source.includes("lpareset:()=>{if(!ADM)return;localStorage.removeItem('aic.lobbyPalette');localStorage.removeItem('aic.lobbyLighting')"));
- assert(source.includes("if(window.lpaRevert)window.lpaRevert()"));assert(source.includes("'aic.lobbyPalette','aic.lobbyLighting','aic.wallAdds','aic.charTone'];"));
+ assert(source.includes("if(window.lpaRevert)window.lpaRevert()"));assert(source.includes("'aic.lobbyPalette','aic.lobbyLighting','aic.wallAdds','aic.charTone','aic.donate'];"));
  assert(source.includes("HEMI.intensity=k==='B'?.3145:k>0?.28:LOBBY_HEMI*LP_LIGHT.b;"));assert(source.includes("dl.intensity=LOBBY_DL*LP_LIGHT.b"));assert(source.includes("const LOBBY_HEMI=.756,LOBBY_DL=.1575;"));
  const vm=require('vm'),ctx={THREE:{Color:function(r,g,b){this.v=[r,g,b]}},LP_LIGHT:{b:1,k:null}};vm.createContext(ctx);const i=source.indexOf('function LP_kRGB('),j=source.indexOf('function LP_lights(');vm.runInContext(source.slice(i,j),ctx);
  assert.deepEqual(ctx.LP_tint().v,[1,1,1]);ctx.LP_LIGHT.k=4500;ctx.LP_tint().v.forEach(x=>assert(Math.abs(x-1)<1e-9));ctx.LP_LIGHT.k=2700;{const [r,g,b]=ctx.LP_tint().v;assert(r>g&&g>b&&b>.5)}ctx.LP_LIGHT.k=6500;{const [r,g,b]=ctx.LP_tint().v;assert(b>g&&g>r&&r>.6)}});

@@ -3858,8 +3858,8 @@ Object.assign(A,{
 });
 /* 아지트 연속 상영: 입장 시 현재 시간에 맞춘 영상 루프. 로비에서는 디코딩을 쉬고 재입장 때 시간을 맞춘다. */
 /* 최종 실사 필름 진열장: 실제 등록된 13개 파일과 1:1 연결 */
-const FILMTITLES=["상영영화 1", "상영영화 2", "상영영화 3", "상영영화 4", "상영영화 5", "Grok 필름 1", "Grok 필름 2", "Grok 필름 3", "Grok 필름 4", "Grok 필름 5", "Grok 필름 6", "Grok 필름 7", "Grok 필름 8"];
-const CLUBFILMS=[{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA1.mp4","title":"상영영화 1"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA2.mp4","title":"상영영화 2"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA3.mp4","title":"상영영화 3"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA4.mp4","title":"상영영화 4"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA5.mp4","title":"상영영화 5"},{"src":"media/grok-video-019f935b-f86f-78c1-9a64-660917dea94b.mp4","title":"Grok 필름 1"},{"src":"media/grok-video-019f935b-f8ab-7990-8c3c-7ad3dc695d3c.mp4","title":"Grok 필름 2"},{"src":"media/grok-video-019f935b-f8b8-7c22-9665-9c06e9ee774b.mp4","title":"Grok 필름 3"},{"src":"media/grok-video-019f9af4-76d5-7b90-83c1-3a9973427768.mp4","title":"Grok 필름 4"},{"src":"media/grok-video-019f9e78-d703-73a3-8274-30c8ac13cc57.mp4","title":"Grok 필름 5"},{"src":"media/grok-video-019f9e78-f482-7570-a0cd-d80ad0a1265a.mp4","title":"Grok 필름 6"},{"src":"media/grok-video-419c3406-bb6e-4237-99d6-0d6fb0e78361.mp4","title":"Grok 필름 7"},{"src":"media/grok-video-75d1608b-5dac-4b06-ba28-4d5164bc3ae0.mp4","title":"Grok 필름 8"}];let CLUBPICK=null;
+const FILMTITLES=["상영영화 0", "상영영화 1", "상영영화 2", "상영영화 3", "상영영화 4", "상영영화 5", "상영영화 6", "상영영화 7", "상영영화 8", "상영영화 9", "상영영화 10", "상영영화 11", "상영영화 12"];
+const CLUBFILMS=[{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA0.mp4","title":"상영영화 0"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA1.mp4","title":"상영영화 1"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA2.mp4","title":"상영영화 2"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA3.mp4","title":"상영영화 3"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA4.mp4","title":"상영영화 4"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA5.mp4","title":"상영영화 5"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA6.mp4","title":"상영영화 6"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA7.mp4","title":"상영영화 7"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA8.mp4","title":"상영영화 8"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA9.mp4","title":"상영영화 9"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA10.mp4","title":"상영영화 10"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA11.mp4","title":"상영영화 11"},{"src":"media/%E1%84%89%E1%85%A1%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%AA12.mp4","title":"상영영화 12"}];let CLUBPICK=null;
 const CLUBFILMS_DEF=CLUBFILMS.map(f=>({...f}));/* QA158: 관리자에서 저장한 아지트 영화 목록 */{const o=store.get('aic.clubFilms');if(Array.isArray(o)&&o.length)CLUBFILMS.splice(0,CLUBFILMS.length,...o.filter(f=>f&&typeof f.src==='string'&&f.src).slice(0,20).map(f=>({src:f.src,title:String(f.title||'필름').slice(0,40)})))}
 let CLUBSTOP=false,FILMPOOL=null;
 /* ===== 영화 월드컵(16강) + 클럽 회원 랭킹 보드 ===== */
@@ -3950,8 +3950,8 @@ async function clubPick(i){
   if(YTL)ytLayer(false);
   clubVid(true);hudUpd();toast('「'+f.title+'」부터 연속 상영을 시작해요');
  }
- /* 아지트 상영: media/club1.mp4 ~ club5.mp4 를 차례로 반복 재생 */const CLUBLIST=CLUBFILMS.map(f=>f.src);let CLUBI=0;const CLUB_DEF=CLUBLIST[0];let CLUBQUEUE=CLUBLIST.slice();
-if(store.get('aic.clubfilmRevision')!==5){store.set('aic.clubfilm',null);store.set('aic.clubfilmRevision',5)}
+ /* 아지트 상영: media/상영영화0.mp4 ~ 상영영화12.mp4 를 번호 순서대로 반복 재생 */const CLUBLIST=CLUBFILMS.map(f=>f.src);let CLUBI=0;const CLUB_DEF=CLUBLIST[0];let CLUBQUEUE=CLUBLIST.slice();
+if(store.get('aic.clubfilmRevision')!==6){store.set('aic.clubfilm',null);store.set('aic.clubfilmRevision',6)}
 function clubUrl(){return CLUBQUEUE[CLUBI%CLUBQUEUE.length]||CLUB_DEF}
 function clubDisplayUrl(){const value=clubUrl();return value.startsWith('data:')?'':value}
 function ytId(u){const m=String(u).match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([\w-]{11})/);return m?m[1]:null}
@@ -3989,8 +3989,12 @@ function clubVid(active=false){
     CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
     const r=CLV.play();if(r&&r.catch)r.catch(()=>{});
    });
+   let altTried='';
    CLV.addEventListener('error',()=>{
     console.warn('재생할 수 없는 필름:',CLVSRC);
+    /* QA283: 한글 파일 이름은 올리는 환경에 따라 자모 분리(NFD)와 완성형(NFC)이 달라서, 한 번은 다른 표기로 다시 시도 */
+    try{const cur=decodeURIComponent(CLVSRC),alt=cur.normalize(cur===cur.normalize('NFC')?'NFD':'NFC');
+     if(alt!==cur&&altTried!==CLVSRC){altTried=CLVSRC;CLVSRC=alt.split('/').map(encodeURIComponent).join('/');CLV.src=CLVSRC;CLV.load();const r0=CLV.play();if(r0&&r0.catch)r0.catch(()=>{});return}}catch(e){}
     if(++errorSkips<CLUBQUEUE.length){
      CLUBI=(CLUBI+1)%CLUBQUEUE.length;
      CLVSRC=clubUrl();CLV.src=CLVSRC;CLV.load();
@@ -5974,7 +5978,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  let ST=null;const close=()=>{const e=document.getElementById('qa270');if(e)e.remove();ST=null};
  const shell=(title,sub,tabs,tab,body,foot)=>{let e=document.getElementById('qa270');if(!e){e=document.createElement('div');e.id='qa270';document.body.appendChild(e);const stop=ev=>ev.stopPropagation();['pointerdown','pointerup','click','touchstart','touchend','wheel'].forEach(t=>e.addEventListener(t,stop));e.addEventListener('click',ev=>{if(ev.target===e)close()});e.addEventListener('click',onClick)}
   e.innerHTML=`<div class="dlg" role="dialog" aria-label="${title}"><header><div><h2>${title}</h2>${sub?`<p>${sub}</p>`:''}</div><button class="close" type="button" data-k="x" aria-label="닫기">✕</button></header><nav>${tabs.map(([k,l])=>`<button type="button" data-tab="${k}" aria-pressed="${k===tab}">${l}</button>`).join('')}</nav><div class="body">${body}</div><footer ${foot?'':'hidden'}>${foot||''}</footer></div>`};
- const zoom=(src,cap,bk,nm)=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const z=document.createElement('div');z.className='zoom';z.innerHTML=(bk?`<div class="flip" data-k="flip"><div class="fi"><img alt="" src="${src}"><div class="bk"><b>${esc(nm||'')}</b><p>${esc(bk)}</p></div></div></div>`:`<img alt="" src="${src}">`)+(cap?`<p>${cap}</p>`:'')+`<div class="zb">${bk?'<button type="button" data-k="flip">뒷면 보기</button>':''}<button type="button" data-k="unzoom">닫기</button></div>`;d.appendChild(z)};/* QA277: 캐릭터 카드 뒷면 = 자기소개 */
+ const zoom=(src,cap,bk,nm)=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const z=document.createElement('div');z.className='zoom';z.innerHTML=(bk?`<div class="flip" data-k="flip"><div class="fi"><img alt="" src="${src}"><div class="bk"><b>${esc(nm?nm+'의 한마디':'한마디')}</b><p>${esc(bk)}</p></div></div></div>`:`<img alt="" src="${src}">`)+(cap?`<p>${cap}</p>`:'')+`<div class="zb">${bk?'<button type="button" data-k="flip">뒷면 보기</button>':''}<button type="button" data-k="unzoom">닫기</button></div>`;d.appendChild(z)};/* QA277: 캐릭터 카드 뒷면 = 자기소개 */
  /* ---- 수첩 ---- */
  const bookBody=tab=>{const C=cards();
   if(tab==='people'){const M=J('aic.meet',{}),names=Object.keys(M).sort((a,b)=>(M[a].first||0)-(M[b].first||0));C.filter(c=>!c.item&&!M[c.n]).forEach(c=>names.push(c.n));if(!names.length)return '<p class="empty">아직 만난 사람이 없어요.</p>';

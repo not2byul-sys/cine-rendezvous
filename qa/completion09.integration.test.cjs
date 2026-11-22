@@ -70,7 +70,10 @@ test('AdService grants immediately with no ad overlay, timer or SDK', async () =
   const ctx = { setInterval() { throw Error('ad timer started'); }, setTimeout() { throw Error('ad timer started'); } };
   vm.createContext(ctx); vm.runInContext(code + '\nthis.service=AdService;', ctx);
   for (const kind of ['ticket', 'order', 'vend', 'quiz']) assert.equal(await ctx.service.show({ kind, label: '테스트' }), true);
-  assert(!/googletag|adsbygoogle|<script[^>]+ads/i.test(source));
+  /* QA285: 보상(티켓·주문·꽃·퀴즈)에는 광고가 없어야 한다. 후원하기의 '광고 보기'만 예외 */
+  const don = source.slice(source.indexOf('<script id="qa266-donate">'), source.indexOf('</script>', source.indexOf('<script id="qa266-donate">')));
+  assert(don.includes('adsbygoogle'));
+  assert(!/googletag|adsbygoogle|<script[^>]+ads/i.test(source.replace(don, '')));
 });
 
 function cupContext(data = new Map()) {

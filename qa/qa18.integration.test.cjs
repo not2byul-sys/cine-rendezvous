@@ -9,8 +9,9 @@ test('QA18 empty join ticket shows the enter stub (Figma 3:6)', () => {
   assert(source.includes("$('go').hidden=false;/* QA18 Figma 3:6"));
   assert(source.includes('top:189.33px') && source.includes('height:38.667px'));
 });
-test('QA18 punch sound is 40% quieter', () => {
-  assert(source.includes('this.noise(.045,4200,.42);this.noise(.11,2800,.24,.025);this.tone(180,85,.055,.096)'));
+test('QA284 punch sound is a short, crisp ticket-punch (quieter than the original)', () => {
+  assert(source.includes("this.tone(1250,620,.016,.2);this.noise(.018,5400,.26);this.tone(150,68,.085,.17,.018)"));
+  assert(!source.includes('this.noise(.045,4200,.42)'));
 });
 test('QA18 every NPC has its own gift voice and hint', () => {
   const i = source.indexOf('const QA18_GIFT={'), block = source.slice(i, source.indexOf('};', i));

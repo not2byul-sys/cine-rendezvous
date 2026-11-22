@@ -24,7 +24,7 @@ function qa18BuildFir(g,o){const H=o.height,B0=o.base,R0=o.radius,dummy=new THRE
  const beads=new THREE.InstancedMesh(new THREE.SphereGeometry(.017,6,5),gd,beadPts.length);beadPts.forEach((p,k)=>{dummy.position.copy(p);dummy.rotation.set(0,0,0);dummy.scale.setScalar(1);dummy.updateMatrix();beads.setMatrixAt(k,dummy.matrix)});g.add(beads);
  return {dots}}
 function qa11ChristmasDisplay(){
- const mark=layBeg(),g=new THREE.Group();g.name='lobby-christmas-display';g.position.set(-6.8,0,14.6)/* QA58: 매표소 왼쪽(예전 테이블 자리) */;g.scale.setScalar(.96)/* QA38: 20% 축소 */;S.add(g);
+ const mark=layBeg(),g=new THREE.Group();g.name='lobby-christmas-display';g.position.set(-6.8,0,14.6)/* QA58: 매표소 왼쪽(예전 테이블 자리) */;g.scale.setScalar(1.152)/* QA285: 트리 20% 키움 */;S.add(g);
  /* QA18: 레퍼런스형 풍성한 전나무 — 층층이 뾰족한 가지 · 빨강/금색 오너먼트 · 금색 비즈 가랜드 스왜그 · 웜화이트 전구 · 반짝이는 금별 */
  const bark=mat(0x4a2f1f),gold=new THREE.MeshPhongMaterial({color:0xd9b25a,shininess:95,specular:0xfff1c0,emissive:0x2a1c04}),glow=new THREE.MeshBasicMaterial({color:0xffe7b1,toneMapped:false});
  const add=(geo,material,x,y,z)=>{const mesh=new THREE.Mesh(geo,material);mesh.position.set(x,y,z);g.add(mesh);return mesh};

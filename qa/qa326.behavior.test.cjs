@@ -143,7 +143,7 @@ test('QA327: 모바일 좌석표 — 접힘이 기본, 줄일 때 transform(하�
   assert(source.includes('#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}'));
   assert(source.includes('body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 116px)}'));
   assert(source.includes("lucide('share',16)") && !source.includes('share2'));
-  assert(hud.includes('#chip b{padding-top:4px;'));
+  assert(hud.includes("#chip b,#chip span{font:500 12px/1 'Noto Sans KR',sans-serif}"));
 });
 
 test('하단 퀵바·액션 칩은 예전 규칙 그대로(탑바 규칙 블록에 들어 있지 않다)', () => {

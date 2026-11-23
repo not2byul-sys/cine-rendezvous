@@ -2631,7 +2631,7 @@ function qa13NickState(){const enabled=!!$('nick').value.trim(),ticket=$('tk');$
 function qa14FieldWidth(){const input=$('nick'),field=input.closest('.jt2-field');let measure=$('jt14-measure');if(!measure){measure=document.createElement('span');measure.id='jt14-measure';field.appendChild(measure)}measure.textContent=input.value||input.placeholder;input.style.width=Math.min(303.8,Math.max(24,Math.ceil(measure.getBoundingClientRect().width/((input.getBoundingClientRect().width/input.offsetWidth)||1))+10))+'px'/* QA42: 여유 폭 — 글자 끝이 잘리지 않게 */}
 try{/* QA42: 웹폰트가 늦게 로드되면 폭을 다시 잼 */if(document.fonts){document.fonts.ready.then(()=>qa14FieldWidth());document.fonts.addEventListener('loadingdone',()=>{try{qa14FieldWidth()}catch(e){}})}}catch(e){}
 $('nick').addEventListener('focus',()=>{$('nick').setSelectionRange(0,0)});qa13NickState();
-/* QA310: 닉네임이 14글자에 닿으면 입력칸 아래에 안내 */(function(){const i=$('nick'),f=i.closest('.jt2-field');const st=document.createElement('style');st.textContent='#qa310msg{position:absolute;left:29.3333px;top:122.5px;width:303.8095px;margin:0;text-align:center;font:500 11px/12px \'Noto Sans KR\',sans-serif;color:#9a2a22;pointer-events:none}#qa310msg[hidden]{display:none}';document.head.appendChild(st);const m=document.createElement('p');m.id='qa310msg';m.hidden=true;m.setAttribute('role','status');m.textContent='닉네임은 14글자까지 쓸 수 있어요';f.insertAdjacentElement('afterend',m);const upd=()=>{m.hidden=!(i.value.length>=14&&!i.readOnly)};i.addEventListener('input',upd);i.addEventListener('compositionend',upd);$('nrand').addEventListener('change',()=>setTimeout(upd,0))})();
+/* QA310: 닉네임이 14글자에 닿으면 입력칸 아래에 안내 */(function(){const i=$('nick'),f=i.closest('.jt2-field');const st=document.createElement('style');st.textContent='#qa310msg{position:absolute;left:29.3333px;top:122.5px;width:303.8095px;margin:0;text-align:center;font:500 11px/12px \'Noto Sans KR\',sans-serif;color:#9a2a22;pointer-events:none}#qa310msg[hidden]{display:none}';document.head.appendChild(st);const m=document.createElement('p');m.id='qa310msg';m.hidden=true;m.setAttribute('role','status');m.textContent='닉네임은 14글자까지 쓸 수 있어요';f.insertAdjacentElement('afterend',m);const fit=()=>{try{const ms=$('jt14-measure');i.style.removeProperty('font-size');if(!ms)return;const w=ms.getBoundingClientRect().width/((i.getBoundingClientRect().width/i.offsetWidth)||1);if(w>296)i.style.setProperty('font-size',Math.max(15,24.0952*296/w).toFixed(2)+'px','important')}catch(e){}};/* QA313: 긴 닉네임은 글자를 줄여 끝이 잘리지 않게 */const upd=()=>{m.hidden=!(i.value.length>=14&&!i.readOnly);fit()};i.addEventListener('input',upd);i.addEventListener('compositionend',upd);$('nrand').addEventListener('change',()=>setTimeout(upd,0))})();
 function fitJoin(){const mobile=innerWidth<=600;const w=mobile?Math.min(innerWidth*.875/* QA43: 모바일 티켓 25% 확대 */,innerWidth-24):innerWidth-32;const h=innerHeight-40;const k=Math.min(1,w/440,h/296);$('jtw').style.transform=`scale(${Math.max(.1,k)})`}fitJoin();addEventListener('resize',fitJoin);
 function startAuto(){let nm=null;try{nm=localStorage.getItem('aic.nick')}catch(e){}$('nick').value=nm||'';if($('nsave'))$('nsave').checked=!!nm;qa13NickState();$('join').hidden=false;setTimeout(()=>{try{$('nick').focus()}catch(e){}},400)}
 $('go').onclick=()=>enterAs($('nick').value);$('nick').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.isComposing)enterAs($('nick').value)});
@@ -6533,6 +6533,33 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
     if(d>1.8&&!moving){const a=me.rotation.y+Math.PI*.72,L=z==='L1'?1:0;let tx=me.position.x+Math.sin(a)*1.15,tz=me.position.z+Math.cos(a)*1.15;if(blocked(tx,tz,L)){tx=me.position.x-Math.sin(me.rotation.y)*1.1;tz=me.position.z-Math.cos(me.rotation.y)*1.1}if(blocked(tx,tz,L)){tx=me.position.x;tz=me.position.z}q.tx=me.position.x;q.tz=me.position.z;walkTo(g,tx,tz,z)}
    }catch(e){}},600);try{hudUpd()}catch(e){}};
  A.qa306shot=()=>{const q=window.QA306;if(!q||!me)return;const g=q.g;g.userData.path=[];clearInterval(q.iv);pair(g,()=>end('멋진 사진이에요!'))};
+})();
+</script>
+<script id="qa312-cull">/* QA312: 속도 — 화면에서 지름 4픽셀도 안 되게 보이는 먼 소품은 그리지 않음(가까워지면 다시 그림). 보이는 모습은 그대로, 그리기 호출만 줄임.
+ visible 값은 건드리지 않고 렌더 레이어만 옮겨서 다른 숨김/표시 로직과 충돌하지 않음. 빛나는 것(전구·화면)·사람·배치 편집 중에는 제외. */
+(function(){const CULL=1<<30,HIDE=4,SHOW=5.5;let L=[],cnt=-1,ptr=0,off=false;const sp=new THREE.Sphere(),cp=new THREE.Vector3();
+ const glow=m=>{const a=Array.isArray(m)?m:[m];return a.some(x=>!x||x.isMeshBasicMaterial||x.isShaderMaterial||x.isSpriteMaterial||x.isPointsMaterial||x.isLineBasicMaterial||(x.emissive&&(x.emissive.r+x.emissive.g+x.emissive.b)>0.02&&(x.emissiveIntensity==null||x.emissiveIntensity>0)))};
+ const people=()=>{const s=new Set();try{if(me)s.add(me)}catch(e){}try{NPCS.forEach(c=>s.add(c))}catch(e){}try{S.children.forEach(c=>{if(c.userData&&(c.userData.remote||c.userData.npc||c.userData.avatar))s.add(c)})}catch(e){}return s};
+ const sphere=e=>{const o=e.o;if(!o.geometry.boundingSphere)o.geometry.computeBoundingSphere();sp.copy(o.geometry.boundingSphere).applyMatrix4(o.matrixWorld);e.x=sp.center.x;e.y=sp.center.y;e.z=sp.center.z;e.r=sp.radius};
+ const build=()=>{const P=people(),hit=new Set();try{INTER.forEach(o=>hit.add(o))}catch(e){}try{AVATAR_HITS.forEach(o=>hit.add(o))}catch(e){}
+  const old=new Map(L.map(e=>[e.o,e]));L=[];let n=0;
+  S.traverse(o=>{if(!o.isMesh)return;n++;if(!o.geometry||o.isInstancedMesh||o.isSkinnedMesh||hit.has(o)||o.userData.act||o.userData.noCull)return;if(o.layers.mask!==1&&o.layers.mask!==CULL)return;if(glow(o.material))return;
+   for(let q=o.parent;q;q=q.parent)if(P.has(q))return;const e=old.get(o)||{o,x:0,y:0,z:0,r:0};old.delete(o);if(o.layers.mask!==CULL||e.r===0)sphere(e);L.push(e)});
+  old.forEach(e=>{if(e.o.layers.mask===CULL)e.o.layers.mask=1});cnt=n};
+ const restore=()=>{L.forEach(e=>{if(e.o.layers.mask===CULL)e.o.layers.mask=1})};
+ window.qa312={off(v){off=!!v;if(off)restore()},stat(){return {tracked:L.length,culled:L.filter(e=>e.o.layers.mask===CULL).length}}};
+ let tick=0;setInterval(()=>{try{if(typeof S==='undefined'||typeof C==='undefined'||!me||document.hidden)return;
+   if(off||(typeof LAYED!=='undefined'&&LAYED)){if(!window.__qa312r){restore();window.__qa312r=true}return}window.__qa312r=false;
+   if(++tick%25===1||cnt<0){let n=0;S.traverse(o=>{if(o.isMesh)n++});if(n!==cnt)build()}
+   /* 움직였을 수 있는 소품의 위치를 조금씩 다시 잼 */for(let k=0;k<400&&L.length;k++){ptr=(ptr+1)%L.length;const e=L[ptr];if(e.o.layers.mask===1)sphere(e)}
+   pass()
+  }catch(e){}},200);
+ function pass(){C.getWorldPosition(cp);const K=(1/Math.tan(C.fov*Math.PI/360))*innerHeight;
+   for(let i=0;i<L.length;i++){const e=L[i],m=e.o.layers.mask;if(m!==1&&m!==CULL)continue;const dx=e.x-cp.x,dy=e.y-cp.y,dz=e.z-cp.z,d=Math.sqrt(dx*dx+dy*dy+dz*dz)-e.r;const px=d<=0.01?1e9:e.r/d*K;
+    if(m===1){if(px<HIDE)e.o.layers.mask=CULL}else if(px>SHOW)e.o.layers.mask=1}}
+ window.qa312.pass=()=>{build();pass()};
+ /* 사진·카드·썸네일처럼 다른 카메라로 찍는 장면에서는 숨긴 소품도 그대로 보이게 */
+ try{const _r=R.render.bind(R);R.render=function(sc,cam){if(cam&&cam!==C&&cam.layers&&(cam.layers.mask&CULL)===0)cam.layers.enable(30);return _r(sc,cam)}}catch(e){}
 })();
 </script>
 </body></html>

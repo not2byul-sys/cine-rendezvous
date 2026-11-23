@@ -87,7 +87,7 @@ test('QA78 screening view: camera approach, sconces off, replay, chip-style over
  /* QA83 */assert(source.includes("cstand:()=>{if(!me||!me.userData.seat)return;/* QA83"));assert(source.includes("||!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE)&&!(window.QA234SEQ"));assert(source.includes("HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);"));assert(source.includes("$('cyt').onclick=()=>$('ext').onclick();"));assert(!/openCine\(sp\)\{[^\n]*window\.open/.test(source));
  assert(source.includes('body.inhall #mpbar,body.cineseat #mpbar{display:none!important}'));assert(source.includes("html body #watch{height:42px;padding:0 13px;border-radius:999px;background:rgba(28,20,22,.72)"));assert(source.includes("html body #ctxbar button.on{background:rgba(28,20,22,.72)"));
  assert(source.includes("#cine iframe{position:absolute;left:0;top:-60px;height:calc(100% + 120px)!important}"));
- assert(source.includes("s.material.sizeAttenuation=false"));/* QA86: 말풍선은 다시 월드 크기 */assert(source.includes("f=`500 ${fs}px \"Noto Sans KR\",sans-serif`;"));assert(source.includes("sprite.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1)/* QA86"));});
+ assert(source.includes("s.material.sizeAttenuation=false"));/* QA86: 말풍선은 다시 월드 크기 */assert(source.includes("f=`400 ${fs}px \"Noto Sans KR\",sans-serif`"))/* QA294: 말풍선 글자 한 단계 얇게 */;assert(source.includes("sprite.scale.set(.8*w/(fs*3.2),.8*h/(fs*3.2),1)/* QA86"));});
 test('QA84 lobby: chandelier bulbs glow, Champs-Elysees street outside, NPC spots clear of the tree',()=>{
  assert(source.includes("const flame=new THREE.MeshBasicMaterial({color:0xfff6d6,toneMapped:false});"));assert(source.includes("bulb.parent.add(h);EMG.push({h,b:.8,f:1.2+Math.random()})"));
  assert(source.includes("['CAFÉ DU COIN · TABAC','#7a1f2b','cafe']"));assert(!source.includes("['PHARMACY'"));assert(!source.includes("철제 비상계단(지그재그)"));assert(source.includes("QA84 파리 스카이라인: 에펠탑 · 개선문 실루엣"));assert(!source.includes("vcar(0xf2c230"));
@@ -127,7 +127,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("가방이 가득 찼어요. 먼저 먹거나 버려주세요."));
  assert(source.includes("/* QA95: 상영관에선 먹기 없음(들고 있기만) */"));
  assert(source.includes("ORD.st==='ready'&&!inH)add('oget'"));
- assert(source.includes("if(zc==='L0'&&(qa20Near('qa13-tree-click',5.2)||me.position.z>LD-2.4"));
+ assert(source.includes("(zc==='L0'&&(qa20Near('qa13-tree-click',5.2)||me.position.z>LD-2.4"))/* QA306: 사진 장소 확대 */;
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
  const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(!ed.includes("color:'색상'")&&ed.includes('닉네임<input')&&ed.includes("className='color-chip'"));/* QA125: 색상 탭 → 왼쪽 컬러칩, 닉네임 문구 */

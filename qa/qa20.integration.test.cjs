@@ -2,7 +2,9 @@ const test=require('node:test');const assert=require('node:assert');const fs=req
 const source=fs.readFileSync(require('path').join(__dirname,'..','index.html'),'utf8');
 test('QA20 context actions are text-only pill chips in the quick bar palette',()=>{
   assert(source.includes("'<button role=\"menuitem\" data-a=\"'+a+'\"><span>'+t+'</span></button>'/* QA20"));
-  assert(source.includes('#ctxbar button{flex:none;display:inline-flex;align-items:center;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72)'));});
+  /* QA326: 액션 칩의 모양은 HUD 기준 블록 한 곳에서(높이 42 · 글자 13 · 유리 재질) */
+  assert(source.includes("#ctxbar button,#actorMenu button{flex:none;height:42px;margin:0;padding:0 16px;display:inline-flex;align-items:center;gap:8px;font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap;cursor:pointer}"));
+  assert(source.includes('#chip,#lobbyMusic,#qa267share,.bar #act,#ctxbar button,#actorMenu button{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;background:var(--glass);'));});
 test('QA20 situational buttons leave the quick bar and live in the context bar',()=>{
   const hud=source.slice(source.indexOf('function hudUpd(){'),source.indexOf('function toLobby('));
   for(const k of['data-a="trash"','data-a="eatn"','data-a="standme"','data-a="sitnear"','data-a="clubstop"'/* QA91: 아지트 나가기(goup)는 퀵바 오른쪽 끝으로 옮김 */])assert(!hud.includes(k),k);

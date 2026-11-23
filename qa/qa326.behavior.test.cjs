@@ -21,49 +21,13 @@ const rule = sel => { const i = hud.indexOf('\n' + sel + '{'); assert(i >= 0, `H
 const px = (css, prop) => { const m = css.match(new RegExp('(?:^|;)' + prop + ':([^;]+)')); assert(m, `${prop} missing in ${css}`); return m[1]; };
 const num = s => parseFloat(s);
 
-test('하단 바: 칸 4개 × 86.5 + 안쪽 여백 + 테두리 = 356 — 폭 402 화면에서 좌우 23', () => {
-  const act = rule('.bar #act'), btn = rule('#act button');
-  const pad = px(act, 'padding').split(' ').map(num)[1], col = num(px(btn, 'width'));
-  assert.equal(4 * col + 2 * pad + 2 * 1, 356);
-  assert.equal(px(act, 'max-width'), 'calc(100vw - 46px)');
-  assert(hud.includes('@media (max-width:600px){.bar #act{width:calc(100vw - 46px)}'));
-  assert.equal(402 - 46, 356);
-});
-
-test('하단 바 안: 아이콘 중심은 위에서 22.7, 라벨 중심은 44.3(산사 실측)', () => {
-  const btn = rule('#act button'), svg = rule('#act button svg');
-  const top = 1 + num(px(btn, 'padding-top')), icon = num(px(svg, 'width')), gap = num(px(btn, 'gap')), line = num(px(btn, 'font').match(/\/(\d+(?:\.\d+)?)px/)[1]);
-  assert(Math.abs(top + icon / 2 - 22.7) < 0.1, String(top + icon / 2));
-  assert(Math.abs(top + icon + gap + line / 2 - 44.3) < 0.1, String(top + icon + gap + line / 2));
-  assert.equal(px(btn, 'font').startsWith('500 12px'), true, '버튼 글자는 미디움(QA232)');
-});
-
 test('탑바: 높이 46 — 왼쪽 칩과 오른쪽의 분리된 원형 버튼(46×46)이 같은 높이', () => {
   const b = rule('#lobbyMusic,#qa267share');
   assert.equal(px(rule('#chip'), 'height'), '46px'); assert.equal(px(b, 'width'), '46px'); assert.equal(px(b, 'height'), '46px');
   assert.equal(px(rule('#mpbar'), 'gap'), '8px');
   /* 버튼마다 유리 재질(원형) — 한 캡슐로 묶지 않음 */
-  assert(hud.includes('\n#chip,#lobbyMusic,#qa267share,.bar #act,#ctxbar button,#actorMenu button{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;'));
+  assert(hud.includes('\n#chip,#lobbyMusic,#qa267share{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;'));
   assert(!/#mpbar\{[^}]*(background|border)/.test(hud));
-});
-
-test('바 위에 뜨는 것들은 바의 변수에서 자리를 얻는다(액션 칩 11 · 안내 문구 10 · 대화 입력줄 12)', () => {
-  const vars = hud.slice(hud.indexOf('body{--glass'), hud.indexOf('}', hud.indexOf('body{--glass')));
-  assert(vars.includes('--bar-h:64px') && vars.includes('+ 14px + var(--qa-keyboard-offset,0px))') && vars.includes('--bar-top:calc(var(--bar-b) + var(--bar-h))'));
-  for (const id of ['#actorMenu', '#ctxbar', '#qa17cta']) assert.equal(source.split(id + '{position:fixed;').length - 1, 1, id);
-  assert.equal(source.split('bottom:calc(var(--bar-top) + 11px);').length - 1, 3);
-  assert(source.includes('.hint{position:fixed;left:0;right:0;bottom:calc(var(--bar-top) + 10px);'));
-  assert(source.includes('#mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 12px);'));
-  /* 14 + 64 + 11 + 칩 줄의 안쪽 여백 2 = 91 → 칩 아래와 바 위 사이 13(산사 실측) */
-  assert.equal(14 + 64 + 11 + 2 - (14 + 64), 13);
-});
-
-test('덮어쓰던 예전 규칙은 남아 있지 않다', () => {
-  for (const gone of ['id="qa319-css"', 'id="qa120-music"', 'html body .bar #act', 'html body:not(.qa220h) .bar #act', '#lobbyMusic[data-state=on]{', 'const look=()=>{const m=document.getElementById(\'lobbyMusic\')', '#chip.chip', 'html body #chip', '#act button svg.lucide', 'QA44: 모바일 하단 네비 5칸 균등 배치'])
-    assert(!source.includes(gone), `남아 있음: ${gone}`);
-  /* 하단 바의 기본 자리 규칙은 한 번만 정의 */
-  assert.equal(source.split('\n.bar{').length - 1, 1);
-  assert(!/(^|[\n}])\.bar\{[^}]*!important/.test(source), '.bar 기본 규칙에 !important 가 남아 있음');
 });
 
 function chipContext(zone) {
@@ -173,11 +137,15 @@ test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10%
   assert(!source.includes('.setHex(0xfff0e0)') && !source.includes(':0xfff0e0)'));
 });
 
-test('QA327: 좌석표(모바일) — 하단 바 위 13px, 접힘이 기본, 액션 칩이 뜨면 한 줄 위, 공유 아이콘은 종이비행기', () => {
-  assert(source.includes('#qa127map{--map-b:calc(var(--bar-top) + 13px);position:fixed;left:12px;bottom:var(--map-b)'));
+
+test('QA327: 모바일 좌석표 — 접힘이 기본, 줄일 때 transform(하단 바와 안 겹침), 칩이 뜨면 한 줄 위 · 공유 아이콘은 종이비행기 · 로비 글자 가운데', () => {
   assert(source.includes("el.classList.toggle('min',MOB.matches)"));
-  assert(source.includes('body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{--map-b:calc(var(--bar-top) + 63px)}'));
   assert(source.includes('#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}'));
+  assert(source.includes('body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 116px)}'));
   assert(source.includes("lucide('share',16)") && !source.includes('share2'));
-  assert(hud.includes("#chip b{padding-top:4px;"));
+  assert(hud.includes('#chip b{padding-top:4px;'));
+});
+
+test('하단 퀵바·액션 칩은 예전 규칙 그대로(탑바 규칙 블록에 들어 있지 않다)', () => {
+  assert(!/\n\.bar[ {]|\n#act /.test(hud) && !hud.includes('#ctxbar') && !hud.includes('--bar-'));
 });

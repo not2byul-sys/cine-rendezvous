@@ -35,7 +35,7 @@ function chatContext() {
   const legacy = new Element(); legacy.id = 'msg';
   const ctx = { document: doc, window: { innerHeight: 800, visualViewport: { height: 450, offsetTop: 0 } }, $: id => nodes.get(id), els: {}, CinemaAudio: { updateButton() {}, setMuted() {} }, K: { w: 1 }, endpoint: () => '', Math };
   vm.createContext(ctx);
-  vm.runInContext(segment('function qaKeyboardInset()', 'if(window.visualViewport)') + segment('function makeUI(){', 'function setStatus('), ctx);
+  vm.runInContext(segment('function qaKeyboardInset()', 'if(window.visualViewport)') + segment('function makeUI(){', 'function showBubble('), ctx);
   ctx.makeUI();
   return { ctx, nodes, properties, styles };
 }
@@ -45,11 +45,9 @@ test('the rendered chat input moves with the keyboard, clears held movement and 
   nodes.get('mpinput').focus();
   assert.equal(properties.get('--qa-keyboard-offset'), '350px');
   assert.equal(ctx.K.w, 0);
-  /* QA326: 입력줄은 하단 바 바로 위(--bar-top)에 붙고, 바의 바닥 값(--bar-b)이 키보드 높이를 따라감 */
   const rules = styles.join('\n').match(/#mpchat\{[^}]*bottom:[^}]*\}/g);
-  assert.equal(rules.length, 1);
-  assert(rules[0].includes('bottom:calc(var(--bar-top) + 12px)'));
-  assert(source.includes('--bar-b:calc(env(safe-area-inset-bottom,0px) + 14px + var(--qa-keyboard-offset,0px));--bar-top:calc(var(--bar-b) + var(--bar-h))'));
+  assert.equal(rules.length, 2);
+  for (const rule of rules) assert(rule.includes('var(--qa-keyboard-offset,0px)'));
   assert.equal(nodes.get('mpclose'), undefined);
   /* QA27: 입력 전 = 닫기(X) 모드, 입력하면 보내기 모드 */
   assert.equal(nodes.get('mpsend').dataset.mode, 'close');

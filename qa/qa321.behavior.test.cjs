@@ -116,31 +116,6 @@ function armContext(hitAt) {
   return { ctx, me };
 }
 
-test('로비에서는 사이에 벽·사물이 있어도 카메라 거리가 줄지 않는다', () => {
-  const { ctx } = armContext(1.0);                       // 1m 앞에 장애물
-  assert.equal(ctx.qa279Arm({ x: 0, z: 0 }, 1, 0, 1.6, -5.3, 1, false), 1);
-});
-
-test('아지트·영사실에서는 예전처럼 장애물 앞으로 당긴다', () => {
-  const { ctx } = armContext(2.0);
-  const t = ctx.qa279Arm({ x: 0, z: 0 }, 1, 0, 1.6, -5.3, 1, true);
-  assert(t < 0.5 && t > 0.2, String(t));
-});
-
-test('당겨져서 숨겨졌던 내 캐릭터는 로비로 나오면 다시 보인다', () => {
-  const { ctx, me } = armContext(0.6);
-  ctx.qa279Arm({ x: 0, z: 0 }, 1, 0, 1.6, -5.3, 1, true);   // 아주 가까이 당겨짐 → 숨김
-  assert.equal(me.visible, false);
-  ctx.qa279Arm({ x: 0, z: 0 }, 1, 0, 1.6, -5.3, 1, false);  // 로비: 당기지 않음
-  assert.equal(me.visible, true);
-});
-
-test('로비 시점 계산에 벽 제한이 남아 있지 않고, 입장 전 화면도 같은 거리를 쓴다', () => {
-  assert(!source.includes('lim(p.x,ox,-LW+.5,LW-.5)'), '로비 벽 제한이 남아 있음');
-  assert.equal(source.split("tt=qa279Arm(p,hy,ox,oy,oz,tt,zn[0]!=='L')").length - 1, 1);
-  assert(source.includes('cp.set(P_.x-fx*camDist*cq,1.0+camDist*sq,P_.z-fz*camDist*cq);'));
-});
-
 test('상영 전 뉴스 영상은 본편 숨김 규칙에 걸리지 않는다', () => {
   assert(source.includes('body.cineseat:not(.qa135play) #cine:not(:has(#qa110pre))>iframe,body.cineseat:not(.qa135play) #cine:not(:has(#qa110pre))>video{opacity:0!important}'));
   assert(!source.includes('body.cineseat:not(.qa135play) #cine iframe,'), '자손 선택자면 뉴스 영상까지 투명해짐');

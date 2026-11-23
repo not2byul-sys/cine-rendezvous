@@ -74,8 +74,8 @@ function chatContext() {
     els: {}, CinemaAudio: { updateButton() {}, setMuted() {} }, qaKeyboardInset() {}, K: {}, endpoint: () => '',
     socket: { readyState: 1, send: value => sent.push(value) }, WebSocket: { OPEN: 1 }, me: avatar('나'),
     setTimeout: f => timers.push(f), showBubble: (target, text) => bubbles.push(text), sayB: (target, text) => replies.push(text),
-    curZone: () => 'L0', npcReplyText: (target, text) => '“반가워요! ' + text + '”', setStatus() {}, connect() {}, toast() {} };
-  vm.createContext(ctx); vm.runInContext(part('function makeUI(){', 'function setStatus(') + part('function openChat(', 'return {start,tick,openChat};'), ctx); ctx.makeUI();
+    curZone: () => 'L0', npcReplyText: (target, text) => '“반가워요! ' + text + '”', connect() {}, toast() {} };
+  vm.createContext(ctx); vm.runInContext(part('function makeUI(){', 'function showBubble(') + part('function openChat(', 'return {start,tick,openChat};'), ctx); ctx.makeUI();
   return { ctx, nodes, timers, documentListeners, sent, bubbles, replies };
 }
 test('NPC chat answers locally and never broadcasts the conversation to other users', () => {

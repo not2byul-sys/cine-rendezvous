@@ -32,8 +32,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
 .jt-stub{flex:0 0 50px;display:flex;align-items:center;justify-content:center}
 .jt-stub span{display:block;transform:rotate(90deg);font-size:16px;font-weight:300;letter-spacing:1px;white-space:nowrap}
 #carry{position:fixed;left:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 118px);z-index:6;background:rgba(30,16,22,.82);color:#fff;border-radius:12px;padding:8px 10px;font:13px/1.4 sans-serif;max-width:min(78vw,360px);box-shadow:0 4px 14px #0005}#carry button{font-size:12px;padding:5px 9px}
-.hint{position:fixed;left:0;right:0;bottom:calc(var(--bar-top) + 10px);text-align:center;font-size:12px;opacity:.75;pointer-events:none;z-index:5;padding:0 10px}
-.bar input{min-width:70px}body.cfull .bar{z-index:9}
+.hint{position:fixed;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 62px);text-align:center;font-size:12px;opacity:.75;pointer-events:none;z-index:5;padding:0 10px}
+.bar{position:fixed;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom,0px) + 10px + var(--qa-keyboard-offset,0px));display:flex;gap:6px;z-index:5;max-width:820px;margin:auto;align-items:center}#act{display:flex;gap:6px;align-items:center;flex-shrink:0}#act:empty{display:none}#act button{padding:9px 12px;font-size:14px;white-space:nowrap}#act button.p{background:var(--acc);color:var(--acc-fg);border-color:transparent}#act .st{font-size:13px;opacity:.85;white-space:nowrap;padding:0 4px}.bar input{min-width:70px}body.cfull .bar{z-index:9}@media (max-width:560px){#act button{padding:8px 9px;font-size:13px}#act .st{display:none}}
 .bar input{flex:1;min-width:0;background:var(--pn);color:var(--fg);border:1px solid #fff3;border-radius:99px;padding:10px 14px;font-size:15px}
 button{background:var(--pn);color:var(--fg);border:1px solid var(--bd);border-radius:99px;padding:10px 14px;font-size:15px;cursor:pointer;font-family:inherit}
 button.p{background:var(--acc);color:var(--acc-fg);border:0;font-weight:700}
@@ -164,11 +164,16 @@ button{font-family:inherit;font-weight:500;line-height:1}
 .chip{background:var(--hud);border:1px solid var(--hud-chip-bd);color:var(--hud-fg);padding:7px 14px;font-size:13px;font-weight:400;line-height:normal}
 #hb button,.bar>button,.bar #send{background:var(--hud);border:1px solid var(--hud-bd);color:var(--hud-fg)}
 #hb button{padding:7px 11px;font-size:14px;font-weight:400;line-height:normal}
+.bar{max-width:none;justify-content:center}
 .bar input{flex:0 1 auto;width:clamp(120px,40vw,320px);background:var(--hud);border:1px solid var(--hud-bd);color:var(--hud-fg);padding:10px 16px;font-size:15px;font-family:inherit}
 .bar input::placeholder{color:var(--hud-fg);opacity:.6}
 .bar>button{padding:14px;font-size:15px;font-weight:500;height:44px;display:inline-flex;align-items:center;justify-content:center;min-width:44px}
 .hint{font-size:12px;opacity:.75;color:#fff;text-shadow:0 1px 3px #000a}
 /* 3. 패널 팝업 */
+/* #act(들고 있는 것·상태): 밝은 알약 + 그림자 */
+#act button{background:var(--pn);border:1px solid var(--line);color:var(--ink);padding:12px 14px;font-size:16px;font-weight:500;height:44px;box-shadow:0 4px 7px rgba(0,0,0,.33)}
+#act button.p{background:var(--acc);color:var(--acc-fg);border:1px solid var(--line)}
+#act .st,#act span{background:var(--carry);color:var(--ink);border-radius:100px;padding:8px 16px;font-size:16px;box-shadow:0 4px 7px rgba(0,0,0,.33);white-space:nowrap}
 #pn{background:var(--dim)}
 .pbox{background:var(--pn);color:var(--ink);border:1px solid var(--soft);border-radius:16px;padding:24px;box-shadow:none}
 .pbox h3{margin:0 44px 4px 0;font-size:17px;font-weight:700;line-height:34px;color:var(--ink)}
@@ -246,7 +251,7 @@ button{font-family:inherit;font-weight:500;line-height:1}
 
 /* ===== 모바일 반응형 (HUD·네비바·팝업 행) — 좁은 화면·인앱 브라우저 글자 확대에도 겹치지 않게 ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
-#hb button,.bar button,.rw button,.chip{white-space:nowrap}
+#hb button,.bar button,#act button,.rw button,.chip{white-space:nowrap}
 .rw{flex-wrap:wrap}.rw .m{flex:1 1 150px;min-width:0}.rw .m b{overflow-wrap:anywhere}.rw>button{flex:0 0 auto;margin-left:auto}
 @media (max-width:600px){
  #hb{left:10px;right:10px;justify-content:flex-end;gap:5px;overflow-x:auto;scrollbar-width:none}#hb::-webkit-scrollbar{display:none}
@@ -257,17 +262,22 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
  .bar #hi,.bar #clap{width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center}
  body:has(#act:not(:empty)) #carry{bottom:calc(env(safe-area-inset-bottom,0px) + 150px)}
  #pn{align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 10px) 0 calc(env(safe-area-inset-bottom,0px) + 10px);box-sizing:border-box}
+ .bar{left:8px;right:8px;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+ #act{order:-1;flex:1 0 100%;justify-content:flex-start;overflow-x:auto;scrollbar-width:none;padding:2px 0}#act::-webkit-scrollbar{display:none}
+ #act button{padding:8px 12px;font-size:14px;height:38px;flex:none}
  .pbox{width:calc(100vw - 20px)!important;max-width:none;box-sizing:border-box;padding:20px 18px!important;max-height:100%!important;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
  /* 닫기 버튼·관리 탭은 스크롤해도 항상 보이게 */
  .pbox .x{position:fixed!important;top:calc(env(safe-area-inset-top,0px) + 24px)!important;right:24px!important;z-index:6}
  .pbox h3{padding-right:44px}
  .admtab{position:sticky;top:-20px;z-index:5;background:var(--pn);margin:-20px -18px 12px!important;padding:14px 62px 10px 18px;display:grid!important;grid-template-columns:1fr 1fr;gap:6px}.admtab button{width:100%;padding:9px 6px!important;font-size:13px!important;white-space:nowrap}
  .rw{gap:8px 10px}.rw .m b{font-size:15px}.rw button{padding:9px 13px;font-size:13px}
+ body:has(#act:not(:empty)) .hint{bottom:calc(env(safe-area-inset-bottom,0px) + 108px)}
 }
 @media (max-width:360px){.rw>button{flex:1 0 100%;margin-left:0}#hb button{padding:5px 8px;font-size:12px}}
 
 /* 하단 바: 채팅 제거 → 주요 액션 버튼이 가운데 */
-#msg,#send{display:none!important}#act:empty+#hi{margin-left:0}
+#msg,#send{display:none!important}.bar{justify-content:center!important;flex-wrap:nowrap!important}.bar #act{order:0!important;flex:0 1 auto!important;justify-content:center!important;overflow-x:auto}
+#act button{height:46px;padding:0 20px!important;font-size:16px!important}#act:empty+#hi{margin-left:0}
 #pn[data-k=quiz] .pbox,#pn[data-k=club] .pbox{width:min(94vw,450px)}
 .qz button.qo.adm-ans{outline:2px solid #f2d9a5;background:rgba(242,217,165,.18)!important}.qz button.qo.adm-ans::after{content:'  · 정답 (관리자)';color:#f2d9a5;font-size:12px}
 .qz button.qo{display:block;width:100%;text-align:left;margin:8px 0;border-radius:12px;padding:13px 16px;font-size:15px}
@@ -289,12 +299,21 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 #aud{position:fixed;left:0;right:0;bottom:0;width:100vw;height:clamp(150px,32vh,300px);pointer-events:none;display:none;z-index:5}#aud canvas{position:absolute;inset:0;z-index:auto;display:block;width:100%;height:100%}#aud::after{content:'';position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,6,7,.68),rgba(10,6,7,.10) 34%,transparent 65%);pointer-events:none}body.cinelv .bar{z-index:12!important}body.cinelv #aud{display:none}body.cfull #aud{display:none}@media(max-width:600px){#aud{height:clamp(145px,25vh,210px)}}
 #act button .tip{all:unset;position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);background:#fff;color:#2a1418;font:600 13px/1 'Noto Sans KR',sans-serif;padding:9px 12px;border-radius:10px;white-space:nowrap;box-shadow:0 6px 16px rgba(0,0,0,.3);animation:tipb 1.2s ease-in-out infinite alternate}
 #act button .tip::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
-#act button[data-a=cstart],#act button[data-a=clive]{position:relative;overflow:visible}
+#act button[data-a=cstart],#act button[data-a=clive]{position:relative;overflow:visible}.bar #act{overflow:visible!important}
 @keyframes tipb{to{transform:translateX(-50%) translateY(-4px)}}
 
 /* 크림색 직물지 봉투 + 레터프레스 카드 + 초콜릿 실링 왁스 */
 
 #pn[data-k=invite] h3{font-size:19px;font-weight:600;letter-spacing:-.4px;margin:4px 0 20px}
+.bar{left:0!important;right:0!important;justify-content:center!important;pointer-events:none}
+.bar #act{pointer-events:auto;display:flex!important;align-items:center;gap:clamp(14px,4.2vw,46px);padding:10px clamp(18px,4vw,40px)!important;border-radius:999px;background:rgba(36,26,24,.55);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none}
+#act button,#act button.p{all:unset;cursor:pointer;display:flex!important;flex-direction:column;align-items:center;gap:5px;color:#fff!important;font:500 14px/1 'Noto Sans KR',sans-serif!important;padding:4px 2px!important;height:auto!important;white-space:nowrap;flex:none}
+#act button.p{color:#f2d9a5!important}#act button:active{transform:scale(.94)}#act button svg{display:block;width:16px!important;height:16px!important;stroke-width:2!important}/* 16px에서 1.33px 선 굵기 */
+#act .st{color:#fff;font-size:13px;opacity:.85;white-space:nowrap}
+#act .fx.sep{margin-left:6px;padding-left:clamp(14px,3vw,30px)!important;border-left:1px solid rgba(255,255,255,.22)}
+@media (max-width:600px){#act button{font-size:12px!important}#act button svg{width:22px;height:22px}}
+
+#act button span{all:unset;font:500 14px/1 'Noto Sans KR',sans-serif;color:inherit}#act button svg{width:28px;height:28px}@media (max-width:600px){#act button span{font-size:12px}#act button svg{width:24px;height:24px}}
 
 .iv{position:relative;width:100%;max-width:490px;margin:0 auto;aspect-ratio:792/714;container-type:inline-size;isolation:isolate}
 .iv-ground{position:absolute;left:10%;right:9%;bottom:1.5%;height:8%;background:radial-gradient(ellipse,rgba(0,0,0,.36),transparent 68%);filter:blur(8px);z-index:0}
@@ -340,6 +359,13 @@ body.inhall #hb #bgmb,body.cineseat #hb #bgmb{display:none!important}
 #pn[data-k=vendor] .pbox{width:min(94vw,400px)}
 #pn[data-k=vendor] .og{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
 #pn[data-k=vendor] .og .rw{display:grid;grid-template-columns:minmax(0,1fr) 44px 24px 44px;align-items:center;gap:8px}
+/* 하단 탭 = shadcn/ui 스타일(Toggle·Tabs): 반투명 popover 표면 · 1px border · rounded-xl · Lucide 아이콘 */
+.bar #act{gap:4px!important;padding:6px!important;border-radius:16px!important;background:rgba(28,20,22,.72)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px) saturate(1.2)}
+#act button,#act button.p{min-width:64px;padding:8px 12px!important;border-radius:12px!important;gap:6px!important;color:rgba(250,245,240,.92)!important;font:500 12px/1 'Noto Sans KR',sans-serif!important;transition:background .15s,color .15s}
+#act button:hover{background:rgba(255,255,255,.08)}#act button:active{background:rgba(255,255,255,.14);transform:none}
+#act button.p{color:#f2d9a5!important;background:rgba(242,217,165,.10)}
+#act button span{font:500 12px/1 'Noto Sans KR',sans-serif!important}#act button svg.lucide{width:22px!important;height:22px!important}
+#act .fx.sep{margin-left:4px;padding-left:12px!important;border-left:0;position:relative}#act .fx.sep::before{content:'';position:absolute;left:-2px;top:12px;bottom:12px;width:1px;background:rgba(255,255,255,.14)}
 #pn[data-k=vendor] .og .rw .m{min-width:0}
 #pn[data-k=vendor] .og .rw .m b{white-space:normal}
 #pn[data-k=vendor] .og button{width:44px;min-width:44px;padding:0;height:34px}
@@ -621,23 +647,23 @@ button.tc3{cursor:pointer;transition:transform .15s,filter .15s;padding:4.8% 8.1
  #pn .pbox .sub{font-size:14px!important;line-height:1.5}
  #pn button:not(.tc3):not(.x),#pn input,#pn select,#pn textarea{font-size:16px!important}
  /* Complete the previous partial fix: chips, footer nav, nick/input and enter CTA. */
- .chip{font-size:14px!important}
- #hb button,.bar>button{font-size:16px!important}
+ #chip,.chip{font-size:14px!important}
+ #hb button,#act button,.bar button{font-size:16px!important}
  #join .jt2 .jt-in,#join #nick,#join .jt2-go,#join #go{font-size:16px!important}
 }
 
 /* QA06: actor menu anchored to the selected character. */
-#actorMenu{position:fixed;z-index:38;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 11px);display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}/* QA20: 컨텍스트 액션 바 = 액션 칩(알약 버튼) 형태 + 하단 퀵바 색감 */ /* QA19: NPC 액션 = 하단 네비 위 둘째 줄 알약 버튼(간식받기·선물하기와 같은 UI) */
+#actorMenu{position:fixed;z-index:38;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}/* QA20: 컨텍스트 액션 바 = 액션 칩(알약 버튼) 형태 + 하단 퀵바 색감 */ /* QA19: NPC 액션 = 하단 네비 위 둘째 줄 알약 버튼(간식받기·선물하기와 같은 UI) */
 #actorMenu b{display:block;padding:3px 7px 7px;font-size:13px}
-#actorMenu button svg.lucide{width:20px!important;height:20px!important;stroke-width:1.6!important}
-body.layed #actorMenu,body.layed #ctxbar{display:none!important}/* QA22: 모든 팝업 화면 중앙 정렬 · 스크롤은 안쪽 라인 프레임 안에서만 */#pn:not(.leg){align-items:center!important;justify-content:center!important}#pn:not(.leg) .phd .x{position:absolute!important;top:2px!important;right:0!important}#pn:not(.leg) .pbox{overflow:hidden!important;display:flex!important;flex-direction:column}#pn:not(.leg) .pin{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}#pn:not(.leg) .pin::-webkit-scrollbar{display:none}#pn:not(.leg) .pbox .hall{color:var(--ln)!important;opacity:1!important;font:700 15px/1.5 'Noto Sans KR',sans-serif!important;padding-top:6px}/* QA22: 좋아요·한줄평은 기존 패널 규칙(행·괘선·로즈 버튼·선택=진한 버튼) */#pn .rvrw{flex-wrap:wrap}#pn .rvrw .m{flex:1 1 100%}#pn .rvb{display:flex;gap:8px;flex:1 1 100%}#pn .rvb button{flex:1 1 0}#pn .rvb .rvcnt{flex:1 1 0;display:flex;align-items:center;font:400 16px/1.5 'Noto Sans KR',sans-serif}#act .qlike.on{color:#f2a5ae!important}#pn:not(.leg) .pin .rvb button.on:not(.x){background:var(--ik)!important;color:var(--sf)!important}#pn .rvtop{display:block;margin-top:4px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#pn .rvbox{padding:4px 0 16px;border-bottom:.6px solid var(--ln);display:flex;flex-direction:column;gap:0}#pn .rvi{padding:10px 0;border-bottom:.6px dashed rgba(152,62,73,.35);font:400 15px/1.5 'Noto Sans KR',sans-serif}#pn .rvi b{margin-right:8px;font-weight:700}#pn .rvmuted{opacity:.75;border-bottom:0}#pn .rvin{display:flex;gap:8px;align-items:center;margin-top:12px}#pn:not(.leg) .pin .rvin button:not(.x){height:46px;padding:0 18px!important}#pn:not(.leg) .rvin input{flex:1;min-width:0;height:46px!important;box-sizing:border-box;margin:0!important;border-radius:2px;border:1px solid var(--ln);background:#fffaf0;color:var(--ik);padding:0 12px;font-size:16px}#pn .rvin button{flex:none}/* QA24: Figma 3. 패널 팝업(1:38) 구조 — 바깥 2px 테두리·10px 여백 / 안쪽 0.7px 레터프레스 프레임 24·28·28 / 장식 헤더(오너먼트 189×20·제목 25 세리프·괘선·닫기 28) / 행 14px·0.6px 괘선 / 로즈 버튼 18·10 */#pn:not(.leg) .pbox{box-shadow:0 4px 8px rgba(93,33,28,.14)!important}#pn:not(.leg) .pin{gap:14px}#pn:not(.leg) .phd{gap:12px;padding-bottom:10px}#pn:not(.leg) .porn{width:189px;height:20px}#pn:not(.leg) .phd .x{width:28px!important;height:28px!important;top:1.9px!important}#pn:not(.leg) .phd h3{padding:0 36px!important;width:100%;box-sizing:border-box}#pn:not(.leg) .pbox .hall{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)!important;padding-top:0!important;margin:6px 0 0}#pn:not(.leg) .rw .m b,#pn:not(.leg) .rw .m strong{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)}#pn:not(.leg) .rw .m i,#pn:not(.leg) .rw .m small{display:block;font:400 12px/1.5 'Noto Sans KR',sans-serif!important;font-style:normal!important;margin-top:6px}#pn:not(.leg) .pin button:disabled{opacity:.42!important}#pn:not(.leg) .rvi{padding:14px 0;border-bottom:.6px solid var(--ln);font:400 16px/1.5 'Noto Sans KR',sans-serif}#pn:not(.leg) .rvi b{font-weight:600}#pn:not(.leg) .rvtop{font-size:12px!important}#sitbox{display:none!important}#ctxbar{position:fixed;z-index:37;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 11px);display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}#ctxbar[hidden]{display:none}#ctxbar::-webkit-scrollbar{display:none}#ctxbar button[disabled]{opacity:.55}html body #sitbox,html body #sitbox:not([hidden]){display:none!important}#clubload{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(18,10,10,.92);color:#f6e7cc;font:500 15px/1.5 'Noto Sans KR',sans-serif}#clubload[hidden]{display:none}#clubload .cl-spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(246,231,204,.25);border-top-color:#f6e7cc;animation:clspin .9s linear infinite}@keyframes clspin{to{transform:rotate(360deg)}}/* QA39: 예전 아이보리 '앉기' 삭제 */#ctxbar button.ivory{background:#f3e3bf;color:#3a211b;border-color:#f3e3bf;font-weight:700}#ctxbar button.ivory:hover{background:#f7ead0}#join .jt2-opts{left:0!important;right:0!important;transform:none!important;justify-content:center!important;width:auto!important}#toast{text-align:center!important;box-sizing:border-box;white-space:normal;word-break:keep-all;text-wrap:balance;line-height:1.5;border-radius:16px!important;padding:12px 20px!important}/* QA29: 액션 버튼(컨텍스트 바·NPC 칩)은 모든 모달 뒤로 */#ctxbar,#actorMenu{z-index:19!important}/* QA27 */.jt14-save{display:none!important}#hb #bgmb,#hb [data-a=adm]{display:none!important}#mpform{padding-right:14px!important}@media (max-width:440px){#ctxbar,#actorMenu{gap:6px}}body:has(#ctxbar:not([hidden])) #hint,body:has(#actorMenu:not([hidden])) #hint{opacity:0}
+#actorMenu button{flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);font:500 15px/1 'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}#actorMenu button svg.lucide{width:20px!important;height:20px!important;stroke-width:1.6!important}
+#actorMenu button:hover,#actorMenu button:focus-visible{background:rgba(48,36,38,.82)}body.layed #actorMenu,body.layed #ctxbar{display:none!important}/* QA22: 모든 팝업 화면 중앙 정렬 · 스크롤은 안쪽 라인 프레임 안에서만 */#pn:not(.leg){align-items:center!important;justify-content:center!important}#pn:not(.leg) .phd .x{position:absolute!important;top:2px!important;right:0!important}#pn:not(.leg) .pbox{overflow:hidden!important;display:flex!important;flex-direction:column}#pn:not(.leg) .pin{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none}#pn:not(.leg) .pin::-webkit-scrollbar{display:none}#pn:not(.leg) .pbox .hall{color:var(--ln)!important;opacity:1!important;font:700 15px/1.5 'Noto Sans KR',sans-serif!important;padding-top:6px}/* QA22: 좋아요·한줄평은 기존 패널 규칙(행·괘선·로즈 버튼·선택=진한 버튼) */#pn .rvrw{flex-wrap:wrap}#pn .rvrw .m{flex:1 1 100%}#pn .rvb{display:flex;gap:8px;flex:1 1 100%}#pn .rvb button{flex:1 1 0}#pn .rvb .rvcnt{flex:1 1 0;display:flex;align-items:center;font:400 16px/1.5 'Noto Sans KR',sans-serif}#act .qlike.on{color:#f2a5ae!important}#pn:not(.leg) .pin .rvb button.on:not(.x){background:var(--ik)!important;color:var(--sf)!important}#pn .rvtop{display:block;margin-top:4px;font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#pn .rvbox{padding:4px 0 16px;border-bottom:.6px solid var(--ln);display:flex;flex-direction:column;gap:0}#pn .rvi{padding:10px 0;border-bottom:.6px dashed rgba(152,62,73,.35);font:400 15px/1.5 'Noto Sans KR',sans-serif}#pn .rvi b{margin-right:8px;font-weight:700}#pn .rvmuted{opacity:.75;border-bottom:0}#pn .rvin{display:flex;gap:8px;align-items:center;margin-top:12px}#pn:not(.leg) .pin .rvin button:not(.x){height:46px;padding:0 18px!important}#pn:not(.leg) .rvin input{flex:1;min-width:0;height:46px!important;box-sizing:border-box;margin:0!important;border-radius:2px;border:1px solid var(--ln);background:#fffaf0;color:var(--ik);padding:0 12px;font-size:16px}#pn .rvin button{flex:none}/* QA24: Figma 3. 패널 팝업(1:38) 구조 — 바깥 2px 테두리·10px 여백 / 안쪽 0.7px 레터프레스 프레임 24·28·28 / 장식 헤더(오너먼트 189×20·제목 25 세리프·괘선·닫기 28) / 행 14px·0.6px 괘선 / 로즈 버튼 18·10 */#pn:not(.leg) .pbox{box-shadow:0 4px 8px rgba(93,33,28,.14)!important}#pn:not(.leg) .pin{gap:14px}#pn:not(.leg) .phd{gap:12px;padding-bottom:10px}#pn:not(.leg) .porn{width:189px;height:20px}#pn:not(.leg) .phd .x{width:28px!important;height:28px!important;top:1.9px!important}#pn:not(.leg) .phd h3{padding:0 36px!important;width:100%;box-sizing:border-box}#pn:not(.leg) .pbox .hall{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)!important;padding-top:0!important;margin:6px 0 0}#pn:not(.leg) .rw .m b,#pn:not(.leg) .rw .m strong{font:400 16px/1.5 'Noto Sans KR',sans-serif!important;color:var(--ik)}#pn:not(.leg) .rw .m i,#pn:not(.leg) .rw .m small{display:block;font:400 12px/1.5 'Noto Sans KR',sans-serif!important;font-style:normal!important;margin-top:6px}#pn:not(.leg) .pin button:disabled{opacity:.42!important}#pn:not(.leg) .rvi{padding:14px 0;border-bottom:.6px solid var(--ln);font:400 16px/1.5 'Noto Sans KR',sans-serif}#pn:not(.leg) .rvi b{font-weight:600}#pn:not(.leg) .rvtop{font-size:12px!important}/* QA24: 퀵바 아이콘 16×16 */#act button svg.lucide,#act button svg,#act .mp-nav-button svg{width:16px!important;height:16px!important}#sitbox{display:none!important}#ctxbar{position:fixed;z-index:37;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));display:flex;gap:8px;flex-wrap:nowrap;max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none;padding:2px;animation:qa16pop .35s ease-out}#ctxbar[hidden]{display:none}#ctxbar::-webkit-scrollbar{display:none}#ctxbar button{flex:none;display:inline-flex;align-items:center;height:44px;padding:0 18px;margin:0;border-radius:999px;background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 30px -10px rgba(0,0,0,.6);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);font:500 15px/1 'Noto Sans KR',sans-serif;cursor:pointer;white-space:nowrap}#ctxbar button:hover,#ctxbar button:focus-visible{background:rgba(48,36,38,.82)}#ctxbar button[disabled]{opacity:.55}html body #sitbox,html body #sitbox:not([hidden]){display:none!important}#clubload{position:fixed;inset:0;z-index:55;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(18,10,10,.92);color:#f6e7cc;font:500 15px/1.5 'Noto Sans KR',sans-serif}#clubload[hidden]{display:none}#clubload .cl-spin{width:34px;height:34px;border-radius:50%;border:3px solid rgba(246,231,204,.25);border-top-color:#f6e7cc;animation:clspin .9s linear infinite}@keyframes clspin{to{transform:rotate(360deg)}}/* QA39: 예전 아이보리 '앉기' 삭제 */#ctxbar button.ivory{background:#f3e3bf;color:#3a211b;border-color:#f3e3bf;font-weight:700}#ctxbar button.ivory:hover{background:#f7ead0}#join .jt2-opts{left:0!important;right:0!important;transform:none!important;justify-content:center!important;width:auto!important}#toast{text-align:center!important;box-sizing:border-box;white-space:normal;word-break:keep-all;text-wrap:balance;line-height:1.5;border-radius:16px!important;padding:12px 20px!important}/* QA29: 액션 버튼(컨텍스트 바·NPC 칩)은 모든 모달 뒤로 */#ctxbar,#actorMenu{z-index:19!important}/* QA27 */.jt14-save{display:none!important}#hb #bgmb,#hb [data-a=adm]{display:none!important}#mpform{padding-right:14px!important}#ctxbar button.on{background:rgba(152,62,73,.92);border-color:rgba(255,210,214,.45);color:#fff}@media (max-width:440px){#ctxbar,#actorMenu{gap:6px}#ctxbar button,#actorMenu button{padding:0 13px;font-size:14px;height:42px}}body:has(#ctxbar:not([hidden])) #hint,body:has(#actorMenu:not([hidden])) #hint{opacity:0}
 #actorMenu[hidden]{display:none}
 
 /* QA07: a visible lobby mute button beside connection status. */
 #lobbyMute{display:flex;align-items:center;justify-content:center;width:38px;height:36px;padding:0;background:#fff8ed;color:#5d211c;border:1px solid #5d211c;border-radius:18px;cursor:pointer}
 #lobbyMute[hidden]{display:none}
 #lobbyMute[aria-pressed="true"]{background:#ead5bf}
-#qa17cta{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 11px);z-index:6;display:flex;gap:8px;animation:qa16pop .35s ease-out}#qa17cta[hidden]{display:none}#qa16get,#qa17box{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:999px;background:#5d211c;color:#f6e7cc;border:1px solid #983e49;font:600 15px/1 'Noto Sans KR',sans-serif;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);cursor:pointer;white-space:nowrap}#qa16get[hidden],#qa17box[hidden]{display:none}#qa16get:hover,#qa17box:hover{background:#6e2a23}@keyframes qa16pop{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}body.layed #qa17cta{display:none!important}
+#qa17cta{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 86px + var(--qa-keyboard-offset,0px));z-index:6;display:flex;gap:8px;animation:qa16pop .35s ease-out}#qa17cta[hidden]{display:none}#qa16get,#qa17box{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 22px;border-radius:999px;background:#5d211c;color:#f6e7cc;border:1px solid #983e49;font:600 15px/1 'Noto Sans KR',sans-serif;box-shadow:0 10px 24px -8px rgba(0,0,0,.6);cursor:pointer;white-space:nowrap}#qa16get[hidden],#qa17box[hidden]{display:none}#qa16get:hover,#qa17box:hover{background:#6e2a23}@keyframes qa16pop{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translate(-50%,0)}}body.layed #qa17cta{display:none!important}
 </style><style id="qa-batch03-20261111">
 /* 11/10 design corrections */
 .iv2-cap { font-size:14px!important; line-height:1.5!important; }
@@ -646,7 +672,7 @@ body.layed #actorMenu,body.layed #ctxbar{display:none!important}/* QA22: 모든 
 #pn a.bk .bk-go { background:#e8a0c4; color:#5d211c; border-color:#d38caf; font-weight:700; }
 #pn a.bk:hover .bk-go { background:#d88dad; color:#451c29; }
 #toast { font-size:15px!important; line-height:1.45; padding:12px 16px!important; border-radius:12px!important; border:1px solid #e6c5d0; background:#fffaf5!important; color:#5d211c!important; box-shadow:0 8px 24px rgba(47,19,31,.18)!important; max-width:min(92vw,420px); text-align:left; font-weight:500; }
-svg.lucide { stroke-width:1.6!important; width:22px!important; height:22px!important; }
+svg.lucide, #act button svg { stroke-width:1.6!important; width:22px!important; height:22px!important; }
 .qa-sit-icon { display:block; width:20px; height:20px; margin:0 auto 4px; }
 #ctitle #cyt { align-items:center; gap:4px; }
 #ctitle #qa-yt-label { font-size:13px; font-weight:500; white-space:nowrap; max-width:min(52vw,360px); overflow:hidden; text-overflow:ellipsis; }
@@ -656,7 +682,7 @@ svg.lucide { stroke-width:1.6!important; width:22px!important; height:22px!impor
 
 /* QA78: 유튜브 제목·로고는 영상 위아래 밖으로 밀어 가림. 마우스를 올리면 다시 보임 */#cine iframe{position:absolute;left:0;top:-60px;height:calc(100% + 120px)!important}@media(hover:hover){#cine:hover iframe{top:0;height:100%!important}#cine:hover #shield{pointer-events:none}}
 #npcb,#npcb *{font-weight:500}
-
+/* QA78: 좋아요 칩도 다른 HUD 칩과 같은 모양(누른 상태는 테두리만 밝게) */html body #ctxbar button.on{background:rgba(28,20,22,.72);color:rgba(250,245,240,.92);border-color:rgba(255,255,255,.5)}html body #ctxbar button.on:hover{background:rgba(48,36,38,.82)}
 /* QA09 club writing and reading views. */
 #pn textarea{width:100%;box-sizing:border-box;resize:vertical;min-height:90px;padding:12px;background:#fffaf2;border:1px solid #b3957d;border-radius:6px;color:#45251d;font:inherit}
 #pn .quote-entry{display:flex;flex-direction:column;align-items:stretch;gap:8px;width:100%;margin-top:12px;text-align:left;white-space:normal}
@@ -750,48 +776,21 @@ svg.lucide { stroke-width:1.6!important; width:22px!important; height:22px!impor
 .tc3-stub{position:absolute;left:8.095238%;top:76%;width:83.809524%;height:14.4%;padding:0 3.333333cqw;border-top:1px solid #5d211c;background:#5d211c;color:#f5bcd8}
 .tc3-no{font-size:4.047619cqw}.tc3-act{font-size:3.333333cqw}
 </style>
-<style id="hud">/* HUD 기준 규칙(QA326) — 칩 · 오른쪽 위 버튼 · 하단 바 · 액션 칩을 여기 한 곳에서 정함.
-   치수는 산사 화면에서 잰 값(폭 402 기준 1pt = 1px). 유리 재질과 바의 위치·높이는 변수로 묶어, 바 위에 뜨는 것들이 함께 따라옴.
-   상영관(body.qa220h)은 글자만 있는 낮은 바 — 맨 아래에서 값만 바꿈. 착석 관람(body.cineseat) 모양은 qa123·qa136·qa139 블록 */
-body{--glass:rgba(46,34,30,.46);--glass-line:rgba(255,255,255,.26);--glass-edge:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.06);--glass-blur:blur(14px) saturate(1.25);
- --hud-top:calc(env(safe-area-inset-top,0px) + 12px);--bar-h:64px;--bar-b:calc(env(safe-area-inset-bottom,0px) + 14px + var(--qa-keyboard-offset,0px));--bar-top:calc(var(--bar-b) + var(--bar-h))}
-#chip,#lobbyMusic,#qa267share,.bar #act,#ctxbar button,#actorMenu button{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;background:var(--glass);box-shadow:var(--glass-edge);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);color:#fff}
+<style id="hud">/* 탑바 규칙(QA326·327) — 왼쪽 칩과 오른쪽 원형 버튼. 하단 퀵바·액션 칩은 예전 규칙(위쪽 qa 블록들) 그대로 */
+body{--glass:rgba(46,34,30,.46);--glass-line:rgba(255,255,255,.26);--glass-edge:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(255,255,255,.06);--glass-blur:blur(14px) saturate(1.25);--hud-top:calc(env(safe-area-inset-top,0px) + 12px)}
+#chip,#lobbyMusic,#qa267share{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;background:var(--glass);box-shadow:var(--glass-edge);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);color:#fff}
 /* 탑바 왼쪽: 지금 있는 곳(이름 굵게 16 + 보조 12). 탑바 높이 46 */
 #chip{position:fixed;z-index:5;top:var(--hud-top);left:12px;height:46px;max-width:calc(100vw - 130px);padding:0 18px;display:flex;align-items:center;gap:7px;white-space:nowrap;cursor:pointer}
 #chip b{padding-top:4px;font:700 16px/1 'Noto Sans KR',sans-serif;letter-spacing:-.01em}/* 굵은 글자는 line-height 1 상자 안에서 2px 위로 떠 보임 → 위 여백 4px 로 잉크 가운데를 칩 가운데에 맞춤 */
 #chip span{min-width:0;overflow:hidden;text-overflow:ellipsis;font:400 12px/1.4 'Noto Sans KR',sans-serif;color:rgba(255,255,255,.8)}
 #chip svg{flex:none;width:11px;height:11px;fill:none;stroke:rgba(255,255,255,.8);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-body.cfull #chip{display:none}
+body.cfull #chip,body.qa220h #chip svg{display:none}/* 상영관에서는 좌석 안내만 — 펼침 표시 없음 */
 /* 탑바 오른쪽: 하나씩 떨어진 원형 버튼(46×46). 아이콘 그림 약 15 · 선 1.3 */
 #mpbar{position:fixed;z-index:8;top:var(--hud-top);right:12px;display:flex;align-items:center;gap:8px}
 #lobbyMusic,#qa267share{flex:none;width:46px;height:46px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 #lobbyMusic[hidden]{display:none}
 #lobbyMusic:hover,#qa267share:hover{background:rgba(74,58,52,.6)}
 #lobbyMusic svg,#qa267share svg{flex:none;pointer-events:none;width:17px!important;height:17px!important;stroke-width:1.84!important}/* !important: 전역 svg.lucide 크기 규칙보다 앞서야 함 */
-#mpstatus{position:absolute;top:calc(100% + 8px);right:0;height:36px;box-sizing:border-box;padding:0 12px;display:inline-flex;align-items:center;white-space:nowrap}
-#mpstatus:not([data-offline='1']){display:none}/* QA267: 연결이 끊겼을 때만 보임 */
-/* 하단 바: 좌우 23 · 높이 64 · 칸 균등. 아이콘 그림 약 18 · 선 1.45, 라벨 12 */
-.bar{position:fixed;z-index:5;left:0;right:0;bottom:var(--bar-b);display:flex;justify-content:center;align-items:center;gap:6px;pointer-events:none}
-.bar #act{pointer-events:auto;height:var(--bar-h);max-width:calc(100vw - 46px);padding:0 4px;display:flex;align-items:stretch}
-.bar #act:empty{display:none}
-#act button{all:unset;box-sizing:border-box;flex:1 1 auto;width:86.5px;min-width:0;padding-top:11.45px;display:flex;flex-direction:column;align-items:center;gap:4.35px;border-radius:999px;font:500 12px/14px 'Noto Sans KR',sans-serif;white-space:nowrap;cursor:pointer}
-#act button svg{display:block;flex:none;width:20.5px!important;height:20.5px!important;stroke-width:1.7!important}
-#act button:hover{background:rgba(255,255,255,.08)}#act button:active{background:rgba(255,255,255,.14)}
-#act button.p{color:#f2d9a5}
-#act .st{align-self:center;padding:0 12px;font:400 13px/1 'Noto Sans KR',sans-serif;opacity:.85;white-space:nowrap}
-#act .sep{position:relative}#act .sep::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:1px;background:rgba(255,255,255,.16)}
-/* 액션 칩: 높이 42 · 글자 13 · 바 위 11 */
-#ctxbar button,#actorMenu button{flex:none;height:42px;margin:0;padding:0 16px;display:inline-flex;align-items:center;gap:8px;font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap;cursor:pointer}
-#ctxbar button:hover,#ctxbar button:focus-visible,#actorMenu button:hover,#actorMenu button:focus-visible{background:rgba(74,58,52,.6)}
-#ctxbar button.on{border-color:rgba(255,255,255,.6)}/* QA78: 누른 상태는 테두리만 밝게 */
-@media (max-width:600px){.bar #act{width:calc(100vw - 46px)}#act .st{display:none}}
-@media (min-width:601px){body:not(.qa220h) #hint{visibility:hidden}}/* 넓은 화면의 로비·아지트 안내 문구는 전부터 바에 가려 보이지 않았음 — 그대로 숨김 */
-/* 상영관: 글자만 한 줄인 낮은 바(높이 46 · 바닥에서 10) */
-body.qa220h{--bar-h:46px;--bar-b:calc(env(safe-area-inset-bottom,0px) + 10px + var(--qa-keyboard-offset,0px))}
-body.qa220h .bar #act{align-items:center;gap:4px;padding:0 6px}
-body.qa220h #act button{flex:none;line-height:1}
-body.qa220h #chip svg{display:none}/* 상영관에서는 좌석 안내만 — 펼침 표시 없음 */
-@media (max-width:600px){body.qa220h .bar #act{width:calc(100vw - 20px);max-width:none;gap:0;padding:0 4px}body.qa220h #act button{flex:1 1 0}}
 </style>
 <style id="qa123-cinehud">/* QA123: 관람 화면 UI 통일 — 같은 높이(36)·같은 재질의 칩, 위 한 줄(제목 · 좋아요 · 닫기), 아래 한 줄(조작) */
 body.cineseat{--hud-bg:rgba(20,12,14,.72);--hud-bd:rgba(255,255,255,.14);--hud-fg:rgba(250,245,240,.94)}
@@ -809,6 +808,7 @@ body.cineseat .bar{justify-content:center!important}
 body.cineseat #act{flex:none!important;max-width:calc(100vw - 24px);width:auto!important;height:44px!important;padding:4px!important;border-radius:999px!important;gap:0!important;box-sizing:border-box}
 body.cineseat #act button{height:36px!important;min-height:0!important;padding:0 14px 1px!important;border-radius:999px!important;background:transparent!important;border:0!important;color:var(--hud-fg)!important;font:500 13px/1 'Noto Sans KR',sans-serif!important;flex-direction:row!important;gap:0!important;opacity:1!important}
 body.cineseat #act button svg,body.cineseat #act button i{display:none!important}
+#ctxbar button,#actorMenu button{padding-bottom:2px!important}
 body.cineseat #act button span{margin:0!important}
 body.cineseat #act button+button{position:relative}body.cineseat #act button+button::before{content:"";position:absolute;left:0;top:11px;bottom:11px;width:1px;background:rgba(255,255,255,.16)}
 body.cineseat #act button:hover{background:rgba(255,255,255,.08)!important}
@@ -3528,8 +3528,7 @@ const Multiplayer=(()=>{
   const style=document.createElement('style');
   style.textContent=`
    /* VINTAGE_FIGMA_CHAT_114_2346_2368_V1: precise Figma 540x54 white pill */
-   #mpstatus{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}
-   #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 12px);width:540px;max-width:calc(100vw - 24px);height:54px;box-sizing:border-box;z-index:36;display:none;background:#fff;border:1px solid #5D211C;border-radius:100px;box-shadow:0 4px 4px rgba(0,0,0,.25);overflow:hidden}
+   #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 93px + var(--qa-keyboard-offset,0px));width:540px;max-width:calc(100vw - 24px);height:54px;box-sizing:border-box;z-index:36;display:none;background:#fff;border:1px solid #5D211C;border-radius:100px;box-shadow:0 4px 4px rgba(0,0,0,.25);overflow:hidden}
    #mpchat.open{display:block}
    #mpform{display:flex;align-items:center;gap:0;width:100%;height:100%;box-sizing:border-box;margin:0;padding:12px 16px;background:transparent}
    #mpinput{flex:1;min-width:0;display:block;height:28px;line-height:20px;box-sizing:border-box;margin:0;padding:0;border:0;border-radius:0;background:transparent;color:#000;font-family:'Noto Sans KR',sans-serif;font-size:19px;font-weight:400;letter-spacing:0;outline:none;box-shadow:none}
@@ -3539,15 +3538,15 @@ const Multiplayer=(()=>{
    #mpclose{display:flex;flex:0 0 28px;justify-content:center;align-items:center;width:28px;height:28px;padding:0;margin:0;background:transparent;border:0;border-radius:50%;cursor:pointer;touch-action:manipulation}
    #mpclose img{display:block;width:28px;height:28px;pointer-events:none}
    #mpclose:focus-visible{outline:2px solid #5D211C;outline-offset:2px}
-   #mpstatus[data-offline="1"]{color:#ffd3cf}#act .mp-nav-button{color:#fff!important}
-   @media(max-width:600px){#mpinput{font-size:19px}}
+   #act .mp-nav-button{color:#fff!important}
+   @media(max-width:600px){#mpchat{bottom:calc(env(safe-area-inset-bottom,0px) + 88px + var(--qa-keyboard-offset,0px))}#mpinput{font-size:19px}}
   `;
   document.head.appendChild(style);
-  const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="lobbyMute" type="button" aria-label="로비 소리 끄기" aria-pressed="false" hidden></button><button id="mpstatus" type="button">● 접속 준비</button>';document.body.appendChild(b);
+  const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="lobbyMute" type="button" aria-label="로비 소리 끄기" aria-pressed="false" hidden></button>';document.body.appendChild(b);
   const c=document.createElement('div');c.id='mpchat';c.setAttribute('aria-label','대화 입력창');
   c.innerHTML='<form id="mpform" autocomplete="off"><input id="mpinput" type="text" maxlength="50" placeholder="입력하세요" autocomplete="off" aria-label="대화를 입력하세요 (50자 이내)"><button id="mpsend" type="submit" aria-label="보내기" disabled><svg class="lucide lucide-arrow-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></form>';
   document.body.appendChild(c);
-  els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.input=document.getElementById('mpinput');els.talkTarget=null;els.talkToken=0;const reply=document.createElement('span');reply.id='npcChatReply';reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');reply.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)';c.appendChild(reply);els.reply=reply;document.getElementById('lobbyMute').onclick=()=>CinemaAudio.setMuted(!CinemaAudio.muted);CinemaAudio.updateButton();
+  els.box=b;els.chat=c;els.input=document.getElementById('mpinput');els.talkTarget=null;els.talkToken=0;const reply=document.createElement('span');reply.id='npcChatReply';reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');reply.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)';c.appendChild(reply);els.reply=reply;document.getElementById('lobbyMute').onclick=()=>CinemaAudio.setMuted(!CinemaAudio.muted);CinemaAudio.updateButton();
   els.input.addEventListener('focus',()=>{Object.keys(K).forEach(k=>K[k]=0);qaKeyboardInset()});
   els.input.addEventListener('blur',()=>document.documentElement.style.setProperty('--qa-keyboard-offset','0px'));
   let alreadyWarnedLocal=false;
@@ -3573,14 +3572,13 @@ const Multiplayer=(()=>{
     document.getElementById('mpform').requestSubmit();
    }
   });
-  els.status.onclick=()=>{if(!endpoint()){alert('멀티플레이 서버 주소가 비어 있어요.');return}if(!socket||socket.readyState!==1){try{toast('다른 사람과 연결을 다시 시도해요')}catch(e){}connect()}else{try{toast('지금 '+(peers.size+1)+'명이 함께 있어요')}catch(e){}}};/* QA285: 눌러서 다시 연결 */
   document.getElementById('mpform').onsubmit=e=>{
    e.preventDefault();
    const msg=els.input.value.trim().slice(0,50);if(!msg)return;
    const target=els.talkTarget;if(target&&!target.userData.remote){if(me)showBubble(me,msg);els.input.value='';if(els.syncSend)els.syncSend();const token=els.talkToken;setTimeout(()=>{if(els.talkToken!==token||els.talkTarget!==target||!target.visible||!me||curZone(target)!==curZone(me))return;const response=npcReplyText(target,msg);sayB(target,response,5);els.reply.textContent=target.userData.displayName+': '+response},550);return}
     let sent=false;
    if(socket&&socket.readyState===WebSocket.OPEN){
-    try{socket.send(JSON.stringify({t:'chat',text:msg}));sent=true}catch{setStatus('● 연결 끊김')}
+    try{socket.send(JSON.stringify({t:'chat',text:msg}));sent=true}catch{}
    }
    // Local feedback always appears, regardless of multiplayer connection state.
    if(me)showBubble(me,msg);
@@ -3591,7 +3589,6 @@ const Multiplayer=(()=>{
    }
   };
  }
- function setStatus(message){if(els.status){els.status.textContent=message;els.status.dataset.offline=/끊김|오류|설정/.test(message)?'1':'0'}}
  function showBubble(avatar,message){
   if(!avatar)return;
   const text=String(message||'').trim().slice(0,50);if(!text)return;
@@ -3615,18 +3612,17 @@ const Multiplayer=(()=>{
  if(!p.init){p.avatar.position.copy(p.target);p.avatar.rotation.y=p.r;p.init=true}
  }
  function connect(){const url=endpoint();if(!url||!me||closing)return;if(socket&&(socket.readyState===0||socket.readyState===1))return;
- try{socket=new WebSocket(url)}catch{setStatus('● 연결 오류');return}
- setStatus('● 연결 중');
- socket.onopen=()=>{retry=0;lastState=null;setStatus('● 동기화 중');socket.send(JSON.stringify({t:'join',name:nick}));sendMove(true)};
+ try{socket=new WebSocket(url)}catch{return}
+ socket.onopen=()=>{retry=0;lastState=null;socket.send(JSON.stringify({t:'join',name:nick}));sendMove(true)};
  socket.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch{return}
-  if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);setStatus('● '+(peers.size+1)+'명 접속');sendMove(true);if(typeof qa40Announce==='function')qa40Announce()}
-  if(d.t==='peer'){upsert(d.peer);setStatus('● '+(peers.size+1)+'명 접속')}
-  if(d.t==='leave'){dispose(d.id);setStatus('● '+(peers.size+1)+'명 접속')}
+  if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);sendMove(true);if(typeof qa40Announce==='function')qa40Announce()}
+  if(d.t==='peer'){upsert(d.peer)}
+  if(d.t==='leave'){dispose(d.id)}
   if(d.t==='chat'&&typeof d.text==='string'&&d.text.startsWith(GIFT_TAG)){handleGiftSignal(d);return}
   if(d.t==='chat'&&me&&d.zone===curZone(me)){const target=d.id===myId?me:peers.get(String(d.id))?.avatar;if(target)showBubble(target,d.text||'')}
  };
- socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);setStatus('● 연결 끊김');if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
- socket.onerror=()=>setStatus('● 접속 오류');
+ socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
+
  }
  function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
  /* QA15: 실제 접속 유저 간 선물 — 공개 채팅 통로로 제안(@@g) → 받는 쪽이 손에 넣고 확인(@@a) → 확인을 받은 뒤에만 보낸 사람 물건 차감 */
@@ -3641,7 +3637,7 @@ const Multiplayer=(()=>{
  function rename(n){/* QA40: 닉네임 변경 — 새 이름으로 다시 접속 */nick=String(n||'관객').slice(0,14);try{if(socket)socket.close(1000,'rename')}catch{}}
  function sendLook(id){if(!id||!socket||socket.readyState!==1||!myId)return;try{socket.send(JSON.stringify({t:'chat',text:GIFT_TAG+'k|*|'+id}))}catch{}}
  if(typeof window!=='undefined'){window.qa40MpRename=rename;window.qa40MpSendLook=sendLook}
- function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint()){setStatus('● 멀티 연결 설정');return}connect()}
+ function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint())returnconnect()}
  function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;p.avatar.scale.setScalar((p.zone[0]==='H'?HSC:.82)*AVS*.9);if(!same||p.avatar.userData.interactionPause)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
  addEventListener('pagehide',()=>{closing=true;try{socket?.close(1000,'leaving')}catch{}});
  function openChat(target=null){makeUI();els.talkTarget=target;els.talkToken++;els.reply.textContent='';els.input.placeholder=target&&!target.userData.remote?'말을 걸어보세요':'입력하세요';els.chat.classList.add('open');try{els.input.focus({preventScroll:true})}catch{els.input.focus()}}
@@ -3687,11 +3683,11 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
    const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+(s&&s.kind!=='cine'?.62:1.0);let tt=1;
-   /* 유저 중심 궤도(각도 고정). 상영관·아지트·영사실은 방 안에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐 */
+   /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,-.35)/* QA216: 뒷벽 밖으로 안 나가게 */}
    else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}else if(zn==='P'){/* QA199: 영사실 — 로비 경계로 계산돼 카메라가 머리에 붙거나 방 밖(3D 상자처럼)으로 나가던 문제 */lim(p.x,ox,PCX-PW+.3,PCX+PW-.3);lim(p.z,oz,PCZ-PD+.3,PCZ+PD-.3);lim(hy,oy,-99,PH-.25)}
-   else{/* QA322: 로비는 벽에서 당기지 않음 — 나를 중심으로 거리가 일정한 궤도. 카메라가 벽 밖으로 나가면 그 벽만 숨김(cutApply). 천장(8.8m) 위로만 못 나가게 */lim(hy,oy,-99,8.8-.5)}
+   else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
    tt=Math.max(tt,.03);
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
    const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:.0)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
@@ -3710,12 +3706,12 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
    const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+1.0;let tt=1;
-   /* 유저 중심 궤도(각도 고정). 상영관·아지트·영사실은 방 안에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐 */
+   /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,-.35)/* QA216: 뒷벽 밖으로 안 나가게 */}
    else if(zn==='B'){lim(p.x,ox,BCX-CBW+.45,BCX+CBW-.45);lim(p.z,oz,BCZ-CBD+.45,BCZ+CBD-.45);lim(hy,oy,-99,CBH-.4)}else if(zn==='P'){/* QA199: 영사실 — 로비 경계로 계산돼 카메라가 머리에 붙거나 방 밖(3D 상자처럼)으로 나가던 문제 */lim(p.x,ox,PCX-PW+.3,PCX+PW-.3);lim(p.z,oz,PCZ-PD+.3,PCZ+PD-.3);lim(hy,oy,-99,PH-.25)}
-   else{/* QA322: 로비는 벽에서 당기지 않음 — 나를 중심으로 거리가 일정한 궤도. 카메라가 벽 밖으로 나가면 그 벽만 숨김(cutApply). 천장(8.8m) 위로만 못 나가게 */lim(hy,oy,-99,8.8-.5)}
-   tt=Math.max(tt,.03);if(typeof qa279Arm==='function')tt=qa279Arm(p,hy,ox,oy,oz,tt,zn[0]!=='L');/* QA279: 아지트·영사실은 캐릭터와 카메라 사이에 벽·사물이 끼면 그 앞으로 당김. QA322: 로비는 당기지 않음(거리 고정) */
+   else{lim(p.x,ox,-LW+.5,LW-.5);lim(p.z,oz,zn==='L1'?LB+.45:.45,LD-.35);if(zn!=='L1'&&p.z+oz<BF+.6&&oz<0)tt=Math.min(tt,(BF+.6-p.z)/oz);/* 천장(8.8m) 위로 못 나가게: 2층에서 멀리 줌아웃해도 같은 시선을 따라 당겨짐 */lim(hy,oy,-99,8.8-.5)}
+   tt=Math.max(tt,.03);if(typeof qa279Arm==='function')tt=qa279Arm(p,hy,ox,oy,oz,tt);/* QA279: 캐릭터와 카메라 사이에 벽·사물이 끼면 그 앞으로 당김 */
    if(hz)hz.dw.forEach(m=>m.visible=!(p.z+oz*tt>-.7));
    const VP=touchViewMode?clampN(camPitch*.85,-.45,.78):(inH?(s?-.015:.0)+Math.max(0,camPitch-.15)*.6:.05+Math.max(0,camPitch-.15)*.6);let vc=Math.cos(VP),vs=Math.sin(VP);
    cp.set(p.x+ox*tt,hy+oy*tt,p.z+oz*tt);if(hz)cp.y=Math.max(cp.y,hy+1.25);lk.set(cp.x+fx*vc*20,cp.y-vs*20,cp.z+fz*vc*20);CDIR.set(fx*vc*20,-vs*20,fz*vc*20);CUSE=true;if(!LAYED&&zn!=='B')cutApply(cp,p,inH?+zn[1]:0,zn);
@@ -3724,8 +3720,8 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
   const _cs=me&&zn[0]==='H'&&!CWIDE;/* QA171: 관람석 시점은 천천히(약 2초) 옮겨감 */if(_cs&&window.FOVT&&Math.abs(C.fov-FOVT)>.02){C.fov=FOVT/* QA231: 상영관 고정 시점 — 화각은 항상 즉시 고정(일어서거나 나갈 때 넓어졌다 줄어드는 현상 제거) */;C.updateProjectionMatrix()}const a=snapCam?1:_cs?1-Math.pow(.22,dt):1-Math.pow(.02,dt),al=a;snapCam=false;if(window.QA171BL>0&&CUSE){QA171BL-=dt;const k_=1-Math.pow(.04,dt);C.position.lerp(cp,k_);look.lerp(V171.copy(cp).add(CDIR),k_);CUSE=false}if(CUSE){C.position.copy(cp);look.copy(cp).add(CDIR);CUSE=false}else{C.position.lerp(cp,a);look.lerp(lk,al)}C.up.set(0,1,0);C.lookAt(look);if(seatCamera&&zn[0]!=='H'){C.position.copy(seatCamera.position);C.quaternion.copy(seatCamera.quaternion);if(C.fov!==seatCamera.fov){C.fov=seatCamera.fov;C.updateProjectionMatrix()}}if(window.FREE){C.position.set(FREE.p.x,FREE.p.y,FREE.p.z);C.lookAt(FREE.l.x,FREE.l.y,FREE.l.z)}if(LAYED)layCam();
   if(!(ac=(ac||0)-dt)||ac<0){ac=.5;hudUpd();$('hint').textContent=s?'':hintFor(zn);if(s&&s.kind==='cine'&&curSp){syncCine();if(nowS()>=curS(s.hall).end&&!curSc){}}
    const tkNow=TK.find(k=>k.hall===(s&&s.hall)&&k.end<=nowS());refTK()}}
- else{/* 입장 전 배경 = 입장 직후 첫 시점과 동일 (아바타 시작 위치 기준, 로비와 같은 거리 고정 궤도) */const P_=spw(),cq=Math.cos(camPitch),sq=Math.sin(camPitch),fx=Math.sin(P_.r),fz=Math.cos(P_.r);
-  cp.set(P_.x-fx*camDist*cq,1.0+camDist*sq,P_.z-fz*camDist*cq);lk.set(cp.x+fx*Math.cos(.17)*20,cp.y-Math.sin(.17)*20,cp.z+fz*Math.cos(.17)*20);if(!LAYED)cutApply(cp,P_,0,'L0');C.position.copy(cp);look.copy(lk);C.lookAt(look);const tf=C.aspect<1?74:65;if(Math.abs(C.fov-tf)>.01){C.fov=tf;C.updateProjectionMatrix()}}
+ else{/* 입장 전 배경 = 입장 직후 첫 시점과 동일 (아바타 시작 위치 기준 카메라 계산) */const P_=spw(),cq=Math.cos(camPitch),sq=Math.sin(camPitch),oz=camDist*cq,fx=Math.sin(P_.r),fz=Math.cos(P_.r),ox_=-fx*oz,oz_=-fz*oz;let tt=1;if(oz_>0&&P_.z+oz_>LD-.35)tt=Math.min(tt,(LD-.35-P_.z)/oz_);if(oz_<0&&P_.z+oz_<BF+.6)tt=Math.min(tt,(BF+.6-P_.z)/oz_);if(ox_>0&&P_.x+ox_>LW-.5)tt=Math.min(tt,(LW-.5-P_.x)/ox_);if(ox_<0&&P_.x+ox_<-LW+.5)tt=Math.min(tt,(-LW+.5-P_.x)/ox_);tt=Math.max(tt,.03);const hh=oz*tt,la=4.5*Math.min(1,Math.max(0,(hh-1.2)/3));let yo=camDist*sq;
+  cp.set(P_.x+ox_*tt,1.0+camDist*sq*tt,P_.z+oz_*tt);lk.set(cp.x+fx*Math.cos(.17)*20,cp.y-Math.sin(.17)*20,cp.z+fz*Math.cos(.17)*20);if(!LAYED)cutApply(cp,P_,0,'L0');C.position.copy(cp);look.copy(lk);C.lookAt(look);const tf=C.aspect<1?74:65;if(Math.abs(C.fov-tf)>.01){C.fov=tf;C.updateProjectionMatrix()}}
  /* doors */
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
  /* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
@@ -4699,6 +4695,8 @@ window.QA21={data,watched,pull,plaques,endFilm,curFilm,sat,rate:(id,yes)=>push(y
 </script>
 <script id="qa38-chandelier">/* QA38: 중앙 샹들리에 15% 축소 — 천장에 매달린 윗부분 높이는 그대로 */(function(){const f=S.getObjectByName('qa13-crystal-chandelier');if(!f)return;f.updateMatrixWorld(true);const b=new THREE.Box3().setFromObject(f),top=b.max.y,k=.85;f.scale.multiplyScalar(k);f.updateMatrixWorld(true);const b2=new THREE.Box3().setFromObject(f);f.position.y+=top-b2.max.y})();</script>
 <style id="qa40-style">
+/* QA44: 모바일 하단 네비 5칸 균등 배치 */
+@media(max-width:600px){html body .bar #act{flex:1 1 auto!important;width:auto!important;max-width:none!important;margin:0 10px!important;overflow:visible!important;box-sizing:border-box;gap:0!important;padding:6px 4px!important;justify-content:stretch!important}html body #act button,html body #act .fx{flex:1 1 0!important;min-width:0!important;padding:8px 2px!important}html body #act .fx.sep{margin-left:0!important;padding-left:2px!important}html body #act .fx.sep::before{display:none}}
 /* QA44: 모바일에서 영상 시작 시 가로(와이드) 화면 — 세로 고정 기기는 화면을 90도 돌려 보여줌 */
 html.qa44-rot,html.qa44-rot body{overflow:hidden!important}
 html.qa44-rot body{position:fixed!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:var(--qa-rh)!important;height:var(--qa-rw)!important;min-height:0!important;margin:0!important;transform-origin:0 0!important;transform:translateX(var(--qa-rw)) rotate(90deg)!important}
@@ -5054,7 +5052,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 <style id="qa127-map">
 html body #watch[hidden],html body.cineseat #watch[hidden]{display:none!important}/* QA130: 상영 중 화면 스타일보다 우선 */
 .qa130-act{display:flex;gap:8px;margin-top:14px}.qa130-act button{flex:1}
-#qa127map{--map-b:calc(var(--bar-top) + 13px);position:fixed;left:12px;bottom:var(--map-b);z-index:40;padding:9px 10px 10px;border-radius:14px;background:var(--hud-bg,rgba(28,20,22,.72));border:1px solid var(--hud-bd,rgba(255,255,255,.12));backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 8px 24px -10px rgba(0,0,0,.6);user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#qa127map{position:fixed;left:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 70px);z-index:40;padding:9px 10px 10px;border-radius:14px;background:var(--hud-bg,rgba(28,20,22,.72));border:1px solid var(--hud-bd,rgba(255,255,255,.12));backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);box-shadow:0 8px 24px -10px rgba(0,0,0,.6);user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #qa127map[hidden]{display:none!important}
 #qa127map.min{padding:0;border-radius:999px}#qa127map.min .scr,#qa127map.min .g,#qa127map.min .x{display:none}#qa127map:not(.min) .open{display:none}
 #qa127map .open{all:unset;box-sizing:border-box;height:36px;padding:0 14px;display:inline-flex;align-items:center;gap:6px;font:500 13px/1 'Noto Sans KR',sans-serif;color:var(--hud-fg,rgba(250,245,240,.92));cursor:pointer;white-space:nowrap}
@@ -5064,6 +5062,7 @@ html body #watch[hidden],html body.cineseat #watch[hidden]{display:none!importan
 #qa127map .g{display:grid;grid-template-columns:repeat(4,13px) 7px repeat(4,13px)/* QA233: 4+4석에 맞춤 */;gap:4px 3px}
 #qa127map button{all:unset;box-sizing:border-box;width:13px;height:10px;border-radius:3px 3px 2px 2px;background:rgba(250,245,240,.26);cursor:pointer}
 #qa127map button.tk{background:rgba(250,245,240,.08);cursor:default}
+@media (max-width:420px){#qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 66px);left:10px}}
 #qa127map button.me{background:#e8c27a;box-shadow:0 0 0 2px rgba(232,194,122,.35)}
 #qa127map button:not(.tk):not(.me):hover{background:rgba(250,245,240,.55)}
 body.cfull #qa127map{display:none!important}
@@ -5204,7 +5203,7 @@ html body.cineseat #watch{background:var(--sc-bg)!important;color:#f6e7cc!import
 </style>
 <style id="qa143-hud">
 /* QA143: 상영관 HUD(좌석표·얼럿·착석 관람) 톤 — rgba(28,20,22,.72) + 흰 12% 테두리 + blur(12px) saturate(1.2). 로비 HUD는 #hud 블록 */
-html body #qa127map,html body #qa127map.min,html body .qa134,html body.cineseat #act,html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full,html body.cineseat #watch{background:rgba(28,20,22,.72)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px) saturate(1.2)!important;-webkit-backdrop-filter:blur(12px) saturate(1.2)!important}
+html body #qa127map,html body #qa127map.min,html body .qa134,html body #ctxbar button,html body.cineseat #act,html body.cineseat #ctitle,html body.cineseat #cx,html body.cineseat #hb #qa133snd,html body.cineseat #hb #qa133full,html body.cineseat #watch{background:rgba(28,20,22,.72)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px) saturate(1.2)!important;-webkit-backdrop-filter:blur(12px) saturate(1.2)!important}
 html body .qa134 button:not(.pri){background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important}
 </style>
 <style id="qa144-mood">body.qa144hall::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:3;background:radial-gradient(ellipse 75% 70% at 50% 45%,rgba(0,0,0,0) 55%,rgba(8,3,4,.55) 100%)}/* QA144: 상영관 비네팅 */</style>
@@ -5536,11 +5535,11 @@ html body #qa127map button.open:hover{background:rgba(255,255,255,.07)!important
 html body #qa127map button.x:hover{background:rgba(255,255,255,.1)!important;border-radius:50%!important}
 html body #qa133full{display:none!important}
 html body #toast{font-size:16px!important}/* QA230: 모든 알림 1px 크게 */
-/* QA327: 모바일 좌석표 — 하단 바 위 13px(액션 칩과 같은 줄), 액션 칩이 뜨면 그 줄 위로(칩 42 + 간격 8).
-   접힌 버튼은 액션 칩 높이(42). 펼친 표는 64% 크기(QA176·QA224) — zoom 은 자리 값(left·bottom)까지 줄여 하단 바와 겹쳤으므로 transform 으로 */
-@media (max-width:699px){body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{--map-b:calc(var(--bar-top) + 63px)}
-#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}
-html body #qa127map button.open{height:42px!important;padding:0 16px!important;font-size:13px!important}}
+/* QA327: 모바일 좌석표 — 접힌 버튼(액션 칩 높이 42)이 기본. 펼친 표는 64% 크기로 줄이되 zoom 대신 transform 으로(zoom 은 bottom 값까지 줄여 하단 바와 겹쳤음).
+   액션 칩이 뜨면 그 줄(칩 위 8px) 위로 */
+@media (max-width:699px){#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}
+html body #qa127map button.open{height:42px!important;padding:0 16px!important;font-size:13px!important}
+body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 116px)}}/* QA173: 알림 글자 1px 크게 */
 </style>
 <script id="qa172-js">
 (function(){
@@ -5856,7 +5855,7 @@ html body #qa127map button.open{height:42px!important;padding:0 16px!important;f
  const V=new THREE.Vector3();let LZ='',SN=0;(function tick(){requestAnimationFrame(tick);try{const z=me?curZone(me):'';if(z!==LZ){const was=LZ;LZ=z;if(z[0]==='H'){SN=6;snapCam=true}else if(was[0]==='H'){window.QA234OFF=null;window.QA234CT={};/* QA231: 상영관에서 나갈 때 화각·렌즈 시프트가 천천히 풀리며 화면이 줄어드는 듯 보이던 것 — 즉시 원래대로 */window.QA173ON=0;window.QA231LEAVE=1;C.fov=C.aspect<1?74:65;C.updateProjectionMatrix();snapCam=true}}document.body.classList.toggle('qa220h',!!(me&&curZone(me)[0]==='H'));if(SN>0&&window.FOVT){SN--;C.fov=FOVT;C.updateProjectionMatrix();window.QA219SNAP=3}}catch(e){}/* 입장하자마자 상영 뷰 그대로(줌 애니메이션 없이) */let show=false;try{const sp=seat(),pn=$('pn');show=!!sp&&!curSp&&!window.QA234SEQ&&!(pn&&!pn.hidden)&&!document.querySelector('.qa134');if(show){const H=HALLN[sp.hall];V.copy(H.scr.position);V.y+=0;V.project(C);b.style.left=((V.x+1)/2*innerWidth)+'px';b.style.top=Math.max(90,(1-V.y)/2*innerHeight)+'px'}}catch(e){show=false}if(b.hidden===show)b.hidden=!show})();
  const css=document.createElement('style');css.textContent=`#qa219play{position:fixed;z-index:30;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;height:56px;padding:0 28px 0 22px;border-radius:999px;border:1px solid rgba(243,215,154,.55);background:rgba(28,14,18,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#f3d79a;font:600 17px 'Noto Sans KR',sans-serif;cursor:pointer;box-shadow:0 12px 34px -12px rgba(0,0,0,.7)}#qa219play[hidden]{display:none}#qa219play:hover{background:rgba(60,22,32,.85)}
 html body.cineseat #hb #qa133full,html body #hb #qa133full,html body.cineseat #hb #cx,html body #hb #cx,#full{display:none!important}/* QA219: 크게 보기·작게 보기·우측 상단 X 삭제 */
-html body.qa220h #act button svg,html body.qa220h #act button i{display:none!important}html body.qa220h #act{background:rgba(28,20,22,.6)!important}@media (min-width:700px){html body #qa127map{zoom:.8}}/* QA224: 좌석표 20% 작게 */html body.qa220h #act button{width:auto!important;min-width:0!important;padding:6.5px 30px!important}@media (max-width:440px){html body.qa220h #act button{padding:6.5px 18px!important}}/* QA230: 간격 2배(좁은 폰에선 화면 안에 들어오게) *//* QA229: 간격 2배 *//* QA221·223: 메뉴 사이 간격 절반의 절반, 퀵바 높이 3px 줄임(41→38) */html body.qa220h #act button,html body.qa220h #act button span{font-size:13px!important;font-weight:400!important}html body.qa220h #act{border:1px solid rgba(255,255,255,.12)!important}/* QA232: 상영관 퀵바 라인 흐릿하게 */html body.qa220h #act button{padding:9.5px 28px!important}@media (max-width:440px){html body.qa220h #act button{padding:9.5px 16px!important}}/* QA231: 모든 퀵바 — 라인 삭제, 메뉴 간격 4px↓, 높이 4px↑ *//* QA232: 퀵바와 같은 라인 */html body #qa219play{border:0!important}html body #qa148info{display:none!important}/* QA232: 상영관 상단 상영작 제목 칩 삭제 *//* QA237: 얼럿 공통 가이드(Figma 279:748) */html body .qa134{width:320px!important;min-width:0!important;max-width:calc(100vw - 32px)!important;box-sizing:border-box!important;padding:31px 22px!important;border-radius:28px!important;background:rgba(28,20,22,.72)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:22px!important;text-align:center!important;color:#fff!important;zoom:1!important}html body .qa134>p{margin:0!important;font:500 16px/23.8px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important;white-space:pre-line!important;word-break:keep-all!important}html body .qa134>p[hidden]{display:none!important}html body .qa134 .d{display:block!important;margin:0!important;font:400 12px/18px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important;word-break:keep-all!important}html body .qa134 .ck{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:0!important;margin:0!important;padding:0!important}html body .qa134 .ck label{display:flex!important;align-items:center!important;gap:6px!important;padding:6px 0!important;margin:0!important;border-radius:0!important;background:none!important;cursor:pointer}html body .qa134 .ck label span{font:400 12px/18px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important}html body .qa134 .ck input{position:absolute!important;opacity:0!important;pointer-events:none!important}html body .qa134 .ck i{flex:none!important;width:20px!important;height:20px!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.2882 8.02237L8.89705 13.5769L5.7118 10.2951L6.78817 9.25039L8.89705 11.4232L13.2118 6.97766L14.2882 8.02237ZM1.75 10C1.75 5.44365 5.44365 1.75 10 1.75C14.5563 1.75 18.25 5.44365 18.25 10C18.25 14.5563 14.5563 18.25 10 18.25C5.44365 18.25 1.75 14.5563 1.75 10Z' fill-rule='evenodd' clip-rule='evenodd' fill='white'/%3E%3C/svg%3E") center/20px 20px no-repeat!important;opacity:.5}html body .qa134 .ck input:checked+i{opacity:1!important;background-color:transparent!important}html body .qa134 .r,html body .qa134 .r.v{display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:flex-start!important;gap:8px!important;margin:0!important}html body .qa134 .r button{flex:none!important;height:35px!important;min-width:0!important;padding:8px 16px!important;border-radius:17.5px!important;box-sizing:border-box!important;font:500 13px/19px 'Noto Sans KR',sans-serif!important;letter-spacing:-.14px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important}html body .qa134 .r button:not(.pri){min-width:71px!important}html body .qa134 .r button.pri{background:#fff!important;border:0!important;color:#1c1416!important}html body .qa134 .r button:hover{filter:brightness(1.08)}html body #pn .pbox,html body #pn .pbox *{font-weight:500!important}/* QA234: 얼럿 UI 상영관 밖도 동일 · 모달 안 글자 모두 미디움 */html body #qa127map{opacity:.9!important}html body #qa127map .scr{display:none!important}html body #qa127map .g button{background:rgba(220,206,182,.18)!important}html body #qa127map .g button.tk{background:rgba(220,206,182,.06)!important}html body #qa127map .g button.me{background:rgba(226,212,188,.85)!important}html body #qa127map .x{opacity:.45!important}/* QA234: 좌석표 주목도 낮춤 */html body #pn button[data-a=obuy]{height:auto!important;min-height:44px!important}/* QA234: 메뉴 가로 스크롤 삭제 */body.cineseat #cine iframe,body.cineseat #cine video{transition:opacity 1.6s ease!important}/* QA234: 영상 페이드인 *//* QA232: 영화관람 버튼 라인 삭제 */html body .qa134 p,html body .qa134 .d{word-break:keep-all!important;overflow-wrap:break-word}/* QA231: 모달 50% 라인 · 두 줄일 때 단어 단위 줄바꿈 *//* QA230: 상영관 모달·얼럿 — 글자 화이트·미디움, 크림 버튼→화이트, 보조 버튼은 글자만 화이트 *//* QA230: 1px 크게 · 한 단계 얇게 *//* QA229: 1px 크게 */html body.qa220h #hint{opacity:.45!important}/* QA229: '의자를 눌러 앉기' 더 흐리게 *//* QA222: 글자 1px 작게(12→11) *//* QA220: 상영관 퀵바 — 아이콘 없이 글자만, 배경 60% 불투명 */
+html body.qa220h #act button svg,html body.qa220h #act button i{display:none!important}html body.qa220h #act{background:rgba(28,20,22,.6)!important}@media (min-width:700px){html body #qa127map{zoom:.8}}/* QA224: 좌석표 20% 작게 */html body.qa220h #act button{width:auto!important;min-width:0!important;padding:6.5px 30px!important}@media (max-width:440px){html body.qa220h #act button{padding:6.5px 18px!important}}/* QA230: 간격 2배(좁은 폰에선 화면 안에 들어오게) *//* QA229: 간격 2배 *//* QA221·223: 메뉴 사이 간격 절반의 절반, 퀵바 높이 3px 줄임(41→38) */html body.qa220h #act button,html body.qa220h #act button span{font-size:13px!important;font-weight:400!important}html body .bar #act,html body.qa220h #act{border:1px solid rgba(255,255,255,.12)!important}/* QA232: 퀵바 라인 흐릿하게 다시(모든 퀵바) */html body:not(.qa220h) .bar #act button{box-sizing:border-box!important}html body.qa220h #act button{padding:9.5px 28px!important}@media (max-width:440px){html body.qa220h #act button{padding:9.5px 16px!important}}@media (min-width:601px){html body:not(.qa220h) .bar #act button{width:84px!important;min-width:84px!important;height:56px!important}}@media (max-width:600px){html body:not(.qa220h) .bar #act button{height:56px!important}}/* QA231: 모든 퀵바 — 라인 삭제, 메뉴 간격 4px↓, 높이 4px↑ *//* QA232: 퀵바와 같은 라인 */html body #qa219play{border:0!important}html body #qa148info{display:none!important}/* QA232: 상영관 상단 상영작 제목 칩 삭제 *//* QA237: 얼럿 공통 가이드(Figma 279:748) */html body .qa134{width:320px!important;min-width:0!important;max-width:calc(100vw - 32px)!important;box-sizing:border-box!important;padding:31px 22px!important;border-radius:28px!important;background:rgba(28,20,22,.72)!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)!important;backdrop-filter:blur(12px)!important;-webkit-backdrop-filter:blur(12px)!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:22px!important;text-align:center!important;color:#fff!important;zoom:1!important}html body .qa134>p{margin:0!important;font:500 16px/23.8px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important;white-space:pre-line!important;word-break:keep-all!important}html body .qa134>p[hidden]{display:none!important}html body .qa134 .d{display:block!important;margin:0!important;font:400 12px/18px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important;word-break:keep-all!important}html body .qa134 .ck{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:0!important;margin:0!important;padding:0!important}html body .qa134 .ck label{display:flex!important;align-items:center!important;gap:6px!important;padding:6px 0!important;margin:0!important;border-radius:0!important;background:none!important;cursor:pointer}html body .qa134 .ck label span{font:400 12px/18px 'Noto Sans KR',sans-serif!important;letter-spacing:-.17px!important;color:#fff!important}html body .qa134 .ck input{position:absolute!important;opacity:0!important;pointer-events:none!important}html body .qa134 .ck i{flex:none!important;width:20px!important;height:20px!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.2882 8.02237L8.89705 13.5769L5.7118 10.2951L6.78817 9.25039L8.89705 11.4232L13.2118 6.97766L14.2882 8.02237ZM1.75 10C1.75 5.44365 5.44365 1.75 10 1.75C14.5563 1.75 18.25 5.44365 18.25 10C18.25 14.5563 14.5563 18.25 10 18.25C5.44365 18.25 1.75 14.5563 1.75 10Z' fill-rule='evenodd' clip-rule='evenodd' fill='white'/%3E%3C/svg%3E") center/20px 20px no-repeat!important;opacity:.5}html body .qa134 .ck input:checked+i{opacity:1!important;background-color:transparent!important}html body .qa134 .r,html body .qa134 .r.v{display:flex!important;flex-direction:row!important;justify-content:center!important;align-items:flex-start!important;gap:8px!important;margin:0!important}html body .qa134 .r button{flex:none!important;height:35px!important;min-width:0!important;padding:8px 16px!important;border-radius:17.5px!important;box-sizing:border-box!important;font:500 13px/19px 'Noto Sans KR',sans-serif!important;letter-spacing:-.14px!important;background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.12)!important;color:#fff!important}html body .qa134 .r button:not(.pri){min-width:71px!important}html body .qa134 .r button.pri{background:#fff!important;border:0!important;color:#1c1416!important}html body .qa134 .r button:hover{filter:brightness(1.08)}html body #pn .pbox,html body #pn .pbox *{font-weight:500!important}/* QA234: 얼럿 UI 상영관 밖도 동일 · 모달 안 글자 모두 미디움 */html body #qa127map{opacity:.9!important}html body #qa127map .scr{display:none!important}html body #qa127map .g button{background:rgba(220,206,182,.18)!important}html body #qa127map .g button.tk{background:rgba(220,206,182,.06)!important}html body #qa127map .g button.me{background:rgba(226,212,188,.85)!important}html body #qa127map .x{opacity:.45!important}/* QA234: 좌석표 주목도 낮춤 */html body #pn button[data-a=obuy]{height:auto!important;min-height:44px!important}/* QA234: 메뉴 가로 스크롤 삭제 */body.cineseat #cine iframe,body.cineseat #cine video{transition:opacity 1.6s ease!important}/* QA234: 영상 페이드인 *//* QA232: 영화관람 버튼 라인 삭제 */html body .qa134 p,html body .qa134 .d{word-break:keep-all!important;overflow-wrap:break-word}/* QA231: 모달 50% 라인 · 두 줄일 때 단어 단위 줄바꿈 *//* QA230: 상영관 모달·얼럿 — 글자 화이트·미디움, 크림 버튼→화이트, 보조 버튼은 글자만 화이트 *//* QA230: 1px 크게 · 한 단계 얇게 *//* QA229: 1px 크게 */html body.qa220h #hint{opacity:.45!important}/* QA229: '의자를 눌러 앉기' 더 흐리게 *//* QA222: 글자 1px 작게(12→11) *//* QA220: 상영관 퀵바 — 아이콘 없이 글자만, 배경 60% 불투명 */
 `;document.body.appendChild(css)/* 문서 맨 끝에 — 앞선 !important 규칙보다 뒤 */;
  /* 상영 중에도 퀵바는 아이콘 있는 기본 모양 그대로 — 관람용 작은 알약 바 스타일 걷어냄 */try{for(const sh of document.styleSheets){let rs;try{rs=sh.cssRules}catch(e){continue}for(let k=rs.length-1;k>=0;k--){const r=rs[k];if(!r.selectorText||!/body\.cineseat #act/.test(r.selectorText))continue;const keep=r.selectorText.split(',').filter(x=>!/#act/.test(x));if(!keep.length)sh.deleteRule(k);else r.selectorText=keep.join(',')}}}catch(e){}
 })();
@@ -5999,7 +5998,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
 <script id="qa267-share">/* QA267: 오른쪽 위 공유 버튼 · '연결 중/접속' 표시는 끊겼을 때만 */
 (function(){const ico=lucide('share',16)/* 종이비행기 — Lucide 격자(24·둥근 선)에 맞춰 그린 그림 */;
  const share=async()=>{const url=location.origin+location.pathname,title='씨네 랑데부';try{if(navigator.share){await navigator.share({title,url});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){toast(url)}};
- const put=()=>{const bar=document.getElementById('mpbar');if(!bar||document.getElementById('qa267share'))return;const b=document.createElement('button');b.id='qa267share';b.type='button';b.setAttribute('aria-label','공유하기');b.title='공유하기';b.innerHTML=ico;b.onclick=e=>{e.stopPropagation();share()};const st_=document.getElementById('mpstatus');bar.insertBefore(b,st_||null)};
+ const put=()=>{const bar=document.getElementById('mpbar');if(!bar||document.getElementById('qa267share'))return;const b=document.createElement('button');b.id='qa267share';b.type='button';b.setAttribute('aria-label','공유하기');b.title='공유하기';b.innerHTML=ico;b.onclick=e=>{e.stopPropagation();share()};bar.appendChild(b)};
 
  setInterval(put,800);put();window.qa267Share=share})();
 </script>
@@ -6205,9 +6204,7 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
  const skip=o=>{for(let x=o;x;x=x.parent){if(x.userData&&(x.userData.legs||x.userData.displayName||x.userData.buff))return true}return false};
  const build=()=>{ARM=[];S.traverse(o=>{if(!o.isMesh||o.isSprite||!o.material)return;const m=Array.isArray(o.material)?o.material[0]:o.material;if(!m||m.visible===false||(m.transparent&&m.opacity<.5))return;if(skip(o))return;bb.setFromObject(o);if(bb.isEmpty())return;bb.getSize(sz);if(Math.max(sz.x,sz.y,sz.z)<.35)return;if(sz.y<.06&&bb.max.y<.12)return/* 바닥 */;ARM.push(o)});ARMT=performance.now()};setTimeout(()=>{ARMT=-1},20000);let wasLay=false;setInterval(()=>{if(wasLay&&!LAYED)ARMT=-1;wasLay=!!LAYED},1000)/* QA280: 가림 판정 목록은 한 번만(배치 편집 뒤에만 다시) — 6초마다 전체 순회하던 끊김 제거 */;
  const vis=o=>{for(let x=o;x;x=x.parent)if(!x.visible)return false;const m=Array.isArray(o.material)?o.material[0]:o.material;return !(m&&m.visible===false)};
- /* QA290: 카메라가 아주 가까우면(1.85m 미만) 내 캐릭터를 숨겨 머리 속이 보이지 않게 — 멀어지면 다시 보임 */
- const show=fin=>{try{const hide=fin<1.85;if(hide===!!window.__qa279hid)return;window.__qa279hid=hide;if(!me)return;if(hide){me.userData.__v0=me.visible;me.visible=false}else if(me.userData.__v0!==false)me.visible=true}catch(e){}};
- window.qa279Arm=(p,hy,ox,oy,oz,tt,pull=true)=>{try{if(LAYED||!S)return tt;const full=Math.hypot(ox,oy,oz),len=full*tt;if(!pull){LAST=tt;show(full*tt);return tt}if(!ARM||(ARMT<0))build();if(len<.6){LAST=tt;return tt}
+ window.qa279Arm=(p,hy,ox,oy,oz,tt)=>{try{if(LAYED||!S)return tt;if(!ARM||(ARMT<0))build();const full=Math.hypot(ox,oy,oz),len=full*tt;if(len<.6){LAST=tt;return tt}
   vO.set(p.x,hy,p.z);vD.set(ox,oy,oz).multiplyScalar(1/full);rc.set(vO,vD);rc.near=.3;rc.far=len+.25;let d=Infinity;const hs=rc.intersectObjects(ARM,false);for(const h of hs){if(vis(h.object)){d=h.distance;break}}
   const MIND=1.3/* QA290: 아무리 막혀도 이보다 가까이는 안 당김 — 카메라가 캐릭터 안으로 들어가던 문제 */;
   let t=tt;if(d<len+.25)t=Math.max(MIND/full,Math.min(tt,(d-.28)/full));const now=performance.now(),dt=Math.min(.5,(now-(window.__qa279t||now))/1000);window.__qa279t=now;if(t<LAST)LAST=t;else LAST+=(t-LAST)*(1-Math.exp(-dt*5));
@@ -6629,4 +6626,16 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
    if(!(u.path&&u.path.length)&&qa318Keep(c.position.x,c.position.z,lvl)){const o=qa318Out(c.position.x,c.position.z,lvl);if(o){u.roamActive=true;u.path=[{x:o.x,z:o.z}];u.after=()=>{u.roamActive=false;u.stood=0};if(!u.roamHome)u.roamHome=new THREE.Vector3(o.x,0,o.z)}}})}catch(e){}},2000);
 })();
 </script>
+<style id="qa319-css">/* QA319: 모바일(폭 600px 이하) 하단 퀵바 — 아이콘 없이 글자만 한 줄로, 높이를 줄임(66→46px). 상영관 퀵바와 같은 모양.
+   퀵바 위에 뜨는 액션 칩·NPC 메뉴·안내 문구·채팅 입력줄은 줄어든 높이(20px)만큼 내려 간격을 그대로 유지 */
+@media (max-width:600px){
+html body:not(.qa220h) .bar #act{padding:4px!important}
+html body:not(.qa220h) .bar #act button svg,html body:not(.qa220h) .bar #act button i{display:none!important}
+html body:not(.qa220h) .bar #act button{height:36px!important;min-height:0!important;flex-direction:row!important;justify-content:center!important;align-items:center!important;text-align:center!important;gap:0!important;padding:0 2px!important}
+html body:not(.qa220h) .bar #act button,html body:not(.qa220h) .bar #act button span{font-size:14px!important;font-weight:400!important;line-height:1!important}
+html body:not(.qa220h):not(.cineseat) #ctxbar,html body:not(.qa220h):not(.cineseat) #actorMenu,html body:not(.qa220h):not(.cineseat) #qa17cta{bottom:calc(env(safe-area-inset-bottom,0px) + 66px + var(--qa-keyboard-offset,0px))!important}
+html body:not(.qa220h):not(.cineseat):has(#act:not(:empty)) .hint{bottom:calc(env(safe-area-inset-bottom,0px) + 88px)!important}
+html body:not(.qa220h):not(.cineseat) #mpchat{bottom:calc(env(safe-area-inset-bottom,0px) + 68px + var(--qa-keyboard-offset,0px))!important}
+}
+</style>
 </body></html>

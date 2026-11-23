@@ -29,7 +29,7 @@ test('QA24 popups follow the Figma panel structure and quick bar icons are 16px'
   assert(source.includes('#act button svg{display:block;flex:none;width:20.5px!important;height:20.5px!important;stroke-width:1.7!important}'));
   assert(!source.includes('#act .mp-nav-button svg{width:16px!important'));});
 test('QA27 top chips align, chat shows X until typing, last nickname always kept',()=>{
-  assert(source.includes('#hb #bgmb,#hb [data-a=adm]{display:none!important}'));assert(source.includes('#mpstatus{position:absolute;top:calc(100% + 8px);right:0;height:36px;'))/* QA326: 끊김 표시는 오른쪽 위 캡슐 아래 */;
+  assert(source.includes('#hb #bgmb,#hb [data-a=adm]{display:none!important}'));assert(!source.includes('mpstatus'))/* QA328: 연결 상태 표시 삭제 */;
   assert(source.includes("sendBtn.dataset.mode==='close'"));assert(source.includes('#mpform{padding-right:14px!important}'));
   assert(source.includes("if(nm)localStorage.setItem('aic.nick',nm);"));assert(source.includes('.jt14-save{display:none!important}'));});
 test('QA29 action chips sit behind every modal',()=>{assert(source.includes('#ctxbar,#actorMenu{z-index:19!important}'));});

@@ -768,8 +768,6 @@ body.cfull #chip{display:none}
 #lobbyMusic[hidden]{display:none}
 #lobbyMusic:hover,#qa267share:hover{background:rgba(74,58,52,.6)}
 #lobbyMusic svg,#qa267share svg{flex:none;pointer-events:none;width:17px!important;height:17px!important;stroke-width:1.84!important}/* !important: 전역 svg.lucide 크기 규칙보다 앞서야 함 */
-#mpstatus{position:absolute;top:calc(100% + 8px);right:0;height:36px;box-sizing:border-box;padding:0 12px;display:inline-flex;align-items:center;white-space:nowrap}
-#mpstatus:not([data-offline='1']){display:none}/* QA267: 연결이 끊겼을 때만 보임 */
 /* 하단 바: 좌우 23 · 높이 64 · 칸 균등. 아이콘 그림 약 18 · 선 1.45, 라벨 12 */
 .bar{position:fixed;z-index:5;left:0;right:0;bottom:var(--bar-b);display:flex;justify-content:center;align-items:center;gap:6px;pointer-events:none}
 .bar #act{pointer-events:auto;height:var(--bar-h);max-width:calc(100vw - 46px);padding:0 4px;display:flex;align-items:stretch}
@@ -3528,7 +3526,6 @@ const Multiplayer=(()=>{
   const style=document.createElement('style');
   style.textContent=`
    /* VINTAGE_FIGMA_CHAT_114_2346_2368_V1: precise Figma 540x54 white pill */
-   #mpstatus{background:rgba(36,20,24,.9);border:1px solid #a88776;border-radius:18px;padding:7px 11px;color:#fff;cursor:pointer}
    #mpchat{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--bar-top) + 12px);width:540px;max-width:calc(100vw - 24px);height:54px;box-sizing:border-box;z-index:36;display:none;background:#fff;border:1px solid #5D211C;border-radius:100px;box-shadow:0 4px 4px rgba(0,0,0,.25);overflow:hidden}
    #mpchat.open{display:block}
    #mpform{display:flex;align-items:center;gap:0;width:100%;height:100%;box-sizing:border-box;margin:0;padding:12px 16px;background:transparent}
@@ -3539,15 +3536,15 @@ const Multiplayer=(()=>{
    #mpclose{display:flex;flex:0 0 28px;justify-content:center;align-items:center;width:28px;height:28px;padding:0;margin:0;background:transparent;border:0;border-radius:50%;cursor:pointer;touch-action:manipulation}
    #mpclose img{display:block;width:28px;height:28px;pointer-events:none}
    #mpclose:focus-visible{outline:2px solid #5D211C;outline-offset:2px}
-   #mpstatus[data-offline="1"]{color:#ffd3cf}#act .mp-nav-button{color:#fff!important}
+   #act .mp-nav-button{color:#fff!important}
    @media(max-width:600px){#mpinput{font-size:19px}}
   `;
   document.head.appendChild(style);
-  const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="lobbyMute" type="button" aria-label="로비 소리 끄기" aria-pressed="false" hidden></button><button id="mpstatus" type="button">● 접속 준비</button>';document.body.appendChild(b);
+  const b=document.createElement('div');b.id='mpbar';b.innerHTML='<button id="lobbyMute" type="button" aria-label="로비 소리 끄기" aria-pressed="false" hidden></button>';document.body.appendChild(b);
   const c=document.createElement('div');c.id='mpchat';c.setAttribute('aria-label','대화 입력창');
   c.innerHTML='<form id="mpform" autocomplete="off"><input id="mpinput" type="text" maxlength="50" placeholder="입력하세요" autocomplete="off" aria-label="대화를 입력하세요 (50자 이내)"><button id="mpsend" type="submit" aria-label="보내기" disabled><svg class="lucide lucide-arrow-up" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg></button></form>';
   document.body.appendChild(c);
-  els.box=b;els.chat=c;els.status=document.getElementById('mpstatus');els.input=document.getElementById('mpinput');els.talkTarget=null;els.talkToken=0;const reply=document.createElement('span');reply.id='npcChatReply';reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');reply.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)';c.appendChild(reply);els.reply=reply;document.getElementById('lobbyMute').onclick=()=>CinemaAudio.setMuted(!CinemaAudio.muted);CinemaAudio.updateButton();
+  els.box=b;els.chat=c;els.input=document.getElementById('mpinput');els.talkTarget=null;els.talkToken=0;const reply=document.createElement('span');reply.id='npcChatReply';reply.setAttribute('role','status');reply.setAttribute('aria-live','polite');reply.style.cssText='position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)';c.appendChild(reply);els.reply=reply;document.getElementById('lobbyMute').onclick=()=>CinemaAudio.setMuted(!CinemaAudio.muted);CinemaAudio.updateButton();
   els.input.addEventListener('focus',()=>{Object.keys(K).forEach(k=>K[k]=0);qaKeyboardInset()});
   els.input.addEventListener('blur',()=>document.documentElement.style.setProperty('--qa-keyboard-offset','0px'));
   let alreadyWarnedLocal=false;
@@ -3573,14 +3570,13 @@ const Multiplayer=(()=>{
     document.getElementById('mpform').requestSubmit();
    }
   });
-  els.status.onclick=()=>{if(!endpoint()){alert('멀티플레이 서버 주소가 비어 있어요.');return}if(!socket||socket.readyState!==1){try{toast('다른 사람과 연결을 다시 시도해요')}catch(e){}connect()}else{try{toast('지금 '+(peers.size+1)+'명이 함께 있어요')}catch(e){}}};/* QA285: 눌러서 다시 연결 */
   document.getElementById('mpform').onsubmit=e=>{
    e.preventDefault();
    const msg=els.input.value.trim().slice(0,50);if(!msg)return;
    const target=els.talkTarget;if(target&&!target.userData.remote){if(me)showBubble(me,msg);els.input.value='';if(els.syncSend)els.syncSend();const token=els.talkToken;setTimeout(()=>{if(els.talkToken!==token||els.talkTarget!==target||!target.visible||!me||curZone(target)!==curZone(me))return;const response=npcReplyText(target,msg);sayB(target,response,5);els.reply.textContent=target.userData.displayName+': '+response},550);return}
     let sent=false;
    if(socket&&socket.readyState===WebSocket.OPEN){
-    try{socket.send(JSON.stringify({t:'chat',text:msg}));sent=true}catch{setStatus('● 연결 끊김')}
+    try{socket.send(JSON.stringify({t:'chat',text:msg}));sent=true}catch{}
    }
    // Local feedback always appears, regardless of multiplayer connection state.
    if(me)showBubble(me,msg);
@@ -3591,7 +3587,6 @@ const Multiplayer=(()=>{
    }
   };
  }
- function setStatus(message){if(els.status){els.status.textContent=message;els.status.dataset.offline=/끊김|오류|설정/.test(message)?'1':'0'}}
  function showBubble(avatar,message){
   if(!avatar)return;
   const text=String(message||'').trim().slice(0,50);if(!text)return;
@@ -3615,18 +3610,17 @@ const Multiplayer=(()=>{
  if(!p.init){p.avatar.position.copy(p.target);p.avatar.rotation.y=p.r;p.init=true}
  }
  function connect(){const url=endpoint();if(!url||!me||closing)return;if(socket&&(socket.readyState===0||socket.readyState===1))return;
- try{socket=new WebSocket(url)}catch{setStatus('● 연결 오류');return}
- setStatus('● 연결 중');
- socket.onopen=()=>{retry=0;lastState=null;setStatus('● 동기화 중');socket.send(JSON.stringify({t:'join',name:nick}));sendMove(true)};
+ try{socket=new WebSocket(url)}catch{return}
+ socket.onopen=()=>{retry=0;lastState=null;socket.send(JSON.stringify({t:'join',name:nick}));sendMove(true)};
  socket.onmessage=e=>{let d;try{d=JSON.parse(e.data)}catch{return}
-  if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);setStatus('● '+(peers.size+1)+'명 접속');sendMove(true);if(typeof qa40Announce==='function')qa40Announce()}
-  if(d.t==='peer'){upsert(d.peer);setStatus('● '+(peers.size+1)+'명 접속')}
-  if(d.t==='leave'){dispose(d.id);setStatus('● '+(peers.size+1)+'명 접속')}
+  if(d.t==='welcome'){myId=d.id;for(const a of d.peers||[])upsert(a);sendMove(true);if(typeof qa40Announce==='function')qa40Announce()}
+  if(d.t==='peer'){upsert(d.peer)}
+  if(d.t==='leave'){dispose(d.id)}
   if(d.t==='chat'&&typeof d.text==='string'&&d.text.startsWith(GIFT_TAG)){handleGiftSignal(d);return}
   if(d.t==='chat'&&me&&d.zone===curZone(me)){const target=d.id===myId?me:peers.get(String(d.id))?.avatar;if(target)showBubble(target,d.text||'')}
  };
- socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);setStatus('● 연결 끊김');if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
- socket.onerror=()=>setStatus('● 접속 오류');
+ socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
+
  }
  function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
  /* QA15: 실제 접속 유저 간 선물 — 공개 채팅 통로로 제안(@@g) → 받는 쪽이 손에 넣고 확인(@@a) → 확인을 받은 뒤에만 보낸 사람 물건 차감 */
@@ -3641,7 +3635,7 @@ const Multiplayer=(()=>{
  function rename(n){/* QA40: 닉네임 변경 — 새 이름으로 다시 접속 */nick=String(n||'관객').slice(0,14);try{if(socket)socket.close(1000,'rename')}catch{}}
  function sendLook(id){if(!id||!socket||socket.readyState!==1||!myId)return;try{socket.send(JSON.stringify({t:'chat',text:GIFT_TAG+'k|*|'+id}))}catch{}}
  if(typeof window!=='undefined'){window.qa40MpRename=rename;window.qa40MpSendLook=sendLook}
- function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint()){setStatus('● 멀티 연결 설정');return}connect()}
+ function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint())returnconnect()}
  function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;p.avatar.scale.setScalar((p.zone[0]==='H'?HSC:.82)*AVS*.9);if(!same||p.avatar.userData.interactionPause)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
  addEventListener('pagehide',()=>{closing=true;try{socket?.close(1000,'leaving')}catch{}});
  function openChat(target=null){makeUI();els.talkTarget=target;els.talkToken++;els.reply.textContent='';els.input.placeholder=target&&!target.userData.remote?'말을 걸어보세요':'입력하세요';els.chat.classList.add('open');try{els.input.focus({preventScroll:true})}catch{els.input.focus()}}
@@ -5999,7 +5993,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
 <script id="qa267-share">/* QA267: 오른쪽 위 공유 버튼 · '연결 중/접속' 표시는 끊겼을 때만 */
 (function(){const ico=lucide('share',16)/* 종이비행기 — Lucide 격자(24·둥근 선)에 맞춰 그린 그림 */;
  const share=async()=>{const url=location.origin+location.pathname,title='씨네 랑데부';try{if(navigator.share){await navigator.share({title,url});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(url);toast('링크를 복사했어요')}catch(e){toast(url)}};
- const put=()=>{const bar=document.getElementById('mpbar');if(!bar||document.getElementById('qa267share'))return;const b=document.createElement('button');b.id='qa267share';b.type='button';b.setAttribute('aria-label','공유하기');b.title='공유하기';b.innerHTML=ico;b.onclick=e=>{e.stopPropagation();share()};const st_=document.getElementById('mpstatus');bar.insertBefore(b,st_||null)};
+ const put=()=>{const bar=document.getElementById('mpbar');if(!bar||document.getElementById('qa267share'))return;const b=document.createElement('button');b.id='qa267share';b.type='button';b.setAttribute('aria-label','공유하기');b.title='공유하기';b.innerHTML=ico;b.onclick=e=>{e.stopPropagation();share()};bar.appendChild(b)};
 
  setInterval(put,800);put();window.qa267Share=share})();
 </script>

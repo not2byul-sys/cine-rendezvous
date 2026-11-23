@@ -35,7 +35,7 @@ function chatContext() {
   const legacy = new Element(); legacy.id = 'msg';
   const ctx = { document: doc, window: { innerHeight: 800, visualViewport: { height: 450, offsetTop: 0 } }, $: id => nodes.get(id), els: {}, CinemaAudio: { updateButton() {}, setMuted() {} }, K: { w: 1 }, endpoint: () => '', Math };
   vm.createContext(ctx);
-  vm.runInContext(segment('function qaKeyboardInset()', 'if(window.visualViewport)') + segment('function makeUI(){', 'function setStatus('), ctx);
+  vm.runInContext(segment('function qaKeyboardInset()', 'if(window.visualViewport)') + segment('function makeUI(){', 'function showBubble('), ctx);
   ctx.makeUI();
   return { ctx, nodes, properties, styles };
 }

@@ -106,7 +106,7 @@ test('QA88 hands hold two, the rest go to the bag; context discard opens the bag
 test('QA91 interaction policy: tap a chair to walk and sit, exits live at the quick bar end, one name per action, clear notices',()=>{
  assert(source.includes("function pickSeat(hid,sp){if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}/* QA91"));assert(source.includes("selSeat=sp;paintSeats();walkToSpot(me,sp);return;"));assert(!source.includes("say(me,'이미 앉은 자리예요')"));
  assert(!source.includes("add('goup'"));assert(source.includes(`zc==='B'?'data-a="goup"':'data-a="exithall"'`));
- assert(!/add\('tt','(다음 회차|상영작 보기|상영작 정보)'\)/.test(source));assert(source.includes('id="go" class="jt2-go">시작하기'));
+ assert(!/add\('tt','(다음 회차|상영작 보기|상영작 정보)'\)/.test(source));assert(source.includes('id="go" class="jt2-go">ENTER'));
  assert(!source.includes("'손이 가득 찼어요"));assert(source.includes("'가방이 가득 찼어요'"));assert(!source.includes('의자를 눌러 앉으면 바로 상영'));assert(!source.includes('보드를 눌러 한줄평 남기기'));});
 test('QA93 policy checklist: objects open without a chip step, film-title field, stand up after closing the screen, ticket button below, not-ready toast, one-line gift notices',()=>{
  assert(source.includes("function qa20Obj(act,o,az){/* QA93"));assert(source.includes("const show=()=>{QA20.obj=null;act.fn();hudUpd()};"));

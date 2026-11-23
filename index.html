@@ -2492,6 +2492,7 @@ const NPC_MOOD=['오늘 상영작, 기대돼요.','이 극장 냄새가 참 좋�
 const NPC_STAFF=['어서 오세요, 씨네 랑데뷰입니다.','상영 시작 전에 미리 자리 잡으세요.','오늘도 만석이면 좋겠네요.','필요한 게 있으면 언제든 말씀하세요.','상영관 안에서는 조용히 부탁드려요.','이 극장은 1979년부터 그대로예요.','좋은 저녁 되세요.'];
 const NPCLN={};function npcLines(name){if(NPCLN[name])return NPCLN[name];let info='';try{info=CHARINFO[name]||''}catch(e){}const fm=(info.match(/[《〈]([^》〉]+)[》〉]/)||[])[1]||'',out=[];
  info.split(/(?<=[.!?요다])\s+/).map(t=>t.trim()).filter(t=>t.length>4&&t.length<=48).slice(0,3).forEach(t=>out.push(t));
+ if(name==='마들렌 할머니')out.push('팝콘이란 게 새로 들어왔다면서요? 미국 간식이라던데.','영화 볼 땐 에스키모 아이스크림이죠. 팝콘은 소리가 나잖아요.','옥수수를 튀겨 극장에서 먹는다니, 파리도 많이 변했어요.','젊은 사람들은 팝콘이 좋다는데… 한 번은 먹어 볼까 봐요.')/* QA308: 1979년 파리지앵이 보는 팝콘 */;
  const staff=/영사기사|직원|우브뢰즈|모지|퍼재컬리|올드 톰/.test(name);if(staff)NPC_STAFF.forEach(t=>out.push(t));
  if(fm){out.push(`《${fm}》 이야기라면 밤새도 할 수 있어요.`,`《${fm}》, 다들 보셨어요?`)}
  let h=0;for(const ch of name)h=(h*31+ch.charCodeAt(0))>>>0;for(let k=0;out.length<10&&k<NPC_MOOD.length*2;k++){const t=NPC_MOOD[(h+k*5)%NPC_MOOD.length];if(!out.includes(t))out.push(t)}

@@ -1,5 +1,5 @@
 /* QA326 동작 테스트 — 실제 계산·흐름을 돌려 확인
-   · HUD: 산사 실측 치수가 규칙의 숫자에서 그대로 나오는지(하단 바 356, 오른쪽 위 캡슐 93, 액션 칩 자리)
+   · HUD: 산사 실측 치수가 규칙의 숫자에서 그대로 나오는지(하단 바 356, 액션 칩 자리) · 탑바 높이 46, 오른쪽은 분리된 원형 버튼
    · 채널 표시: 로비 01, 02 … · 접속 인원은 표시하지 않음
    · 이름표: 카메라 기본 거리에서 알약 28px · 글자 11px, 다른 라벨(자판기 등)의 모양은 그대로
    · 설정 파일: force 에 적힌 항목만 관리자 브라우저의 더 나중 저장보다 우선
@@ -38,10 +38,13 @@ test('하단 바 안: 아이콘 중심은 위에서 22.7, 라벨 중심은 44.3(
   assert.equal(px(btn, 'font').startsWith('500 12px'), true, '버튼 글자는 미디움(QA232)');
 });
 
-test('오른쪽 위 캡슐: 44×44 버튼 두 개가 93×50 안에', () => {
-  const cap = rule('#mpbar'), b = rule('#lobbyMusic,#qa267share');
-  assert.equal(2 * num(px(b, 'width')) + 2 * px(cap, 'padding').split(' ').map(num)[1] + 2 * 1, 93);
-  assert.equal(px(cap, 'height'), '50px'); assert.equal(px(rule('#chip'), 'height'), '50px');
+test('탑바: 높이 46 — 왼쪽 칩과 오른쪽의 분리된 원형 버튼(46×46)이 같은 높이', () => {
+  const b = rule('#lobbyMusic,#qa267share');
+  assert.equal(px(rule('#chip'), 'height'), '46px'); assert.equal(px(b, 'width'), '46px'); assert.equal(px(b, 'height'), '46px');
+  assert.equal(px(rule('#mpbar'), 'gap'), '8px');
+  /* 버튼마다 유리 재질(원형) — 한 캡슐로 묶지 않음 */
+  assert(hud.includes('\n#chip,#lobbyMusic,#qa267share,.bar #act,#ctxbar button,#actorMenu button{box-sizing:border-box;border:1px solid var(--glass-line);border-radius:999px;'));
+  assert(!/#mpbar\{[^}]*(background|border)/.test(hud));
 });
 
 test('바 위에 뜨는 것들은 바의 변수에서 자리를 얻는다(액션 칩 11 · 안내 문구 10 · 대화 입력줄 12)', () => {
@@ -168,4 +171,13 @@ test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10%
   assert.equal(source.split('LOBBY_HC').length - 1, 4, '로비 반구광 색은 한 이름으로(정의 1 + 쓰는 곳 3)');
   assert.equal(source.split('LOBBY_DC').length - 1, 4);
   assert(!source.includes('.setHex(0xfff0e0)') && !source.includes(':0xfff0e0)'));
+});
+
+test('QA327: 좌석표(모바일) — 하단 바 위 13px, 접힘이 기본, 액션 칩이 뜨면 한 줄 위, 공유 아이콘은 종이비행기', () => {
+  assert(source.includes('#qa127map{--map-b:calc(var(--bar-top) + 13px);position:fixed;left:12px;bottom:var(--map-b)'));
+  assert(source.includes("el.classList.toggle('min',MOB.matches)"));
+  assert(source.includes('body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{--map-b:calc(var(--bar-top) + 63px)}'));
+  assert(source.includes('#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}'));
+  assert(source.includes("lucide('share',16)") && !source.includes('share2'));
+  assert(hud.includes("#chip b{padding-top:4px;"));
 });

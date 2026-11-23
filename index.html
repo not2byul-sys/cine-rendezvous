@@ -2961,6 +2961,9 @@ if(me.userData.seat&&floors.includes(o)){standUp(me,true);me.userData.path=[];NE
  if(ud.stair){const lv=me.userData.lvl;walkTo(me,STX,lv?ST.z1+.9:ST.z0-.5,lv?'L0':'L1');return}
  walkTo(me,h.point.x,h.point.z,ud.zone);qa19TapMark(h.point,ud.zone)});
 const CDIR=new THREE.Vector3();let CUSE=false;let camYaw=Math.PI,camYawS=Math.PI,camPitch=.3,camPitchT=.3,camDist=5.6,camDistT=5.6,yawV=0,sYaw=0,sPitch=0;const clampN=(v,a,b)=>Math.max(a,Math.min(b,v));
+/* QA320: 시점 회전 — 내가 돌린 만큼은 바로 따라오게. 직접 돌린 회전(드래그·Q/E)은 속도 제한 없이 짧은 감쇠(약 0.13초)로 따라가고, 걷기·선물처럼 게임이 돌리는 시점만 예전처럼 천천히(초당 40°).
+   전에는 손을 떼는 순간 남은 회전이 초당 40°로 묶여, 스와이프할 때마다 '툭' 돌고 손을 뗀 뒤에도 몇 초씩 혼자 돌았음 */
+let camUserT=0;function qa320Yaw(s,t,dt,active){let d=t-s;d=Math.atan2(Math.sin(d),Math.cos(d));camUserT=active?.4:Math.max(0,camUserT-dt);return s+(camUserT>0?d*(1-Math.exp(-dt*8)):clampN(d*Math.min(1,dt*4.5),-.7*dt,.7*dt))}
 function alignSpaceCamera(c){releaseSeatCamera();camYaw=camYawS=c.rotation.y;camPitch=camPitchT=curZone(c)[0]==='H'?.2:.3;yawV=0;snapCam=true}
 const PTR=new Map();let camDrag=false;let touchViewMode=false; // Mobile drag uses direct look control, without mouse-style momentum
 addEventListener('pointerdown',e=>{yawV=0;if(NPCB&&!NPCB.hidden&&!e.target.closest('#npcb')&&e.target===R.domElement)setTimeout(()=>{if(NPCB&&performance.now()>NPCB._t-11500)NPCB.hidden=true},0);if(e.target===R.domElement||e.target.id==='shield'||e.target.id==='cine'){if(e.pointerType==='touch')touchViewMode=true;else if(e.pointerType==='mouse')touchViewMode=false;PTR.set(e.pointerId,{x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,on:false});camDrag=false}});
@@ -3665,7 +3668,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
    const D=inH?(s?10.5:clampN(camDist*.85,3.2,11))/* QA19: 레퍼런스처럼 아바타 바로 뒤 낮은 시점 */:(s&&s.kind!=='cine'?3.7:camDist),PP=inH?Math.max(.06,camPitch-.06):(s&&s.kind!=='cine'?.4:camPitch);
-   {let d=camYaw-camYawS;d=Math.atan2(Math.sin(d),Math.cos(d));let st_=d*Math.min(1,dt*4.5);if(!camDrag&&Math.abs(yawV)<.01)st_=clampN(st_,-.7*dt,.7*dt);camYawS=snapCam?camYaw:camYawS+st_}
+   {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
    const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+(s&&s.kind!=='cine'?.62:1.0);let tt=1;
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
@@ -3688,7 +3691,7 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
    const D=camDist,PP=inH?Math.max(.06,camPitch-.06):camPitch;
-   {let d=camYaw-camYawS;d=Math.atan2(Math.sin(d),Math.cos(d));let st_=d*Math.min(1,dt*4.5);if(!camDrag&&Math.abs(yawV)<.01)st_=clampN(st_,-.7*dt,.7*dt);camYawS=snapCam?camYaw:camYawS+st_}
+   {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
    const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+1.0;let tt=1;
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */

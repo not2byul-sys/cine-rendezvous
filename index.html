@@ -698,6 +698,12 @@ svg.lucide, #act button svg { stroke-width:1.6!important; width:22px!important; 
 <style id="cine-visual-20261110">
 #cine-first-load{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#f6f4ed;color:#b49a68;transition:opacity .55s ease,visibility .55s ease;opacity:1;visibility:visible}
 #cine-first-load.cine-loaded{opacity:0;visibility:hidden;pointer-events:none}
+/* QA340: 로딩 바(영사기 + 진행 막대 + %) — 첫 입장과 상영 전 공용 */
+.qa340ld{--c:#6b1f24;--h:#f6f4ed;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px 14px;width:min(420px,72vw);margin-top:28px;color:var(--c)}
+.qa340ld svg{grid-column:1/-1;justify-self:center;width:52px;height:auto;fill:var(--c)}.qa340ld svg .h{fill:var(--h)}
+.qa340ld .b{height:14px;border:1.5px solid var(--c);border-radius:999px;padding:2px;box-sizing:border-box}.qa340ld .b i{display:block;height:100%;width:0;background:var(--c);border-radius:999px;transition:width .25s linear}
+.qa340ld .n{font:400 15px Georgia,'Noto Serif KR',serif;min-width:40px;text-align:right;color:#2a1d1f}
+#qa340cine{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#140c0e;pointer-events:none}#qa340cine .qa340ld{--c:#f6e7cc;--h:#140c0e;margin:0;width:min(360px,60%)}#qa340cine .n{color:#f6e7cc}
 #cine-first-load .cine-load-emblem{width:min(240px,42vw);height:auto;filter:drop-shadow(0 2px 4px rgba(177,148,102,.1));margin-bottom:20px}
 #cine-first-load .cine-load-emblem svg{width:100%;display:block}
 #cine-first-load .cine-load-title{font-family:'Noto Serif KR',Georgia,serif;font-size:clamp(15px,2vw,19px);line-height:1.3;letter-spacing:.04em;text-align:center;font-weight:400}
@@ -833,7 +839,12 @@ html body.cineseat #watch::before{content:"";width:14px;height:14px;flex:none;ba
  <div class="cine-load-title">Welcome to Vintage Cinema</div>
  <div class="cine-load-name">씨네 랑데부</div>
  <div class="cine-load-rule"></div><div class="cine-load-caption">Step into 1979</div>
+ <div class="qa340ld"><svg viewBox="0 0 48 44" aria-hidden="true"><circle cx="13" cy="10" r="8"/><circle cx="31" cy="10" r="8"/><g class="h"><circle cx="13" cy="10" r="2"/><circle cx="31" cy="10" r="2"/><circle cx="13" cy="5.6" r="1.3"/><circle cx="13" cy="14.4" r="1.3"/><circle cx="8.6" cy="10" r="1.3"/><circle cx="17.4" cy="10" r="1.3"/><circle cx="31" cy="5.6" r="1.3"/><circle cx="31" cy="14.4" r="1.3"/><circle cx="26.6" cy="10" r="1.3"/><circle cx="35.4" cy="10" r="1.3"/></g><rect x="7" y="18" width="28" height="15" rx="2"/><path d="M35 22l9-4v15l-9-4zM20 33l-6 10h3l4-7 4 7h3l-6-10z"/></svg><div class="b"><i></i></div><span class="n">0%</span></div>
 </div>
+<script id="qa340-load">/* QA340: 진행률은 실제 값을 알 수 없어 천천히 차오르다가 준비되면 100% */
+window.qa340Run=(box,done)=>{const bar=box.querySelector('.b i'),n=box.querySelector('.n');let p=0;const set=v=>{p=v;bar.style.width=p+'%';n.textContent=Math.round(p)+'%'};const t=setInterval(()=>{if(!box.isConnected){clearInterval(t);return}if(done()){set(100);clearInterval(t);return}set(p+(92-p)*.035)},100);return()=>clearInterval(t)};
+{const b=document.querySelector('#cine-first-load .qa340ld');window.QA340HTML=b?b.outerHTML:'';if(b)qa340Run(b,()=>!!document.documentElement.dataset.cinemaReady)}
+</script>
 <script id="cine-loading-reveal">
 (()=>{
  const el=document.getElementById('cine-first-load');if(!el)return;
@@ -2263,6 +2274,9 @@ function vArm(x,z,rot){const g=new THREE.Group();g.position.set(x,0,z);g.rotatio
 /* Per-hall boards and per-film information editable in administrator mode. */
 /* 2관 폐관(준비 중) — 다시 열 때는 CLOSEDH 에서 2를 빼면 됨 */const CLOSEDH=new Set([2]);
 const HALL_BOARDS=[],FILM_INFO_KEY='aic.filmInfo';
+/* QA340: 편성에서 빠진 영화의 상영정보(썸네일 포함)는 지움 — 저장하면 서버에서도 같이 사라짐 */
+function qa340Prune(d){const own=!d;d=d||store.get(FILM_INFO_KEY)||{};const keep=new Set();CFG.HALLS.forEach(h=>h.films.forEach(f=>keep.add(filmInfoId(h,f))));let n=0;Object.keys(d).forEach(k=>{if(!keep.has(k)&&d[k]&&d[k].thumb){delete d[k].thumb;n++}});/* 글자 정보는 남기고 이미지만 */if(own&&n)store.set(FILM_INFO_KEY,d);return n}
+document.addEventListener('change',e=>{const i=e.target;if(!i||!i.dataset||!i.dataset.fthumb)return;const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const W=640,H=360,cv=document.createElement('canvas');cv.width=W;cv.height=H;const sc=Math.max(W/im.width,H/im.height),dw=im.width*sc,dh=im.height*sc;cv.getContext('2d').drawImage(im,(W-dw)/2,(H-dh)/2,dw,dh);const u=cv.toDataURL('image/jpeg',.82),hid=document.getElementById(i.dataset.fthumb),pv=i.parentNode.querySelector('img');if(hid)hid.value=u;if(pv){pv.src=u;pv.hidden=false}};im.src=r.result};r.readAsDataURL(f)});
 const filmInfoId=(h,f)=>h.id+':'+(f.id||f.src||f.title);
 function filmBoardInfo(h,f){const custom=(store.get(FILM_INFO_KEY)||{})[filmInfoId(h,f)]||{};return{source:custom.source||f.source||'',license:custom.license||f.license||'',title:custom.title||f.title,credit:custom.credit||f.credit||'',syn:custom.syn||f.syn||'',duration:custom.duration||Math.round(f.dur/60)+'분',notice:custom.notice||'좌석을 선택하고 앉아 관람하세요',director:custom.director||f.director||'',donate:custom.donate||f.donate||'',acct:custom.acct||'',yt:custom.yt||'',thumb:custom.thumb||''/* QA339 */}}
 function boardText(c,text,x,y,maxWidth,lineHeight,maxLines){let line='',lines=[];for(const ch of String(text)){if(ch==='\n'||c.measureText(line+ch).width>maxWidth){lines.push(line);line=ch==='\n'?'':ch}else line+=ch}if(line)lines.push(line);lines.slice(0,maxLines).forEach((t,i)=>c.fillText(t,x,y+i*lineHeight));return Math.min(lines.length,maxLines)*lineHeight}
@@ -2798,8 +2812,8 @@ PANELS.adset=()=>{if(!ADM){PANELS.admlogin();return}const a=CFG.AD,u=a.units||{}
  <label>AdSense 게시자 ID</label><input id="ad_cl" placeholder="ca-pub-0000000000000000" value="${esc(a.client||'')}">
  <label>예시 광고 길이(초)</label><input id="ad_sec" type="number" min="3" max="30" value="${a.seconds}">
  <div style="display:flex;gap:8px;margin-top:6px"><button class="p" data-a="adsetsave">저장</button><button data-a="adsettest">테스트 재생</button><button data-a="adm">상영작 관리</button></div>`)};
-PANELS.adfilmInfo=()=>{if(!ADM){PANELS.admlogin();return}let html='<h3>상영정보 편집</h3><p class="sub">각 작품의 안내판 정보를 편집합니다. 저장하면 두 관의 안내판에 바로 반영됩니다.</p><div class="adh"><b>극장 후원</b>'+(()=>{const D=qa266Cfg();return [['url','송금 링크'],['acct','계좌(은행·번호·예금주)'],['yt','유튜브 채널'],['ad','광고 영상 링크(mp4·YouTube)']].map(([k,l])=>'<label style="display:block;margin-top:10px">'+l+'</label><textarea style="width:100%;box-sizing:border-box" id="fi_theater_'+k+'" rows="1">'+esc(D[k]||'')+'</textarea>').join('')})()+'</div>';CFG.HALLS.forEach(h=>{html+='<h3>'+esc(h.name)+'</h3>';h.films.forEach((f,i)=>{const info=filmBoardInfo(h,f),id='fi_'+h.id+'_'+i;html+='<div class="adh"><b>'+esc(f.title)+'</b>';[['title','영화 제목'],['thumb','썸네일 이미지 주소(상영작 안내에 표시)'],['credit','감독·제작 정보'],['duration','상영시간'],['syn','영화 소개'],['notice','관람 안내'],['source','출처(채널·아카이브)'],['license','권리 근거(퍼블릭 도메인·CC·공식 임베드 등)'],['director','감독 이름'],['donate','감독 송금 링크'],['acct','감독 계좌(은행·번호·예금주)'],['yt','감독 유튜브 채널']].forEach(([k,label])=>/* QA102: 출처·라이선스 기록 칸 · QA266: 감독 후원 */{html+='<label style="display:block;margin-top:10px">'+label+'</label><textarea style="width:100%;box-sizing:border-box" id="'+id+'_'+k+'" rows="'+(k==='syn'?3:1)+'">'+esc(info[k]||'')+'</textarea>'});html+='</div>'})});panel(html+'<button class="p" data-a="saveFilmInfo" style="width:100%">상영정보 저장</button>')};
-Object.assign(A,{adfilmInfo:()=>PANELS.adfilmInfo(),saveFilmInfo:()=>{if(!ADM)return;const data=store.get(FILM_INFO_KEY)||{};CFG.HALLS.forEach(h=>h.films.forEach((f,i)=>{const info={};['title','thumb','credit','duration','syn','notice','source','license','director','donate','acct','yt'].forEach(k=>{const el_=$('fi_'+h.id+'_'+i+'_'+k);info[k]=(el_&&el_.value||'').trim()});data[filmInfoId(h,f)]=info}));store.set(FILM_INFO_KEY,data);{const g_=k=>{const e_=$('fi_theater_'+k);return e_?(e_.value||'').trim():''};if($('fi_theater_url'))store.set('aic.donate',{url:g_('url'),acct:g_('acct'),yt:g_('yt'),ad:g_('ad')})}boardDraw();toast('상영정보를 저장했어요')}});
+PANELS.adfilmInfo=()=>{if(!ADM){PANELS.admlogin();return}let html='<h3>상영정보 편집</h3><p class="sub">각 작품의 안내판 정보를 편집합니다. 저장하면 두 관의 안내판에 바로 반영됩니다.</p><div class="adh"><b>극장 후원</b>'+(()=>{const D=qa266Cfg();return [['url','송금 링크'],['acct','계좌(은행·번호·예금주)'],['yt','유튜브 채널'],['ad','광고 영상 링크(mp4·YouTube)']].map(([k,l])=>'<label style="display:block;margin-top:10px">'+l+'</label><textarea style="width:100%;box-sizing:border-box" id="fi_theater_'+k+'" rows="1">'+esc(D[k]||'')+'</textarea>').join('')})()+'</div>';CFG.HALLS.forEach(h=>{html+='<h3>'+esc(h.name)+'</h3>';h.films.forEach((f,i)=>{const info=filmBoardInfo(h,f),id='fi_'+h.id+'_'+i;html+='<div class="adh"><b>'+esc(f.title)+'</b>';[['title','영화 제목'],['thumb','썸네일 이미지(상영작 안내에 표시)'],['credit','감독·제작 정보'],['duration','상영시간'],['syn','영화 소개'],['notice','관람 안내'],['source','출처(채널·아카이브)'],['license','권리 근거(퍼블릭 도메인·CC·공식 임베드 등)'],['director','감독 이름'],['donate','감독 송금 링크'],['acct','감독 계좌(은행·번호·예금주)'],['yt','감독 유튜브 채널']].forEach(([k,label])=>/* QA102: 출처·라이선스 기록 칸 · QA266: 감독 후원 */{if(k==='thumb'){html+='<label style="display:block;margin-top:10px">'+label+'</label><div class="qa340th"><img alt="" src="'+esc(info.thumb||'')+'"'+(info.thumb?'':' hidden')+'><input type="hidden" id="'+id+'_thumb" value="'+esc(info.thumb||'')+'"><input type="file" accept="image/*" data-fthumb="'+id+'_thumb"><button type="button" class="g" data-a="qa340thdel" data-id="'+id+'_thumb">이미지 삭제</button></div>';return}html+='<label style="display:block;margin-top:10px">'+label+'</label><textarea style="width:100%;box-sizing:border-box" id="'+id+'_'+k+'" rows="'+(k==='syn'?3:1)+'">'+esc(info[k]||'')+'</textarea>'});html+='</div>'})});panel(html+'<button class="p" data-a="saveFilmInfo" style="width:100%">상영정보 저장</button>')};
+Object.assign(A,{qa340thdel:d=>{const h=$(d.id);if(h){h.value='';const p=h.parentNode,im=p.querySelector('img'),fi=p.querySelector('input[type=file]');if(im){im.removeAttribute('src');im.hidden=true}if(fi)fi.value=''}},adfilmInfo:()=>PANELS.adfilmInfo(),saveFilmInfo:()=>{if(!ADM)return;const data=store.get(FILM_INFO_KEY)||{};CFG.HALLS.forEach(h=>h.films.forEach((f,i)=>{const info={};['title','thumb','credit','duration','syn','notice','source','license','director','donate','acct','yt'].forEach(k=>{const el_=$('fi_'+h.id+'_'+i+'_'+k);info[k]=(el_&&el_.value||'').trim()});data[filmInfoId(h,f)]=info}));qa340Prune(data);store.set(FILM_INFO_KEY,data);{const g_=k=>{const e_=$('fi_theater_'+k);return e_?(e_.value||'').trim():''};if($('fi_theater_url'))store.set('aic.donate',{url:g_('url'),acct:g_('acct'),yt:g_('yt'),ad:g_('ad')})}boardDraw();toast('상영정보를 저장했어요')}});
 PANELS.adm=()=>{if(!ADM){PANELS.admlogin();return}if(!ADMD)admInit();const _pb=document.querySelector('#pn .pbox'),_st=_pb?_pb.scrollTop:0;
  let h='';/* QA158: 메뉴는 왼쪽 LNB로 */
  CFG.HALLS.forEach(hl=>{const D=ADMD[hl.id];
@@ -2827,7 +2841,7 @@ Object.assign(A,{
   Object.assign(f,{title,credit:'관리자 등록',dur:dur||300,auto:!dur,color:PAL[(D.films.length+ +h)%4],syn:'관리자가 편성한 작품'});D.films.push(f);PANELS.adm()},
  adsave:async()=>{if(!ADM)return;if(window.CLOUD_UPLOADING){toast('영상 업로드가 끝난 뒤 저장해 주세요');return}admCollect();const o={gap:ADMD.gap};{const club=clubUrl();if(/^https:\/\//i.test(club))o.club=club}for(const hl of CFG.HALLS){if(!ADMD[hl.id].films.length){toast(hl.name+'에 작품이 필요해요');return}o[hl.id]={anchor:ADMD[hl.id].anchor,films:ADMD[hl.id].films}}
   if(window.CinemaCloud?.enabled){try{await window.CinemaCloud.saveSchedule(o)}catch(e){toast(e.message);return}}
-  store.set(SCHEDK,o);applySched();drawScreens();paintSeats();if(curSp){curSc=null;syncCine()}toast(window.CinemaCloud?.enabled?'공유 상영 목록을 저장했어요':'이 브라우저에 저장했어요');admInit();PANELS.adm()},
+  store.set(SCHEDK,o);applySched();qa340Prune();drawScreens();paintSeats();if(curSp){curSc=null;syncCine()}toast(window.CinemaCloud?.enabled?'공유 상영 목록을 저장했어요':'이 브라우저에 저장했어요');admInit();PANELS.adm()},
  adreset:async()=>{if(!ADM)return;if(window.CinemaCloud?.enabled){try{await window.CinemaCloud.saveSchedule(null)}catch(e){toast(e.message);return}}store.set(SCHEDK,null);applySched();admInit();drawScreens();paintSeats();toast('기본 편성으로 되돌렸어요');PANELS.adm()}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target&&e.target.id==='ad_pw')A.admlogin()});
@@ -6432,6 +6446,7 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
 #qa270 .qa338t:hover{background:#f6e7cc;color:#2a1d1f}
 #qa270 .qa338t svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 #qa270 .cell:hover .n{opacity:0}
+.qa340th{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.qa340th img{width:160px;aspect-ratio:16/9;object-fit:cover;border-radius:4px}
 #qa338v{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#f5ebdf;font-family:Pretendard,'Noto Sans KR',sans-serif}
 #qa338v .tt{font:600 18px/1.4 Pretendard,'Noto Sans KR',sans-serif}
 #qa338v .in{max-width:min(88vw,432px);display:flex;align-items:center;justify-content:center}
@@ -6467,6 +6482,11 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 #qa270.qa338tt .fx button{align-self:flex-start;margin-top:6px;height:36px;padding:0 16px;border:1px solid var(--sub);border-radius:999px}
 @media(max-width:760px){#qa270.qa338tt .dlg{height:100dvh;max-height:none}#qa270.qa338tt .fm{flex-direction:column}#qa270.qa338tt .ps{width:100%}}
 </style>
+<script id="qa340-cine">(function(){const H=window.QA340HTML||'';if(!H)return;let el=null;
+ setInterval(()=>{const c=document.getElementById('cine');if(!c)return;const B=document.body.classList,need=!c.hidden&&typeof curSp!=='undefined'&&curSp&&curSc&&!CINE_DONE&&!B.contains('qa135play')&&!B.contains('qa141need')&&document.getElementById('watch').hidden&&document.getElementById('cmsg').hidden;
+  if(need&&!el){el=document.createElement('div');el.id='qa340cine';el.innerHTML=H;c.appendChild(el);qa340Run(el,()=>false)}
+  else if(!need&&el){const e=el;el=null;const b=e.querySelector('.b i'),n=e.querySelector('.n');if(b)b.style.width='100%';if(n)n.textContent='100%';setTimeout(()=>e.remove(),250)}},200)})();
+</script>
 <script id="qa338-view">/* QA338: 크게 보기·카드 획득·버리기 확인을 한 가지 화면으로. 가방·수첩 슬롯은 누르면 크게 보기, 올리면 휴지통만 */
 (function(){
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}},W=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};

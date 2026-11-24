@@ -26,7 +26,7 @@ test('QA17 fig plant no longer overlaps the ticket booth', () => {
   assert(source.includes("[-LW+.6,0,7.85,'fig',0]"));
 });
 test('QA17 club entry view, unified mute, tap-to-pause screen', () => {
-  assert(source.includes('camYaw=camYawS=Math.PI+.3;camPitch=camPitchT=.46'));
+  assert(source.includes('camYaw=camYawS=cy_;camPitch=camPitchT=.42;camDist=camDistT=5.4')&&source.includes('me.position.set(BCX+6,0,BCZ+2.2)'));/* QA336: 계단 아래에서 스크린을 바라보는 첫 시점 */
   assert(source.includes("['L0','L1','B'].includes(curZone(me))"));
   assert(source.includes('CinemaAudio.setMuted=function(v){base(v);qa17ApplyMute()}'));
   assert(source.includes("fn:()=>A.clubstop()/* QA17"));

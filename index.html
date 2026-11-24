@@ -2897,7 +2897,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
    if(inH&&!sp){const sd=qa20Side(zc);if(sd)add('ctxside',sd.name+' 옆자리 앉기')/* QA135: 하단 퀵바와 겹치던 상영작 칩 삭제 */}
    if(zc==='P'&&typeof qa305Open==='function'&&!qa305Won())add('qa305open','퍼즐 풀기')/* QA305 */
    if(zc==='B'){/* QA91: 나가기는 퀵바 오른쪽 끝 */add('clubstop',CLUBSTOP?'영상 재생':'영상 멈추기')}
-   if(window.QA306)add('qa306shot','같이 사진 찍기');else if((zc==='L0'&&(qa20Near('qa13-tree-click',5.2)||me.position.z>LD-2.4/* QA194: 정문 창가에 다가가도 */))||(typeof qa306Spot==='function'&&qa306Spot()))add('ctxphoto','사진 찍기')/* QA94: 앉아서도 */;
+   if(window.QA306)add('qa306shot','같이 사진 찍기');/* QA338: 사진 찍기는 퀵바 카메라로 *//* QA94: 앉아서도 */;
    if(QA20.follow)add('ctxunfollow','따라가기 멈추기')}}
  let cb=$('ctxbar');if(!cb){cb=document.createElement('div');cb.id='ctxbar';cb.setAttribute('role','toolbar');cb.setAttribute('aria-label','지금 할 수 있는 일');document.body.appendChild(cb)}
  const html=X.join('');if(cb._h!==html){cb.innerHTML=html;cb._h=html}cb.hidden=!X.length||!!$('actorMenu')||(typeof LAYED!=='undefined'&&LAYED)}
@@ -2971,7 +2971,7 @@ R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-
  if(ud.qa255){qa255Pick(ud.qa255,o);return}/* QA255: 아이템 정보 */
  if(ud.act){if(ud.act.avatar){selectAvatar(ud.act.avatar);return}if(ud.act.ctx){qa20Obj(ud.act,o,az);return}if(az==='L0'||az==='L1'){approachObject(ud.act,o);return}if(ud.act.now){ud.act.fn();return}walkTo(me,ud.act.pt.x,ud.act.pt.z,ud.act.pt.zone,{after:ud.act.fn});return}
  if(o.isInstancedMesh){let id=h.instanceId;{const HN=HALLN[ud.hall];if(HN&&o===HN.IB){const c2=hs.find(q=>q.object===HN.IC&&q.instanceId!==id&&q.distance-h.distance<1.2);if(c2)id=c2.instanceId}}/* QA94: 앞줄 등받이 윗단을 스쳐 뒷좌석 방석에 닿으면 방석 쪽 좌석 */pickSeat(ud.hall,HALLN[ud.hall].seats[id]);return}
- if(ud.spot){const sp=ud.spot;if(sp.kind!=='cine'&&me.userData.seat!==sp&&typeof qa255Spot==='function'&&qa255Spot(sp,o))return;goSpot(sp);return}
+ if(ud.spot){const sp=ud.spot;if(sp.kind!=='cine'&&me.userData.seat!==sp&&typeof qa255Spot==='function')qa255Spot(sp,o);/* QA338: 의자를 누르면 가서 바로 앉음 · 살펴보기는 액션바 */goSpot(sp);return}
  if(typeof qa284ItemTap==='function'&&qa284ItemTap(o))return;/* QA284: 앉는 자리가 없는 장식(화분 등)도 눌러서 아이템 정보 보기 */
 if(me.userData.seat&&floors.includes(o)){standUp(me,true);me.userData.path=[];NEARSP=null;hudUpd();return}
  if(ud.stair){const lv=me.userData.lvl;walkTo(me,STX,lv?ST.z1+.9:ST.z0-.5,lv?'L0':'L1');return}
@@ -3170,7 +3170,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  if(false){/* QA172: 간식이 없으면 먹기 숨김, 그만보기 옆 크게보기(오른쪽 위 버튼 대신) *//* QA133: 관람 중엔 먹기·그만보기 둘만. 소리·크게 보기는 위쪽 아이콘 *//* QA132: 관람 중 일어나기 삭제 — 자리 이동은 좌석표, 나가기는 로비로 나가기 *//* QA83: 그만보기는 상단 X가 담당 */}
  else if(sp&&sp.kind==='cine'&&CWIDE){}
  qa20Ctx(zc,inH,sp,cine);
- h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(inH){const pl_=!!curSp||!!window.QA234SEQ;h+=[['bag','가방',tbIco('bag')],/* QA225: 티켓은 가방 안으로 */[pl_?'qa219stop':'qa219play',pl_?'관람중단':'영화관람',pl_?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 5.5v13l10.5-6.5z"/></svg>'],(HELD.some(x=>!isFlower(x.k))?['qa219eat','간식먹기',tbIco('eatn')]:['qa230buy','간식구매',tbIco('eatn')])/* QA231: 간식이 없으면 간식구매 */].map((x,i)=>`<button class="fx${i===0&&hc?' sep':''}" data-a="${x[0]}">${x[2]}<span>${x[1]}</span></button>`).join('')/* QA219: 상영관 퀵바 — 티켓·가방·영화관람(상영 중 관람중단)·간식먹기·로비로 나가기 */}else if(!cine)h+=['bag:가방','book:수첩','tt:상영작','avatar:캐릭터'/* QA40 *//* QA225: 티켓은 가방 안으로 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${tbIco(k)}<span>${t}</span></button>`}).join('');
+ h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(inH){const pl_=!!curSp||!!window.QA234SEQ;h+=[['bag','가방',tbIco('bag')],/* QA225: 티켓은 가방 안으로 */[pl_?'qa219stop':'qa219play',pl_?'관람중단':'영화관람',pl_?'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>':'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M8 5.5v13l10.5-6.5z"/></svg>'],(HELD.some(x=>!isFlower(x.k))?['qa219eat','간식먹기',tbIco('eatn')]:['qa230buy','간식구매',tbIco('eatn')])/* QA231: 간식이 없으면 간식구매 */].map((x,i)=>`<button class="fx${i===0&&hc?' sep':''}" data-a="${x[0]}">${x[2]}<span>${x[1]}</span></button>`).join('')/* QA219: 상영관 퀵바 — 티켓·가방·영화관람(상영 중 관람중단)·간식먹기·로비로 나가기 */}else if(!cine)h+=['bag:가방','book:수첩','tt:상영작','avatar:캐릭터','camshot:카메라'/* QA40 · QA338 *//* QA225: 티켓은 가방 안으로 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${k==='camshot'?'<svg class="lucide" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.5L8 5.5h8L17.5 8H21v11.5H3z"/><circle cx="12" cy="13.5" r="3.8"/></svg>':tbIco(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
  if(zc==='P')h+=`<button class="fx" data-a="qa199out" aria-label="아지트로 나가기">${lucide('hallDoor')}<span>아지트로 나가기</span></button>`/* QA199: 영사실에서 바로 나가기 */;
@@ -5582,8 +5582,8 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
  window.QA255={sel:null,BY};window.QA255HIT=[];
  /* 의자·소파가 아닌 아이템(화분 등)은 보이지 않는 클릭 영역 */LAYI.forEach(it=>{const k=BY[it.id];if(!k||it.spots.length)return;it.objs.forEach(e=>{if(e.o.isSprite||e.o.isLight)return;const b=new THREE.Box3().setFromObject(e.o);if(b.isEmpty())return;const sz=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());const h=new THREE.Mesh(new THREE.BoxGeometry(sz.x,sz.y,sz.z),new THREE.MeshBasicMaterial({visible:false}));h.position.copy(c);h.userData.qa255={k,top:e.o,it};S.add(h);QA255HIT.push(h);it.objs.push({o:h,p:h.position.clone(),q:h.quaternion.clone()});h.userData._lay=it})});
  window.qa255Spot=(sp,o)=>{if(curZone(me)!==sp.zone||sp.zone[0]==='H')return false;const it=LAYI.find(i=>i.spots.some(e=>e.s===sp)),k=it&&BY[it.id];if(!k)return false;let tp=topOf(o);{const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);if(gs.length&&!gs.includes(tp))tp=gs.sort((a,b)=>Math.hypot(a.position.x-sp.x,a.position.z-sp.z)-Math.hypot(b.position.x-sp.x,b.position.z-sp.z))[0]}/* QA278: 카드 사진은 앉는 의자 */QA255.sel={k,sp,top:tp,it,d0:Math.hypot(me.position.x-tp.position.x,me.position.z-tp.position.z)};hudUpd();return true};
- window.qa255Pick=(d,o)=>{QA255.sel={k:d.k,sp:null,top:d.top,it:d.it,d0:Math.hypot(me.position.x-d.top.position.x,me.position.z-d.top.position.z)};hudUpd()};
- const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h=(s_.sp?'<button type="button" data-a="qa255sit">앉기</button>'+(HELD.some(x=>!isFlower(x.k))?'<button type="button" data-a="qa263siteat">앉아서 먹기</button>':''):'')+'<button type="button" data-a="qa255info">아이템 정보 보기</button>';if(!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;cb.hidden=false}}}catch(e){}return r};
+ window.qa255Pick=(d,o)=>{const w=d.top.getWorldPosition(new THREE.Vector3());approachObject({pt:{x:w.x,z:w.z,zone:curZone(me)},fn:()=>{QA255.sel={k:d.k,sp:null,top:d.top,it:d.it,d0:Math.hypot(me.position.x-w.x,me.position.z-w.z)};hudUpd()}},d.top)};/* QA338: 누르면 그 앞까지 감 */
+ const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h='<button type="button" data-a="qa255info">살펴보기</button>'/* QA338 */;if(!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;cb.hidden=false}}}catch(e){}return r};
  A.qa255sit=()=>{const s_=QA255.sel;QA255.sel=null;if(s_&&s_.sp)goSpot(s_.sp);hudUpd()};
  /* 아이템 3D 컷(투명 배경) */let PR=null;function shot(top){if(!PR){PR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});PR.setPixelRatio(1)}PR.setSize(480,502,false);
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x8a7a6a,1.0));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(2,3,4);sc.add(dl);
@@ -5592,7 +5592,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
   const f=new THREE.Vector3(Math.sin(top.rotation.y+.6),0,Math.cos(top.rotation.y+.6)),cam=new THREE.PerspectiveCamera(28,480/502,.05,100),R=Math.max(sz.x,sz.y*1.05,sz.z)/(2*Math.tan(14*Math.PI/180))*1.08+Math.max(sz.x,sz.z)*.5;cam.position.copy(c).addScaledVector(f,R);cam.position.y=c.y+R*.32;cam.lookAt(c);
   PR.setClearColor(0,0);PR.render(sc,cam);return PR.domElement.toDataURL('image/png')}
  A.qa255info=async()=>{const s_=QA255.sel;if(!s_)return;QA255.sel=null;hudUpd();const d=P[s_.k];if(!d)return;const C_=qa255Cards,L=C_.list(),have=L.find(x=>x.n===d.name);
-  if(have){panel('<h3>'+esc(d.name)+'</h3><div style="text-align:center"><img alt="" src="'+have.src+'" style="width:min(88vw,432px);border-radius:6.49%/4.62%;box-shadow:0 10px 26px rgba(0,0,0,.28)"></div>');return}
+  if(have){QA338.view({img:have.src,card:1});return}
   let por='';try{por=shot(s_.top)}catch(e){}const src=await qa255Compose(d.name,por,0,'',null,{pre:'I',no:d.no,rows:d.rows});qa255Fly(src,()=>{const L2=C_.list();if(!L2.some(x=>x.n===d.name)){L2.push({n:d.name,src,t:Date.now(),no:d.no,item:1});C_.save()}})};
  window.qa255Shot=shot;window.qa255P=P;
 })();
@@ -5732,7 +5732,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
   const fin=()=>{let y=415.2*S2;c.textBaseline='middle';rows.forEach(([a,b])=>{c.fillStyle='#484848';c.fillRect(PX,y,PW,1*S2);c.fillStyle='#161616';c.font=`500 ${15*S2}px ${KR}`;c.fillText(a,PX,y+13.3*S2);c.textAlign='right';c.fillText(b,PR_,y+13.3*S2,PW-60*S2);c.textAlign='left';y+=26.6*S2});c.fillStyle='#484848';c.fillRect(PX,y,PW,1*S2);res(cv.toDataURL('image/jpeg',.9))};
   const im=new Image();im.onload=()=>{const pad=.06,aw=PW*(1-2*pad),ah=ph*(1-2*pad),r=Math.min(aw/im.width,ah/im.height),w=im.width*r,h=im.height*r;c.save();c.beginPath();c.rect(PX,py,PW,ph);c.clip();c.drawImage(im,PX+(PW-w)/2,py+(ph-h)/2,w,h);c.restore();fin()};im.onerror=fin;if(por)im.src=por;else fin()})}
  function bagBtn(){return [...document.querySelectorAll('button,[data-a]')].find(b=>b.offsetParent&&b.textContent.trim()==='가방')}
- function fly(src,onTake,onClose){/* QA281: 카드가 뜨면 액션바에 「카드 획득」 — 아무 데나 눌러도 저장되고 수첩으로 들어감(카드 아래 버튼 없음) */const o=document.createElement('div');o.className='qa194fly ask';o.innerHTML='<div class="qa200c"><img alt="카드" src="'+src+'"></div>';document.body.appendChild(o);const img=o.querySelector('img');
+ function fly(src,onTake,onClose){if(window.QA338)return QA338.card(src,onTake,onClose);/* QA281: 카드가 뜨면 액션바에 「카드 획득」 — 아무 데나 눌러도 저장되고 수첩으로 들어감(카드 아래 버튼 없음) */const o=document.createElement('div');o.className='qa194fly ask';o.innerHTML='<div class="qa200c"><img alt="카드" src="'+src+'"></div>';document.body.appendChild(o);const img=o.querySelector('img');
   requestAnimationFrame(()=>o.classList.add('in'));let done=false;document.body.classList.add('qa281card');window.QA281TAKE=take;try{hudUpd()}catch(_){}
   function take(){if(done)return;done=true;window.QA281TAKE=null;document.body.classList.remove('qa281card');try{onTake&&onTake()}catch(_){}o.classList.remove('ask');go();try{hudUpd()}catch(_){}}
   o.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();take()});
@@ -6037,8 +6037,8 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  const cards=()=>{try{return qa255Cards.list()}catch(e){return J('aic.cards',[])}};
  /* ---- 만남 기록: 하루 1회 · 2번째 만남에 작은 소품 선물(횟수는 화면에 보이지 않음) ---- */
  const PROPS={'토토':'잘려 나온 필름 조각','마리아 폰 트랩':'기타 피크','알프레도 할아버지':'낡은 영사기 렌즈 캡','앙드레':'택시 미터기 영수증','쥘리에트':'목탄 스케치 한 장','마르셀':'카페 성냥갑','가스통':'옛 우표 한 장','이베트':'재즈 클럽 초대권','마들렌 할머니':'레이스 손수건','에밀 감독':'촬영 슬레이트 조각','클로에':'빨간 스카프 실 한 타래','시몬':'서점 책갈피','미스 모지':'BUVETTE 쿠폰','미시즈 퍼재컬리':'구멍 뚫린 옛 티켓','꽃 파는 소녀':'말린 장미 꽃잎','올드 톰':'아지트 코스터'};
- const meet=g=>{try{const u=g&&g.userData;if(!u||u.remote||!u.displayName||g===me)return;const n=u.displayName,M=J('aic.meet',{}),r=M[n]||(M[n]={days:[],first:Date.now()}),t=today();if(r.days.includes(t)){W('aic.meet',M);return}r.days.push(t);W('aic.meet',M);
-   if(r.days.length>=2&&!r.gift)/* QA284: 2번째 만남에 소품 */{r.gift=1;W('aic.meet',M);const pr=PROPS[n]||(n+'의 작은 기념품');const K=J('aic.keeps',[]);K.push({nm:pr,from:n,t:Date.now()});W('aic.keeps',K);setTimeout(()=>{try{sayB(g,'자주 만나네요. 이거 받아요 — '+pr,6)}catch(e){}try{toast(pr+'을(를) 받았어요 · 가방 기타')}catch(e){}},700)}}catch(e){}};
+ const meet=g=>{try{const u=g&&g.userData;if(!u||u.remote||!u.displayName||g===me)return;const n=u.displayName,M=J('aic.meet',{}),r=M[n]||(M[n]={days:[],first:Date.now()}),t=today();if(r.days.includes(t)){W('aic.meet',M);return}r.days.push(t);W('aic.meet',M);}catch(e){}};/* QA338: 소품은 선물을 건넸을 때 답례로 */
+ window.qa270Prop=n=>PROPS[n]||(n+'의 작은 기념품');
  const _sm=window.showActorMenu;if(typeof _sm==='function'){window.showActorMenu=function(t,local){try{if(t&&!t.userData.remote)meet(t)}catch(e){}return _sm.apply(this,arguments)};try{showActorMenu=window.showActorMenu}catch(e){}}
  window.qa270Meet=meet;
  /* ---- 공통 창 ---- */
@@ -6048,12 +6048,12 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  const zoom=(src,cap,bk,nm)=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const z=document.createElement('div');z.className='zoom';z.innerHTML=(bk?`<div class="flip" data-k="flip"><div class="fi"><img alt="" src="${src}"><div class="bk"><b>${esc(nm?nm+'의 한마디':'한마디')}</b><p>${esc(bk)}</p></div></div></div>`:`<img alt="" src="${src}">`)+(cap?`<p>${cap}</p>`:'')+`<div class="zb">${bk?'<button type="button" data-k="flip">뒷면 보기</button>':''}<button type="button" data-k="unzoom">닫기</button></div>`;d.appendChild(z)};/* QA277: 캐릭터 카드 뒷면 = 자기소개 */
  /* ---- 수첩 ---- */
  const bookBody=tab=>{const C=cards();
-  if(tab==='people'){const M=J('aic.meet',{}),names=Object.keys(M).sort((a,b)=>(M[a].first||0)-(M[b].first||0));C.filter(c=>!c.item&&!M[c.n]).forEach(c=>names.push(c.n));if(!names.length)return '<p class="empty">아직 만난 사람이 없어요.</p>';
-   return '<div class="grid">'+names.map(n=>{const c=C.find(x=>!x.item&&x.n===n),k=(M[n]&&M[n].days.length)||0;return c?`<button type="button" class="cell card bare" data-zoom="${C.indexOf(c)}"><img alt="" src="${c.src}"></button>`:`<div class="cell slot"><div class="ph">?</div><span>${esc(n)}</span></div>`}).join('')+'</div>'}
+  if(tab==='people'){/* QA338: 획득한 카드(인물+아이템)만 먼저, 그 뒤는 빈 슬롯 */let tot=5;try{tot+=new Set(NPCS.filter(n=>n!==me&&!n.userData.remote&&n.userData.displayName).map(n=>n.userData.displayName)).size}catch(e){}const blank=Math.max(0,tot-C.length);
+   return '<div class="grid">'+C.map((c,i)=>`<button type="button" class="cell card bare" data-zoom="${i}"><img alt="" src="${c.src}"></button>`).join('')+'<div class="cell slot"><div class="ph">?</div></div>'.repeat(blank)+'</div>'}
   if(tab==='things'){const M=(()=>{const a=J('aic.memos',[]),seen=new Set(),o=a.filter(m=>{const k=String(m.t||'').replace(/[\s.,!?…“”"']/g,'');if(seen.has(k))return false;seen.add(k);return true});if(o.length!==a.length)W('aic.memos',o);return o})()/* QA277: 같은 소문은 한 번만 */;if(!M.length)return '<p class="empty">NPC에게 말을 걸면 들은 소문과 힌트가 적혀요.</p>';return '<div class="memos">'+M.map((m,i)=>[m,i]).reverse().map(([m,i])=>`<div class="memo"><button type="button" class="del" data-memo="${i}" aria-label="메모 삭제">${lucide('trash2',16)}</button><b>${esc(m.kind)}</b><p>${esc(m.t)}</p></div>`).join('')+'</div>'}
-  /* 미감 수집 = 인테리어(아이템 카드) + 패키지(포장지) */const L=C.filter(c=>c.item);let h='<h3>인테리어</h3>'+(L.length?'<div class="grid">'+L.map(c=>`<button type="button" class="cell card" data-zoom="${C.indexOf(c)}"><img alt="" src="${c.src}"><span>${esc(c.n)}</span></button>`).join('')+'</div>':'<p class="empty">가구·화분의 아이템 정보를 보면 모여요.</p>');
-  const A_=window.qa121Api,o=A_?A_.get():{},ids=A_?Object.keys(o).filter(id=>o[id]>0&&A_.D[id.split(':')[0]]):[];h+='<h3>패키지</h3>'+(ids.length?'<div class="grid">'+ids.map(id=>{const [k,vi]=id.split(':');return `<button type="button" class="cell wrap" data-wrap="${id}"><img alt="" src="${A_.draw(k,+vi)}"><span>${A_.D[k].nm}${vi==='1'?' ✦':''}</span><span class="n">×${o[id]}</span></button>`}).join('')+'</div>':'<p class="empty">간식을 다 먹으면 포장지가 모여요.</p>');return h};
- const BOOKT=[['people','만난 사람들'],['things','발견한 것들'],['taste','미감 수집']];
+  return ''};
+ const wrapsHTML=()=>{const A_=window.qa121Api,o=A_?A_.get():{},ids=A_?Object.keys(o).filter(id=>o[id]>0&&A_.D[id.split(':')[0]]):[];return ids.length?'<h3>패키지</h3><div class="grid">'+ids.map(id=>{const [k,vi]=id.split(':');return `<button type="button" class="cell wrap" data-wrap="${id}"><img class="im" alt="" src="${QA338.cut(A_.draw(k,+vi))}"><span>${A_.D[k].nm}${vi==='1'?' ✦':''}</span><span class="n">×${o[id]}</span></button>`}).join('')+'</div>':''};
+ const BOOKT=[['people','획득한 카드'],['things','메모장']];/* QA338 */
  const openBook=(tab='people')=>{try{closePanel()}catch(e){}ST={kind:'book',tab};shell('수첩','',BOOKT,tab,bookBody(tab),'')};
  /* ---- 가방 ---- */
  const bagBody=(tab,sel)=>{
@@ -6062,13 +6062,13 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
   if(tab==='photo'){const P=typeof qa68List==='function'?qa68List():[];return P.length?'<div class="grid">'+P.map((x,i)=>`<button type="button" class="cell photo" data-sel="p${i}" aria-pressed="${sel.has('p'+i)}"><img alt="" src="${x.src}"></button>`).join('')+'</div>':'<p class="empty">찍은 사진이 없어요.</p>'}
   const F=HELD.map((x,i)=>[x,i]).filter(([x])=>isFlower(x.k)),K=J('aic.keeps',[]),P=typeof qa68List==='function'?qa68List():[];let h='';
   if(F.length){const g={};F.forEach(([x])=>g[x.k]=(g[x.k]||0)+1);h+='<h3>꽃</h3><div class="grid">'+Object.entries(g).map(([k,n])=>`<button type="button" class="cell" data-sel="${k}" aria-pressed="${sel.has(k)}">${icon(k)}<span>${IT[k][1]}</span>${n>1?`<span class="n">×${n}</span>`:''}</button>`).join('')+'</div>'}
-  if(K.length)h+='<h3>받은 소품</h3><div class="grid">'+K.map((x,i)=>`<button type="button" class="cell" data-sel="k${i}" aria-pressed="${sel.has('k'+i)}">${(window.QA336&&QA336.img(x.nm))?`<img class="p3" alt="" src="${QA336.img(x.nm)}">`:'<span class="em">🎁</span>'}<span>${esc(x.nm)}</span><small>${esc(x.from)}</small></button>`).join('')+'</div>';
-  return h||'<p class="empty">비어 있어요.</p>'};
- const BAGT=[['snack','간식'],['ticket','티켓'],['photo','사진'],['etc','소지품']];
+  if(K.length)h+='<h3>받은 소품</h3><div class="grid">'+K.map((x,i)=>`<button type="button" class="cell" data-sel="k${i}" aria-pressed="${sel.has('k'+i)}">${(window.QA336&&QA336.img(x.nm))?`<img class="im" alt="" src="${QA336.img(x.nm)}">`:'<span class="em">🎁</span>'}<span>${esc(x.nm)}</span><small>${esc(x.from)}</small></button>`).join('')+'</div>';
+  h+=wrapsHTML();return h||'<p class="empty">비어 있어요.</p>'};
+ const BAGT=[['snack','간식'],['ticket','티켓'],['photo','사진첩'],['etc','발견한 것들']];/* QA338 */
  /* 실제 3D 아이템 이미지 */let TR=null;const TH={};const thumb=k=>{const _p=(window.QA287SNACK||{})[k];if(_p)return _p/* QA287: 실제 제품 사진 */;if(TH[k])return TH[k];try{if(!TR){TR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});TR.setPixelRatio(1);TR.setSize(256,256,false);try{TR.outputEncoding=R.outputEncoding}catch(e){}}
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x9a8a7a,1.0));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(1.5,2.5,3);sc.add(dl);const m=itemMesh(k);sc.add(m);m.updateMatrixWorld(true);const bb=new THREE.Box3().setFromObject(m),c=bb.getCenter(new THREE.Vector3()),z=bb.getSize(new THREE.Vector3()),r=Math.max(z.x,z.y,z.z)*.62||.2;
   const cam=new THREE.PerspectiveCamera(30,1,.01,50);const d=r/Math.tan(15*Math.PI/180);cam.position.set(c.x+d*.35,c.y+d*.28,c.z+d*.9);cam.lookAt(c);TR.setClearColor(0x000000,0);TR.render(sc,cam);TH[k]=TR.domElement.toDataURL('image/png')}catch(e){TH[k]=''}return TH[k]};
- const icon=k=>{const t=thumb(k);return t?`<img class="im" alt="" src="${t}">`:`<span class="em">${IT[k][0]}</span>`};
+ const icon=k=>{const t=QA338.cut(thumb(k));return t?`<img class="im" alt="" src="${t}">`:`<span class="em">${IT[k][0]}</span>`};
  const bagFoot=(tab,sel)=>tab==='snack'?`<button type="button" data-k="trash" ${sel.size?'':'disabled'}>버리기</button><button type="button" class="pri" data-k="eat" ${sel.size===1?'':'disabled'}>먹기</button>`:`<button type="button" data-k="trash" ${sel.size?'':'disabled'}>버리기</button>`/* QA274: 간식만 먹기, 나머지는 버리기만 */;
  const openBag=(tab='snack')=>{if(!BAGT.some(x=>x[0]===tab))tab='snack';try{closePanel()}catch(e){}const sel=ST&&ST.kind==='bag'&&ST.tab===tab?ST.sel:new Set();ST={kind:'bag',tab,sel};shell('가방','',BAGT,tab,bagBody(tab,sel),bagFoot(tab,sel))};
  const re=()=>{if(!ST)return;ST.kind==='book'?openBook(ST.tab):openBag(ST.tab)};
@@ -6264,8 +6264,7 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
   let it=null,top=null;for(const i of LAYI){if(!BY[i.id])continue;for(const e of i.objs){let x=o;for(let d=0;d<8&&x;d++,x=x.parent)if(x===e.o){it=i;top=e.o;break}if(it)break}if(it)break}
   if(!it)return false;const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);if(gs.length)top=gs[0];
   const w=top.getWorldPosition(new THREE.Vector3());if(curZone(me)!==curZone({position:w,userData:{lvl:me.userData.lvl}}))return false;
-  const d=Math.hypot(me.position.x-w.x,me.position.z-w.z);if(d>4.5)return false;
-  QA255.sel={k:BY[it.id],sp:{x:w.x,z:w.z,zone:curZone(me)},top,it,d0:d};hudUpd();return true}catch(e){return false}};
+  approachObject({pt:{x:w.x,z:w.z,zone:curZone(me)},fn:()=>{QA255.sel={k:BY[it.id],sp:null,top,it,d0:Math.hypot(me.position.x-w.x,me.position.z-w.z)};hudUpd()}},top);return true}catch(e){return false}};
 })();
 </script>
 <script id="qa286-bag">/* QA286: 손에 무언가를 들고 있으면 액션바에 '가방에 넣기' — 물건은 그대로 두고 손만 비움 */
@@ -6375,23 +6374,23 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
 #qa295 .close:hover{background:var(--panel)}
 #qa295 .body{flex:1;min-height:0;overflow:auto;padding:4px 22px 20px;scrollbar-width:none}
 #qa295 h3{margin:14px 0 8px;font:500 13px/1.4 'Noto Sans KR',sans-serif;color:var(--sub)}
-#qa295 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
-#qa295 .it{all:unset;cursor:pointer;background:#f4ecdc;color:#2a1d1f;border-radius:10px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;font-size:12px;box-sizing:border-box}
+#qa295 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#qa295 .it{all:unset;cursor:pointer;min-width:0;aspect-ratio:1/1;background:var(--panel);border:1px solid var(--line);color:var(--fg);border-radius:6px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;font-size:13px;box-sizing:border-box;overflow:hidden}/* QA338: 가방·수첩 슬롯과 같은 크기·모양 */
 #qa295 .it:hover{outline:2px solid var(--accent)}
-#qa295 .it img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:6px;background:#fff}
+#qa295 .it img{width:100%;flex:1;min-height:0;object-fit:contain;display:block}
 #qa295 .it .em{font-size:30px;line-height:1.2}
-#qa295 .it b{font-weight:500;font-size:12px;line-height:1.35;word-break:keep-all}
-@media (max-width:520px){#qa295 .dlg{width:100vw;height:100dvh;max-height:none;border-radius:0}#qa295 .body{padding:4px 16px 16px}#qa295 header{padding:14px 16px 8px}}
+#qa295 .it b{font-weight:400;font-size:13px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:none}
+@media (max-width:760px){#qa295 .grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:520px){#qa295 .dlg{width:100vw;height:100dvh;max-height:none;border-radius:0}#qa295 .body{padding:4px 16px 16px}#qa295 header{padding:14px 16px 8px}}
 </style>
 <script id="qa295-gift">/* QA295: 선물하기 — 손에 든 것뿐 아니라 가방의 소품과 수첩의 캐릭터 카드·패키지도 줄 수 있음 */
 (function(){
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}},W=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
  const eating=()=>{try{return EAT?HELD.indexOf(EAT.it):-1}catch(e){return -1}};
  const items=()=>{const out=[];
-  try{HELD.forEach((it,i)=>{if(i===eating()||it.slow)return;out.push({t:'held',i,k:it.k,nm:(IT[it.k]||[])[1]||'',img:(window.QA287SNACK||{})[it.k]||'',em:(IT[it.k]||[])[0]||'🎁'})})}catch(e){}
+  try{HELD.forEach((it,i)=>{if(i===eating()||it.slow)return;out.push({t:'held',i,k:it.k,nm:(IT[it.k]||[])[1]||'',img:QA338.cut((window.QA287SNACK||{})[it.k]||''),em:(IT[it.k]||[])[0]||'🎁'})})}catch(e){}
   try{J('aic.keeps',[]).forEach((x,i)=>out.push({t:'keep',i,nm:x.nm||'',em:'🎁',img:(window.QA336&&QA336.img(x.nm||''))||''}))}catch(e){}
   try{qa255Cards.list().forEach((c,i)=>{if(c&&c.src)out.push({t:'card',i,nm:c.n||'',img:c.src})})}catch(e){}
-  try{const A_=window.qa121Api,o=A_?A_.get():{};Object.keys(o).forEach(id=>{if(!(o[id]>0))return;const [k,vi]=id.split(':');if(!A_.D[k])return;out.push({t:'wrap',id,nm:A_.D[k].nm,img:A_.draw(k,+vi)})})}catch(e){}
+  try{const A_=window.qa121Api,o=A_?A_.get():{};Object.keys(o).forEach(id=>{if(!(o[id]>0))return;const [k,vi]=id.split(':');if(!A_.D[k])return;out.push({t:'wrap',id,nm:A_.D[k].nm,img:QA338.cut(A_.draw(k,+vi))})})}catch(e){}
   return out};
  window.qa295Items=items;
  window.qa295Has=()=>items().length>0;
@@ -6401,7 +6400,7 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
   close();const w=document.createElement('div');w.id='qa295';
   const sec=(t,f)=>{const g=L.map((x,i)=>[x,i]).filter(([x])=>f(x));if(!g.length)return '';
    return `<h3>${t}</h3><div class="grid">${g.map(([x,i])=>`<button type="button" class="it" data-i="${i}">${x.img?`<img alt="" src="${x.img}">`:`<span class="em">${x.em||'🎁'}</span>`}<b>${esc(x.nm)}</b></button>`).join('')}</div>`};
-  w.innerHTML=`<div class="dlg" role="dialog" aria-label="선물 고르기"><header><div><h2>${esc(target.userData.displayName||'')}에게 주기</h2><p>건네줄 선물을 골라 주세요</p></div><button class="close" type="button" data-k="x" aria-label="닫기">✕</button></header><div class="body">${sec('손에 든 것',x=>x.t==='held')}${sec('가방 · 소지품',x=>x.t==='keep')}${sec('수첩 · 캐릭터 카드',x=>x.t==='card')}${sec('수첩 · 패키지',x=>x.t==='wrap')}</div></div>`;
+  w.innerHTML=`<div class="dlg" role="dialog" aria-label="선물 고르기"><header><div><h2>${esc(target.userData.displayName||'')}에게 주기</h2><p>건네줄 선물을 골라 주세요</p></div><button class="close" type="button" data-k="x" aria-label="닫기">✕</button></header><div class="body">${sec('손에 든 것',x=>x.t==='held')}${sec('가방 · 발견한 것들',x=>x.t==='keep'||x.t==='wrap')}${sec('수첩 · 획득한 카드',x=>x.t==='card')}</div></div>`;
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','click','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
   w.addEventListener('click',ev=>{if(ev.target===w){close();return}const b=ev.target.closest('button');if(!b)return;
    if(b.dataset.k==='x'){close();return}
@@ -6413,84 +6412,130 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
    else if(x.t==='card'){const C=qa255Cards.list();C.splice(x.i,1);qa255Cards.save()}
    else if(x.t==='wrap'){const A_=window.qa121Api,o=A_.get();o[x.id]=(o[x.id]||1)-1;if(o[x.id]<=0)delete o[x.id];try{localStorage.setItem('aic.wraps',JSON.stringify(o))}catch(e){}}}catch(e){}
   try{say(target,THX[Math.random()*THX.length|0])}catch(e){}
-  try{dismissActor()}catch(e){}
+  ret(target,1800);try{dismissActor()}catch(e){}
   toast('「'+x.nm+'」을 건넸어요');try{hudUpd()}catch(e){}}
+ /* QA338: 선물을 건네면 NPC가 자기 소지품을 답례로 줌(인물마다 한 번) */function ret(g,ms){try{const u=g&&g.userData;if(!u||u.remote||!u.displayName||g===me)return;const n=u.displayName,M=J('aic.meet',{}),r=M[n]||(M[n]={days:[],first:Date.now()});if(r.gift)return;r.gift=1;W('aic.meet',M);const pr=qa270Prop(n);setTimeout(()=>{const K=J('aic.keeps',[]);K.push({nm:pr,from:n,t:Date.now()});W('aic.keeps',K);try{sayB(g,'이건 제 답례예요 — '+pr,6)}catch(e){}try{toast(pr+'을(를) 받았어요')}catch(e){}},ms||0)}catch(e){}}
+ {const _gi=giveItem;giveItem=function(i){const t=GIFT_TARGET,n=HELD.length;const r=_gi.apply(this,arguments);if(t&&!t.userData.remote)ret(t,4200);return r}}
  /* 선물 메뉴를 새 고르기 창으로 · 가방/수첩에서 미리 고른 것이 있으면 바로 건넴 */
  const _gm=window.giftMenu;window.giftMenu=function(){try{const t=(typeof GIFT_TARGET!=='undefined'&&GIFT_TARGET)||null;if(t&&t.userData.giftEating){toast('지금 선물을 받고 있어요');return}
    if(t&&window.QA297PRE){const pre=QA297PRE;window.QA297PRE=null;const L=items();const x=L.find(y=>y.t===pre.t&&(pre.t==='held'?y.k===pre.k:pre.t==='wrap'?y.id===pre.id:y.i===pre.i));if(x){give(t,x);return}}
    if(t&&qa295Has()){qa295Open(t);return}}catch(e){}return _gm&&_gm.apply(this,arguments)};
 })();
 </script>
-<style id="qa297-css">/* QA297: 가방·수첩 아이템에 올리면(터치는 한 번 누르면) 먹기·선물하기·버리기가 그 자리에 뜸 — 하단 버튼 없음 */
+<style id="qa338-css">/* QA338: 카드·아이템 크게 보기(흐린 딤 위에 대상만 + 하단 버튼) · 슬롯 휴지통 · 카메라 장면 잡기 · 상영작 창 */
 #qa270 footer{display:none!important}
 #qa270 .cell,#qa270 .tkc{position:relative}
 #qa270 .tkc{width:min(100%,440px)}#qa270 .tkc .tcw{margin:0}
-#qa270 .qa297ov{position:absolute;inset:0;z-index:3;display:grid;grid-template-columns:repeat(2,36px);justify-content:center;align-content:center;gap:8px;padding:8px;box-sizing:border-box;background:rgba(24,12,16,.78);border-radius:inherit;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-#qa270 .qa297ov button{all:unset;cursor:pointer;pointer-events:auto!important;width:36px;height:36px;border-radius:50%;background:rgba(246,231,204,.14);border:1px solid rgba(246,231,204,.4);color:#f6e7cc;display:grid;place-items:center;box-sizing:border-box}
-#qa270 .qa297ov button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
-#qa270 .qa297ov button:hover{background:#f6e7cc;color:#2a1d1f}
-#qa297big{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px}
-#qa297big .in{max-width:min(88vw,432px);max-height:74dvh;display:flex;align-items:center;justify-content:center}
-#qa297big .in img{max-width:100%;max-height:74dvh;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.4);background:#fff}
-#qa297big .in .tx{background:#fff;color:#141414;border-radius:14px;padding:26px 30px;font:500 18px/1.5 'Noto Sans KR',sans-serif;text-align:center;white-space:pre-line}
-#qa297big .in .tk{width:min(86vw,420px)}
-#qa297big p{margin:0;color:#b8a5a9;font:400 14px 'Noto Sans KR',sans-serif}
-#qa297big button{all:unset;cursor:pointer;height:40px;padding:0 20px;border-radius:999px;border:1px solid #b8a5a9;color:#f5ebdf;font:500 14px/40px 'Noto Sans KR',sans-serif}
+#qa270 .slot .ph{border-style:solid;font-size:34px;opacity:.35}
+#qa270 nav button{white-space:nowrap;padding:0 4px}@media(max-width:760px){#qa270 nav button{font-size:15px;letter-spacing:-.3px}}
+#qa270 .qa338t{position:absolute;right:6px;top:6px;z-index:3;width:30px;height:30px;border-radius:50%;background:rgba(24,12,16,.82);border:1px solid rgba(246,231,204,.4);color:#f6e7cc;display:grid;place-items:center;cursor:pointer}
+#qa270 .qa338t:hover{background:#f6e7cc;color:#2a1d1f}
+#qa270 .qa338t svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#qa270 .cell:hover .n{opacity:0}
+#qa338v{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#f5ebdf;font-family:Pretendard,'Noto Sans KR',sans-serif}
+#qa338v .tt{font:600 18px/1.4 Pretendard,'Noto Sans KR',sans-serif}
+#qa338v .in{max-width:min(88vw,432px);display:flex;align-items:center;justify-content:center}
+#qa338v .in img{display:block;max-width:100%;max-height:66dvh;object-fit:contain}
+#qa338v .in img.cd{border-radius:6.49%/4.62%;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+#qa338v .in img.ph{border-radius:6px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+#qa338v .in .tk{width:min(86vw,420px)}
+#qa338v .in .tx{font:500 18px/1.6 Pretendard,'Noto Sans KR',sans-serif;text-align:center;white-space:pre-line}
+#qa338v p{margin:0;color:#b8a5a9;font:400 14px Pretendard,'Noto Sans KR',sans-serif;text-align:center}
+#qa338v .zb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#qa338v .zb button{all:unset;cursor:pointer;height:40px;padding:0 20px;border-radius:999px;border:1px solid #b8a5a9;color:#f5ebdf;font:500 14px/40px Pretendard,'Noto Sans KR',sans-serif;box-sizing:border-box}
+#qa338v .zb button.pri{background:#f6e7cc;border-color:#f6e7cc;color:#211317}
+#qa338v .flip{perspective:1400px;cursor:pointer}#qa338v .fi{position:relative;transition:transform .5s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}#qa338v .flip.on .fi{transform:rotateY(180deg)}
+#qa338v .fi img{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+#qa338v .bk{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fff;color:#141414;border-radius:6.49%/4.62%;padding:28px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;overflow:auto}
+#qa338v .bk b{font-size:20px;font-weight:700}#qa338v .bk span{font-size:16px;line-height:1.65;color:#2a2a2a;white-space:pre-wrap}
+/* 카메라: 화면 UI를 걷고 정사각 틀만 */
+body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar,body.qa338cam #ctxbar,body.qa338cam #hint,body.qa338cam #qa127map,body.qa338cam #qa244tip,body.qa338cam #actorMenu,body.qa338cam #qa17cta{display:none!important}
+#qa338cam{position:fixed;inset:0;z-index:60;pointer-events:none;display:flex;align-items:center;justify-content:center}
+#qa338cam .fr{width:min(100vw,100dvh);aspect-ratio:1/1;box-shadow:0 0 0 100vmax rgba(10,5,8,.55);border:1px solid rgba(246,231,204,.7);box-sizing:border-box}
+#qa338cam .cb{position:absolute;left:0;right:0;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);display:flex;align-items:center;justify-content:center;gap:28px;pointer-events:none}
+#qa338cam button{all:unset;pointer-events:auto;cursor:pointer;color:#f5ebdf;font:500 14px/40px Pretendard,'Noto Sans KR',sans-serif;height:40px;padding:0 18px;border-radius:999px;border:1px solid #b8a5a9;background:rgba(24,12,16,.6);box-sizing:border-box}
+#qa338cam button.sh{width:64px;height:64px;padding:0;border-radius:50%;border:4px solid #f6e7cc;background:rgba(246,231,204,.25)}
+#qa338cam button.sh:active{background:#f6e7cc}
+#qa338cam i{width:76px}
+/* 상영작 창 */
+#qa270.qa338tt .dlg{height:auto;max-height:min(761px,94dvh)}
+#qa270.qa338tt .fm{display:flex;gap:16px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:10px}
+#qa270.qa338tt .ps{flex:none;width:200px;aspect-ratio:16/9;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#qa270.qa338tt .ps img{width:100%;height:100%;object-fit:cover;display:block}
+#qa270.qa338tt .fx{min-width:0;display:flex;flex-direction:column;gap:4px}
+#qa270.qa338tt .fx b{font-size:17px;font-weight:600}#qa270.qa338tt .fx small{color:var(--sub);font-size:13px}#qa270.qa338tt .fx p{margin:4px 0 0;font-size:14px;line-height:1.55}
+#qa270.qa338tt .fx button{align-self:flex-start;margin-top:6px;height:36px;padding:0 16px;border:1px solid var(--sub);border-radius:999px}
+@media(max-width:760px){#qa270.qa338tt .dlg{height:100dvh;max-height:none}#qa270.qa338tt .fm{flex-direction:column}#qa270.qa338tt .ps{width:100%}}
 </style>
-<script id="qa297-hover">/* QA297: 가방·수첩 아이템 액션 레이어(올리면 뜸 · 터치는 한 번 누르면 뜸) + 한 번 더 누르면 크게 보기 */
+<script id="qa338-view">/* QA338: 크게 보기·카드 획득·버리기 확인을 한 가지 화면으로. 가방·수첩 슬롯은 누르면 크게 보기, 올리면 휴지통만 */
 (function(){
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}},W=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
- const root=()=>document.getElementById('qa270');
+ const cut=u=>typeof u==='string'&&/qa95_assets\/snack\/[a-z_]+\.webp$/.test(u)&&!/_c\.webp$/.test(u)?u.replace(/\.webp$/,'_c.webp'):u;/* 배경을 걷어 낸 이미지 */
+ let V=null;const close=()=>{if(V){V.remove();V=null}};
+ /* o={img|html, card, photo, title, cap, back:{nm,text}, modal, btns:[[글자,함수,강조]]} */
+ function view(o){close();const btns=(o.btns||[['닫기']]).slice();if(o.back)btns.unshift(['뒷면 보기','flip']);const cls=o.card?'cd':o.photo?'ph':'';
+  const im=o.img?`<img class="${cls}" alt="" src="${o.img}">`:'',body=o.html||(o.back?`<div class="flip"><div class="fi">${im}<div class="bk"><b>${esc(o.back.nm?o.back.nm+'의 한마디':'한마디')}</b><span>${esc(o.back.text)}</span></div></div></div>`:im);
+  const w=document.createElement('div');w.id='qa338v';w.innerHTML=(o.title?`<b class="tt">${esc(o.title)}</b>`:'')+`<div class="in">${body}</div>`+(o.cap?`<p>${esc(o.cap)}</p>`:'')+'<div class="zb">'+btns.map((b,i)=>`<button type="button" data-i="${i}"${b[2]?' class="pri"':''}>${b[0]}</button>`).join('')+'</div>';
+  const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
+  const flip=()=>{const f=w.querySelector('.flip');if(!f)return;const on=f.classList.toggle('on'),t=w.querySelector('.zb button[data-i="0"]');if(t)t.textContent=on?'앞면 보기':'뒷면 보기'};
+  w.addEventListener('click',e=>{e.stopPropagation();if(e.target.closest('.flip')){flip();return}const b=e.target.closest('.zb button');if(!b){if(e.target===w&&!o.modal)close();return}const fn=btns[+b.dataset.i][1];if(fn==='flip'){flip();return}close();if(fn)fn()});
+  document.body.appendChild(w);V=w;return w}
+ const ask=(msg,label,fn)=>view({html:`<div class="tx">${esc(msg)}</div>`,modal:1,btns:[['취소'],[label,fn,1]]});
+ const card=(src,onTake,onClose)=>view({img:src,card:1,title:'카드를 획득했습니다.',modal:1,btns:[['버리기',()=>{try{onClose&&onClose()}catch(e){}}],['수첩에 넣기',()=>{try{onTake&&onTake()}catch(e){}try{toast('카드는 수첩에 넣었어요.')}catch(e){}},1]]});
+ window.QA338={view,ask,card,cut,close};
+ /* ---- 가방·수첩 슬롯 ---- */
+ const root=()=>{const r=document.getElementById('qa270');return r&&!r.classList.contains('qa338tt')?r:null};
  const cellOf=t=>t&&t.closest?t.closest('#qa270 .body .cell:not(.slot), #qa270 .body .tkc'):null;
  const info=c=>{const d=c.dataset;
   if(c.classList.contains('tkc'))return {t:'ticket',id:d.tk};
   if(d.sel){if(/^p\d+$/.test(d.sel))return {t:'photo',i:+d.sel.slice(1)};if(/^k\d+$/.test(d.sel))return {t:'keep',i:+d.sel.slice(1)};return {t:'held',k:d.sel,flower:(()=>{try{return isFlower(d.sel)}catch(e){return false}})()}}
   if(d.zoom!=null)return {t:'card',i:+d.zoom};
   if(d.wrap)return {t:'wrap',id:d.wrap};
-  if(d.photo!=null)return {t:'photo',i:+d.photo};
   return null};
- const acts=x=>{const a=[['detail','자세히 보기']];if(x.t==='held'&&!x.flower)a.push(['eat','먹기']);if(x.t==='held'||x.t==='keep'||x.t==='card'||x.t==='wrap')a.push(['gift','선물하기']);a.push(['trash','버리기']);return a};
- const IC={detail:'<svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg>',gift:'<svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10"/><rect x="3" y="7" width="18" height="3"/><path d="M12 7v13M12 7c-2-3-5-3-5-1s3 1 5 1zM12 7c2-3 5-3 5-1s-3 1-5 1z"/></svg>',trash:'<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',eat:'<svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 0 0 4 0V3M7 11v10M17 3c-2 2-2 6 0 8v10"/></svg>'};
- const hide=()=>{document.querySelectorAll('#qa270 .qa297ov').forEach(o=>o.remove())};
- const show=c=>{if(c.querySelector('.qa297ov'))return;const x=info(c);if(!x)return;hide();const o=document.createElement('div');o.className='qa297ov';o.innerHTML=acts(x).map(([k,t])=>`<button type="button" data-q="${k}" aria-label="${t}" title="${t}">${IC[k]||t}</button>`).join('');c.appendChild(o)};
  const refresh=()=>{const b=document.querySelector('#qa270 nav button[aria-pressed="true"]');if(b)b.click()};
- const closeBag=()=>{const b=document.querySelector('#qa270 .close');if(b)b.click()};
- const big=c=>{const x=info(c);if(!x)return;if(x.t==='keep'&&window.QA336){const k=J('aic.keeps',[])[x.i];if(k&&QA336.open(k))return}const im=c.querySelector('img');let inner='';
-  if(x.t==='ticket'){const cl=c.cloneNode(true);cl.querySelectorAll('.qa297ov').forEach(o=>o.remove());inner='<div class="tk">'+cl.innerHTML+'</div>'}
-  else if(x.t==='held'&&(window.QA287SNACK||{})[x.k])inner='<img alt="" src="'+QA287SNACK[x.k]+'">';
-  else if(im)inner='<img alt="" src="'+im.src+'">';
-  else{const cl=c.cloneNode(true);cl.querySelectorAll('.qa297ov').forEach(o=>o.remove());inner='<div class="tx">'+esc(cl.innerText.trim())+'</div>'}
-  const nm=x.t==='held'?((IT[x.k]||[])[1]||''):'';
-  const w=document.createElement('div');w.id='qa297big';w.innerHTML='<div class="in">'+inner+'</div>'+(nm?'<p>'+esc(nm)+'</p>':'')+'<button type="button">닫기</button>';
-  const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
-  w.addEventListener('click',e=>{e.stopPropagation();if(e.target===w||e.target.closest('button'))w.remove()});document.body.appendChild(w)};
- const run=(q,c)=>{const x=info(c);if(!x)return;
-  if(q==='detail'){big(c);return}
-  if(q==='eat'){const i=HELD.findIndex(h=>h.k===x.k);closeBag();if(i>=0)try{startEat(i)}catch(e){}return}
-  if(q==='gift'){let t=null;try{t=qa20Nearest()}catch(e){}if(!t){toast('선물할 사람이 근처에 없어요');return}
-   window.QA297PRE=x.t==='held'?{t:'held',k:x.k}:x.t==='wrap'?{t:'wrap',id:x.id}:{t:x.t,i:x.i};closeBag();try{A.ctxgift()}catch(e){window.QA297PRE=null}return}
-  if(q==='trash'){try{
-    if(x.t==='held'){const i=HELD.findIndex(h=>h.k===x.k);if(i>=0){if(typeof EAT!=='undefined'&&EAT&&HELD[i]===EAT.it){toast('먹는 중인 건 버릴 수 없어요');return}HELD.splice(i,1);try{refreshMe()}catch(e){}}}
-    else if(x.t==='keep'){const K=J('aic.keeps',[]);K.splice(x.i,1);W('aic.keeps',K)}
-    else if(x.t==='photo'){const L=qa68List();L.splice(x.i,1);qa68Persist()}
-    else if(x.t==='ticket'){const a=(store.get('aic.tickets')||[]).filter(t=>String(t.id)!==String(x.id));store.set('aic.tickets',a);try{refTK()}catch(e){}}
-    else if(x.t==='card'){const C=qa255Cards.list();C.splice(x.i,1);qa255Cards.save()}
-    else if(x.t==='wrap'){const A_=window.qa121Api,o=A_.get();o[x.id]=(o[x.id]||1)-1;if(o[x.id]<=0)delete o[x.id];try{localStorage.setItem('aic.wraps',JSON.stringify(o))}catch(e){}}
-   }catch(e){}toast('버렸어요');try{hudUpd()}catch(e){}refresh();return}};
+ const closeBag=()=>{try{qa270.close()}catch(e){}};
+ const discard=x=>{try{
+   if(x.t==='held'){const i=HELD.findIndex(h=>h.k===x.k);if(i>=0){if(typeof EAT!=='undefined'&&EAT&&HELD[i]===EAT.it){toast('먹는 중인 건 버릴 수 없어요');return}HELD.splice(i,1);try{refreshMe()}catch(e){}}}
+   else if(x.t==='keep'){const K=J('aic.keeps',[]);K.splice(x.i,1);W('aic.keeps',K)}
+   else if(x.t==='photo'){const L=qa68List();L.splice(x.i,1);qa68Persist()}
+   else if(x.t==='ticket'){const a=(store.get('aic.tickets')||[]).filter(t=>String(t.id)!==String(x.id));store.set('aic.tickets',a);try{refTK()}catch(e){}}
+   else if(x.t==='card'){const C=qa255Cards.list();C.splice(x.i,1);qa255Cards.save()}
+   else if(x.t==='wrap'){const A_=window.qa121Api,o=A_.get();o[x.id]=(o[x.id]||1)-1;if(o[x.id]<=0)delete o[x.id];try{localStorage.setItem('aic.wraps',JSON.stringify(o))}catch(e){}}
+  }catch(e){}toast('버렸어요');try{hudUpd()}catch(e){}refresh()};
+ const trash=x=>ask('버릴까요?','버리기',()=>discard(x));
+ const big=c=>{const x=info(c);if(!x)return;const T=['버리기',()=>trash(x)],X=['닫기'],im=c.querySelector('img');
+  if(x.t==='keep'){const k=J('aic.keeps',[])[x.i];if(k&&window.QA336&&QA336.open(k,{trash:cl=>{cl();trash(x)}}))return;view({img:im&&im.src,cap:k?k.nm:'',btns:[X,T]});return}
+  if(x.t==='ticket'){const cl=c.cloneNode(true);cl.querySelectorAll('.qa338t').forEach(o=>o.remove());view({html:'<div class="tk">'+cl.innerHTML+'</div>',btns:[X,T]});return}
+  if(x.t==='held'){const b=[X,T];if(!x.flower)b.push(['먹기',()=>{const i=HELD.findIndex(h=>h.k===x.k);closeBag();if(i>=0)try{startEat(i)}catch(e){}},1]);view({img:cut((window.QA287SNACK||{})[x.k]||'')||(im&&im.src),cap:(IT[x.k]||[])[1]||'',btns:b});return}
+  if(x.t==='photo'){const p=qa68List()[x.i];if(!p)return;view({img:p.src,photo:1,btns:[X,['다운받기',()=>{try{qa68Download(qa68Blob(p.src))}catch(e){}}],T]});return}
+  if(x.t==='card'){const cd=qa255Cards.list()[x.i];if(!cd)return;const bk=cd.item?'':(()=>{try{return qa277Intro(cd.n)}catch(e){return ''}})();view({img:cd.src,card:1,back:bk?{nm:cd.n,text:bk}:null,btns:[X,T]});return}
+  if(x.t==='wrap'){const [k,vi]=x.id.split(':'),A_=qa121Api,v=A_.D[k].v[+vi];view({img:cut(A_.draw(k,+vi)),cap:v.t+' — '+v.s,btns:[X,T]})}};
+ const IC='<svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>';
  /* 캡처 단계에서 받음 — 창 안쪽이 이벤트 전파를 막고 있어서 */
- document.addEventListener('mouseover',e=>{if(!root())return;const c=cellOf(e.target);if(c)show(c)},true);
- document.addEventListener('mouseout',e=>{if(!root())return;const c=cellOf(e.target);if(c&&!c.contains(e.relatedTarget)){const o=c.querySelector('.qa297ov');if(o)o.remove()}},true);
- document.addEventListener('click',e=>{const r=root();if(!r||!r.contains(e.target)||e.target.closest('.zoom'))return;
-  const b=e.target.closest('.qa297ov button');if(b){e.preventDefault();e.stopPropagation();const c=cellOf(b);hide();if(c)run(b.dataset.q,c);return}
-  const c=cellOf(e.target);if(!c){hide();return}
-  if(!c.querySelector('.qa297ov')){e.preventDefault();e.stopPropagation();show(c);return}/* 터치: 첫 번째 누름 = 버튼 띄우기 */
-  const x=info(c);hide();if(x&&(x.t==='card'||x.t==='wrap'))return;/* 카드·패키지는 기존 크게 보기(뒷면 포함)로 */
-  e.preventDefault();e.stopPropagation();big(c)},true);
+ document.addEventListener('mouseover',e=>{if(!root()||!matchMedia('(hover:hover)').matches)return;const c=cellOf(e.target);if(c&&!c.querySelector('.qa338t')){const s=document.createElement('span');s.className='qa338t';s.setAttribute('role','button');s.setAttribute('aria-label','버리기');s.title='버리기';s.innerHTML=IC;c.appendChild(s)}},true);
+ document.addEventListener('mouseout',e=>{if(!root())return;const c=cellOf(e.target);if(c&&!c.contains(e.relatedTarget)){const o=c.querySelector('.qa338t');if(o)o.remove()}},true);
+ document.addEventListener('click',e=>{const r=root();if(!r||!r.contains(e.target))return;const c=cellOf(e.target);if(!c)return;e.preventDefault();e.stopPropagation();
+  if(e.target.closest('.qa338t')){const x=info(c);if(x)trash(x);return}big(c)},true);
+ /* ---- 카메라: 장면을 잡고 찍기 ---- */
+ let CAM=null;const camOff=()=>{if(!CAM)return;CAM.remove();CAM=null;document.body.classList.remove('qa338cam');removeEventListener('keydown',camKey)},camKey=e=>{if(e.key==='Escape')camOff()};
+ A.camshot=()=>{if(CAM||!me)return;try{closePanel()}catch(e){}try{dismissActor()}catch(e){}CAM=document.createElement('div');CAM.id='qa338cam';CAM.innerHTML='<div class="fr"></div><div class="cb"><button type="button" data-k="x">취소</button><button type="button" class="sh" data-k="s" aria-label="찍기"></button><i></i></div>';
+  CAM.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;e.stopPropagation();const k=b.dataset.k;camOff();if(k!=='s')return;
+   const cc=window.qa194CloseCam;window.qa194CloseCam=null;/* 내가 잡은 장면 그대로 */let p;try{p=qa20Photo()}finally{window.qa194CloseCam=cc}await p});
+  document.body.appendChild(CAM);document.body.classList.add('qa338cam');addEventListener('keydown',camKey)};
+ /* ---- 상영작: 가방·수첩과 같은 창 ---- */
+ PANELS.tt=function(){try{closePanel()}catch(e){}try{qa270.close()}catch(e){}const FI=store.get('aic.filmInfo')||{};let h='';
+  CFG.HALLS.forEach(hl=>{h+=`<h3>${esc(hl.name)}</h3>`;if(CLOSEDH.has(hl.id)){h+='<div class="fm"><div class="fx"><b>준비 중입니다</b><small>상영작을 모집하고 있어요</small><button type="button" data-a="recruit">상영작 모집</button></div></div>';return}
+   hl.films.forEach(f=>{const i=FI[hl.id+':'+f.id]||{},yt=/^[\w-]{11}$/.test(f.id||''),pc=(()=>{try{return f.id?QA21.sat(f.id):null}catch(e){return null}})();
+    h+=`<div class="fm"><div class="ps" style="background:${esc(f.color||'#39252c')}">${yt?`<img alt="" src="https://i.ytimg.com/vi/${f.id}/mqdefault.jpg" onerror="this.remove()">`:''}</div><div class="fx"><b>${esc(i.title||f.title)}</b><small>${esc([i.credit||f.credit,i.duration||('러닝타임 '+Math.round(f.dur/60)+'분')].filter(Boolean).join(' · '))}</small>${(i.syn||f.syn)?`<p>${esc(i.syn||f.syn)}</p>`:''}${pc!=null?`<small>관객의 ${pc}%가 만족했어요</small>`:''}</div></div>`})});
+  const w=document.createElement('div');w.id='qa270';w.className='qa338tt';w.innerHTML=`<div class="dlg" role="dialog" aria-label="상영작 안내"><header><div><h2>상영작 안내</h2><p>티켓을 받고 상영관 좌석에 앉으면 처음부터 바로 시작돼요</p></div><button class="close" type="button" data-k="x" aria-label="닫기">✕</button></header><div class="body">${h}</div></div>`;
+  const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
+  w.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('button');if(e.target===w||(b&&b.dataset.k==='x')){w.remove();return}if(b&&b.dataset.a&&A[b.dataset.a]){w.remove();A[b.dataset.a](b.dataset)}});
+  document.body.appendChild(w)};
 })();
 </script>
 <style id="qa336-css">#qa270 .cell img.p3{width:68px;height:68px;object-fit:contain;flex:none;pointer-events:none}
 #qa336v{position:fixed;inset:0;z-index:97;background:rgba(16,8,12,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;color:#f5ebdf;font-family:'Noto Sans KR',sans-serif}
-#qa336v canvas{width:min(86vw,400px);height:min(86vw,400px);touch-action:none;cursor:grab}
+#qa336v{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,8,12,.72)}#qa336v canvas{position:static!important;display:block;flex:none;width:min(86vw,400px)!important;height:min(86vw,400px)!important;touch-action:none;cursor:grab}#qa336v .zb{display:flex;gap:8px}
 #qa336v b{font:500 17px/1.4 'Noto Sans KR',sans-serif}#qa336v p{margin:0;color:#b8a5a9;font:400 14px 'Noto Sans KR',sans-serif}
 #qa336v button{all:unset;cursor:pointer;height:40px;padding:0 20px;border-radius:999px;border:1px solid #b8a5a9;color:#f5ebdf;font:500 14px/40px 'Noto Sans KR',sans-serif}</style>
 <script id="qa336-props">/* QA336: 받은 소품을 실제 모양 그대로 3D로 — 가방 썸네일 · 자세히 보기 · 선물 고르기 */
@@ -6531,19 +6576,19 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
  let TR=null;const cache={};
  const img=nm=>{if(cache[nm]!=null)return cache[nm];let u='';
   try{if(!TR){const cv=document.createElement('canvas');cv.width=cv.height=240;TR={r:mkR(cv),st:stage()};TR.r.setSize(240,240,false)}
-   const {S3,C3}=TR.st,m=build(nm);m.rotation.set(-.25,-.5,0);S3.add(m);TR.r.render(S3,C3);u=TR.r.domElement.toDataURL('image/png');S3.remove(m)}catch(e){u=''}
+   const {S3,C3}=TR.st,m=build(nm);m.rotation.set(-.25,-.5,0);m.scale.multiplyScalar(1.5)/* QA338: 슬롯에서 다른 아이템과 비슷한 크기로 */;S3.add(m);TR.r.render(S3,C3);u=TR.r.domElement.toDataURL('image/png');S3.remove(m)}catch(e){u=''}
   return cache[nm]=u};
  let V=null;
  const close=()=>{if(!V)return;cancelAnimationFrame(V.raf);try{V.r.dispose();V.r.forceContextLoss()}catch(e){}V.el.remove();V=null};
- const open=x=>{if(!x||typeof THREE==='undefined')return false;close();
+ const open=(x,opt)=>{if(!x||typeof THREE==='undefined')return false;close();
   try{const el=document.createElement('div');el.id='qa336v';const d=x.t?new Date(x.t):null,ds=d?d.getFullYear()+'.'+(d.getMonth()+1)+'.'+d.getDate():'';
-   el.innerHTML='<canvas width="800" height="800"></canvas><b></b><p></p><button type="button">닫기</button>';el.querySelector('b').textContent=x.nm||'';el.querySelector('p').textContent=[x.from||'',ds].filter(Boolean).join(' · ');
+   el.innerHTML='<canvas width="800" height="800"></canvas><b></b><p></p><div class="zb"><button type="button">닫기</button>'+(opt&&opt.trash?'<button type="button" data-k="trash">버리기</button>':'')+'</div>';el.querySelector('b').textContent=x.nm||'';el.querySelector('p').textContent=[x.from||'',ds].filter(Boolean).join(' · ');
    const cv=el.querySelector('canvas'),r=mkR(cv);r.setSize(800,800,false);const {S3,C3}=stage(),m=build(x.nm);S3.add(m);let ry=-.5,rx=-.25,drag=null,auto=true;
    const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>el.addEventListener(t,stop));
    cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};auto=false;cv.setPointerCapture(e.pointerId)});
    cv.addEventListener('pointermove',e=>{if(!drag)return;ry+=(e.clientX-drag.x)*.01;rx=Math.max(-1.2,Math.min(1.2,rx+(e.clientY-drag.y)*.01));drag={x:e.clientX,y:e.clientY}});
    cv.addEventListener('pointerup',()=>{drag=null;auto=true});
-   el.addEventListener('click',e=>{e.stopPropagation();if(e.target===el||e.target.closest('button'))close()});
+   el.addEventListener('click',e=>{e.stopPropagation();const b=e.target.closest('button');if(b&&b.dataset.k==='trash'){opt.trash(close);return}if(e.target===el||b)close()});
    document.body.appendChild(el);V={el,r,raf:0};
    const tick=()=>{if(!V)return;if(auto)ry+=.012;m.rotation.set(rx,ry,0);r.render(S3,C3);V.raf=requestAnimationFrame(tick)};tick();return true}
   catch(e){close();return false}};

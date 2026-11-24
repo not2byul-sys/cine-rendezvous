@@ -1,5 +1,5 @@
 {
- "rev": "2026-11-24T11:08:59.049Z",
+ "rev": "2026-11-24T11:23:50.327Z",
  "force": [
   "aic.lobbyPalette",
   "aic.lobbyLighting"
@@ -114,9 +114,9 @@
    "YTK21v_oEgk": 197
   },
   "aic.lobbyPalette": {
-   "floorCream": "#E3DAD0",
-   "floorPink": "#D6C5B7",
-   "wallWood": "#9A7355",
+   "floorCream": "#EEEAE4",
+   "floorPink": "#D3C3B9",
+   "wallWood": "#A07B5F",
    "wallDark": "#563115",
    "carpetA": "#956A43",
    "carpetB": "#956A43",
@@ -130,7 +130,7 @@
   },
   "aic.lobbyLighting": {
    "b": 100,
-   "k": 4500
+   "k": null
   }
  }
 }

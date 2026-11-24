@@ -135,5 +135,5 @@ test('트리 별의 십자 광선과 쓰이지 않던 반짝이 코드는 지워
 
 test('상영관 벽등의 빛 번짐은 전구 재질로 바뀌지 않고(크림색 네모로 보이던 문제), 상영 중에는 벽등과 함께 꺼진다', () => {
   assert(source.includes('else if(m.material===sconce.W.m)m.material=wm;else if(m.material.isMeshBasicMaterial)m.material=bm'));
-  assert(source.includes('HALL_SC[id]=[sm,bm,wm]') && source.includes('HALL_SC[space][2].opacity=sconce.W.m.opacity*HLF'));
+  assert(source.includes('HALL_SC[id]=[sm,bm,wm]') && source.includes('HALL_SC[space][2].opacity=HALL_SC[space][2].userData.fullOpacity*HLF'));
 });

@@ -977,7 +977,7 @@ const josa=w=>{const c=w.trim().slice(-1).charCodeAt(0);if(c>=0xAC00&&c<=0xD7A3)
 function doneMsg(name,ms=1700){return new Promise(res=>{let d=$('done');if(!d){d=document.createElement('div');d.id='done';document.body.appendChild(d)}d.innerHTML=`<div class="db">✅ ${name}${josa(name)} 지급되었습니다</div>`;d.hidden=false;d.style.opacity=1;setTimeout(()=>{d.style.opacity=0;setTimeout(()=>{d.hidden=true;res()},300)},ms)})}
 /* ---------- renderer ---------- */
 const R=new THREE.WebGLRenderer({antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));{const ov=document.createElement('div');ov.id='qa276dim';ov.style.cssText='position:fixed;inset:0;background:#000;opacity:.05;pointer-events:none';document.body.prepend(ov)}/* QA276: 캔버스 CSS 필터(매 프레임 합성 비용) 대신 같은 5% 어둡게 덮개 *//* QA258: 공간은 5% 어둡게 복귀(캐릭터·상호작용 사물은 셰이더에서 보정) *//* 3D 극장 공간만 기존 대비 5% 어둡게, HUD·팝업은 유지 */document.body.prepend(R.domElement);
-const S=new THREE.Scene();S.background=new THREE.Color(0x1a0d12);S.fog=new THREE.Fog(0x1a0d12,60,170);
+const S=new THREE.Scene();S.background=new THREE.Color(0x1a0d12);const cinemaFog=new THREE.Fog(0x1a0d12,60,170);
 const C=new THREE.PerspectiveCamera(45,1,.1,300);
 /* 벽 포스터·스틸 이미지(제공 이미지 13종, JPEG 내장) */var WALLIMG={"01": "qa95_assets/img-bad9bd6fab.jpg", "02": "qa95_assets/img-79c715dd6c.jpg", "03": "qa95_assets/img-6fc6a01dc2.jpg", "04": "qa95_assets/img-34c725eca2.jpg", "05": "qa95_assets/img-588be44e0b.jpg", "06": "qa95_assets/img-db95a6e36b.jpg", "07": "qa95_assets/img-797dca0ada.jpg", "08": "qa95_assets/img-568366f1fd.jpg", "09": "qa95_assets/img-695b5046ab.jpg", "10": "qa95_assets/img-eae7091807.jpg", "11": "qa95_assets/img-331aca9a96.jpg", "12": "qa95_assets/img-957fc909fc.jpg", "13": "qa95_assets/img-88344f82dd.jpg"};
 var WTEX={};function wallTex(k,aspect){const key=k+'_'+aspect.toFixed(3);if(WTEX[key])return WTEX[key];const cv=document.createElement('canvas'),H_=512,W_=Math.round(H_*aspect);cv.width=W_;cv.height=H_;const c=cv.getContext('2d');c.fillStyle='#2a2420';c.fillRect(0,0,W_,H_);const t=new THREE.CanvasTexture(cv);WTEX[key]=t;
@@ -1102,11 +1102,23 @@ const LOBBY_PALETTE={
 const LP_rgb=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255]},LP_mix=(a,b,k)=>{const A=LP_rgb(a),B_=LP_rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B_[i]-v)*k)).join(',')})`},LP_a=(h,al)=>`rgba(${LP_rgb(h).join(',')},${al})`;
 const LP_shade=(h,k)=>'#'+LP_rgb(h).map(v=>Math.max(0,Math.min(255,Math.round(k<0?v*(1+k):v+(255-v)*k))).toString(16).padStart(2,'0')).join('');
 /* 나뭇결 밝은 줄·어두운 줄·이음매는 기준색에서 같은 비율로 계산 */function LP_sync(){const P=LOBBY_PALETTE,c=LP_CUR;P.floor.dark=c.floorPink;P.floor.cream=c.floorCream;P.wall.base=c.wallWood;P.wall.grainLight=LP_shade(c.wallWood,.17);P.wall.grainDark=LP_shade(c.wallWood,-.165);P.wall.seam=LP_shade(c.wallWood,-.22);P.woodFrame.base=c.wallDark;P.woodFrame.grainLight=LP_shade(c.wallDark,.155);P.woodFrame.grainDark=LP_shade(c.wallDark,-.23)}LP_sync();
-/* 로비 전용 재질 목록(조명 관리자가 자체 발색분을 함께 조절) · 기준색 기록 */const LP_LDEF={b:95,k:4200}/* 저장된 조명값이 없을 때: 밝기 95% · 색온도 4200K(QA337) */,LP_MATS=[],LP_LIGHT=(o=>o?({b:(o.b>=50&&o.b<=150?Math.round(o.b):LP_LDEF.b)/100,k:o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}):{b:LP_LDEF.b/100,k:LP_LDEF.k})((o=>{try{if(o&&o.k==null&&localStorage.getItem('aic.qa257')){o=Object.assign({},o,{k:4700});store.set('aic.lobbyLighting',o)}localStorage.removeItem('aic.qa257')}catch(e){}return o})(store.get('aic.lobbyLighting')));
+/* 로비 전용 재질 목록(조명 관리자가 자체 발색분을 함께 조절) · 기준색 기록 */const LP_LDEF={b:100,k:null},LP_MATS=[];
+const LP_LIGHT=(o=>({
+ b:(o?.b>=50&&o.b<=150?Math.round(o.b):LP_LDEF.b)/100,
+ k:o?.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null
+}))(store.get('aic.lobbyLighting'));
 function LP_base(m,c,e){m.userData.lp={c,e};m.color.copy(c);if(m.emissive)m.emissive.copy(e)}
 const LP_flat=(lit=.42,gain=.95)=>{const m=new THREE.MeshLambertMaterial({color:0xffffff});m.userData.keep=1;m.userData.flat={lit,gain};LP_MATS.push(m);return m};
-/* 텍스처에 색이 이미 들어 있으므로 재질색을 다시 곱하지 않음: 조명분(color)+자체 발색(emissive) 합이 1이 되게 나눠, 조명이 따뜻해도 팔레트 색에서 벗어나지 않게 함. gain은 조명 적용 후 실제 화면을 측정해 맞춘 보정값 */
-const LP_mat=(map,tile,P,lit=.42,gain=1)=>{map.anisotropy=lobbyAnisotropy;const g=v=>new THREE.Color(v,v,v),o={map,color:g(lit*gain),emissive:g((1-lit)*gain),emissiveMap:map},m=P.roughness>=.8?new THREE.MeshLambertMaterial(o):new THREE.MeshPhongMaterial({...o,shininess:Math.round((1-P.roughness)*48),specular:0x1c1611});m.userData.tile=tile;m.userData.keep=1;LP_MATS.push(m);return m};
+/* 텍스처의 고유색에는 조명이 주로 반응하고, 발광은 그림자부의 최소 밝기만 보완한다. */
+const LP_mat=(map,tile,P,lit,gain=1,bumpScale=.012)=>{
+ map.anisotropy=lobbyAnisotropy;
+ const gray=v=>new THREE.Color(v,v,v);
+ const m=new THREE.MeshPhongMaterial({
+  map,color:gray(lit*gain),emissive:gray((1-lit)*gain),emissiveMap:map,
+  bumpMap:map,bumpScale,shininess:Math.round(12+(1-P.roughness)*72),specular:0x272727
+ });
+ m.userData.tile=tile;m.userData.keep=1;LP_MATS.push(m);return m;
+};
 const WAINS=0xa47b55,LINEN=0xa47b56,FRAME=0x65432f,WH=1.15,LPW=LOBBY_PALETTE.wall,LPF=LOBBY_PALETTE.woodFrame,LPFL=LOBBY_PALETTE.floor;
 /* 세로 원목 패널: 판재 8장 = 타일 1장(판재 폭 panelWidthMeters), 판재마다 명도 차이 + 은은한 나뭇결 + 얇은 이음 홈 */
 const LP_DRAW={},PANELT=TXR(512,512,LP_DRAW.wall=(c,W,H)=>{const r=rng(53),n=8,bw=W/n;for(let i=0;i<n;i++){const tone=r();c.fillStyle=tone<.5?LP_mix(LPW.base,LPW.grainDark,(.5-tone)*.9):LP_mix(LPW.base,LPW.grainLight,(tone-.5)*.9);c.fillRect(i*bw,0,bw,H);
@@ -1114,13 +1126,13 @@ const LP_DRAW={},PANELT=TXR(512,512,LP_DRAW.wall=(c,W,H)=>{const r=rng(53),n=8,b
   if(r()<.35){const kx=i*bw+bw*(.3+r()*.4),ky=30+r()*(H-60),ks=3+r()*4;for(let q=ks;q>0;q-=1.3){c.strokeStyle=LP_a(LPW.grainDark,.14+.25*(1-q/ks));c.lineWidth=1;c.beginPath();c.ellipse(kx,ky,q*.8,q*1.5,0,0,7);c.stroke()}}
   c.fillStyle=LP_a(LPW.seam,.85);c.fillRect(i*bw,0,1.8,H);c.fillStyle=LP_a(LPW.grainLight,.35);c.fillRect(i*bw+1.8,0,1.2,H)}});
 const FRAMET=TXR(512,512,LP_DRAW.frame=(c,W,H)=>{const r=rng(67);c.fillStyle=LPF.base;c.fillRect(0,0,W,H);for(let k=0;k<150;k++){const x0=r()*W,amp=1+r()*5,ph=r()*6.3,f=(1+(r()*3|0))*Math.PI*2/H;c.strokeStyle=LP_a(r()<.55?LPF.grainDark:LPF.grainLight,.1+r()*.22);c.lineWidth=.6+r()*2;c.beginPath();for(let y=0;y<=H;y+=8){const x=x0+Math.sin(y*f+ph)*amp;y?c.lineTo(x,y):c.moveTo(x,y)}c.stroke()}});
-TM[WAINS]=LP_mat(PANELT,LPW.panelWidthMeters*8,LPW,.48,.9975);/* QA73: 팔레트 색 그대로 쓰도록 이전 색 보정(QA57·61)은 뺌 */TM[LINEN]=TM[WAINS];TM[MU2]=TM[WAINS];/* 1·2층 로비 벽, 계단 옆 삼각 벽, 계단 챌판이 모두 같은 패널 */
-TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.42,.945);/* QA56: 계단·발코니 난간은 짙은 버건디 */TM[MET]=new THREE.MeshPhongMaterial({color:0x2b1711,emissive:0x281611,shininess:18,specular:0x140c0a});TM[MET].userData.keep=1;
+TM[WAINS]=LP_mat(PANELT,LPW.panelWidthMeters*8,LPW,.78,1.06,.022);/* QA73: 팔레트 색 그대로 쓰도록 이전 색 보정(QA57·61)은 뺌 */TM[LINEN]=TM[WAINS];TM[MU2]=TM[WAINS];/* 1·2층 로비 벽, 계단 옆 삼각 벽, 계단 챌판이 모두 같은 패널 */
+TM[FRAME]=LP_mat(FRAMET,1.3,LPF,.76,1.03,.016);/* QA56: 계단·발코니 난간은 짙은 버건디 */TM[MET]=new THREE.MeshPhongMaterial({color:0x2b1711,emissive:0x281611,shininess:18,specular:0x140c0a});TM[MET].userData.keep=1;
 /* QA73: 계단 디딤판 금색 · 계단 옆판 · 매표소·매점 상판과 몸체는 로비 전용 재질(다른 공간과 공유하지 않음) */const GOLDT='lpGold';TM[GOLDT]=new THREE.MeshPhongMaterial({color:0xdeb967,shininess:30,specular:0x3a2c14});TM[GOLDT].userData.keep=1;TM.lpSide=LP_flat();TM.lpTop=LP_flat();TM.lpBody=LP_flat(.42,.97);TM.lpBody.side=THREE.DoubleSide;[TM[CARP1],TM[CARP2]].forEach(m=>m.userData.keep=1);LP_MATS.push(TM[CARP1],TM[CARP2],TM[MET],TM[GOLDT]);
 const LOBBYT=TXR(512,512,LP_DRAW.floor=(c,W,H)=>{const r=rng(31),A=LPFL.cream,Bc=LPFL.dark;c.fillStyle=A;c.fillRect(0,0,W,H);c.fillStyle=Bc;c.beginPath();c.moveTo(W/2,0);c.lineTo(W,H/2);c.lineTo(W/2,H);c.lineTo(0,H/2);c.closePath();c.fill();
  for(let k=0;k<2400;k++){const x=r()*W,y=r()*H;c.fillStyle=`rgba(${r()<.5?'255,255,255':'120,96,84'},${.02+r()*.035})`;const z=1+r()*4;c.fillRect(x,y,z,z)}
  /* QA76: 타일 사이 줄눈 선 제거 */});
-const LP_FLOORT=[];{const mk_=(rx,ry)=>{const t=LOBBYT.clone();LP_FLOORT.push(t);t.needsUpdate=true;t.repeat.set(rx,ry);const m=LP_mat(t,0,LPFL,.47,1)/* QA73: 새 크림색이 하얗게 뜨지 않게 보정값 1 */;m.userData.tile=0;return m};fL0.material=mk_(21,LD/.857);fL0b.material=mk_(91,91)}
+const LP_FLOORT=[];{const mk_=(rx,ry)=>{const t=LOBBYT.clone();LP_FLOORT.push(t);t.needsUpdate=true;t.repeat.set(rx,ry);const m=LP_mat(t,0,LPFL,.76,.88,.005);m.specular.setHex(0x151515);m.userData.tile=0;return m};fL0.material=mk_(21,LD/.857);fL0b.material=mk_(91,91)}
 /* 뒷벽 */
 wseg(-LW,LW,0,4.3,LB-.2,MU2);wseg(-LW,LW,4.3,8.8,LB-.2,MU2);B(2*LW,.22,.06,FRAME,0,4.42,LB+.03);
 /* 왼쪽 벽: 회반죽 + 마호가니 걸레받이 */
@@ -1130,7 +1142,7 @@ wsegX(LB,LD,0,4.3,LW,MU2);wsegX(LB,LD,4.3,8.8,LW,MU2);B(.1,.2,LD,FRAME,LW-.24,.1
 /* 앞벽 */
 {/* QA81: 창이 벽 전체 폭이라 앞벽은 창 위쪽만 남음 */const fh=5.6*Math.sqrt(1.3);wseg(-LW,LW,fh,8.8,LD,MU2,.3)}
 /* 천장: 머스터드 평천장 + 크라운 몰딩 + 메달리온 */
-{const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0x666666,emissive:0xbac1cd,emissiveMap:PLAS});cm.material.userData.keep=1;LP_MATS.push(cm.material)/* QA56: 크림색 천장 → QA326: 노란 기 없는 아이보리(조명분 .56→.40, 발색을 푸른 쪽으로 보정) */}const CRN=0xe9dfd0;TM[CRN]=new THREE.MeshLambertMaterial({color:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.45),emissive:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.58)});TM[CRN].userData.keep=1;LP_MATS.push(TM[CRN]);B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
+{const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0xc7c7c7,emissive:0x747474,emissiveMap:PLAS});cm.material.userData.keep=1;LP_MATS.push(cm.material)/* QA56: 크림색 천장 → QA326: 노란 기 없는 아이보리(조명분 .56→.40, 발색을 푸른 쪽으로 보정) */}const CRN=0xe9dfd0;TM[CRN]=new THREE.MeshLambertMaterial({color:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.45),emissive:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.58)});TM[CRN].userData.keep=1;LP_MATS.push(TM[CRN]);B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
  [LB+3,5.2,10.2].forEach(z=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),TM[CRN]/* QA326: 천장 몰딩과 같은 재질 — 조명만 받는 재질이라 아이보리 천장에서 갈색 원반처럼 보였음 */);m.position.set(0,CY-.03,z);S.add(m)})}
 const glassM=new THREE.MeshPhongMaterial({color:0xdde8ea,transparent:true,opacity:.14,depthWrite:false,shininess:90,specular:0xffffff});
 /* QA73: 정문 유리만 따로(매표소·진열장 유리는 그대로) */const LP_GLASS=glassM.clone();LP_MATS.push(LP_GLASS);
@@ -1311,15 +1323,29 @@ const lobbyContactGeometry=new THREE.PlaneGeometry(1,1);
 const lobbyContactMaterial=new THREE.MeshBasicMaterial({
  map:art(64,64,c=>{
   const fade=c.createRadialGradient(32,32,0,32,32,32);
-  fade.addColorStop(0,'rgba(43,29,27,.38)');
-  fade.addColorStop(.48,'rgba(43,29,27,.27)');
-  fade.addColorStop(.78,'rgba(43,29,27,.08)');
-  fade.addColorStop(1,'rgba(43,29,27,0)');
+  fade.addColorStop(0,'rgba(23,29,34,.48)');
+  fade.addColorStop(.48,'rgba(23,29,34,.31)');
+  fade.addColorStop(.78,'rgba(23,29,34,.08)');
+  fade.addColorStop(1,'rgba(23,29,34,0)');
   c.fillStyle=fade;c.fillRect(0,0,64,64);
  }),
  transparent:true,depthWrite:false
 });
 const lobbyContactNoRaycast=()=>{};
+function updateLobbyAvatarShadows(){
+ for(const tag of QA78_TAGS){
+  const actor=tag.parent;
+  if(!actor||actor.parent!==S)continue;
+  const shadow=actor.children.find(child=>child.name==='avatar-shadow');
+  if(!shadow)continue;
+  const {x,y,z}=actor.position,upper=actor.userData.lvl===1,floorY=upper?4.2:0;
+  shadow.visible=space===0&&actor.visible&&Math.abs(y-floorY)<.24&&
+   Math.abs(x)<LW-.4&&z>(upper?LB+.4:.4)&&z<(upper?BF-.4:LD-.4)&&!inStair(x,z);
+  if(!shadow.visible)continue;
+  shadow.position.set(0,(floorY+.014-y)/actor.scale.y,actor.userData.seat?.kind ? .20 : .02);
+  shadow.scale.set(.82,.62,1);
+ }
+}
 function addLobbyContactShadow(roots,lvl){
  const floorY=lvl*4.2,bounds=new THREE.Box3(),part=new THREE.Box3();
  for(const root of roots){
@@ -1376,7 +1402,7 @@ const CHD=[];function chandelier(x,y,z){const g=new THREE.Group();g.position.set
  const brass=new THREE.MeshPhongMaterial({color:0xbda477,shininess:95,specular:0xfff2cf});
  const crystal=new THREE.MeshPhongMaterial({color:0xfff4df,transparent:true,opacity:.68,shininess:125,specular:0xffffff,depthWrite:false});
  const flame=new THREE.MeshBasicMaterial({color:0xffe9bd,toneMapped:false});/* QA84: 전구에 불빛(후광) */
- /* QA325: 천장에 번지는 따뜻한 빛 */{const w=new THREE.Mesh(new THREE.CircleGeometry(3.9,32),new THREE.MeshBasicMaterial({map:haloTex,color:0xffb866,transparent:true,opacity:.29/* QA326: 10% 밝게, 더 넓고 완만하게 */,blending:THREE.AdditiveBlending,depthWrite:false}));w.rotation.x=Math.PI/2;w.position.y=2.07/* 천장(8.8m) 바로 아래 */;w.renderOrder=8;fixture.add(w)}
+ /* QA325: 천장에 번지는 따뜻한 빛 */{const w=new THREE.Mesh(new THREE.CircleGeometry(3.9,32),new THREE.MeshBasicMaterial({map:haloTex,color:0xfff0dc,transparent:true,opacity:.07,blending:THREE.AdditiveBlending,depthWrite:false}));w.rotation.x=Math.PI/2;w.position.y=2.07/* 천장(8.8m) 바로 아래 */;w.renderOrder=8;fixture.add(w)}
  const mesh=(geo,material,x,y,z)=>{const o=new THREE.Mesh(geo,material);o.position.set(x,y,z);fixture.add(o);return o};
  const beadG=new THREE.SphereGeometry(.033,7,5),dropG=new THREE.SphereGeometry(.072,8,6);
  const beadPositions=[];const bead=(x,y,z)=>beadPositions.push([x,y,z]);
@@ -1724,7 +1750,7 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
  if(o.bag==='hand'){const hb=new THREE.Group();hb.position.set(0,-.58-AL,.02);arms[0].add(hb);add(new THREE.BoxGeometry(.2,.16,.08),M(BGC),0,0,0,hb);add(new THREE.BoxGeometry(.03,.03,.01),GOLD,0,.04,.045,hb);const hd_=add(new THREE.TorusGeometry(.06,.012,6,12,Math.PI),M(BGD),0,.08,0,hb)}
  if(o.tote){const tb=new THREE.Group();tb.position.set(0,-.62-AL,.02);arms[0].add(tb);add(new THREE.BoxGeometry(.22,.24,.04),M(0xf3ecdc),0,0,0,tb);add(new THREE.BoxGeometry(.1,.08,.01),M(0xb3202e),0,-.02,.025,tb);add(new THREE.TorusGeometry(.07,.01,6,12,Math.PI),M(0xd9cdb0),0,.12,0,tb)}
  if(o.paper||o.flyer){const pp=new THREE.Group();pp.position.set(0,-.5-AL,.08);arms[0].add(pp);const tx=(art(48,64,(c,W,H)=>{c.fillStyle='#f3ecdc';c.fillRect(0,0,W,H);c.fillStyle='#5a4a3a';if(o.paper){for(let y=8;y<H-4;y+=6)c.fillRect(5,y,W-10,2)}else{c.fillStyle='#8a4a2a';c.fillRect(6,8,W-12,30);c.fillStyle='#5a4a3a';c.fillRect(6,44,W-12,3);c.fillRect(6,50,W-20,3)}}));const pl=add(new THREE.PlaneGeometry(.2,.27),new THREE.MeshBasicMaterial({map:tx,side:THREE.DoubleSide}),0,0,0,pp);pl.rotation.y=.4}
- if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({color:0,transparent:true,opacity:.3}));sh.rotation.x=-Math.PI/2;sh.position.y=.03;sh.visible=false/* QA19: 아바타 바닥 그림자 제거 */;sh.name='avatar-shadow';g.add(sh);const t=nameTag(name,!!o.me);t.name='avatar-tag';QA78_TAGS.push(t);t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.38:o.hat||o.hs==='curly'?2.26:2.16;g.add(t)}
+ if(!o.notag){const sh=new THREE.Mesh(shadowG,new THREE.MeshBasicMaterial({map:lobbyContactMaterial.map,transparent:true,depthWrite:false,opacity:.78}));sh.rotation.x=-Math.PI/2;sh.visible=false;sh.name='avatar-shadow';sh.renderOrder=-1;sh.raycast=lobbyContactNoRaycast;g.add(sh);const t=nameTag(name,!!o.me);t.name='avatar-tag';QA78_TAGS.push(t);t.position.y=o.hat==='pillbox'||o.hat==='fedora'?2.38:o.hat||o.hs==='curly'?2.26:2.16;g.add(t)}
  g.scale.setScalar((o.kid?.7:.82)*AVS*.9);g.userData={base:(o.kid?.7/.82:1)*.9,path:[],after:null,spot:null,seat:null,b:null,bt:0,hop:0,wait:2+Math.random()*4,lvl:0,tgY:0,legs,arms,seatedLegs,head:headGroup,bodyK:o.originalViewing?1:1.16*1.13};(o.parent||S).add(g);
  if(o.bw){/* 무성영화 주인공: 흑백 */n.traverse(q=>{if(q.isMesh&&q.material&&q.material.color){const ms=Array.isArray(q.material)?q.material:[q.material];q.material=ms.map(m=>{const c=m.clone(),l=c.color.r*.3+c.color.g*.59+c.color.b*.11;c.color.setRGB(Math.min(1,l*1.035+.008),l,Math.max(0,l*.94));if(c.emissive){const e=c.emissive,le=e.r*.3+e.g*.59+e.b*.11;e.setRGB(le*1.035,le,le*.94)}return c});if(q.material.length===1)q.material=q.material[0]}})}
  if(!o.notag&&!o.me&&CHARINFO[name]){const hb=new THREE.Mesh(new THREE.BoxGeometry(1.1,2.4,1.1),new THREE.MeshBasicMaterial({visible:false}));hb.position.y=1.15;g.add(hb);hb.userData.act={now:1,fn:()=>{if(!me)return;const talk=()=>{g.rotation.y=Math.atan2(me.position.x-g.position.x,me.position.z-g.position.z);me.rotation.y=Math.atan2(g.position.x-me.position.x,g.position.z-me.position.z);npcCard(g,name)};const dx=me.position.x-g.position.x,dz=me.position.z-g.position.z,d=Math.hypot(dx,dz),zn=curZone(g);
@@ -1821,7 +1847,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
  S.add(IC,IB,IS);IC.userData.hall=id;IB.userData.hall=id;
  for(let i=0;i<NSEAT;i++)if(isAud(id,i)){const s=seats[i],a=mk('',COLS[i%6],Object.assign(chAud(i),{notag:true}));a.position.set(s.x,s.y,s.z);a.rotation.y=Math.PI;a.children[0].scale.y=.78;a.children[0].position.y=0;a.userData.static=1;s.taken=a}
  /* QA109: 검표원은 입구에서만(상영관 안 검표원 제거 — 객석 안은 안내원의 자리) */
- HALLG[id]=S.children.slice(n0);HALLG[id].forEach(o=>HSET.add(o));{/* QA78: 상영관 벽등은 관마다 따로 재질을 둬서 상영 중에 끌 수 있게 */const sm=TULM.clone(),bm=new THREE.MeshBasicMaterial({color:0xfffbe8}),wm=sconce.W.m.clone()/* QA326: 벽에 번지는 빛(전구 재질로 바뀌어 네모로 보이던 것 수정) */;HALLG[id].forEach(o=>{if(o.userData.sconce)o.traverse(m=>{if(!m.isMesh)return;if(m.material===TULM)m.material=sm;else if(m.material===sconce.W.m)m.material=wm;else if(m.material.isMeshBasicMaterial)m.material=bm})});HALL_SC[id]=[sm,bm,wm]}
+ HALLG[id]=S.children.slice(n0);HALLG[id].forEach(o=>HSET.add(o));{/* QA78: 상영관 벽등은 관마다 따로 재질을 둬서 상영 중에 끌 수 있게 */const sm=TULM.clone(),bm=new THREE.MeshBasicMaterial({color:0xfffbe8}),wm=sconce.W.m.clone()/* QA326: 벽에 번지는 빛(전구 재질로 바뀌어 네모로 보이던 것 수정) */;HALLG[id].forEach(o=>{if(o.userData.sconce)o.traverse(m=>{if(!m.isMesh)return;if(m.material===TULM)m.material=sm;else if(m.material===sconce.W.m)m.material=wm;else if(m.material.isMeshBasicMaterial)m.material=bm})});wm.userData.fullOpacity=wm.opacity;HALL_SC[id]=[sm,bm,wm]}
  /* ===== 로비 쪽 입구 (1관: CINEMA 커튼 · 2관: 2층 발코니 문) ===== */
  let dg,dL,dR,pL,pR,st,gz=GATE[id];
  if(id===1){dg=new THREE.Group();dg.position.set(lx,0,dzr-.15);S.add(dg);dL=new THREE.Group();dR=new THREE.Group();dL.position.set(-1.8,0,0);dR.position.set(1.8,0,0);dg.add(dL,dR);
@@ -1851,7 +1877,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
 }
 /* 공간 전환: 로비 ↔ 상영관 (한 번에 한 공간만 렌더) */
 let space=-1,LSAVE=null,snapCam=false,HLF=1;
-const LOBBY_HEMI=.69,LOBBY_DL=.21,LOBBY_HC=0xf1eae3,LOBBY_DC=0xffe4ce,LOBBY_GROUND=0x958c86;
+const LOBBY_HEMI=.64,LOBBY_DL=.44,LOBBY_HC=0xf4f7ff,LOBBY_DC=0xfffcf6,LOBBY_GROUND=0x939ba6;
 const HDIM=.4,HEMI=S.children.find(o=>o.isHemisphereLight);
 /* QA74: 로비 조명 관리자 — 밝기(50~150%)는 로비 조명 세기와 로비 재질의 자체 발색분에, 색온도(2700~6500K, 켰을 때만)는 조명색과 자체 발색분에 곱함. 100%·색온도 끔 = 지금 로비 그대로 */
 const LP_PLS=[];let LP_PREV=1;
@@ -1860,10 +1886,10 @@ function LP_tint(){const k=LP_LIGHT.k;if(!k)return new THREE.Color(1,1,1);const 
 function LP_lights(){if(space!==0||LSAVE||!LP_PLS.ready)return;const b=LP_LIGHT.b*(window.QA102_LF||1)/* QA102: 상영 리듬 배율 */,t=LP_tint(),f=b/LP_PREV;HEMI.intensity=LOBBY_HEMI*b;HEMI.color.setHex(LOBBY_HC).multiply(t);dl.color.setHex(LOBBY_DC).multiply(t);LP_PLS.forEach(p=>{if(f!==1){p.l.intensity*=f;if(p.l.userData.i!=null)p.l.userData.i*=f}p.l.color.copy(p.c).multiply(t)});LP_PREV=b}
 /* QA102: 상영 리듬에 맞춰 로비 조명 — 상영 중엔 조금 어둡게(78%), 끝나면 천천히 원래대로 */window.QA102_LF=1;setInterval(()=>{let on=false;try{const n=nowS();on=Object.keys(ODS||{}).some(k=>{const q=ODS[k];return q&&!q.idle&&n>=q.start&&n<q.end})}catch(e){}const tg=on?.78:1,cur=window.QA102_LF;if(Math.abs(tg-cur)<.005)return;window.QA102_LF=cur+Math.sign(tg-cur)*Math.min(.015,Math.abs(tg-cur));try{LP_lights()}catch(e){}},250);
 function LP_atmos(){const b=LP_LIGHT.b,t=LP_tint();LP_MATS.forEach(m=>{const u=m.userData.lp||(m.userData.lp={c:m.color.clone(),e:m.emissive?m.emissive.clone():new THREE.Color(0,0,0)});m.color.copy(u.c);if(m.emissive)m.emissive.copy(u.e).multiplyScalar(b).multiply(t)});LP_lights()}
-function showSpace(k){document.body.classList.toggle('inhall',typeof k==='number'&&k>0);if(k===space)return;const first=space<0;space=k;OBS=null;
+function showSpace(k){document.body.classList.toggle('inhall',typeof k==='number'&&k>0);if(k===space)return;const first=space<0;space=k;S.fog=k===0?null:cinemaFog;OBS=null;
  if(k>0&&typeof k==='number'){if(BGM.ctx&&BGM.g){const at=BGM.ctx.currentTime;BGM.g.gain.cancelScheduledValues(at);BGM.g.gain.setValueAtTime(0,at)}}else if(!first)BGM.vol();
  CFG.HALLS.forEach(h=>{const on=h.id===k;HALLG[h.id].forEach(o=>{if(o.isLight)o.intensity=on?HALLN[h.id].pli*HDIM:0;else o.visible=on})});
- window.QA258W=!(k==='B'||k>0);HEMI.color.setHex(k==='B'?0xffdfbd:k>0?0xffe4bc:LOBBY_HC);HEMI.groundColor.setHex(k==='B'?0x66523e:k>0?0x9a7a5e:LOBBY_GROUND);dl.color.setHex(k==='B'?0xffdfbd:k>0?0xffeccc:LOBBY_DC);HEMI.intensity=k==='B'?.3145:k>0?.28:LOBBY_HEMI*LP_LIGHT.b;CLUBG.forEach(o=>{if(o.isLight)o.intensity=k==='B'?o.userData.i:0;o.visible=k==='B'});
+ HEMI.color.setHex(k==='B'?0xffdfbd:k>0?0xffe4bc:LOBBY_HC);HEMI.groundColor.setHex(k==='B'?0x66523e:k>0?0x9a7a5e:LOBBY_GROUND);dl.color.setHex(k==='B'?0xffdfbd:k>0?0xffeccc:LOBBY_DC);HEMI.intensity=k==='B'?.3145:k>0?.28:LOBBY_HEMI*LP_LIGHT.b;CLUBG.forEach(o=>{if(o.isLight)o.intensity=k==='B'?o.userData.i:0;o.visible=k==='B'});
  if((k>0||k==='B')&&!LSAVE){LSAVE=S.children.filter(o=>!HSET.has(o)&&o!==me).map(o=>[o,o.visible,o.isLight?o.intensity:0]);LSAVE.forEach(([o,v,i])=>{if(o.isLight){if(!o.isHemisphereLight&&!o.isDirectionalLight)o.intensity=0}else o.visible=false})}
  else if(k===0&&LSAVE){LSAVE.forEach(([o,v,i])=>{if(o.isLight)o.intensity=i;else o.visible=v});LSAVE=null}
  if(k===0)LP_lights();
@@ -3767,10 +3793,10 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
  CFG.HALLS.forEach(h=>{const H=HALLN[h.id],dg=DOORS[h.id];const near=(H.entryUntil||0)>performance.now()/1000?1:0;H.sec+=(near-H.sec)*Math.min(1,dt*5);if(H.slide){H.dL.scale.x=H.dR.scale.x=1-.78*H.sec}else{H.dL.rotation.y=-H.sec*1.45;H.dR.rotation.y=H.sec*1.45}});
  /* 상영관 조명: 영화가 시작하면 서서히 소등, 끝나거나 일어나면 다시 점등 */
  if(space>0&&HALLN[space]){const H=HALLN[space],on=!!window.QA284PAUSE/* QA284: 간식 주문 중엔 커튼은 그대로 두고 불만 켬 */||!(curSp&&curSc&&curSp.hall===space&&!CINE_DONE)&&!(window.QA234SEQ&&QA234SEQ.hall===space&&QA234SEQ.dark)/* QA236: 커튼이 열린 뒤 서서히 소등 */;/* QA83: 상영이 끝나거나 그만보면 불이 천천히(약 4초) 들어옴. 꺼질 때는 기존 속도 */HLF=on?Math.min(1,HLF+dt/4):HLF+(0-HLF)*Math.min(1,dt*1.1);HEMI.intensity=.03+.27*HLF;H.pl.intensity=H.pli*(.05+.38*HLF);dl.intensity=.008+.092*HLF/* QA147: 입장 시 더 어둡게 *//* QA142: 상영관 조명 20% 낮춤 *//* QA122: 상영 중에도 객석이 보이게 조도 +10%p *//* QA139: 상영 중엔 벽·천장은 어둡게, 스크린 빛이 객석에만 번지게 */;if(!H.qa139){const L=new THREE.SpotLight(0xfff0d8,0,24,.68,.7,1);L.position.set(H.cx,H.base+SCY,SCZ+.8);L.target.position.set(H.cx,H.base+.5,SEAT_Z(3.5));S.add(L,L.target);H.qa139=L}{const cm=HALL_CEIL[space];if(cm){cm.emissive.setHex(0x4a3c2c).multiplyScalar(.08+.92*HLF);cm.color.setHex(0xeadfca).multiplyScalar(.35+.65*HLF)}/* QA157: 상영 중 천장도 어둡게 */}{const dk=1-HLF;H.qa139.intensity=dk*(2.6+.2*Math.sin(t*1.7)+.12*Math.sin(t*5.3))/* QA147: 객석에 번지는 스크린 빛 강조 */;H.qa139.visible=dk>.02}}else{dl.intensity=space===0?LOBBY_DL*LP_LIGHT.b*(window.QA102_LF||1):.1575*LP_LIGHT.b;HLF=1}
-popAnim(dt,t);emgAnim(t);qa78Tick();/* QA15: 착석·상영 중 벽등 빛 감광, 종료·퇴석 시 복원 */if(space>0&&HALL_GLOW[space])HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF});if(space>0&&HALL_SC[space]){/* QA78: 상영이 시작되면 벽등 소등 */const k=.1+.9*HLF;HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k);HALL_SC[space][1].color.setHex(0xfffbe8).multiplyScalar(k);HALL_SC[space][2].opacity=sconce.W.m.opacity*HLF}Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'||z_==='P'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=g.userData.alwaysVisible||LAYED||C.position.distanceTo(g.position)>4});
+popAnim(dt,t);emgAnim(t);qa78Tick();/* QA15: 착석·상영 중 벽등 빛 감광, 종료·퇴석 시 복원 */if(space>0&&HALL_GLOW[space])HALL_GLOW[space].forEach(e=>{e.h.material.opacity*=HLF});if(space>0&&HALL_SC[space]){/* QA78: 상영이 시작되면 벽등 소등 */const k=.1+.9*HLF;HALL_SC[space][0].color.setHex(0xfff1da).multiplyScalar(k);HALL_SC[space][1].color.setHex(0xfffbe8).multiplyScalar(k);HALL_SC[space][2].opacity=HALL_SC[space][2].userData.fullOpacity*HLF}Multiplayer.tick(dt);if(me){const z_=curZone(me);showSpace(z_==='B'||z_==='P'?'B':z_[0]==='H'?+z_[1]:0)}CHD.forEach(g=>{g.visible=g.userData.alwaysVisible||LAYED||C.position.distanceTo(g.position)>4});
  if(Math.floor(t)!==Math.floor(t-dt)&&Math.floor(t)%2===0)drawScreens();
  NPCS.forEach(c=>{if(!c.userData.static)upd(c,dt,t)});buffTick(dt);if(typeof doorTick==="function"&&TRAP&&TRAP.userData.leaf)doorTick(dt);if(typeof vendTick==="function"&&typeof VENDS!=="undefined"&&VENDS&&typeof CFG!=="undefined"&&me){if(!VENDS.length&&!window.__vi){window.__vi=1;vendInit()}vendTick(dt)}if(typeof CLUBN!=='undefined'){if(me&&curZone(me)==='B')CLUBN.forEach(c=>upd(c,dt,t));clubTick(t)}if(me)upd(me,dt,t);actorMenuTick();Object.values(VSTAFF).forEach(c=>{if(!c.userData.trayVendor)upd(c,dt,t)});orderTick(dt,t);
- if(window.qa13TreeTick)window.qa13TreeTick();window.qa124Render?qa124Render():R.render(S,C);place()})();
+ if(window.qa13TreeTick)window.qa13TreeTick();updateLobbyAvatarShadows();window.qa124Render?qa124Render():R.render(S,C);place()})();
 drawScreens();paintSeats();
 startAuto();
 
@@ -4550,7 +4576,7 @@ setTimeout(cutBuild,0);
 /* Preserve the lobby fixtures’ warm tones while tempering the strongest color casts. */
 S.children.forEach(o=>{if(o.isLight&&!o.isHemisphereLight&&!o.isDirectionalLight&&!HSET.has(o)&&Math.abs(o.position.x)<=LW+.5&&o.position.z>=LB-.5&&o.position.z<=LD+.5){o.intensity*=.8676635;o.color.lerp(new THREE.Color(0xfff2e4),.55);if(o.userData.i!=null)o.userData.i*=.8676635}});
 /* Neutral white lobby sources and visible bulb/halo surfaces. */
-window.QA258W=true;HEMI.color.setHex(LOBBY_HC);HEMI.groundColor.setHex(LOBBY_GROUND);dl.color.setHex(LOBBY_DC);
+HEMI.color.setHex(LOBBY_HC);HEMI.groundColor.setHex(LOBBY_GROUND);dl.color.setHex(LOBBY_DC);
 S.children.forEach(root=>{if(HSET.has(root)||root===me)return;root.traverse(o=>{if(!o.material||(!o.isMesh&&!o.isSprite))return;const pos=o.getWorldPosition(new THREE.Vector3());if(Math.abs(pos.x)>LW+.5||pos.z<LB-.5||pos.z>LD+.5||pos.y<2.3)return;const m=o.material;if(Array.isArray(m)||!m.color)return;const c=m.color;if((m.isMeshBasicMaterial||m.isSpriteMaterial)&&c.r>.7&&c.g>.48&&c.b<c.g*.91){o.material=m.clone();o.material.color.setHex(0xffe3c2)}})});
 /* Club-only warm, dimmed atmosphere. */
 CLUBG.forEach(o=>{if(o.isLight){o.color.setHex(0xffd9b3);o.intensity*=.85;if(o.userData.i!=null)o.userData.i*=.85}});
@@ -4569,7 +4595,19 @@ function qa95Space(o){const v=o.getWorldPosition(new THREE.Vector3());if(v.x>400
 function qa95Budget(){let sum=0;S.traverse(o=>{if(!o.isPointLight||qa95Space(o)!==0)return;let tree=false;for(let q=o;q;q=q.parent)if(q.name==='qa13-tree'||q.userData&&q.userData.isTree)tree=true;if(tree||o.intensity<=0)return;if((o.intensity<=.16&&o.distance>=12)||o.intensity<=.05){QA95.off.add(o);sum+=o.intensity;o.visible=false}});QA95.add=sum;qa95LightVis()}
 function qa95LightVis(){S.traverse(o=>{if(!o.isLight||o.isHemisphereLight||o.isDirectionalLight||o.isAmbientLight)return;const sp=o.userData.qa95sp!==undefined?o.userData.qa95sp:(o.userData.qa95sp=qa95Space(o));o.visible=!QA95.off.has(o)&&sp===space})}
 {const _ss=showSpace;showSpace=function(k){_ss(k);try{qa95LightVis()}catch(e){}}}
-{/* QA326: 전체 밝기를 110%→100%로 낮추면서 등불(샹들리에·벽등·스탠드)은 지금보다 10% 밝게 — 점광원 .399×1.21, 빛 번짐 ×1.1 */const LP_LAMP=.483,LP_GLOW=1.1;EMG.forEach(e=>{if(qa95Space(e.h)===0)e.b*=LP_GLOW});const top=o=>{while(o.parent&&o.parent!==S)o=o.parent;return o},club=new Set(CLUBG);S.traverse(o=>{if(!o.isPointLight||o.intensity<=0)return;const r=top(o);if(HSET.has(r)||club.has(r)||HSET.has(o)||club.has(o))return;if(o.distance>0)o.distance*=1.55;o.decay=1;o.intensity*=LP_LAMP;if(o.userData.i!=null)o.userData.i*=LP_LAMP;o.color.lerp(new THREE.Color(0xfff4e8),.5)/* QA56: 주황 기 줄임 */;LP_PLS.push({l:o,c:o.color.clone()})});LP_PLS.ready=1;LP_atmos();qa95Budget()}
+{/* 로비 등불의 광량은 유지하고 화면에 겹치는 후광의 크기와 세기를 줄인다. */
+ const LP_LAMP=.483,LP_GLOW=.32;
+ EMG.forEach(e=>{if(qa95Space(e.h)===0){e.b*=LP_GLOW;e.h.scale.multiplyScalar(.78)}});
+ const clubRoots=new Set(CLUBG),glowMaterials=new Set();
+ S.children.forEach(root=>{
+  if(HSET.has(root)||clubRoots.has(root))return;
+  root.traverse(o=>{
+   const m=o.material;
+   if(m?.map!==haloTex||m.blending!==THREE.AdditiveBlending||glowMaterials.has(m))return;
+   glowMaterials.add(m);m.opacity*=LP_GLOW;
+  });
+ });
+ const top=o=>{while(o.parent&&o.parent!==S)o=o.parent;return o},club=new Set(CLUBG);S.traverse(o=>{if(!o.isPointLight||o.intensity<=0)return;const r=top(o);if(HSET.has(r)||club.has(r)||HSET.has(o)||club.has(o))return;if(o.distance>0)o.distance*=1.55;o.decay=1;o.intensity*=LP_LAMP;if(o.userData.i!=null)o.userData.i*=LP_LAMP;o.color.lerp(new THREE.Color(0xfff9f2),.77);LP_PLS.push({l:o,c:o.color.clone()})});LP_PLS.ready=1;LP_atmos();qa95Budget()}
 Object.values(HALLN).forEach(h=>h.pli*=.82);try{softenObject(S);Object.values(TM).forEach(softenSurface);/* QA59: 로비의 캐릭터·가구·소품에 클레이 질감 적용(상영관·아지트 공간은 그대로, 캐릭터는 어디서나) */{const club=new Set(CLUBG);S.children.forEach(r=>{if(r.userData&&r.userData.legs){clayObject(r);return}if(HSET.has(r)||club.has(r))return;clayObject(r)})}}catch(e){console.warn('soften skipped',e)}
 window.AIC={C,S,get HCH(){return HCH},doorPose:q=>doorPose(q),mk,LOOK,get BUFF(){return BUFF},sit,standUp,get SPOTS(){return SPOTS},trapShow:a=>trapShow(a),INTER,get NPCS(){return NPCS},showSpace,get space(){return space},pickSeat,get sel(){return selSeat},get yaw(){return camYaw},set yaw(v){camYaw=v},get me(){return me},upd,walkTo,API,AdService,CFG,openPanel,A,scrAt,listS,curS,HALLN,STAFF,move,zoneOf,hasPass,refTK,paintSeats,PANELS,curZone,get curSp(){return curSp},HNPC,LAYI,layGet,HALLN,txT,txCatalog};
 /* Ready is set only after navigation and winter decoration scripts load. */
@@ -5070,7 +5108,8 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 <script id="qa124-grade">/* QA124: 전체 톤(컬러 그레이딩) — 게임 엔진식 후처리 한 단계. 노출·명도·대비·채도·색온도·틴트·비네팅·필름 그레인. 3D 공간에만 적용(영상·UI 제외), 즉석 카메라 사진에도 적용. 기본값이면 후처리를 건너뜀 */
 (function(){if(typeof THREE==='undefined'||typeof R==='undefined')return;const KEY='aic.grade',DEF={ev:0,bri:0,con:1,sat:1,temp:6500,tint:0,vig:0,grain:0};
  const PRE={'기본':DEF,'1979 필름':{ev:0,bri:.01,con:1.08,sat:.86,temp:5400,tint:.12,vig:.38,grain:.32},'따뜻한 밤':{ev:-.1,bri:0,con:1.05,sat:.95,temp:4800,tint:.05,vig:.3,grain:.12},'바랜 오후':{ev:.12,bri:.03,con:.92,sat:.78,temp:6000,tint:.18,vig:.2,grain:.22}};
- let G=Object.assign({},DEF,store.get(KEY)||{});/* QA335: 로비 전용 톤 보정(채도 ×1.02 · 색온도 −50K · 틴트 −0.01)을 저장된 전체 톤 위에 얹음. 상영관·아지트는 그대로 */const E=()=>space===0?Object.assign({},G,{ev:G.ev,sat:G.sat*1.02,temp:G.temp-50,tint:G.tint-.01}):G;const neutral=g=>Object.keys(DEF).every(k=>Math.abs((g[k]??DEF[k])-DEF[k])<1e-4);
+ let G=Object.assign({},DEF,store.get(KEY)||{}),SNAP=null,EDIT=false;/* 로비 기본 렌더는 필름 그레이딩을 거치지 않는다. 편집 중에는 조작값을 미리 볼 수 있다. */
+ const E=()=>space===0&&!EDIT?DEF:G;const neutral=g=>Object.keys(DEF).every(k=>Math.abs((g[k]??DEF[k])-DEF[k])<1e-4);
  let RT=null,QS=null,QC=null,MAT=null;const sz=new THREE.Vector2(),N6500=LP_kRGB(6500);
  function gains(){const a=LP_kRGB(E().temp),g=[a[0]/N6500[0],a[1]/N6500[1],a[2]/N6500[2]],t=E().tint;g[0]*=1+t*.05;g[1]*=1-t*.1;g[2]*=1+t*.05;const l=.2126*g[0]+.7152*g[1]+.0722*g[2];return g.map(v=>v/l)}
  function ensure(){R.getDrawingBufferSize(sz);if(!RT||RT.width!==sz.x||RT.height!==sz.y){if(RT)RT.dispose();const Ctor=(R.capabilities.isWebGL2&&THREE.WebGLMultisampleRenderTarget)?THREE.WebGLMultisampleRenderTarget:THREE.WebGLRenderTarget;RT=new Ctor(sz.x,sz.y,{format:THREE.RGBAFormat});RT.texture.encoding=R.outputEncoding;if(MAT)MAT.uniforms.tex.value=RT.texture}
@@ -5080,7 +5119,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
    depthTest:false,depthWrite:false});QS=new THREE.Scene();const q=new THREE.Mesh(new THREE.PlaneGeometry(2,2),MAT);q.frustumCulled=false;QS.add(q);QC=new THREE.Camera()}}
  function sync(){if(!MAT)return;const g=gains(),u=MAT.uniforms;u.gain.value.set(g[0],g[1],g[2]);u.ev.value=Math.pow(2,E().ev);u.bri.value=E().bri;u.con.value=E().con;u.sat.value=E().sat;u.vig.value=E().vig;u.grain.value=E().grain;u.res.value.set(sz.x,sz.y)}
  window.qa124Render=function(){if(neutral(E())){R.render(S,C);return}try{ensure();sync();MAT.uniforms.time.value=(performance.now()%100000)/37;R.setRenderTarget(RT);R.render(S,C);R.setRenderTarget(null);R.render(QS,QC)}catch(e){R.setRenderTarget(null);R.render(S,C)}};
- /* 관리자 */let SNAP=null,EDIT=false;const F=[['ev','노출',-1,1,.05,v=>(v>0?'+':'')+v.toFixed(2)+' EV'],['bri','명도',-.2,.2,.01,v=>(v>0?'+':'')+Math.round(v*100)],['con','대비',.7,1.4,.01,v=>Math.round(v*100)+'%'],['sat','채도',0,1.6,.01,v=>Math.round(v*100)+'%'],['temp','색온도',3500,9000,100,v=>v+'K'],['tint','틴트',-1,1,.02,v=>(v>0?'자주 +':v<0?'초록 ':'')+Math.round(Math.abs(v)*100)],['vig','비네팅',0,1,.01,v=>Math.round(v*100)+'%'],['grain','필름 그레인',0,1,.01,v=>Math.round(v*100)+'%']];
+ /* 관리자 */const F=[['ev','노출',-1,1,.05,v=>(v>0?'+':'')+v.toFixed(2)+' EV'],['bri','명도',-.2,.2,.01,v=>(v>0?'+':'')+Math.round(v*100)],['con','대비',.7,1.4,.01,v=>Math.round(v*100)+'%'],['sat','채도',0,1.6,.01,v=>Math.round(v*100)+'%'],['temp','색온도',3500,9000,100,v=>v+'K'],['tint','틴트',-1,1,.02,v=>(v>0?'자주 +':v<0?'초록 ':'')+Math.round(Math.abs(v)*100)],['vig','비네팅',0,1,.01,v=>Math.round(v*100)+'%'],['grain','필름 그레인',0,1,.01,v=>Math.round(v*100)+'%']];
  PANELS.admgrade=()=>{if(!ADM){PANELS.admlogin();return}if(!EDIT){SNAP=Object.assign({},G);EDIT=true}
   panel('<h3>로비 컬러·조명·톤</h3><div class="lpa-tabs" role="tablist"><button type="button" role="tab" aria-selected="false" data-a="lpatab" data-t="color">컬러</button><button type="button" role="tab" aria-selected="false" data-a="lpatab" data-t="light">조명</button><button type="button" role="tab" aria-selected="true" data-a="lpatab" data-t="grade">전체 톤</button></div><div class="qa124-pre">'+Object.keys(PRE).map(n=>`<button type="button" data-a="gradepre" data-n="${n}">${n}</button>`).join('')+'</div>'+F.map(([k,t,a,b,st,fm])=>`<div class="qa124-row"><div class="qa124-h"><span>${t}</span><b id="gv_${k}">${fm(G[k])}</b></div><input type="range" id="gr_${k}" data-k="${k}" min="${a}" max="${b}" step="${st}" value="${G[k]}"></div>`).join('')+'<p class="sub">3D 공간 전체에 적용돼요(영상·버튼 제외). 바꾸면 바로 미리보기, 저장하지 않고 닫으면 원래대로 돌아가요. 색온도는 낮을수록 따뜻해요.</p><div class="qa124-act"><button data-a="gradereset">초기화</button><button data-a="graderevert">되돌리기</button><button class="p" data-a="gradesave">저장</button></div>')};
  document.addEventListener('input',e=>{const el=e.target;if(!el||!el.id||el.id.indexOf('gr_')!==0)return;const k=el.dataset.k,f=F.find(x=>x[0]===k);G[k]=parseFloat(el.value);const o=$('gv_'+k);if(o&&f)o.textContent=f[5](G[k])});
@@ -5902,14 +5941,18 @@ html body.qa220h #act button svg,html body.qa220h #act button i{display:none!imp
 })();
 </script>
 <script id="qa258-pop">/* QA258: 캐릭터·매표소·매점·의자/소파만 QA257 조명(중립 흰빛·5% 어둡게 없음)으로 보이게 — 공간·장식은 이전 조명 그대로 */
-(function(){const U={value:new THREE.Vector3(1,1,1)},UA={value:new THREE.Vector3(1,1,1)},CL=new Map(),A=new THREE.Color(),Bc=new THREE.Color();
+(function(){const U={value:new THREE.Vector3(1,1,1)},UA={value:new THREE.Vector3(1,1,1)},CL=new Map();
  const patch=(m,uu)=>{if(m.userData.qa258)return;m.userData.qa258=1;const pb=m.onBeforeCompile,pk=m.customProgramCacheKey;m.onBeforeCompile=(sh,r)=>{if(pb)pb.call(m,sh,r);sh.uniforms.qa258c=uu||U;sh.fragmentShader='uniform vec3 qa258c;\n'+sh.fragmentShader.replace('#include <dithering_fragment>','gl_FragColor.rgb*=qa258c;\n#include <dithering_fragment>')};m.customProgramCacheKey=()=>(pk?pk.call(m):'')+'|qa258';m.needsUpdate=true};
  const own=src=>{if(CL.has(src))return CL.get(src);const m=src.clone(),u=src.userData&&src.userData.lp;if(u&&u.c)m.userData.lp={c:u.c.clone(),e:u.e?u.e.clone():new THREE.Color(0,0,0)};if(typeof LP_MATS!=='undefined'&&LP_MATS.includes(src))LP_MATS.push(m);CL.set(src,m);patch(m,U);return m};
  const fix=(o,shared)=>{if(!o.material||o.isSprite||o.isLight||(o.material.visible===false))return;const f=m=>!m||m.visible===false?m:(shared?own(m):(patch(m,UA),m));o.material=Array.isArray(o.material)?o.material.map(f):f(o.material)};
  window.qa258Pop=(root,av)=>root.traverse(o=>{if(o.isMesh)fix(o,!av)});
- const tick=()=>{const k=1/.95;if(window.QA258W!==false&&space===0){A.copy(HEMI.color).add(Bc.copy(dl.color)).multiplyScalar(.5);U.value.set(k/Math.max(.5,A.r),k/Math.max(.5,A.g),k/Math.max(.5,A.b))}else U.value.set(k,k,k);const avatarExposure=(typeof CTONE!=='undefined'?CTONE.expo:1/.95)*.95;
-  /* 로비에서는 캐릭터의 밝기 보정을 낮춰 피부와 밝은 의상의 명암을 살린다. */
-  UA.value.copy(U.value).multiplyScalar(avatarExposure*(space===0?.95:1));requestAnimationFrame(tick)};tick();
+ const tick=()=>{
+  const legacy=1/.95,sceneGain=space===0?1:legacy;
+  U.value.setScalar(sceneGain);
+  const avatarExposure=(typeof CTONE!=='undefined'?CTONE.expo:legacy)*.95;
+  UA.value.copy(U.value).multiplyScalar(avatarExposure);
+  requestAnimationFrame(tick);
+ };tick();
  /* 매표소·매점: 상호작용 영역 안에 있는 사물 · 의자/소파: 앉는 자리 주변 사물 */
  const run=()=>{const hb=INTER.filter(h=>h.userData&&h.userData.act&&/openPanel\('(booth|shop)'\)/.test(String(h.userData.act.fn))).map(h=>{h.updateWorldMatrix(true,false);return new THREE.Box3().setFromObject(h).expandByScalar(.45)});
   const sp=SPOTS.filter(s=>s.kind!=='cine'&&/^L/.test(s.zone||''));const bb=new THREE.Box3(),c=new THREE.Vector3(),z=new THREE.Vector3(),T=new Set();

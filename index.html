@@ -5907,7 +5907,9 @@ html body.qa220h #act button svg,html body.qa220h #act button i{display:none!imp
  const own=src=>{if(CL.has(src))return CL.get(src);const m=src.clone(),u=src.userData&&src.userData.lp;if(u&&u.c)m.userData.lp={c:u.c.clone(),e:u.e?u.e.clone():new THREE.Color(0,0,0)};if(typeof LP_MATS!=='undefined'&&LP_MATS.includes(src))LP_MATS.push(m);CL.set(src,m);patch(m,U);return m};
  const fix=(o,shared)=>{if(!o.material||o.isSprite||o.isLight||(o.material.visible===false))return;const f=m=>!m||m.visible===false?m:(shared?own(m):(patch(m,UA),m));o.material=Array.isArray(o.material)?o.material.map(f):f(o.material)};
  window.qa258Pop=(root,av)=>root.traverse(o=>{if(o.isMesh)fix(o,!av)});
- const tick=()=>{const k=1/.95;if(window.QA258W!==false&&space===0){A.copy(HEMI.color).add(Bc.copy(dl.color)).multiplyScalar(.5);U.value.set(k/Math.max(.5,A.r),k/Math.max(.5,A.g),k/Math.max(.5,A.b))}else U.value.set(k,k,k);UA.value.copy(U.value).multiplyScalar((typeof CTONE!=='undefined'?CTONE.expo:1/.95)*.95)/* QA262: 캐릭터 밝기(관리자) */;requestAnimationFrame(tick)};tick();
+ const tick=()=>{const k=1/.95;if(window.QA258W!==false&&space===0){A.copy(HEMI.color).add(Bc.copy(dl.color)).multiplyScalar(.5);U.value.set(k/Math.max(.5,A.r),k/Math.max(.5,A.g),k/Math.max(.5,A.b))}else U.value.set(k,k,k);const avatarExposure=(typeof CTONE!=='undefined'?CTONE.expo:1/.95)*.95;
+  /* 로비에서는 캐릭터의 밝기 보정을 낮춰 피부와 밝은 의상의 명암을 살린다. */
+  UA.value.copy(U.value).multiplyScalar(avatarExposure*(space===0?.95:1));requestAnimationFrame(tick)};tick();
  /* 매표소·매점: 상호작용 영역 안에 있는 사물 · 의자/소파: 앉는 자리 주변 사물 */
  const run=()=>{const hb=INTER.filter(h=>h.userData&&h.userData.act&&/openPanel\('(booth|shop)'\)/.test(String(h.userData.act.fn))).map(h=>{h.updateWorldMatrix(true,false);return new THREE.Box3().setFromObject(h).expandByScalar(.45)});
   const sp=SPOTS.filter(s=>s.kind!=='cine'&&/^L/.test(s.zone||''));const bb=new THREE.Box3(),c=new THREE.Vector3(),z=new THREE.Vector3(),T=new Set();

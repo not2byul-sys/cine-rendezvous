@@ -116,14 +116,14 @@ test('설정 파일: 같은 판을 이미 받은 브라우저는 다시 덮어�
   assert.equal(JSON.parse(ls.get('aic.lobbyLighting')).b, 120);
 });
 
-test('로비 설정: 대비가 낮은 타일, 밝은 목재, 밝기 105%와 4600K', () => {
-  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#EFE8DE');
-  assert.deepEqual(config.data['aic.lobbyLighting'], { b: 105, k: 4600 });
+test('로비 설정: 대비가 낮은 타일, 밝은 목재, 밝기 100%와 4500K', () => {
+  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#E3DAD0');
+  assert.deepEqual(config.data['aic.lobbyLighting'], { b: 100, k: 4500 });
   assert.deepEqual(config.force, ['aic.lobbyPalette', 'aic.lobbyLighting']);
   assert(Date.parse(config.rev) > Date.parse('2026-11-24T04:02:35.000Z'));
   /* 그 밖의 관리자 입력값은 그대로 */
   assert.deepEqual(Object.keys(config.data), ['aic.clubfilmRevision', 'aic.layout', 'aic.posters', 'aic.filmInfo', 'aic.durs', 'aic.lobbyPalette', 'aic.lobbyLighting']);
-  assert.equal(config.data['aic.lobbyPalette'].floorPink, '#E0D2C4'); assert.equal(config.data['aic.lobbyPalette'].wallWood, '#A07B58');
+  assert.equal(config.data['aic.lobbyPalette'].floorPink, '#D6C5B7'); assert.equal(config.data['aic.lobbyPalette'].wallWood, '#9A7355');
 });
 
 test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10% 밝게', () => {

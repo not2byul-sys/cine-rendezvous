@@ -861,6 +861,7 @@ html body.cineseat #watch::before{content:"";width:14px;height:14px;flex:none;ba
 <div id="join"><div class="jt-wrap" id="jtw"><div class="jt jt2" id="tk" data-state="empty"><img class="jt14-paper" src="qa14_assets/join-plain.svg" alt="" aria-hidden="true"><img class="jt14-punched-paper" src="qa14_assets/join-half-r.svg" alt="" aria-hidden="true"><i class="jt2-f1"></i><i class="jt2-f2"></i><div class="jt2-face"><div class="jt-q">어떤 영화를 좋아하세요?</div><div class="jt2-field"><input id="nick" class="jt-in" placeholder="사용할 닉네임 적기" maxlength="14" autocomplete="off" aria-label="닉네임"></div><div class="jt2-opts"><label class="jt2-ck jt14-random"><input type="checkbox" id="nrand"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>랜덤고르기</span></label><label class="jt2-ck jt14-save"><input type="checkbox" id="nsave"><span class="jt14-check" aria-hidden="true"><img class="jt14-off" src="qa14_assets/check-empty.svg" alt=""><img class="jt14-on" src="qa14_assets/check-checked.svg" alt=""></span><span>저장</span></label></div><button id="go" class="jt2-go">ENTER</button></div><span id="no" hidden>1/500</span><div id="dt" hidden></div><div id="dots" hidden></div></div></div></div></div>
 <script id="qa105-settings-pull">/* QA105: 관리자 설정을 서버에서 받아 이 브라우저 저장에 반영(바뀐 경우만) — 실패하면 기존 저장 그대로 */(function(){if(location.protocol==='file:')return;try{const x=new XMLHttpRequest();x.open('GET','/api/settings',false);x.send();if(x.status!==200)return;const r=JSON.parse(x.responseText);window.QA105_REMOTE={rev:r.rev||0,writable:!!r.writable};if(!r.ok||!r.rev||String(r.rev)===localStorage.getItem('aic.cfgRev'))return;Object.keys(r.data||{}).forEach(k=>{try{localStorage.setItem(k,JSON.stringify(r.data[k]))}catch(e){}});localStorage.setItem('aic.cfgRev',String(r.rev))}catch(e){}})()</script>
 <script src="vendor/three.min.js"></script><!-- QA98: three.js r128을 같은 서버에서 제공(외부 CDN 의존 제거) -->
+<script src="vendor/GLTFLoader.js"></script>
 <script src="multiplayer-config.js"></script>
 <script id="config">
 /* =====================================================
@@ -4496,16 +4497,59 @@ function migrateWallLayout(saved){if(!saved||saved.wallStyleRev===1)return saved
 /* QA178: 로비 아이템 전체 10% 축소 — 바닥 물건은 바닥 기준, 벽 물건은 제자리 중심 기준, 천장 물건은 천장 기준으로 줄임(구조물·비밀문·매표 부스·입장 위치 제외) */
 (function(){const EX=new Set(['spawn','club-mini-tree','bookshelf','qa102arch','booth']);LAYI.forEach(it=>{if(EX.has(it.id)||it.dup)return;const k=LOBBY_KD.has(it.id)?.9:.936/* QA260: 1층 바깥(2층 등)은 여기서 4% 키움 */;const bb=new THREE.Box3();it.objs.forEach(e=>{if(!e.o.isSprite&&!e.o.isLight&&e.o.name!=='lobby-contact-shadow')bb.expandByObject(e.o)});if(bb.isEmpty())return;const ay=it.ceil?bb.max.y:it.wall?(bb.min.y+bb.max.y)/2:bb.min.y,ax=it.cx,az=it.cz;
  it.objs.forEach(e=>{e.p.set(ax+(e.p.x-ax)*k,ay+(e.p.y-ay)*k,az+(e.p.z-az)*k);e.o.position.copy(e.p);if(!e.o.isLight)e.o.scale.multiplyScalar(k)});it.spots.forEach(q=>{q.x=ax+(q.x-ax)*k;q.z=az+(q.z-az)*k;q.y=ay+(q.y-ay)*k;q.s.x=q.x;q.s.z=q.z;q.s.y=q.y})})})();
+/* Blender assets share their mesh resources across the two lobby layouts. */
+function loadCinemaAssets(){
+ if(!THREE.GLTFLoader)return;
+ const groups=new Map();
+ S.traverse(o=>{
+  if(!o.name.startsWith('cinema-asset:'))return;
+  const name=o.name.slice('cinema-asset:'.length);
+  if(!groups.has(name))groups.set(name,[]);
+  groups.get(name).push(o);
+ });
+ const loader=new THREE.GLTFLoader();
+ groups.forEach((targets,name)=>{
+  loader.load('assets/cinema/'+name+'.glb',({scene})=>{
+   /* Match the lobby's existing display-space palette without changing the GLB. */
+   if(R.outputEncoding===THREE.LinearEncoding){
+    const materials=new Set();
+    scene.traverse(o=>{
+     if(o.isMesh)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>materials.add(m));
+    });
+    materials.forEach(m=>m.color?.convertLinearToSRGB());
+   }
+   for(const target of targets){
+    for(const child of target.children){
+     if(child.userData.spot){
+      child.material=child.material.clone();
+      child.material.visible=false;
+     }else child.visible=false;
+    }
+    const model=scene.clone(true);
+    model.name='blender-model';
+    model.traverse(o=>o.layers.mask=target.layers.mask);
+    target.add(model);
+   }
+  },undefined,error=>console.warn('Cinema asset fallback:',name,error));
+ });
+}
+function cinemaAssetGroup(name,x,y,z){
+ const g=new THREE.Group();
+ g.name='cinema-asset:'+name;
+ g.position.set(x,y,z);
+ S.add(g);
+ return g;
+}
 /* QA250: 공중전화와 크리스마스 트리 사이 — 레트로 가죽 소파 + 오벌 커피 테이블 · QA260: 매점 옆(맞은편 벽)에도 같은 소파 */const qa260Sofa=(X_,Z_,R_,TX_,ID_,NM_)=>{const m_=layBeg();
  /* QA252: 체스터필드 — 단추 터프팅 등받이, 둥글게 말린 팔걸이, 황동 징 장식, 짧은 원목 다리 */
- {const x=X_,z=Z_,rot=R_,zone='L0',g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=rot;S.add(g);
- const grain=art(256,256,(c,w,h)=>{const r=rng(1979);c.fillStyle='#8a5536';c.fillRect(0,0,w,h);for(let i=0;i<9000;i++){c.fillStyle=r()<.5?'rgba(255,220,180,.05)':'rgba(30,12,4,.08)';c.fillRect(r()*w,r()*h,2,1)}});
- const tuft=art(512,256,(c,w,h)=>{c.fillStyle='#8a5536';c.fillRect(0,0,w,h);const cw=w/10,ch=h/4;for(let j=-1;j<=4;j++)for(let i=-1;i<=10;i++){const cx=(i+(j%2?.5:0))*cw,cy=(j+.5)*ch,gr=c.createRadialGradient(cx-cw*.12,cy-ch*.15,2,cx,cy,cw*.62);gr.addColorStop(0,'rgba(255,214,170,.32)');gr.addColorStop(.6,'rgba(255,214,170,.04)');gr.addColorStop(1,'rgba(30,10,2,.28)');c.fillStyle=gr;c.beginPath();c.moveTo(cx,cy-ch*.55);c.lineTo(cx+cw*.55,cy);c.lineTo(cx,cy+ch*.55);c.lineTo(cx-cw*.55,cy);c.closePath();c.fill()}
+ {const x=X_,z=Z_,rot=R_,zone='L0',compact=ID_==='leather-sofa',g=cinemaAssetGroup(compact?'cinema-sofa':'chesterfield',x,0,z);g.rotation.y=rot;
+ const grain=art(256,256,(c,w,h)=>{const r=rng(1979);c.fillStyle=compact?'#a83d56':'#8a5536';c.fillRect(0,0,w,h);for(let i=0;i<9000;i++){c.fillStyle=r()<.5?'rgba(255,220,180,.05)':'rgba(30,12,4,.08)';c.fillRect(r()*w,r()*h,2,1)}});
+ const tuft=art(512,256,(c,w,h)=>{c.fillStyle=compact?'#a83d56':'#8a5536';c.fillRect(0,0,w,h);const cw=w/10,ch=h/4;for(let j=-1;j<=4;j++)for(let i=-1;i<=10;i++){const cx=(i+(j%2?.5:0))*cw,cy=(j+.5)*ch,gr=c.createRadialGradient(cx-cw*.12,cy-ch*.15,2,cx,cy,cw*.62);gr.addColorStop(0,'rgba(255,214,170,.32)');gr.addColorStop(.6,'rgba(255,214,170,.04)');gr.addColorStop(1,'rgba(30,10,2,.28)');c.fillStyle=gr;c.beginPath();c.moveTo(cx,cy-ch*.55);c.lineTo(cx+cw*.55,cy);c.lineTo(cx,cy+ch*.55);c.lineTo(cx-cw*.55,cy);c.closePath();c.fill()}
   c.strokeStyle='rgba(35,14,4,.55)';c.lineWidth=3;for(let j=0;j<=4;j++)for(let i=-1;i<=10;i++){const ax=(i+(j%2?.5:0))*cw,ay=j*ch;c.beginPath();c.moveTo(ax,ay);c.lineTo(ax+cw*.5,ay+ch);c.moveTo(ax,ay);c.lineTo(ax-cw*.5,ay+ch);c.stroke()}});
  const lea=new THREE.MeshPhongMaterial({map:grain,color:0xe6cdb8,shininess:38,specular:0x5a3a26}),leaT=new THREE.MeshPhongMaterial({map:tuft,color:0xe6cdb8,shininess:34,specular:0x5a3a26}),brass=new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90,specular:0xfff0c0}),wood=new THREE.MeshPhongMaterial({color:0x4a2a17,shininess:40});
  const rb=(w,h,d,px,py,pz,m=lea,rr=.08)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d,6,6,6),m);const at=o.geometry.attributes.position,r=Math.min(rr,h*.45,w*.45,d*.45),hw=w/2,hh=h/2,hd=d/2,v=new THREE.Vector3(),k=new THREE.Vector3();for(let i=0;i<at.count;i++){v.set(at.getX(i),at.getY(i),at.getZ(i));k.set(clampN(v.x,-hw+r,hw-r),clampN(v.y,-hh+r,hh-r),clampN(v.z,-hd+r,hd-r));v.sub(k);if(v.lengthSq()>1e-9)v.normalize().multiplyScalar(r);v.add(k);at.setXYZ(i,v.x,v.y,v.z)}o.geometry.computeVertexNormals();o.position.set(px,py,pz);g.add(o);return o};
  const cyl=(r,len,px,py,pz,ax,m=lea)=>{const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,24),m);if(ax==='x')o.rotation.z=Math.PI/2;else o.rotation.x=Math.PI/2;o.position.set(px,py,pz);g.add(o);return o};
- const W=2.5,D=.9;
+ const W=compact?1.92:2.5,D=compact?.85:.9;
  rb(W,.26,D,0,.24,0,lea,.05)/* 바닥 레일 */;
  [-1,1].forEach(k=>[-1,1].forEach(q=>{const l=new THREE.Mesh(new THREE.CylinderGeometry(.045,.032,.11,12),wood);l.position.set(k*(W/2-.12),.055,q*(D/2-.1));g.add(l);const bn=new THREE.Mesh(new THREE.SphereGeometry(.05,12,8),wood);bn.scale.y=.7;bn.position.set(k*(W/2-.12),.1,q*(D/2-.1));g.add(bn)}))/* 돌림 다리 */;
  const back=rb(W-.36,.5,.24,0,.62,-D/2+.13,leaT,.06);back.material=leaT;cyl(.11,W-.3,0,.88,-D/2+.13,'x')/* 등받이 윗단 롤 */;
@@ -4514,12 +4558,21 @@ function migrateWallLayout(saved){if(!saved||saved.wallStyleRev===1)return saved
   for(let i=0;i<6;i++){const n=new THREE.Mesh(new THREE.SphereGeometry(.014,6,4),brass);n.position.set(k*(W/2-.15),.2+i*.075,D/2+.012);g.add(n)}});
  for(let i=0;i<=40;i++){const n=new THREE.Mesh(new THREE.SphereGeometry(.014,6,4),brass);n.position.set(-W/2+.04+(W-.08)*i/40,.16,D/2+.008);g.add(n)}/* 황동 징 */
  for(let j=0;j<3;j++)for(let i=0;i<(j%2?8:9);i++){const bt=new THREE.Mesh(new THREE.SphereGeometry(.017,8,6),lea);bt.position.set(-(W-.5)/2+.06+(i+(j%2?.5:0))*((W-.62)/8),.47+j*.13,-D/2+.255);g.add(bt)}/* 단추 */
- [-.72,0,.72].forEach(o=>{const cu=rb(.7,.15,.64,o,.44,.08,lea,.06);const sx=x+Math.cos(rot)*o,sz=z-Math.sin(rot)*o;addSpot({x:sx,y:0,z:sz,rot,zone,kind:'sofa',taken:null},cu)});}
- const wood=new THREE.MeshPhongMaterial({color:0x6b3f22,shininess:60,specular:0x3a2414}),tx=TX_,tz=Z_;const top=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.045,40),wood);top.scale.set(.62,1,1);top.position.set(tx,.42,tz);S.add(top);
- [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,b])=>{const l=new THREE.Mesh(new THREE.CylinderGeometry(.022,.012,.4,10),wood);l.position.set(tx+a*.17,.2,tz+b*.3);l.rotation.z=a*.12;l.rotation.x=-b*.12;S.add(l)});
- const ash=new THREE.Mesh(new THREE.CylinderGeometry(.07,.06,.03,20),new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90}));ash.position.set(tx,.458,tz-.12);S.add(ash);
- layEnd(m_,ID_,NM_,0)};qa260Sofa(-8.5,16.95,Math.PI/2,-6.7,'leather-sofa','레트로 가죽 소파 · 테이블');qa260Sofa(8.5,16.95,-Math.PI/2,6.7,'leather-sofa-2','레트로 가죽 소파 · 테이블 (매점 옆)');
+ (compact?[-.51,.51]:[-.72,0,.72]).forEach(o=>{const cu=rb(compact?.83:.7,compact?.17:.15,compact?.65:.64,o,compact?.49:.44,compact?.06:.08,lea,.06);const sx=x+Math.cos(rot)*o,sz=z-Math.sin(rot)*o;addSpot({x:sx,y:0,z:sz,rot,zone,kind:'sofa',taken:null},cu)});}
+ const wood=new THREE.MeshPhongMaterial({color:0x6b3f22,shininess:60,specular:0x3a2414}),tx=TX_,tz=Z_;
+ const table=cinemaAssetGroup('oval-table',tx,0,tz);
+ const top=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.045,40),wood);top.scale.set(.62,1,1);top.position.y=.42;table.add(top);
+ [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([a,b])=>{const l=new THREE.Mesh(new THREE.CylinderGeometry(.022,.012,.4,10),wood);l.position.set(a*.17,.2,b*.3);l.rotation.z=a*.12;l.rotation.x=-b*.12;table.add(l)});
+ const tray=cinemaAssetGroup('brass-ashtray',tx,.444,tz-.15);
+ const ash=new THREE.Mesh(new THREE.CylinderGeometry(.07,.06,.03,20),new THREE.MeshPhongMaterial({color:0xc9a24a,shininess:90}));ash.position.y=.014;tray.add(ash);
+ const lamp=cinemaAssetGroup('opal-lamp',tx,.444,tz+.19);
+ lamp.scale.setScalar(.68);
+ B(.065,.29,.065,BR,0,.145,0,lamp);
+ const shade=new THREE.Mesh(new THREE.SphereGeometry(.125,16,10),new THREE.MeshBasicMaterial({color:0xfff0d6}));
+ shade.position.y=.357;lamp.add(shade);
+ layEnd(m_,ID_,NM_,0)};qa260Sofa(-8.5,16.95,Math.PI/2,-6.7,'leather-sofa','라즈베리 벨벳 소파 · 테이블');qa260Sofa(8.5,16.95,-Math.PI/2,6.7,'leather-sofa-2','레트로 가죽 소파 · 테이블 (매점 옆)');
 laySet(migrateWallLayout(store.get(LAYK))||DEF_LAYOUT||{});
+loadCinemaAssets();
 /* 문 앞을 막는 화분은 옆으로 비켜 배치(상영관 입구 1·2관, 정문) */LAYI.filter(it=>!it.del&&/^plant/.test(it.dup||it.id)).forEach(it=>{const x=it.cx+it.dx,z=it.cz+it.dz,up=((it.lvl0||0)+(it.dl||0))>=1;let nx=null,nz=null;
  if(!up&&Math.abs(x)<2.4&&z<BF+3.2){nx=x<0?-3.1:3.1;nz=BF+.5}else if(up&&Math.abs(x)<2.4&&z<LB+2.6){nx=x<0?-2.9:2.9;nz=LB+.5}else if(!up&&Math.abs(x)<2.6&&z>LD-2.6){nx=x<0?-3.4:3.4;nz=LD-.75}
  if(nx!=null){it.dx=nx-it.cx;it.dz=nz-it.cz;layApply(it)}

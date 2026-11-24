@@ -1087,7 +1087,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 /* QA73·74: 로비 팔레트 13색(피그마 90:1362 기반, QA76에서 사용자 지정 값으로 교체). 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
-const LP_DEF=Object.freeze({floorCream:"#E1DBD1",floorPink:"#D2BDA3",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음). QA326: 크림 타일은 노란 기를 뺀 아이보리(예전 #E2DCC1) */
+const LP_DEF=Object.freeze({floorCream:"#E9E7DD",floorPink:"#D2BDA3",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음). QA326: 크림 타일은 노란 기를 뺀 아이보리(예전 #E2DCC1) */
 const LP_HEX=/^#[0-9a-f]{6}$/i,LP_clean=o=>{const r={};Object.keys(LP_DEF).forEach(k=>{const v=o&&o[k];r[k]=typeof v==='string'&&LP_HEX.test(v)?v.toUpperCase():LP_DEF[k]});return r};
 const LP_CUR=LP_clean(store.get('aic.lobbyPalette'));
 const LOBBY_PALETTE={
@@ -1098,7 +1098,7 @@ const LOBBY_PALETTE={
 const LP_rgb=h=>{const n=parseInt(h.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255]},LP_mix=(a,b,k)=>{const A=LP_rgb(a),B_=LP_rgb(b);return `rgb(${A.map((v,i)=>Math.round(v+(B_[i]-v)*k)).join(',')})`},LP_a=(h,al)=>`rgba(${LP_rgb(h).join(',')},${al})`;
 const LP_shade=(h,k)=>'#'+LP_rgb(h).map(v=>Math.max(0,Math.min(255,Math.round(k<0?v*(1+k):v+(255-v)*k))).toString(16).padStart(2,'0')).join('');
 /* 나뭇결 밝은 줄·어두운 줄·이음매는 기준색에서 같은 비율로 계산 */function LP_sync(){const P=LOBBY_PALETTE,c=LP_CUR;P.floor.dark=c.floorPink;P.floor.cream=c.floorCream;P.wall.base=c.wallWood;P.wall.grainLight=LP_shade(c.wallWood,.17);P.wall.grainDark=LP_shade(c.wallWood,-.165);P.wall.seam=LP_shade(c.wallWood,-.22);P.woodFrame.base=c.wallDark;P.woodFrame.grainLight=LP_shade(c.wallDark,.155);P.woodFrame.grainDark=LP_shade(c.wallDark,-.23)}LP_sync();
-/* 로비 전용 재질 목록(조명 관리자가 자체 발색분을 함께 조절) · 기준색 기록 */const LP_LDEF={b:100,k:4800}/* 저장된 조명값이 없을 때: 밝기 100% · 색온도 4800K(QA326) */,LP_MATS=[],LP_LIGHT=(o=>o?({b:(o.b>=50&&o.b<=150?Math.round(o.b/5)*5:LP_LDEF.b)/100,k:o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}):{b:LP_LDEF.b/100,k:LP_LDEF.k})((o=>{try{if(o&&o.k==null&&localStorage.getItem('aic.qa257')){o=Object.assign({},o,{k:4700});store.set('aic.lobbyLighting',o)}localStorage.removeItem('aic.qa257')}catch(e){}return o})(store.get('aic.lobbyLighting')));
+/* 로비 전용 재질 목록(조명 관리자가 자체 발색분을 함께 조절) · 기준색 기록 */const LP_LDEF={b:102,k:4200}/* 저장된 조명값이 없을 때: 밝기 102% · 색온도 4200K(QA334) */,LP_MATS=[],LP_LIGHT=(o=>o?({b:(o.b>=50&&o.b<=150?Math.round(o.b):LP_LDEF.b)/100,k:o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}):{b:LP_LDEF.b/100,k:LP_LDEF.k})((o=>{try{if(o&&o.k==null&&localStorage.getItem('aic.qa257')){o=Object.assign({},o,{k:4700});store.set('aic.lobbyLighting',o)}localStorage.removeItem('aic.qa257')}catch(e){}return o})(store.get('aic.lobbyLighting')));
 function LP_base(m,c,e){m.userData.lp={c,e};m.color.copy(c);if(m.emissive)m.emissive.copy(e)}
 const LP_flat=(lit=.42,gain=.95)=>{const m=new THREE.MeshLambertMaterial({color:0xffffff});m.userData.keep=1;m.userData.flat={lit,gain};LP_MATS.push(m);return m};
 /* 텍스처에 색이 이미 들어 있으므로 재질색을 다시 곱하지 않음: 조명분(color)+자체 발색(emissive) 합이 1이 되게 나눠, 조명이 따뜻해도 팔레트 색에서 벗어나지 않게 함. gain은 조명 적용 후 실제 화면을 측정해 맞춘 보정값 */
@@ -1810,7 +1810,7 @@ function buildHall(h){const id=h.id,cx=HCX[id],lx=DOORX[id],dzr=id===1?BF:LB,bas
 }
 /* 공간 전환: 로비 ↔ 상영관 (한 번에 한 공간만 렌더) */
 let space=-1,LSAVE=null,snapCam=false,HLF=1;
-const LOBBY_HEMI=.756,LOBBY_DL=.1575,LOBBY_HC=0xfdf0e9,LOBBY_DC=0xfde3ca/* QA326: 로비 반구광·직사광 색 — 노란 기를 조금 뺌(예전 0xfff0e0 · 0xffe3c2) */;/* QA71: 로비 조도 +5% *//* QA56: 중립에 가까운 부드러운 조명 *//* QA45: 부드럽고 따뜻한 로비 — 직사광 줄이고 간접광 올림 *//* 로비 조명: 처음 값 */const HDIM=.4,HEMI=S.children.find(o=>o.isHemisphereLight);
+const LOBBY_HEMI=.756,LOBBY_DL=.1575,LOBBY_HC=0xf2e1cf,LOBBY_DC=0xffe3c2/* QA326: 로비 반구광·직사광 색 — 노란 기를 조금 뺌(예전 0xfff0e0 · 0xffe3c2) */;/* QA71: 로비 조도 +5% *//* QA56: 중립에 가까운 부드러운 조명 *//* QA45: 부드럽고 따뜻한 로비 — 직사광 줄이고 간접광 올림 *//* 로비 조명: 처음 값 */const HDIM=.4,HEMI=S.children.find(o=>o.isHemisphereLight);
 /* QA74: 로비 조명 관리자 — 밝기(50~150%)는 로비 조명 세기와 로비 재질의 자체 발색분에, 색온도(2700~6500K, 켰을 때만)는 조명색과 자체 발색분에 곱함. 100%·색온도 끔 = 지금 로비 그대로 */
 const LP_PLS=[];let LP_PREV=1;
 function LP_kRGB(K){const t=K/100,r=t<=66?255:329.698727446*Math.pow(t-60,-.1332047592),g=t<=66?99.4708025861*Math.log(t)-161.1195681661:288.1221695283*Math.pow(t-60,-.0755148492),b=t>=66?255:t<=19?0:138.5177312231*Math.log(t-10)-305.0447927307;return [r,g,b].map(v=>Math.max(0,Math.min(255,v))/255)}
@@ -2750,7 +2750,7 @@ PANELS.admposter=()=>{if(!ADM){PANELS.admlogin();return}const o=pGet();panel(`<h
 Object.assign(A,{admposter:()=>PANELS.admposter(),preset:d=>{const o=pGet();delete o[d.pid];store.set(PKEY,o);const sl=PSLOT.find(q=>q.id===d.pid);if(sl)pApply(sl,null);PANELS.admposter()}});
 /* QA74: 관리 → 로비 컬러·조명. 바꾸면 바로 미리보기, 저장하면 이 브라우저에 보관(설정 내보내기 파일에도 포함), 초기화하면 피그마 기본값·밝기 100%·색온도 끔 */
 const LP_LABEL={floorCream:'바닥 타일 · 크림',floorPink:'바닥 타일 · 핑크',wallWood:'벽 패널 · 원목',wallDark:'짙은 원목 · 몰딩',carpetA:'계단 카펫 A',carpetB:'계단 카펫 B',railing:'계단 난간 · 버건디',railingBase:'계단 난간 · 베이스',goldTrim:'계단 디딤판 · 골드',sidePanel:'계단 옆판',counterTop:'매표소·매점 상판',counterBody:'매표소·매점 몸체',glass:'출입문 유리'};
-const LPA={tab:'color',dirty:false,saved:()=>({pal:LP_clean(store.get('aic.lobbyPalette')),light:(o=>o?({b:o.b>=50&&o.b<=150?Math.round(o.b/5)*5:LP_LDEF.b,k:o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}):Object.assign({},LP_LDEF))(store.get('aic.lobbyLighting'))})};
+const LPA={tab:'color',dirty:false,saved:()=>({pal:LP_clean(store.get('aic.lobbyPalette')),light:(o=>o?({b:o.b>=50&&o.b<=150?Math.round(o.b):LP_LDEF.b,k:o.k>=2700&&o.k<=6500?Math.round(o.k/100)*100:null}):Object.assign({},LP_LDEF))(store.get('aic.lobbyLighting'))})};
 function lpaSet(pal,light){if(light){LP_LIGHT.b=light.b/100;LP_LIGHT.k=light.k}LP_apply(pal||{})}
 window.lpaRevert=()=>{if(!LPA.dirty)return;LPA.dirty=false;const sv=LPA.saved();lpaSet(sv.pal,sv.light)};
 PANELS.admlobby=()=>{if(!ADM){PANELS.admlogin();return}const b=Math.round(LP_LIGHT.b*100),k=LP_LIGHT.k,col=LPA.tab==='color';

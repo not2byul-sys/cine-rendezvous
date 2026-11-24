@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>LAB</title></head>
+<body style="margin:0;background:#111;color:#ddd;font:14px sans-serif">
+<p style="padding:16px">LAB 불러오는 중…</p>
+<script>
+/* 색감·카메라 테스트용. index.html을 그대로 불러와 실행하고, 끝에 lab.js만 덧붙인다.
+   멀티플레이 연결은 끊고(운영 접속자에 섞이지 않도록) 운영 저장값은 건드리지 않는다. */
+fetch('index.html',{cache:'no-store'}).then(r=>r.text()).then(h=>{
+  var E='<\/script>';
+  h=h.replace('<script src="multiplayer-config.js">'+E,'<script>window.VINTAGE_MULTIPLAYER_URL=""'+E)
+     .replace('<head>','<head><meta name="robots" content="noindex">')
+     .replace('</body>','<script src="lab.js">'+E+'</body>');
+  document.open();document.write(h);document.close();
+});
+</script>
+</body></html>

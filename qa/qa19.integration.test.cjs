@@ -13,4 +13,4 @@ test('QA19 every NPC gift line reacts in character and then hints at the club or
   rows.forEach(r=>assert(/클럽|무지개 팝콘/.test(r[3]),r[1]));});
 test('QA19 mobile camera is game-style and taps show a destination mark',()=>{
   assert(source.includes('QA19: 일반 모바일 게임식'));assert(source.includes('qa19TapMark(h.point,ud.zone)'));assert(source.includes('eatTick(dt,t);qa19TapTick(dt);'));});
-test('Avatar contact shadows are limited to the lobby floor',()=>{assert(source.includes('shadow.visible=space===0&&actor.visible'));assert(source.includes('&&!inStair(x,z)'));});
+test('QA19 avatar floor shadow is hidden',()=>{assert(source.includes('sh.visible=false/* QA19'));});

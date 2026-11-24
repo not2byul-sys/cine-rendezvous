@@ -8,8 +8,9 @@ test('QA16 invite follows the Figma 76:2228 layout', () => {
   assert(source.includes('<h3>비밀영화클럽 초대장</h3>'));
   assert(source.includes('초대장을 수락하면 영화클럽으로 가는 문이 열려요'));
 });
-test('QA16 lobby plays a calm classical schedule and dims its fixtures', () => {
+test('QA16 lobby plays a calm classical schedule and is 5% darker', () => {
   assert(source.includes('BGM.sched=qa16ClassicSchedule;'));
+  assert(source.includes('LOBBY_HEMI=.756,LOBBY_DL=.1575'));
   assert(source.includes('o.intensity*=.95'));
 });
 test('QA16 chat send button uses the shadcn icon button shape', () => {

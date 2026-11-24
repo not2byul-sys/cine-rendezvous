@@ -70,13 +70,15 @@ const SL=[
  ['거리','cam.dist',2,16,.1],['높이','cam.h',.3,8,.05],['가로 회전','cam.yaw',-180,180,1],['시선 높이','cam.look',0,3,.05],['FOV','cam.fov',20,90,1]];
 const get=p=>{const[a,b]=p.split('.');return st[a][b]};
 const put=(p,v)=>{const[a,b]=p.split('.');st[a][b]=v};
+/* 운영 로비는 저장된 전체 톤 위에 로비 전용 보정(QA335)을 얹으므로, 랩 슬라이더 값이 로비 최종값이 되도록 그만큼 뺀다 */
+const gradeFor=g=>Object.assign({},g,{ev:g.ev,sat:g.sat/1.02,temp:g.temp+50,tint:g.tint+.01});
 let fT=0;
 function push(p){
- if(p.startsWith('g.')&&window.QA124)QA124.set(Object.assign({},st.g));
+ if(p.startsWith('g.')&&window.QA124)QA124.set(gradeFor(st.g));
  if(p==='lt.floor'){clearTimeout(fT);fT=setTimeout(()=>LP_apply({floorCream:st.lt.floor}),120)}}
 function sync(){SL.forEach(r=>{if(!r[1])return;const i=$('lab-'+r[1]);if(i){i.value=get(r[1]);const v=$('lab-v-'+r[1]);if(v)v.textContent=r[2]==='color'?get(r[1]):(+get(r[1])).toFixed(r[4]<1?2:0)}})}
 function load(o){Object.assign(st.lt,o.lt||{});Object.assign(st.cam,o.cam||{});Object.assign(st.g,o.g||{});
- if(window.QA124)QA124.set(Object.assign({},st.g));LP_apply({floorCream:st.lt.floor});sync()}
+ if(window.QA124)QA124.set(gradeFor(st.g));LP_apply({floorCream:st.lt.floor});sync()}
 function ui(){
  const css=document.createElement('style');
  css.textContent='#cine-first-load,#chip,#mpbar,#bar,#act,#ctxbar,#hint,#qa127map,#qa244tip,#toast,.chip,#pn{display:none!important}'+

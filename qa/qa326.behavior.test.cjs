@@ -116,11 +116,11 @@ test('설정 파일: 같은 판을 이미 받은 브라우저는 다시 덮어�
   assert.equal(JSON.parse(ls.get('aic.lobbyLighting')).b, 120);
 });
 
-test('올려 둔 설정: 크림 타일은 아이보리, 밝기 102% — 두 항목만 고쳐 올린 판', () => {
-  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#E9E7DD');
-  assert.deepEqual(config.data['aic.lobbyLighting'], { b: 102, k: 4200 });
+test('올려 둔 설정: 크림 타일은 아이보리, 밝기 95% — 두 항목만 고쳐 올린 판', () => {
+  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#E1DBD1');
+  assert.deepEqual(config.data['aic.lobbyLighting'], { b: 95, k: 4200 });
   assert.deepEqual(config.force, ['aic.lobbyPalette', 'aic.lobbyLighting']);
-  assert.equal(config.rev, '2026-11-24T03:19:27.000Z');
+  assert.equal(config.rev, '2026-11-24T04:02:35.000Z');
   /* 그 밖의 관리자 입력값은 그대로 */
   assert.deepEqual(Object.keys(config.data), ['aic.clubfilmRevision', 'aic.layout', 'aic.posters', 'aic.filmInfo', 'aic.durs', 'aic.lobbyPalette', 'aic.lobbyLighting']);
   assert.equal(config.data['aic.lobbyPalette'].floorPink, '#D2BDA3'); assert.equal(config.data['aic.lobbyPalette'].wallWood, '#865A32');
@@ -131,7 +131,7 @@ test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10%
   /* 예전: 세기 배율 .399 × 밝기 1.10 → 지금: 배율 × 밝기 1.00 */
   assert(Math.abs(lamp * 1.00 / (.399 * 1.10) - 1.10) < 0.005, String(lamp / (.399 * 1.10)));
   assert.equal(glow, 1.1);
-  assert(source.includes('const LP_LDEF={b:102,k:4200}'));
+  assert(source.includes('const LP_LDEF={b:95,k:4200}'));
   assert.equal(source.split('LOBBY_HC').length - 1, 4, '로비 반구광 색은 한 이름으로(정의 1 + 쓰는 곳 3)');
   assert.equal(source.split('LOBBY_DC').length - 1, 4);
   assert(!source.includes('.setHex(0xfff0e0)') && !source.includes(':0xfff0e0)'));

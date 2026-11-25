@@ -6597,6 +6597,12 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  let m0=-1;setInterval(()=>{try{if(!EAT){m0=-1;return}const m=Math.ceil((EAT.until-performance.now()/1000)/60);if(m!==m0){m0=m;hudUpd()}}catch(e){}},2000);
 })();
 </script>
+<script id="qa349-tint">/* QA349: iOS 26 Safari는 상태바 색을 body 배경색에서 가져온다(투명 지정 불가). 화면 맨 위 색을 1초마다 읽어 body 배경에 맞춰, 상태바가 장면에 녹아 보이게 한다 */
+(function(){const o=window.qa124Render;if(typeof o!=='function'||typeof R==='undefined')return;let t=0;const px=new Uint8Array(4),c=[0,0,0];let init=false;
+ window.qa124Render=function(){const r=o.apply(this,arguments);const n=performance.now();if(n-t<1000)return r;t=n;
+  try{const gl=R.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight;let a=[0,0,0];[.25,.5,.75].forEach(f=>{gl.readPixels(Math.floor(w*f),h-3,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);a[0]+=px[0];a[1]+=px[1];a[2]+=px[2]});
+   for(let i=0;i<3;i++)c[i]=init?c[i]+(a[i]/3-c[i])*.5:a[i]/3;init=true;const v='rgb('+c.map(x=>Math.round(x)).join(',')+')';document.body.style.backgroundColor=v;document.documentElement.style.backgroundColor=v}catch(e){}return r}})();
+</script>
 <script id="qa342-lock">/* QA342: 등록 전에는 가방·수첩이 잠김. 물건은 양손(2개)까지만 */
 (function(){
  const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};

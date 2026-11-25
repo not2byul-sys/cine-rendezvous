@@ -6601,11 +6601,11 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  /* 잠긴 가방·수첩을 누름: 아직 아무것도 없으면 얻는 곳을 알려 주고, 가진 게 있으면 등록 창 */
  const has=()=>{try{return count()>0||JSON.parse(localStorage.getItem('aic.cards')||'[]').length>0||JSON.parse(localStorage.getItem('aic.keeps')||'[]').length>0}catch(e){return false}};
  const go=(pt,k)=>{try{closePanel()}catch(e){}try{approachObject({pt,fn:()=>openPanel(k)},null)}catch(e){}};
- const ask=()=>{if(has()){QA341.form('new');return}QA338.view({html:'<div class="tx" style="font-size:16px">해제하려면 아이템을 획득하세요</div>',btns:[['티켓 구매',()=>{try{qa17GoBooth()}catch(e){}}],['간식 구매',()=>go({x:6.0,z:12.2,zone:'L0'},'shop')],['닫기']]})};
+ const ask=nm=>{if(has()){QA341.form('new');return}QA338.view({html:'<div class="tx" style="font-size:16px">아이템을 획득하면 '+nm+' 사용할 수 있어요</div>',btns:[['티켓 구매',()=>{try{qa17GoBooth()}catch(e){}}],['간식 구매',()=>go({x:6.0,z:12.2,zone:'L0'},'shop')],['닫기']]})};
  /* 받기: 2개를 넘기지 않음 */
  {const _h=holdAdd;holdAdd=function(keys){if(locked()){const room=2-count();if(room<=0){tell();return}keys=keys.slice(0,room)}const r=_h.call(this,keys);if(locked()&&count()>=2&&!sessionStorage.getItem('qa342told')){sessionStorage.setItem('qa342told','1');setTimeout(tell,900)}return r}}
  /* 가방·수첩 열기 */
- {const _b=A.bag,_k=A.book;A.bag=function(){if(locked()){ask();return}return _b.apply(this,arguments)};A.book=function(){if(locked()){ask();return}return _k.apply(this,arguments)}}
+ {const _b=A.bag,_k=A.book;A.bag=function(){if(locked()){ask('가방을');return}return _b.apply(this,arguments)};A.book=function(){if(locked()){ask('수첩을');return}return _k.apply(this,arguments)}}
  const paint=()=>document.body.classList.toggle('qa342lock',locked());paint();setInterval(paint,1500);
 })();
 </script>

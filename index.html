@@ -6577,8 +6577,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  window.QA341={form,acct,push};A.qa341new=()=>form('new');A.qa341load=()=>form('load');
  /* 이어받은 손·가방 간식 */
  const rest=()=>{const h=localStorage.getItem('aic.heldRestore');if(!h||typeof holdAdd!=='function'||!me)return;localStorage.removeItem('aic.heldRestore');try{const L=JSON.parse(h);if(!HELD.length&&L.length){holdAdd(L.map(x=>x.k));L.forEach((x,i)=>{if(HELD[i]&&x.left!=null)HELD[i].left=x.left});QA115_OFF=true;refreshMe()}}catch(e){}};
- /* 첫 입장 티켓: 이어하기 */
- {const go=document.getElementById('go');if(go&&!acct()){const b=document.createElement('button');b.type='button';b.className='qa341c';b.textContent='이어하기';b.onclick=e=>{e.preventDefault();e.stopPropagation();form('load')};(document.getElementById('jtw')||go.parentNode).appendChild(b)/* QA345: 티켓 안쪽은 절대 배치라 겹침 → 티켓 아래에 */}}
+ /* QA347: 첫 입장 티켓의 '이어하기' 버튼은 뺌(불러오기 창 A.qa341load 는 남겨 둠) */
  setInterval(()=>{if(typeof me==='undefined'||!me)return;rest();
   const a=acct(),bag=document.getElementById('qa270');
   /* 처음 무언가를 간직했을 때 한 번만 묻는다 */

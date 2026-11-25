@@ -6579,7 +6579,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  const KEYS=['aic.cards','aic.keeps','aic.wraps','aic.meet','aic.memos','aic.club','aic.quiz','aic.visits','aic.cardday','aic.nick'];
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}};
  const acct=()=>J('aic.acct',null),snap=()=>{const o={};KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)o[k]=v});try{o.held=JSON.stringify(HELD.map(x=>({k:x.k,left:x.left})))}catch(e){}return o};
- const post=async b=>{try{const r=await fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});return await r.json()}catch(e){return {ok:false,error:'net'}}};
+ const post=async b=>{const vis=b.op!=='save'&&window.QA356;if(vis)QA356.show();try{const r=await fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});return await r.json()}catch(e){return {ok:false,error:'net'}}finally{if(vis)QA356.hide()}};
  const ERR={taken:'이미 쓰는 아이디예요',wrong:'아이디나 비밀번호가 달라요',none:'저장된 기록이 없어요',locked:'잠시 뒤에 다시 해 주세요',bad_input:'아이디는 영문·숫자 4~16자, 비밀번호는 숫자 4자리예요'};
  let last='',busy=false;
  const sigOf=()=>{let g='';KEYS.forEach(k=>{g+=(localStorage.getItem(k)||'').length+','});try{g+=HELD.map(x=>x.k+(x.left==null?'':Math.round(x.left*20))).join('')}catch(e){}return g};/* QA354: 값 길이만 비교(전체를 문자열로 만들지 않음) */
@@ -6635,6 +6635,21 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
   const lit=(g,on)=>g.traverse(o=>{const m=o.isMesh&&o.material;if(!m||Array.isArray(m)||!m.emissive||m.visible===false)return;if(!o.userData.qhov){o.material=m.clone();o.userData.qhov=o.material.emissive.clone()}const e0=o.userData.qhov;o.material.emissive.setRGB(e0.r+(on?.1:0),e0.g+(on?.1:0),e0.b+(on?.1:0))});
   const target=o=>{const ud=o.userData;if(ud.qa255)return ud.qa255.top;if(ud.spot&&ud.spot.kind!=='cine'){const it=LAYI.find(i=>i.spots.some(e=>e.s===ud.spot));if(!it)return null;const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);return gs.sort((a,b)=>Math.hypot(a.position.x-ud.spot.x,a.position.z-ud.spot.z)-Math.hypot(b.position.x-ud.spot.x,b.position.z-ud.spot.z))[0]||null}if(ud.act&&o.material&&o.material.visible!==false)return o;return null};
   R.domElement.addEventListener('pointermove',e=>{const n=performance.now();if(n-t<90||!me||e.buttons)return;t=n;const b=R.domElement.getBoundingClientRect();v.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);rc.setFromCamera(v,C);let g=null;try{const hs=rc.intersectObjects([...INTER,...spotMeshes,...(window.QA255HIT||[])],false);if(hs.length)g=target(hs[0].object)}catch(x){}if(g===cur)return;if(cur)lit(cur,false);cur=g;if(cur)lit(cur,true);R.domElement.style.cursor=cur?'pointer':''})}
+})();
+</script>
+<style id="qa356-css">/* QA356: 잠깐 기다리는 지점의 로딩 스피너(아지트 입장과 같은 모양, 화면은 가리지 않음) */
+#qa356spin{position:fixed;left:50%;top:50%;z-index:97;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:16px;background:rgba(18,10,10,.72);display:grid;place-items:center;pointer-events:none}
+#qa356spin[hidden]{display:none}
+#qa356spin i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(246,231,204,.25);border-top-color:#f6e7cc;animation:clspin .9s linear infinite;box-sizing:border-box}
+</style>
+<script id="qa356-spin">(function(){
+ let el=null,n=0,tm=0;const show=()=>{n++;if(!el){el=document.createElement('div');el.id='qa356spin';el.innerHTML='<i></i>';document.body.appendChild(el)}el.hidden=false;clearTimeout(tm);tm=setTimeout(()=>{n=0;el.hidden=true},9000)/* 어떤 경우에도 9초 뒤엔 사라짐 */};
+ const hide=()=>{n=Math.max(0,n-1);if(!n&&el){el.hidden=true;clearTimeout(tm)}};
+ const wrap=async f=>{show();try{return await f()}finally{hide()}};
+ window.QA356={show,hide,wrap};
+ /* 사진 찍기 */{const _p=qa20Photo;qa20Photo=function(){return wrap(()=>_p.apply(this,arguments))}}
+ /* 살펴보기 → 카드 만드는 동안 */{const _i=A.qa255info;if(_i)A.qa255info=function(){return wrap(()=>_i.apply(this,arguments))}}
+ /* 말걸기 → 캐릭터 카드가 뜰 때까지 */{const _a=window.qa194Award;if(_a)window.qa194Award=function(g,name){const had=qa255Cards.list().length,r=_a.apply(this,arguments);try{const D=JSON.parse(localStorage.getItem('aic.cardday')||'{}');if(!qa255Cards.list().some(x=>x.n===name)&&D.n>0&&!document.getElementById('qa338v')){show();const t0=performance.now();const iv=setInterval(()=>{if(document.getElementById('qa338v')||performance.now()-t0>6000){clearInterval(iv);hide()}},150)}}catch(e){}return r}}
 })();
 </script>
 <script id="qa342-lock">/* QA342: 등록 전에는 가방·수첩이 잠김. 물건은 양손(2개)까지만 */

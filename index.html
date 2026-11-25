@@ -5596,11 +5596,11 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
 <script id="qa255-iteminfo">/* QA255: 로비 인테리어 아이템 정보 카드(실제 제품) — 의자·소파는 「앉기 / 아이템 정보 보기」, 그 밖의 아이템은 「아이템 정보 보기」 */
 (function(){if(typeof LAYI==='undefined')return;
  const P={
-  chester:{no:1,name:'체스터필드 소파',rows:[['제품','3인용 가죽 체스터필드 소파'],['디자인','영국 전통 · 18세기 후반'],['구매','영국 공방 수작업 · 현재 판매']]},
-  thonet:{no:2,name:'토넷 214',rows:[['제품','벤트우드 의자 (옛 이름 No.14)'],['디자인','미하엘 토넷 · 1859'],['구매','토넷(Thonet) · 현재 생산']]},
-  ficus:{no:3,name:'떡갈잎고무나무',rows:[['식물','피쿠스 리라타 (Ficus lyrata)'],['화분','임프루네타 테라코타 롤림 화분'],['구매','화원 · 현재 판매']]},
-  strel:{no:4,name:'극락조',rows:[['식물','스트렐리치아 니콜라이'],['화분','테라코타 화분'],['구매','화원 · 현재 판매']]},
-  jalk:{no:5,name:'그레테 얄크 118',rows:[['제품','라운지 체어 모델 118 · 티크 · 그린 벨루어'],['디자인','그레테 얄크 · 1963'],['구매','프랑스 & 쇤(덴마크) · 빈티지 경매']]}};/* QA278 */
+  chester:{kind:'소파',no:1,name:'체스터필드 소파',rows:[['제품','3인용 가죽 체스터필드 소파'],['디자인','영국 전통 · 18세기 후반'],['구매','영국 공방 수작업 · 현재 판매']]},
+  thonet:{kind:'의자',no:2,name:'토넷 214',rows:[['제품','벤트우드 의자 (옛 이름 No.14)'],['디자인','미하엘 토넷 · 1859'],['구매','토넷(Thonet) · 현재 생산']]},
+  ficus:{kind:'화분',no:3,name:'떡갈잎고무나무',rows:[['식물','피쿠스 리라타 (Ficus lyrata)'],['화분','임프루네타 테라코타 롤림 화분'],['구매','화원 · 현재 판매']]},
+  strel:{kind:'화분',no:4,name:'극락조',rows:[['식물','스트렐리치아 니콜라이'],['화분','테라코타 화분'],['구매','화원 · 현재 판매']]},
+  jalk:{kind:'의자',no:5,name:'그레테 얄크 118',rows:[['제품','라운지 체어 모델 118 · 티크 · 그린 벨루어'],['디자인','그레테 얄크 · 1963'],['구매','프랑스 & 쇤(덴마크) · 빈티지 경매']]}};/* QA278 */
  const BY={lounge:'jalk','leather-sofa':'chester','leather-sofa-2':'chester','lobby-table-2':'thonet','ticket-side-table':'thonet',plant0:'strel',plant1:'strel',plant2:'ficus',plant3:'ficus'};
  const itemOf=o=>{for(let x=o;x;x=x.parent){const it=x.userData&&x.userData._lay;if(it)return it}return null},topOf=o=>{let x=o;while(x&&x.parent&&x.parent!==S)x=x.parent;return x};
  window.QA255={sel:null,BY};window.QA255HIT=[];
@@ -5608,7 +5608,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
  window.qa255Spot=(sp,o)=>{if(curZone(me)!==sp.zone||sp.zone[0]==='H')return false;const it=LAYI.find(i=>i.spots.some(e=>e.s===sp)),k=it&&BY[it.id];if(!k)return false;let tp=topOf(o);{const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);if(gs.length&&!gs.includes(tp))tp=gs.sort((a,b)=>Math.hypot(a.position.x-sp.x,a.position.z-sp.z)-Math.hypot(b.position.x-sp.x,b.position.z-sp.z))[0]}/* QA278: 카드 사진은 앉는 의자 */QA255.sel={k,sp,top:tp,it,d0:Math.hypot(me.position.x-tp.position.x,me.position.z-tp.position.z)};hudUpd();return true};
  window.qa353Front=w=>{const dx=me.position.x-w.x,dz=me.position.z-w.z,l=Math.hypot(dx,dz)||1,r=Math.min(1.1,l);return {x:w.x+dx/l*r,z:w.z+dz/l*r}};/* QA353: 물건 쪽으로 1.1m 앞 */
  window.qa255Pick=(d,o)=>{const w=d.top.getWorldPosition(new THREE.Vector3()),f=qa353Front(w);approachObject({pt:{x:f.x,z:f.z,zone:curZone(me)},fn:()=>{QA255.sel={k:d.k,sp:null,top:d.top,it:d.it,d0:Math.hypot(me.position.x-w.x,me.position.z-w.z)};hudUpd()}},d.top)};/* QA338: 누르면 그 앞까지 감 */
- const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h='<button type="button" data-a="qa255info">'+(P[s_.k]&&P[s_.k].name?esc(P[s_.k].name)+' ':'')+'살펴보기</button>'/* QA338 · QA353: 아이템 이름 */;if(!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;cb.hidden=false}}}catch(e){}return r};
+ const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h='<button type="button" data-a="qa255info">'+(P[s_.k]&&(P[s_.k].kind||P[s_.k].name)?esc(P[s_.k].kind||P[s_.k].name)+' ':'')+'살펴보기</button>'/* QA338 · QA353 · QA364: 제품명 대신 종류(소파·의자·화분) */;if(!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;cb.hidden=false}}}catch(e){}return r};
  A.qa255sit=()=>{const s_=QA255.sel;QA255.sel=null;if(s_&&s_.sp)goSpot(s_.sp);hudUpd()};
  /* 아이템 3D 컷(투명 배경) */let PR=null;function shot(top){if(!PR){PR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});PR.setPixelRatio(1)}PR.setSize(480,502,false);
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x8a7a6a,1.0));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(2,3,4);sc.add(dl);
@@ -5689,7 +5689,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
 <script id="qa194-js">/* QA194: 말풍선 정리(내 앞을 지나는 큰 말풍선 숨김·화면 크기 상한·겹치면 위로 비켜 쌓기) · 입구 분홍 발판 · 창가 사진 찍기+캐릭터 클로즈업 · NPC 대화 시 영화 카드 획득 */
 (function(){
  /* 1) 말풍선 */
- const BUBS=new Set(),_bub=window.bubble;if(typeof _bub==='function')window.bubble=function(t){const s=_bub(t);try{if(innerWidth<=760){/* QA343: 모바일은 글자 1px 작게(14→13 비율) */const k=13/14;s.scale.x*=k;s.scale.y*=k;if(s.userData.px){s.userData.px[0]*=k;s.userData.px[1]*=k}}BUBS.add(s);if(!s.userData.px)s.visible=false/* QA260: 크기 맞추기 전 첫 프레임에 크게 번쩍 보이지 않게 */}catch(e){}return s};
+ const BUBS=new Set(),_bub=window.bubble;if(typeof _bub==='function')window.bubble=function(t){const s=_bub(t);try{if(false){/* QA343 모바일 1px 축소 → QA364에서 되돌림 */const k=13/14;s.scale.x*=k;s.scale.y*=k;if(s.userData.px){s.userData.px[0]*=k;s.userData.px[1]*=k}}BUBS.add(s);if(!s.userData.px)s.visible=false/* QA260: 크기 맞추기 전 첫 프레임에 크게 번쩍 보이지 않게 */}catch(e){}return s};
  const V1=new THREE.Vector3(),V2=new THREE.Vector3(),V3=new THREE.Vector3(),WS=new THREE.Vector3();
  function tick(){try{if(typeof C==='undefined'||!C)return;const H=innerHeight,W=innerWidth,tf=2*Math.tan(C.fov*Math.PI/360),cam=C.position,dMe=me?cam.distanceTo(me.getWorldPosition(V3)):1e9,L=[];
   BUBS.forEach(s=>{if(!s.parent){BUBS.delete(s);return}const o=s.parent,u=s.userData;if(u.s0==null){u.s0=[s.scale.x,s.scale.y];u.cy0=s.center.y}
@@ -6624,10 +6624,10 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  {const o=window.qa124Render;if(typeof o==='function')window.qa124Render=function(){if(WV.size){const n=performance.now();WV.forEach((t0,a)=>{const A_=a.userData.arms[1],k=(n-t0)/1400;if(k>=1){WV.delete(a);A_.rotation.z=0;return}A_.rotation.x=-2.6;A_.rotation.z=-.35+Math.sin(k*Math.PI*6)*.35})}return o.apply(this,arguments)}}
  const near=(p,r,ex)=>NPCS.filter(n=>n!==me&&n!==ex&&n.visible&&!n.userData.remote&&n.userData.displayName&&curZone(n)===curZone(me)&&Math.hypot(n.position.x-p.x,n.position.z-p.z)<r).sort((a,b)=>Math.hypot(a.position.x-p.x,a.position.z-p.z)-Math.hypot(b.position.x-p.x,b.position.z-p.z));
  /* 손 흔들기 */
- {const _e=qa20Emote;qa20Emote=function(kind,target){if(kind!=='wave'||!me)return _e.apply(this,arguments);qa44SayEmoji(me,'👋');wave(me);const L=target&&!target.userData.remote&&target!==me?[target]:near(me.position,4.2).slice(0,3);
+ {const _e=qa20Emote;qa20Emote=function(kind,target){if(kind!=='wave'||!me)return _e.apply(this,arguments);qa44SayEmoji(me,'👋');wave(me);const L=target&&!target.userData.remote&&target!==me?[target]:[]/* QA364: 주변 NPC 리액션 삭제 */;
    L.forEach((n,i)=>setTimeout(()=>{if(!n.visible)return;if(!n.userData.seat)n.rotation.y=Math.atan2(me.position.x-n.position.x,me.position.z-n.position.z);qa44SayEmoji(n,'👋');wave(n)},500+i*220))}}
  /* 가까이 있던 NPC의 맞장구 */
- {const R=['오호.','아하.','아, 당신 알고 있어요.','이분은 여기 처음인가 봐요.'];let last=0;const _s=sayB;sayB=function(g,t,d){const r=_s.apply(this,arguments);try{const now=performance.now();if(typeof ACTOR_SESSION!=='undefined'&&ACTOR_SESSION&&ACTOR_SESSION.target===g&&now-last>9000){const o=near(g.position,2.8,g)[0];if(o){last=now;setTimeout(()=>{try{if(o.visible)_s(o,R[Math.random()*R.length|0],3)}catch(e){}},1500)}}}catch(e){}return r}}
+ if(0){/* QA364: 주변 NPC 맞장구 삭제 */const R=['오호.','아하.','아, 당신 알고 있어요.','이분은 여기 처음인가 봐요.'];let last=0;const _s=sayB;sayB=function(g,t,d){const r=_s.apply(this,arguments);try{const now=performance.now();if(typeof ACTOR_SESSION!=='undefined'&&ACTOR_SESSION&&ACTOR_SESSION.target===g&&now-last>9000){const o=near(g.position,2.8,g)[0];if(o){last=now;setTimeout(()=>{try{if(o.visible)_s(o,R[Math.random()*R.length|0],3)}catch(e){}},1500)}}}catch(e){}return r}}
  /* 마들렌 할머니와 마주 앉으면 에스프레소 한 잔(처음 한 번) */
  setInterval(()=>{try{if(!me||!me.userData.seat||localStorage.getItem('aic.espresso'))return;const m=NPCS.find(n=>n.userData.displayName==='마들렌 할머니'&&n.visible&&n.userData.seat);if(!m||curZone(m)!==curZone(me)||Math.hypot(m.position.x-me.position.x,m.position.z-me.position.z)>2.3)return;localStorage.setItem('aic.espresso','1');
    sayB(m,'마침 잘 왔어요. 에스프레소 한 잔 들어요.',5);setTimeout(()=>{try{const K=JSON.parse(localStorage.getItem('aic.keeps')||'[]');K.push({nm:'에스프레소 잔',from:'마들렌 할머니',t:Date.now()});localStorage.setItem('aic.keeps',JSON.stringify(K));toast('에스프레소 잔을 받았어요')}catch(e){}},1600)}catch(e){}},1200);
@@ -6878,5 +6878,18 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
    if(u.roamHome&&qa318Keep(u.roamHome.x,u.roamHome.z,lvl)){const o=qa318Out(u.roamHome.x,u.roamHome.z,lvl);if(o){u.roamHome.x=o.x;u.roamHome.z=o.z}}
    if(!(u.path&&u.path.length)&&qa318Keep(c.position.x,c.position.z,lvl)){const o=qa318Out(c.position.x,c.position.z,lvl);if(o){u.roamActive=true;u.path=[{x:o.x,z:o.z}];u.after=()=>{u.roamActive=false;u.stood=0};if(!u.roamHome)u.roamHome=new THREE.Vector3(o.x,0,o.z)}}})}catch(e){}},2000);
 })();
+</script>
+<style id="qa364-ls">#qa364m{display:none}
+@media (orientation:landscape) and (max-height:520px){
+ #qa364m{display:grid;place-items:center;position:fixed;right:calc(env(safe-area-inset-right,0px) + 12px);bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:10;width:44px;height:44px;border-radius:50%;background:var(--pn);border:1px solid var(--line);color:var(--ink);box-shadow:0 4px 7px rgba(0,0,0,.33);padding:0;cursor:pointer}
+ body:not(.qa364o) .bar #act{display:none!important}
+ body.qa364o #qa364m{background:var(--acc);color:var(--acc-fg)}
+ body.qa364o .bar{right:68px}
+}</style>
+<button type="button" id="qa364m" aria-label="메뉴" aria-expanded="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+<script id="qa364-ls-js">/* QA364: 모바일 가로 화면에선 퀵바를 버튼 하나로 접고, 누르면 펼침 · 메뉴를 고르거나 바깥을 누르면 다시 접힘 */
+(()=>{const b=document.getElementById('qa364m');if(!b)return;const set=o=>{document.body.classList.toggle('qa364o',o);b.setAttribute('aria-expanded',o)};
+ b.addEventListener('click',e=>{e.stopPropagation();set(!document.body.classList.contains('qa364o'))});
+ document.addEventListener('click',e=>{if(!document.body.classList.contains('qa364o'))return;if(e.target.closest&&e.target.closest('#act button'))setTimeout(()=>set(false),0);else if(!(e.target.closest&&e.target.closest('#act')))set(false)},true)})();
 </script>
 </body></html>

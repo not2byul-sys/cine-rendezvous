@@ -3067,7 +3067,7 @@ $('snd').onclick=()=>{ytMuted=!ytMuted;try{if(curSc&&curSc.film.src)vf.muted=ytM
 $('stand').onclick=()=>{if(me)standUp(me)};
 let FULL=0;function setFull(on){FULL=on?1:0;$('cine').classList.toggle('full',!!FULL);document.body.classList.toggle('cfull',!!FULL);$('full').textContent=FULL?'⤡ 작게 보기':'⛶ 크게 보기';try{if(FULL&&!document.fullscreenElement&&document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});else if(!FULL&&document.fullscreenElement)document.exitFullscreen().catch(()=>{})}catch(e){}}
 $('full').onclick=()=>setFull(!FULL);document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&FULL)setFull(0)});
-$('cyt').onclick=()=>$('ext').onclick();$('ext').onclick=()=>{const s=curSc||curS(curSp?curSp.hall:1);window.open((s.film.src&&(UC[s.film.src]||s.film.src))||('https://www.youtube.com/watch?v='+s.film.id),'_blank')};
+$('cyt').onclick=()=>$('ext').onclick();$('ext').onclick=()=>{const s=curSc||curS(curSp?curSp.hall:(()=>{try{return +String(curZone(me))[1]||1}catch(e){return 1}})())/* QA371 */;window.open((s.film.src&&(UC[s.film.src]||s.film.src))||('https://www.youtube.com/watch?v='+s.film.id),'_blank')};
 function place(){if(!me||!curSp)return;if(FULL){const e=$('cine').style;e.left=e.top='0px';e.width='100vw';e.height='100vh';return}const H=HALLN[curSp.hall],sp=H.scr.position,h=[[-SCW/2,SCH/2],[SCW/2,-SCH/2]].map(([dx,dy])=>{const v=new THREE.Vector3(dx,dy,0).add(sp).project(C);return[(v.x+1)/2*innerWidth,(1-v.y)/2*innerHeight]});const e=$('cine').style;e.left=Math.min(h[0][0],h[1][0])+'px';e.top=Math.min(h[0][1],h[1][1])+'px';e.width=Math.abs(h[1][0]-h[0][0])+'px';e.height=Math.abs(h[1][1]-h[0][1])+'px';/* QA126: 스크린 일부가 화면 밖이면 '영화 보기'를 보이는 부분 가운데로 */{const L=Math.min(h[0][0],h[1][0]),T=Math.min(h[0][1],h[1][1]),W=Math.abs(h[1][0]-h[0][0]),Hh=Math.abs(h[1][1]-h[0][1]),x0=Math.max(L,8),x1=Math.min(L+W,innerWidth-8),y0=Math.max(T,64),y1=Math.min(T+Hh,innerHeight-90),w_=$('watch').style;if(W>0&&Hh>0&&x1>x0&&y1>y0){w_.left=((x0+x1)/2-L)/W*100+'%';w_.top=((y0+y1)/2-T)/Hh*100+'%'}else{w_.left=w_.top=''}}}
 /* ---------- canvases (screens, timetable board) ---------- */
 function drawScreens(){const t=nowS();CFG.HALLS.forEach(h=>{const H=HALLN[h.id],s=scrAt(h,t),pl=t<s.end;
@@ -3190,7 +3190,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  if(false){/* QA172: 간식이 없으면 먹기 숨김, 그만보기 옆 크게보기(오른쪽 위 버튼 대신) *//* QA133: 관람 중엔 먹기·그만보기 둘만. 소리·크게 보기는 위쪽 아이콘 *//* QA132: 관람 중 일어나기 삭제 — 자리 이동은 좌석표, 나가기는 로비로 나가기 *//* QA83: 그만보기는 상단 X가 담당 */}
  else if(sp&&sp.kind==='cine'&&CWIDE){}
  qa20Ctx(zc,inH,sp,cine);
- h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(inH){const pl_=!!curSp||!!window.QA234SEQ;h+=[['bag','가방',tbIco('bag')],/* QA225: 티켓은 가방 안으로 */[pl_?'qa219stop':'qa219play',pl_?'관람 중단':'영화 보기'/* QA367 · QA370: B안 이름 */,pl_?lucide('cpause',16):lucide('reel',16)],(HELD.some(x=>!isFlower(x.k))?['qa219eat','간식',lucide('popcorn',16)]:['qa230buy','간식',lucide('popcorn',16)])/* QA367: 간식 하나로 — 있으면 고르기, 없으면 구매 *//* QA231: 간식이 없으면 간식구매 */].map((x,i)=>`<button class="fx${i===0&&hc?' sep':''}" data-a="${x[0]}">${x[2]}<span>${x[1]}</span></button>`).join('')/* QA219: 상영관 퀵바 — 티켓·가방·영화관람(상영 중 관람중단)·간식먹기·로비로 나가기 */}else if(!cine)h+=['bag:가방','book:수첩','tt:상영작','avatar:캐릭터','camshot:카메라'/* QA40 · QA338 *//* QA225: 티켓은 가방 안으로 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${k==='camshot'?'<svg class="lucide" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.5L8 5.5h8L17.5 8H21v11.5H3z"/><circle cx="12" cy="13.5" r="3.8"/></svg>':tbIco(k)}<span>${t}</span></button>`}).join('');
+ h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(inH){const pl_=!!curSp||!!window.QA234SEQ;const st_=!!(me&&me.userData.seat&&me.userData.seat.kind==='cine')/* QA371: B안 — 앉기 전엔 좌석표, 앉은 뒤엔 영화 보기 */;h+=[['bag','가방',tbIco('bag')],/* QA225: 티켓은 가방 안으로 */st_?null:['qa371map','좌석표',lucide('sitnear',16)],st_?[pl_?'qa219stop':'qa219play',pl_?'관람 중단':'영화 보기'/* QA367 · QA370: B안 이름 */,pl_?lucide('cpause',16):lucide('reel',16)]:null,(HELD.some(x=>!isFlower(x.k))?['qa219eat','간식',lucide('popcorn',16)]:['qa230buy','간식',lucide('popcorn',16)])/* QA367: 간식 하나로 — 있으면 고르기, 없으면 구매 *//* QA231: 간식이 없으면 간식구매 */].filter(Boolean).map((x,i)=>`<button class="fx${i===0&&hc?' sep':''}" data-a="${x[0]}">${x[2]}<span>${x[1]}</span></button>`).join('')/* QA219: 상영관 퀵바 — 티켓·가방·영화관람(상영 중 관람중단)·간식먹기·로비로 나가기 */}else if(!cine)h+=['bag:가방','book:수첩','tt:상영작','avatar:캐릭터','camshot:카메라'/* QA40 · QA338 *//* QA225: 티켓은 가방 안으로 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${k==='camshot'?'<svg class="lucide" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3.5L8 5.5h8L17.5 8H21v11.5H3z"/><circle cx="12" cy="13.5" r="3.8"/></svg>':tbIco(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
  if(zc==='P')h+=`<button class="fx" data-a="qa199out" aria-label="아지트로 나가기">${lucide('hallDoor')}<span>아지트로 나가기</span></button>`/* QA199: 영사실에서 바로 나가기 */;
@@ -5096,7 +5096,7 @@ body.cfull #qa127map{display:none!important}
 <script id="qa127-seatmap">
 /* QA127: 상영관 좌석표 — 입장부터 좌측 하단. 빈자리를 누르면 그 자리로(앉아 있으면 상영을 끊지 않고 바로 옮김) */
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g'),MOB=matchMedia('(max-width:699px)');let hall=0,btn=[];
- const build=h=>{hall=h;el.classList.toggle('min',MOB.matches)/* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 · QA327: 모바일은 접힌 버튼으로 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
+ const build=h=>{hall=h;el.classList.add('min')/* QA371: B안 — 처음엔 닫힘, 퀵바 '좌석표'로 열기 *//* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 · QA327: 모바일은 접힌 버튼으로 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
   window.__qa130ok=0;
   if(old&&old.kind==='cine'&&old.hall===sp.hall){toast(seatLabel(HALLN[sp.hall].seats.indexOf(sp))+' 좌석으로 이동합니다')/* QA176: 확인창 없이 알림만 띄우고 바로 이동 */;old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
@@ -6911,7 +6911,7 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
  const wake=e=>{if(document.body.classList.contains('qa367idle')&&e&&e.type==='pointerdown'){eat=true;setTimeout(()=>eat=false,700);e.stopImmediatePropagation()}else if(e&&e.type==='pointerdown')eat=false;last=performance.now();document.body.classList.remove('qa367idle')};
  addEventListener('pointerdown',wake,true);addEventListener('keydown',wake,true);addEventListener('mousemove',()=>{last=performance.now();document.body.classList.remove('qa367idle')},{passive:true});
  ['pointerup','click'].forEach(t=>addEventListener(t,e=>{if(eat){e.stopImmediatePropagation();e.preventDefault();if(t==='click')eat=false}},true));
- setInterval(()=>{const pn=document.getElementById('pn');document.body.classList.toggle('qa367idle',play()&&performance.now()-last>4000&&(!pn||pn.hidden))},500)})();
+ setInterval(()=>{if(window.QA367OFF)return;const pn=document.getElementById('pn');document.body.classList.toggle('qa367idle',play()&&performance.now()-last>4000&&(!pn||pn.hidden))},500)})();
 </script>
 <style id="qa370-css">/* QA370: 상영관 HUD — 피그마 B안 최종(396:4085) · 상영관(body.cineseat)에만 */
 html body:is(.cineseat,.inhall) #act{background:rgba(28,20,22,.72)!important;width:auto!important;flex:none!important;border:0!important;border-radius:20px!important;height:auto!important;padding:0 8px!important;gap:4px!important}
@@ -6938,5 +6938,59 @@ html body.cineseat #cyt svg{width:18px!important;height:18px!important}
   l.innerHTML=L.map(([it,i])=>`<button type="button" class="row" data-i="${i}" ${EAT||it.slow?'disabled':''}><span>${esc(IT[it.k][1])}</span><em>선택</em></button>`).join('');w.hidden=false};
  w.addEventListener('click',e=>{const r=e.target.closest('.row');if(r&&!r.disabled){close();startEat(+r.dataset.i);return}if(e.target.closest('.p')){close();A.qa230buy();return}if(e.target.closest('.x')||e.target===w)close()});
  addEventListener('keydown',e=>{if(e.key==='Escape'&&!w.hidden)close()})})();
+</script>
+<style id="qa371-css">/* QA371: 상영관 HUD — 피그마 B안 최종(396:4085) 정밀 반영 · 상영관(body.inhall)에만 */
+html body.inhall #chip{display:none!important}
+html body.inhall #ctitle{display:flex!important;position:fixed!important;left:calc(env(safe-area-inset-left,0px) + 16px)!important;top:calc(env(safe-area-inset-top,0px) + 16px)!important;height:48px!important;padding:0 16px!important;border-radius:100px!important;background:rgba(28,20,22,.72)!important;border:0!important;box-shadow:none!important;align-items:center;z-index:6}
+html body.inhall #ctitle #ctt{display:none!important}
+html body.inhall #ctitle,html body.inhall #ctitle #qa-yt-label{max-width:none!important;width:auto!important;overflow:visible!important}html body.inhall #ctitle #qa-yt-label{font:600 14px/1 'Noto Sans KR',sans-serif!important;color:#fff!important}
+html body.inhall #cyt{all:unset;display:flex!important;align-items:center;gap:8px!important;font:600 14px/1 'Noto Sans KR',sans-serif!important;color:#fff!important;cursor:pointer;white-space:nowrap}
+html body.inhall #cyt svg{width:18px!important;height:18px!important}
+html body.inhall #hb{position:fixed!important;left:auto!important;right:calc(env(safe-area-inset-right,0px) + 16px)!important;top:calc(env(safe-area-inset-top,0px) + 16px)!important;gap:8px!important;align-items:flex-start!important;overflow:visible!important}
+html body.inhall #hb>*:not(#qa157vol):not(#qa133snd):not(#qa133full){display:none!important}
+html body.inhall #hb #qa133snd,html body.inhall #hb #qa133full{display:grid!important;place-items:center;padding:0!important;border:0!important;border-radius:100px!important;background:rgba(28,20,22,.72)!important;color:#fff!important;box-shadow:none!important}
+html body.inhall #hb button#qa133snd{width:44px!important;height:44px!important;order:1}
+html body.inhall #hb button#qa133full{width:48px!important;height:48px!important;order:3}
+html body.inhall #hb #qa133snd svg,html body.inhall #hb #qa133full svg{width:18px!important;height:18px!important}
+html body.inhall #hb #qa133snd span,html body.inhall #hb #qa133full span{display:none!important}
+html body.inhall #hb #qa157vol{display:none!important}
+@media (min-width:700px){
+ html body.inhall #ctitle{left:24px!important;top:24px!important}
+ html body.inhall #hb{right:24px!important;top:24px!important}
+ html body.inhall #hb #qa157vol{display:inline-flex!important;align-items:center!important;order:2;box-sizing:border-box;width:176px!important;height:48px!important;margin-left:-52px;padding:0 0 0 48px!important;gap:7px;border:0!important;border-radius:100px!important;background:rgba(28,20,22,.72)!important;box-shadow:none!important}
+ html body.inhall #hb #qa133snd{position:relative;z-index:1;background:transparent!important}
+ html body.inhall #hb #qa157vol input{width:96px!important;background:linear-gradient(to right,#f3e4c4 var(--v,70%),#66575b var(--v,70%))!important}
+ html body.inhall #hb #qa157vol input::-webkit-slider-thumb{background:#f3e4c4!important}
+ html body.inhall #hb #qa157vol .qa371v{font:500 11px/1 'Noto Sans KR',sans-serif;color:#b8a5a9;min-width:16px}
+}
+html body:is(.cineseat,.inhall) #act{padding:0 8px!important;gap:4px!important;border-radius:20px!important;margin-bottom:14px!important}/* 바닥에서 24px(B안) */
+html body:is(.cineseat,.inhall) #act button span{font:500 12px/1.2 'Noto Sans KR',sans-serif!important;color:#f5ebdf!important}
+html body:is(.cineseat,.inhall) #act button[data-a="bag"] span{font-weight:400!important;line-height:20px!important;color:#fff!important}
+html body:is(.cineseat,.inhall).qa342lock #act [data-a="bag"]>*{opacity:1!important}
+html body:is(.cineseat,.inhall).qa342lock #act [data-a="bag"] span{color:rgba(255,255,255,.6)!important}
+html body:is(.cineseat,.inhall).qa342lock #act [data-a="bag"]::before{content:''!important;display:block!important;position:absolute!important;left:50%!important;top:calc(50% - 13px)!important;bottom:auto!important;width:32px!important;height:28px!important;transform:translate(-50%,-50%)!important;border-radius:12px!important;background:#2f2829!important}
+html body:is(.cineseat,.inhall).qa342lock #act [data-a="bag"]::after{top:calc(50% - 13px)!important;width:14px!important;height:14px!important;background:#fff!important;z-index:1}
+html body.inhall #qa127map.min,html body.qa371seat #qa127map{display:none!important}
+html body.inhall #qa127map:not(.min){position:fixed!important;z-index:60!important;left:50%!important;transform:translateX(-50%)!important;bottom:calc(env(safe-area-inset-bottom,0px) + 104px)!important;width:210px!important;height:256px!important;box-sizing:border-box!important;padding:0!important;border-radius:12px!important;background:#211317!important;border:.52px solid #574049!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+@media (min-width:700px){html body.inhall #qa127map:not(.min){bottom:118px!important;zoom:1!important}}
+html body.inhall #qa127map .hd{position:relative;height:42px;margin:0!important;display:block!important}
+html body.inhall #qa127map .hd .open{display:none!important}
+html body.inhall #qa127map .hd .qa371t{position:absolute;left:11px;top:9.5px;font:500 14px/1.45 'Noto Sans KR',sans-serif;color:#f5ebdf}
+html body.inhall #qa127map .x{all:unset;position:absolute!important;right:3.5px;top:4.5px;width:32px!important;height:32px!important;display:grid!important;place-items:center;color:#f5ebdf!important;cursor:pointer;font-size:0!important}
+html body.inhall #qa127map .x::before{content:'';width:17.6px;height:17.6px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat}
+html body.inhall #qa127map .scr{display:block!important;width:180.2px;height:1.56px!important;margin:.85px 0 0 14px!important;border-radius:1px!important;background:#b8a5a9!important}
+html body.inhall #qa127map .g{display:grid!important;grid-template-columns:repeat(4,22.917px) 6.25px repeat(4,22.917px)!important;grid-auto-rows:22.917px!important;gap:.521px 1.042px!important;margin:16.15px 0 0 5.73px!important}
+html body.inhall #qa127map .g button{all:unset;box-sizing:border-box!important;place-self:center;width:15.625px!important;height:13.542px!important;margin:0!important;border-radius:2.6px!important;background:#66575b!important;border:.52px solid #8c7a7d!important;box-shadow:none!important;cursor:pointer}
+html body.inhall #qa127map .g button.tk{background:#382a2d!important;border-color:transparent!important;cursor:default}
+html body.inhall #qa127map .g button.me{background:#f3e4c4!important;border-color:#f3e4c4!important}
+html body.inhall #qa127map .g>i,html body.inhall #qa127map .g>span{width:6.25px}
+</style>
+<script id="qa371-hud">/* QA371: 상영관 HUD 보조 — 좌석표 열기/닫기(퀵바), 앉으면 좌석표 숨김, 유튜브 칩 문구, PC 볼륨 숫자 */
+(()=>{const T=()=>{const m=document.getElementById('qa127map');if(m&&!m.querySelector('.qa371t')){const b=document.createElement('b');b.className='qa371t';b.textContent='좌석표';const hd=m.querySelector('.hd');hd&&hd.prepend(b)}
+  const sp=document.getElementById('qa-yt-label');if(sp&&!sp.textContent)sp.textContent='유튜브에서 보기';
+  const v=document.getElementById('qa157vol');if(v&&!v.querySelector('.qa371v')){const n=document.createElement('span');n.className='qa371v';v.appendChild(n);const i=v.querySelector('input');const u=()=>{n.textContent=i?i.value:''};i&&i.addEventListener('input',u);u()}
+  let st=false;try{st=!!(me&&me.userData.seat&&me.userData.seat.kind==='cine')}catch(e){}document.body.classList.toggle('qa371seat',st)};
+ A.qa371map=()=>{T();const m=document.getElementById('qa127map');if(!m)return;m.classList.toggle('min')};
+ setInterval(T,700);T()})();
 </script>
 </body></html>

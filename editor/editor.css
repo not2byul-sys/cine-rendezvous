@@ -86,3 +86,44 @@ output:not(:empty) { position:absolute; bottom:0; left:50%; transform:translateX
  footer { grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
 }
 @media(max-height:550px) and (max-width:760px){.preview{height:auto;min-height:170px}.preview .avatar{height:100px}}
+
+/* 피그마 148:818(PC 388:2412 · 모바일 388:2598) — 색상 선택 UI · 하단 CTA */
+.color-picker { position:relative; gap:10px; width:calc(100% + 16px); margin:0 -8px; }
+.color-picker-title { position:relative; display:flex; align-items:center; justify-content:space-between; height:36px; font:600 16px/normal 'Noto Sans KR',Pretendard,sans-serif; color:var(--fg); }
+.color-target-btn { display:flex; align-items:center; justify-content:space-between; width:110px; height:36px; padding:0 12px; border:1px solid var(--line); border-radius:8px; color:#f3e4c4; font:500 14px/normal 'Noto Sans KR',Pretendard,sans-serif; }
+.color-target-btn .color-target { color:#f3e4c4; }
+.color-target-btn svg { flex:none; }
+.part-picker { position:absolute; z-index:5; top:calc(100% + 2px); right:0; width:110px; display:flex; flex-direction:column; gap:0; padding:6px; background:#211317; border:1px solid #57404a; border-radius:8px; box-sizing:border-box; }
+.part-picker[hidden] { display:none; }
+.part-picker button { height:40px; padding:0 0 0 12px; text-align:left; border:0; border-radius:6px; font:500 14px/normal 'Noto Sans KR',Pretendard,sans-serif; color:var(--fg); white-space:nowrap; }
+.part-picker button[aria-pressed=true] { background:#402e33; border-radius:4px; color:#f3e4c4; }
+.part-picker button:not([aria-pressed=true]):hover { background:#2b1b20; }
+.color-chips { display:grid; grid-template-columns:repeat(6,36px); justify-content:space-between; gap:10px 0; }
+.color-chip { position:relative; width:36px; height:36px; aspect-ratio:auto; padding:0; border:0; border-radius:8.18px; background:transparent; outline:0; box-sizing:border-box; }
+.color-chip::before { content:''; position:absolute; left:3.27px; top:3.27px; width:29.45px; height:29.45px; border-radius:7.36px; background:var(--chip); }
+.color-chip[aria-pressed=true] { border:1.2px solid #f3e4c4; outline:0; }
+.color-chip[aria-pressed=true]::before { left:2.04px; top:2.04px; }
+.color-chip[aria-pressed=true]::after { content:''; position:absolute; left:9.4px; top:9.4px; width:14.7px; height:14.7px; background:#fff; -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat; mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center/contain no-repeat; }
+main { padding-bottom:82px; }
+.preview { padding-bottom:20px; }
+footer { position:absolute; left:24px; right:24px; bottom:24px; width:auto; display:grid; grid-template-columns:240px minmax(0,1fr); gap:8px; padding:0; }
+footer button { height:52px; border-radius:6px; font:500 14px/20px Pretendard,'Noto Sans KR',sans-serif; }
+.reset { border:1px solid var(--sub); color:var(--sub); background:transparent; }
+.save { background:#f3e4c4; color:#211317; font-size:16px; }
+@media(max-width:760px){
+ main { padding-bottom:0; }
+ .preview { padding-bottom:16px; }
+ .preview .color-picker { grid-column:1 / -1; grid-row:2; width:100%; margin:0; gap:2px; }
+ .preview .avatar { grid-row:1; height:120px; }
+ .color-picker-title { height:52px; }
+ .color-target-btn { width:114px; }
+ .part-picker { width:114px; }
+ .color-chips { grid-template-columns:repeat(10,30px); gap:6px 0; }
+ .color-chip { width:30px; height:30px; border-radius:6.82px; }
+ .color-chip::before { left:2.73px; top:2.73px; width:24.55px; height:24.55px; border-radius:6.14px; }
+ .color-chip[aria-pressed=true] { border-width:1.02px; }
+ .color-chip[aria-pressed=true]::before { left:1.7px; top:1.7px; }
+ .color-chip[aria-pressed=true]::after { left:7.84px; top:7.84px; width:12.27px; height:12.27px; }
+ footer { position:static; flex:none; margin:0 -16px; height:auto; padding:12px 20px max(24px,env(safe-area-inset-bottom)); background:#211317; grid-template-columns:117px minmax(0,1fr); }
+ footer button { height:52px; }
+}

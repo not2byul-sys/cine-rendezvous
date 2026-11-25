@@ -17,7 +17,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const dialog=document.createElement('dialog');
   dialog.setAttribute('aria-labelledby','editor-title');
   dialog.innerHTML=`<header><div><h2 id="editor-title">복고풍 캐릭터 꾸미기</h2><p>오늘 극장에서 만날 나의 모습</p></div><button class="close" aria-label="닫기"><img alt=""></button></header>
-  <main><section class="preview"><label>닉네임<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div><div class="color-picker" aria-label="아이템 색상 선택"><div class="color-picker-title">색상 선택 <span class="color-target">상의</span></div><div class="part-picker" aria-label="색상 변경 아이템"></div><div class="color-chips"></div></div></section>
+  <main><section class="preview"><label>닉네임<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div><div class="color-picker" aria-label="아이템 색상 선택"><div class="color-picker-title"><span class="cp-t">색상</span><button type="button" class="color-target-btn" aria-haspopup="listbox" aria-expanded="false"><span class="color-target">상의</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="part-picker" role="listbox" aria-label="색상 변경 아이템" hidden></div></div><div class="color-chips"></div></div></section>
   <section class="controls"><nav aria-label="꾸미기 메뉴"></nav><div class="options"></div></section><footer><button class="reset">초기화</button><button class="save">저장</button></footer></main><output role="alert"></output>`;
   root.append(dialog); document.body.append(host);
   try {await ready;} catch(e){host.remove();throw e;}
@@ -55,7 +55,12 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     grid.append(n);
   }
   const colorChips=q('.color-chips');
-  for(const [key,label] of Object.entries(parts)){const part=button(label,()=>setSelectedPart(key));part.dataset.part=key;q('.part-picker').append(part);}
+  for(const [key,label] of Object.entries(parts)){const part=button(label,()=>{setSelectedPart(key);pickOpen(false);});part.dataset.part=key;part.setAttribute('role','option');q('.part-picker').append(part);}
+  /* 피그마 148:818 — 색상 대상 드롭다운 */
+  const pickBtn=q('.color-target-btn'),pickList=q('.part-picker');
+  function pickOpen(on){pickList.hidden=!on;pickBtn.setAttribute('aria-expanded',String(on));}
+  pickBtn.onclick=e=>{e.stopPropagation();pickOpen(pickList.hidden);};
+  dialog.addEventListener('click',e=>{if(!pickList.hidden&&!e.target.closest('.color-picker-title'))pickOpen(false);});
   const selectableParts=['top','bottom','hat','glasses','bag','shoes'];
   function setSelectedPart(key){
     if(!selectableParts.includes(key))return;

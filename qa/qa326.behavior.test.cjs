@@ -139,7 +139,7 @@ test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10%
 
 
 test('QA327: 모바일 좌석표 — 접힘이 기본, 줄일 때 transform(하단 바와 안 겹침), 칩이 뜨면 한 줄 위 · 공유 아이콘은 종이비행기 · 로비 글자 가운데', () => {
-  assert(source.includes("el.classList.toggle('min',MOB.matches)"));
+  assert(source.includes("el.classList.add('min')/* QA371"));// QA371: B안 — PC·모바일 모두 처음엔 닫힘
   assert(source.includes('#qa127map:not(.min){transform:scale(.64);transform-origin:0 100%}'));
   assert(source.includes('body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-area-inset-bottom,0px) + 116px)}'));
   assert(source.includes("lucide('share',16)") && !source.includes('share2'));

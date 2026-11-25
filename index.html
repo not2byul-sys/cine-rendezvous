@@ -4101,7 +4101,7 @@ function mkVendor(){const v=mk('꽃 파는 소녀',0,{skin:SK.lt,hair:0x523626,h
    rose.position.set(-.20,.11,-.05);rose.scale.setScalar(.8);tr.add(rose);
    bouquet.position.set(.18,.11,.04);bouquet.scale.setScalar(.74);tr.add(bouquet);
    /* QA17: 꽃다발 2개 더 + 바구니 손잡이 */[[.02,-.06,.68,.25],[-.02,.08,.66,-.3]].forEach(([x,z,sc,ry])=>{const b2=itemMesh('rosebouquet');b2.position.set(x,.11,z);b2.scale.setScalar(sc);b2.rotation.set(-.35,ry,0);tr.add(b2)});bouquet.rotation.set(-.3,0,0);
-   /* QA353: 바구니 가득 보이는 장미 송이 */{const RM=new THREE.MeshLambertMaterial({color:0xc4283c,emissive:0x3a0810}),LM=new THREE.MeshLambertMaterial({color:0x3f6b3a});for(let i=0;i<16;i++){const x=-.29+(i%6)*.116+((i*7)%3)*.01,z=-.13+Math.floor(i/6)*.12+((i*5)%3)*.012,y=.33+((i*11)%4)*.022;const r=new THREE.Mesh(new THREE.SphereGeometry(.052,10,8),RM);r.position.set(x,y,z);r.scale.y=.85;tr.add(r);const l=new THREE.Mesh(new THREE.ConeGeometry(.05,.07,6),LM);l.position.set(x,y-.06,z);l.rotation.x=Math.PI;tr.add(l)}}
+   /* QA353: 바구니 가득 보이는 장미 송이 */{const RM=new THREE.MeshLambertMaterial({color:0xc4283c,emissive:0x3a0810}),LM=new THREE.MeshLambertMaterial({color:0x3f6b3a}),RG=new THREE.SphereGeometry(.052,10,8),LG=new THREE.ConeGeometry(.05,.07,6)/* QA354: 모양은 한 벌만 만들어 나눠 씀 */;for(let i=0;i<16;i++){const x=-.29+(i%6)*.116+((i*7)%3)*.01,z=-.13+Math.floor(i/6)*.12+((i*5)%3)*.012,y=.33+((i*11)%4)*.022;const r=new THREE.Mesh(RG,RM);r.position.set(x,y,z);r.scale.y=.85;tr.add(r);const l=new THREE.Mesh(LG,LM);l.position.set(x,y-.06,z);l.rotation.x=Math.PI;tr.add(l)}}
    {const hd=new THREE.Mesh(new THREE.TorusGeometry(.3,.018,8,24,Math.PI),WK);hd.position.set(0,.13,0);tr.add(hd)}
 const ST=new THREE.MeshPhongMaterial({color:0x6e3e1a});[-1,1].forEach(sx=>{const A=new THREE.Vector3(sx*.32,.78+.14,.5+.15),Bv=new THREE.Vector3(sx*.14,1.12,.05),L=A.distanceTo(Bv),st=new THREE.Mesh(new THREE.BoxGeometry(.03,L,.012),ST);st.position.copy(A).add(Bv).multiplyScalar(.5);st.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),Bv.clone().sub(A).normalize());v.children[0].add(st)});
   return v}
@@ -6468,7 +6468,7 @@ body.qa342lock #act [data-a="bag"],body.qa342lock #act [data-a="book"]{position:
 #qa270 .dlg .close:hover,#qa295 .dlg .close:hover{opacity:.7}
 #qa270 .dlg .close:focus-visible,#qa295 .dlg .close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media(max-width:760px){#qa270 .dlg header,#qa295 .dlg header{padding:16px}#qa270 .dlg .close,#qa295 .dlg .close{right:16px;top:20px}}
-#qa338v{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#f5ebdf;font-family:Pretendard,'Noto Sans KR',sans-serif}
+#qa338v{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.86);/* QA355: 블러 없이 어두운 반투명만 */display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#f5ebdf;font-family:Pretendard,'Noto Sans KR',sans-serif}
 #qa338v .tt{font:600 20px/1.4 Pretendard,'Noto Sans KR',sans-serif}
 #qa338v .in{max-width:min(88vw,432px);display:flex;align-items:center;justify-content:center}
 #qa338v .in img{display:block;max-width:100%;max-height:66dvh;object-fit:contain}
@@ -6582,7 +6582,8 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  const post=async b=>{try{const r=await fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});return await r.json()}catch(e){return {ok:false,error:'net'}}};
  const ERR={taken:'이미 쓰는 아이디예요',wrong:'아이디나 비밀번호가 달라요',none:'저장된 기록이 없어요',locked:'잠시 뒤에 다시 해 주세요',bad_input:'아이디는 영문·숫자 4~16자, 비밀번호는 숫자 4자리예요'};
  let last='',busy=false;
- const push=async op=>{const a=acct();if(!a||busy)return null;const d=snap(),sig=JSON.stringify(d);if(op==='save'&&sig===last)return null;busy=true;const r=await post({op,id:a.id,pin:a.pin,data:d});busy=false;if(r.ok)last=sig;return r};
+ const sigOf=()=>{let g='';KEYS.forEach(k=>{g+=(localStorage.getItem(k)||'').length+','});try{g+=HELD.map(x=>x.k+(x.left==null?'':Math.round(x.left*20))).join('')}catch(e){}return g};/* QA354: 값 길이만 비교(전체를 문자열로 만들지 않음) */
+ const push=async op=>{const a=acct();if(!a||busy)return null;const sig=sigOf();if(op==='save'&&sig===last)return null;const d=snap();busy=true;const r=await post({op,id:a.id,pin:a.pin,data:d});busy=false;if(r.ok)last=sig;return r};
  /* o.mode: 'new' 저장하기 · 'load' 이어하기 */
  function form(mode,keep){const w=QA338.view({title:mode==='new'?'가방과 수첩을 쓸까요?':'이어하기',modal:1,html:`<div class="fm"><p>${mode==='new'?'가방과 수첩을\n사용하시려면 등록이 필요해요. 등록을 하면 기록도 안전하게 저장돼요.\n닉네임과 별도로 사용할 수 있어요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
    btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'등록':'불러오기','go',1]]});
@@ -6601,15 +6602,15 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
   /* 처음 무언가를 간직했을 때 한 번만 묻는다 */
   if(!a&&!localStorage.getItem('aic.saveAsked')&&!document.getElementById('qa338v')&&!document.getElementById('qa270')&&!document.getElementById('qa336v')&&(J('aic.cards',[]).length||J('aic.keeps',[]).length||Object.keys(J('aic.wraps',{})).length||(window.QA342&&QA342.count()>0)))form('new');
  },2500);
- setInterval(()=>{push('save')},20000);addEventListener('pagehide',()=>{const a=acct();if(!a)return;try{navigator.sendBeacon('/api/save',new Blob([JSON.stringify({op:'save',id:a.id,pin:a.pin,data:snap()})],{type:'application/json'}))}catch(e){}});
+ setInterval(()=>{push('save')},20000);addEventListener('pagehide',()=>{const a=acct();if(!a||sigOf()===last)return;/* 바뀐 게 없으면 보내지 않음 */try{navigator.sendBeacon('/api/save',new Blob([JSON.stringify({op:'save',id:a.id,pin:a.pin,data:snap()})],{type:'application/json'}))}catch(e){}});
  /* 먹는 중: 남은 분이 바뀌면 액션바도 갱신 */
  let m0=-1;setInterval(()=>{try{if(!EAT){m0=-1;return}const m=Math.ceil((EAT.until-performance.now()/1000)/60);if(m!==m0){m0=m;hudUpd()}}catch(e){}},2000);
 })();
 </script>
 <script id="qa349-tint">/* QA349: iOS 26 Safari는 상태바 색을 body 배경색에서 가져온다(투명 지정 불가). 화면 맨 위 색을 1초마다 읽어 body 배경에 맞춰, 상태바가 장면에 녹아 보이게 한다 */
 (function(){const o=window.qa124Render;if(typeof o!=='function'||typeof R==='undefined')return;let t=0;const px=new Uint8Array(4),c=[0,0,0];let init=false;
- window.qa124Render=function(){const r=o.apply(this,arguments);const n=performance.now();if(n-t<1000)return r;t=n;
-  try{const gl=R.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight;let a=[0,0,0];[.25,.5,.75].forEach(f=>{gl.readPixels(Math.floor(w*f),h-3,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);a[0]+=px[0];a[1]+=px[1];a[2]+=px[2]});
+ window.qa124Render=function(){const r=o.apply(this,arguments);const n=performance.now();if(n-t<1500)return r;t=n;
+  try{const gl=R.getContext(),w=gl.drawingBufferWidth,h=gl.drawingBufferHeight;gl.readPixels(Math.floor(w*.3),h-3,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);/* QA354: 한 점만 읽음 */const a=[px[0]*3,px[1]*3,px[2]*3];
    for(let i=0;i<3;i++)c[i]=init?c[i]+(a[i]/3-c[i])*.5:a[i]/3;init=true;const v='rgb('+c.map(x=>Math.round(x)).join(',')+')';document.body.style.backgroundColor=v;document.documentElement.style.backgroundColor=v}catch(e){}return r}})();
 </script>
 <script id="qa353-play">/* QA353: 손 흔들기(손만 들기 · 주변 NPC도 같이) · NPC 맞장구 · 마들렌의 에스프레소 · 매점 자리 메뉴판 · 누를 수 있는 물건 밝게 */
@@ -6658,7 +6659,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 </script>
 <style id="qa336-css">#qa270 .cell img.p3{width:68px;height:68px;object-fit:contain;flex:none;pointer-events:none}
 #qa336v{position:fixed;inset:0;z-index:97;background:rgba(16,8,12,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;color:#f5ebdf;font-family:'Noto Sans KR',sans-serif}
-#qa336v{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);background:rgba(16,8,12,.72)}#qa336v canvas{position:static!important;display:block;flex:none;width:min(86vw,400px)!important;height:min(86vw,400px)!important;touch-action:none;cursor:grab}#qa336v .zb{display:flex;gap:8px}
+#qa336v{background:rgba(16,8,12,.86)}#qa336v canvas{position:static!important;display:block;flex:none;width:min(86vw,400px)!important;height:min(86vw,400px)!important;touch-action:none;cursor:grab}#qa336v .zb{display:flex;gap:8px}
 #qa336v b{font:500 17px/1.4 'Noto Sans KR',sans-serif}#qa336v p{margin:0;color:#b8a5a9;font:400 14px 'Noto Sans KR',sans-serif}
 #qa336v button{all:unset;cursor:pointer;height:40px;padding:0 20px;border-radius:999px;border:1px solid #b8a5a9;color:#f5ebdf;font:500 14px/40px 'Noto Sans KR',sans-serif}</style>
 <script id="qa336-props">/* QA336: 받은 소품을 실제 모양 그대로 3D로 — 가방 썸네일 · 자세히 보기 · 선물 고르기 */

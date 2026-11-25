@@ -6913,7 +6913,7 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
  b.addEventListener('click',e=>{e.stopPropagation();b.hidden=true;try{A.qa341stop()}catch(x){}});
  document.addEventListener('pointerdown',e=>{if(!b.hidden&&e.target!==b)setTimeout(()=>{if(performance.now()>until-4900)b.hidden=true},0)},true)})();
 </script>
-<style id="qa367-css">body.qa367idle :is(#chip,#hb,.bar,#qa127map,#qa364m){opacity:0!important;pointer-events:none!important;transition:opacity .4s}</style>
+<style id="qa367-css">body.qa367idle :is(#chip,#hb,#ctitle,.bar,#qa127map,#qa364m){opacity:0!important;pointer-events:none!important;transition:opacity .4s}/* QA380: 유튜브에서 보기 칩도 함께 숨김 */</style>
 <script id="qa367-idle">/* QA367: 상영 중 4초 동안 조작이 없으면 조작 UI를 숨김 · 화면을 누르면 다시 보임(그 첫 터치는 다른 동작을 하지 않음) */
 (()=>{let last=performance.now(),eat=false;
  const play=()=>{try{return !!(me&&me.userData.seat&&me.userData.seat.kind==='cine'&&((typeof curSc!=='undefined'&&curSc&&!CINE_DONE)||window.QA234SEQ))}catch(e){return false}};

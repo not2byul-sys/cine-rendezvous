@@ -1574,7 +1574,7 @@ const CHARINFO={'에밀 감독':'누벨바그 영화를 찍는 감독 에밀이�
  '귀도':'〈8과 1/2〉(1963)의 영화감독 귀도요. 다음 영화를 찍어야 하는데 도무지 이야기가 떠오르지 않았지.',
  '파트리샤':'〈네 멋대로 해라〉(1960)의 파트리샤예요. 파리 샹젤리제에서 「뉴욕 헤럴드 트리뷴」을 팔던 미국 유학생이죠.',
  '앙투안 두아넬':'〈400번의 구타〉(1959)의 앙투안이에요. 학교도 집도 버거웠던 파리 소년. 마지막에 바다까지 달려갔죠.'};
-/* 모든 아바타 크기 배율 */var AVS=.8;
+/* 모든 아바타 크기 배율 */var AVS=.92/* QA365: 공간·가구 대비 작아 보여 .8→.92(15%) */;
 /* Reduce overhead illumination on avatar materials only. */
 function softenAvatarOverhead(root){return/* QA257: 캐릭터 머리 위 조명 줄이기 제거 */;const copies=new Map();const convert=material=>{if(!material||(!material.isMeshPhongMaterial&&!material.isMeshLambertMaterial))return material;if(copies.has(material))return copies.get(material);const m=material.clone();m.onBeforeCompile=shader=>{let lights=THREE.ShaderChunk.lights_fragment_begin;
  lights=lights.replace(/(get(?:Directional|Point|Spot)LightInfo\([^;]+;)/g,'$1\n directLight.color *= ( inverseTransformDirection( directLight.direction, viewMatrix ).y > 0.25 ? 0.9 : 1.0 );');
@@ -2908,7 +2908,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
   else if(!cine){
    if(ORD&&ORD.st==='ready'&&!inH)add('oget','간식받기')/* QA94: 상영관에선 숨김 */;
    const nearSeat=!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length);
-   if(HELD.length&&!QA115_OFF&&!nearSeat&&!(window.QA255&&QA255.sel)){if(HELD.some(x=>!isFlower(x.k))&&!inH){if(EAT)X.push(`<span class="qa341st"><b>${esc(IT[EAT.it.k][1])} 먹는 중 · ${Math.max(1,Math.ceil((EAT.until-performance.now()/1000)/60))}분 남음</b><button type="button" data-a="qa341stop">그만 먹기</button></span>`);else add('eatn','먹기')}/* QA290: 의자·아이템을 고른 동안에는 손에 든 것 버튼을 숨김 *//* QA219: 상영관에선 퀵바 '간식먹기'로 *//* QA114: 들고 있으면 어디서든 먹기(관람 좌석만 예외 — 앉을 때 묻는 방식) */;/* QA136: 선물하기는 캐릭터를 골랐을 때만(캐릭터 메뉴) */;if(!inH&&!EAT&&!(window.QA342&&QA342.locked()))add('qa286bag','가방에 넣기')/* QA286: 손에 든 것을 가방에 넣기 · QA341: 버리기는 가방에서만 */}
+   if(HELD.length&&!QA115_OFF&&!nearSeat&&!(window.QA255&&QA255.sel)){if(HELD.some(x=>!isFlower(x.k))&&!inH){if(!EAT)add('eatn','먹기')/* QA365: 먹는 중 상태 칩 삭제 — 그만 먹기는 내 캐릭터를 누르면 */}/* QA290: 의자·아이템을 고른 동안에는 손에 든 것 버튼을 숨김 *//* QA219: 상영관에선 퀵바 '간식먹기'로 *//* QA114: 들고 있으면 어디서든 먹기(관람 좌석만 예외 — 앉을 때 묻는 방식) */;/* QA136: 선물하기는 캐릭터를 골랐을 때만(캐릭터 메뉴) */;if(!inH&&!EAT&&!(window.QA342&&QA342.locked()))add('qa286bag','가방에 넣기')/* QA286: 손에 든 것을 가방에 넣기 · QA341: 버리기는 가방에서만 */}
    if(sp&&(sp.kind!=='cine'||!document.body.classList.contains('cineseat'))){/* QA93: 상영 화면을 닫으면 상영관 좌석도 일어나기 */add('ctxwave','손 흔들기')/* QA353: 일어나기 버튼 없음 — 다른 곳을 누르면 일어나서 감 */}
    else if(!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length)){add('sitnear','앉기');if(HELD.some(x=>!isFlower(x.k)))add('siteat','앉아서 먹기')/* QA263 */}
    if(QA17_NOTK&&(zc==='L0'||zc==='L1'))add('ctxbooth','매표소 가기')/* QA260: 검표원을 눌렀을 때만 — 다른 걸 누르면 사라짐 */
@@ -2983,7 +2983,7 @@ function qa19TapMark(p,zone){let m=QA19_TM;if(!m.g){const g=new THREE.Group();g.
  const y=me?targetY({position:{x:p.x,z:p.z},userData:me.userData}):p.y;m.g.position.set(p.x,(isFinite(y)?y:p.y)+.035,p.z);m.g.visible=true;m.t=0;m.zone=zone;m.r1.scale.setScalar(.35);m.r1.material.opacity=.95}
 function qa19TapTick(dt){const m=QA19_TM;if(!m.g||m.t<0)return;m.t+=dt;const k=Math.min(1,m.t/.6),e=1-Math.pow(1-k,3);m.r1.scale.setScalar(.35+e*.85);m.r1.material.opacity=.95*(1-k);if(k>=1){m.g.visible=false;m.t=-1}}
 R.domElement.addEventListener('pointerup',e=>{if(!me||!pd||Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>8||performance.now()-pd.t>500)return;
- QA20.obj=null;QA20.follow=null;if(window.QA255&&QA255.sel){QA255.sel=null;hudUpd()}mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(mv,C);
+ QA20.obj=null;QA20.follow=null;if(window.QA255&&QA255.sel){QA255.sel=null;hudUpd()}mv.set(e.clientX/innerWidth*2-1,-e.clientY/innerHeight*2+1);rc.setFromCamera(mv,C);if(EAT&&!EAT.cancel&&me){const mh=AVATAR_HITS.find(h=>h.userData.giftAvatar===me);if(mh&&rc.intersectObject(mh,false).length){qa365Stop(true);return}}/* QA365: 먹는 중에 내 캐릭터를 누르면 왼쪽에 그만 먹기 */
  const az=curZone(me),objs=[...AVATAR_HITS.filter(h=>h.userData.giftAvatar!==me&&h.userData.giftAvatar.visible&&curZone(h.userData.giftAvatar)===az),...INTER,...spotMeshes,...floors.filter(f=>!f.userData.zone||f.userData.zone[0]!=='H'||f.userData.zone===az),...CFG.HALLS.filter(h=>'H'+h.id===az).flatMap(h=>[HALLN[h.id].IC,HALLN[h.id].IB])];
  const hs=rc.intersectObjects(objs.filter(o=>!(o.userData.exitH&&C.position.z>-.7)),false);if(!hs.length)return;if(!$('sitbox').hidden&&!(hs[0].object.isInstancedMesh))hideSit();window.__qaLastHit=null;const h=hs.find(q=>q.object.userData.prio)||(()=>{const f=hs[0];if(f&&f.object.material&&f.object.material.visible===false&&!f.object.userData.spot){const sp=hs.find(q=>q.object.userData.spot&&q.distance-f.distance<3.2);if(sp)return sp}return f})()/* QA260: 투명 클릭 영역(트리 등) 안에 있는 의자·소파를 누르면 앉기 우선 */,o=h.object,ud=o.userData;window.__qaLastHit={point:h.point.clone(),normal:h.face?h.face.normal.clone().transformDirection(h.object.matrixWorld):null,obj:h.object};
  const ah=hs.find(q=>q.object.userData.giftAvatar&&q.distance<=h.distance+.65);if(ah){selectAvatar(ah.object.userData.giftAvatar);return}
@@ -6084,7 +6084,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  const openBook=(tab='people')=>{try{closePanel()}catch(e){}ST={kind:'book',tab};shell('수첩','',BOOKT,tab,bookBody(tab),'')};
  /* ---- 가방 ---- */
  const bagBody=(tab,sel)=>{
-  if(tab==='snack'){const L=HELD.map((x,i)=>[x,i]).filter(([x])=>!isFlower(x.k));if(!L.length)return '<p class="empty">간식이 없어요.</p>';const g={};L.forEach(([x,i])=>{(g[x.k]=g[x.k]||[]).push(i)});return '<div class="grid">'+Object.entries(g).map(([k,ix])=>`<button type="button" class="cell" data-sel="${k}" aria-pressed="${sel.has(k)}">${icon(k)}<span>${IT[k][1]}</span>${(l=>l<1?`<small>먹는 중 · ${Math.round(l*100)}%</small>`:'')(Math.min(...ix.map(i=>eatLeft(HELD[i]))))}${ix.length>1?`<span class="n">×${ix.length}</span>`:''}</button>`).join('')+'</div>'}
+  if(tab==='snack'){const L=HELD.map((x,i)=>[x,i]).filter(([x])=>!isFlower(x.k));if(!L.length)return '<p class="empty">간식이 없어요.</p>';const g={};L.forEach(([x,i])=>{(g[x.k]=g[x.k]||[]).push(i)});return '<div class="grid">'+Object.entries(g).map(([k,ix])=>`<button type="button" class="cell" data-sel="${k}" aria-pressed="${sel.has(k)}">${icon(k)}<span>${IT[k][1]}</span>${ix.length>1?`<span class="n">×${ix.length}</span>`:''}</button>`).join('')+'</div>'}
   if(tab==='ticket'){try{refTK()}catch(e){}return TK.length?'<div class="tks">'+TK.map(t=>`<div class="tkc" data-tk="${esc(String(t.id))}" aria-pressed="${sel.has(String(t.id))}">${tcHTML(t,0)}</div>`).join('')+'</div>':'<p class="empty">티켓이 없어요.</p>'}
   if(tab==='photo'){const P=typeof qa68List==='function'?qa68List():[];return P.length?'<div class="grid">'+P.map((x,i)=>`<button type="button" class="cell photo" data-sel="p${i}" aria-pressed="${sel.has('p'+i)}"><img alt="" src="${x.src}"></button>`).join('')+'</div>':'<p class="empty">찍은 사진이 없어요.</p>'}
   const F=HELD.map((x,i)=>[x,i]).filter(([x])=>isFlower(x.k)),K=J('aic.keeps',[]),P=typeof qa68List==='function'?qa68List():[];let h='';
@@ -6891,5 +6891,14 @@ html body #pn#pn:not(.leg):not([data-k=shop]):not([data-k=vend]):not([data-k=caf
 (()=>{const b=document.getElementById('qa364m');if(!b)return;const set=o=>{document.body.classList.toggle('qa364o',o);b.setAttribute('aria-expanded',o)};
  b.addEventListener('click',e=>{e.stopPropagation();set(!document.body.classList.contains('qa364o'))});
  document.addEventListener('click',e=>{if(!document.body.classList.contains('qa364o'))return;if(e.target.closest&&e.target.closest('#act button'))setTimeout(()=>set(false),0);else if(!(e.target.closest&&e.target.closest('#act')))set(false)},true)})();
+</script>
+<style id="qa365-css">#qa365s{position:fixed;z-index:8;transform:translate(-100%,-50%);height:44px;padding:0 16px;border-radius:999px;background:var(--pn);border:1px solid var(--line);color:var(--ink);font:500 14px/1 'Noto Sans KR',sans-serif;box-shadow:0 4px 7px rgba(0,0,0,.33);white-space:nowrap;cursor:pointer}#qa365s[hidden]{display:none}</style>
+<button type="button" id="qa365s" hidden>그만 먹기</button>
+<script id="qa365-stop">/* QA365: 먹는 중 내 캐릭터를 누르면 캐릭터 왼쪽에 '그만 먹기' — 다른 곳을 누르거나 5초가 지나거나 다 먹으면 사라짐 */
+(()=>{const b=document.getElementById('qa365s'),V=new THREE.Vector3();let until=0;
+ const pos=()=>{if(b.hidden)return;if(!EAT||EAT.cancel||!me||performance.now()>until){b.hidden=true;return}me.getWorldPosition(V);V.y+=.9;V.project(C);b.style.left=Math.max(8+b.offsetWidth,(V.x+1)/2*innerWidth-34)+'px';b.style.top=((1-V.y)/2*innerHeight)+'px';requestAnimationFrame(pos)};
+ window.qa365Stop=on=>{if(!on){b.hidden=true;return}until=performance.now()+5000;b.hidden=false;pos()};
+ b.addEventListener('click',e=>{e.stopPropagation();b.hidden=true;try{A.qa341stop()}catch(x){}});
+ document.addEventListener('pointerdown',e=>{if(!b.hidden&&e.target!==b)setTimeout(()=>{if(performance.now()>until-4900)b.hidden=true},0)},true)})();
 </script>
 </body></html>

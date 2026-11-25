@@ -6592,14 +6592,14 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  const sigOf=()=>{let g='';KEYS.forEach(k=>{g+=(localStorage.getItem(k)||'').length+','});try{g+=HELD.map(x=>x.k+(x.left==null?'':Math.round(x.left*20))).join('')}catch(e){}return g};/* QA354: 값 길이만 비교(전체를 문자열로 만들지 않음) */
  const push=async op=>{const a=acct();if(!a||busy)return null;const sig=sigOf();if(op==='save'&&sig===last)return null;const d=snap();busy=true;const r=await post({op,id:a.id,pin:a.pin,data:d});busy=false;if(r.ok)last=sig;return r};
  /* o.mode: 'new' 저장하기 · 'load' 이어하기 */
- function form(mode,keep){const w=QA338.view({title:mode==='new'?'가방과 수첩을 쓸까요?':'이어하기',modal:1,html:`<div class="fm"><p>${mode==='new'?'가방과 수첩을\n사용하시려면 등록이 필요해요. 등록을 하면 기록도 안전하게 저장돼요.\n닉네임과 별도로 사용할 수 있어요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
-   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'등록':'불러오기','go',1]]});
+ function form(mode,keep){const w=QA338.view({title:mode==='new'?'가방과 수첩을 사용해볼까요?':'이어하기'/* QA372: 피그마 414:4310 */,modal:1,html:`<div class="fm"><p>${mode==='new'?'아이디를 등록하면 가방과 수첩을 사용할 수 있고,\n기록을 저장할 수 있어요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
+   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'등록하기':'불러오기','go',1]]});try{w.classList.add('qa372');const c=document.createElement('div');c.className='qa372c';[...w.children].forEach(x=>c.appendChild(x));w.appendChild(c)}catch(e){}/* QA372: 카드 안에 제목·안내·입력·버튼 */
   /* 입력값이 틀리면 창을 닫지 않도록 버튼을 직접 받는다 */
   w.addEventListener('click',async e=>{const b=e.target.closest('.zb button.pri');if(!b)return;e.stopImmediatePropagation();const id=w.querySelector('#qa341id').value.trim().toLowerCase(),pin=w.querySelector('#qa341pin').value.trim();
    if(!/^[a-z0-9_]{4,16}$/.test(id)||!/^\d{4}$/.test(pin)){toast(ERR.bad_input);return}b.disabled=true;
    if(mode==='new'){localStorage.setItem('aic.acct',JSON.stringify({id,pin}));last='';const r=await push('create');if(!r||!r.ok){const e=r&&r.error;if(e==='taken'||e==='locked'||e==='bad_input'){localStorage.removeItem('aic.acct');b.disabled=false;toast(ERR[e]);return}/* 서버에 닿지 않아도 가방은 열어 줌 */localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수첩이 열렸어요 · 지금은 이 브라우저에만 저장돼요');try{hudUpd()}catch(x){}return}localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수첩이 열렸어요');try{hudUpd()}catch(x){}}
    else{const r=await post({op:'load',id,pin});if(!r.ok){b.disabled=false;toast(ERR[r.error]||'불러오지 못했어요');return}Object.entries(r.data||{}).forEach(([k,v])=>{if(KEYS.includes(k))try{localStorage.setItem(k,v)}catch(e){}});if(r.data&&r.data.held)try{localStorage.setItem('aic.heldRestore',r.data.held)}catch(e){}localStorage.setItem('aic.acct',JSON.stringify({id,pin}));localStorage.setItem('aic.saveAsked','1');location.reload()}},true);
-  setTimeout(()=>{const i=w.querySelector('#qa341id');if(i)i.focus()},50)}
+  setTimeout(()=>{const i=w.querySelector('#qa341id');if(i&&matchMedia('(pointer:fine)').matches)i.focus()/* QA372: 모바일은 키보드가 바로 뜨지 않게 */},50)}
  window.QA341={form,acct,push};A.qa341new=()=>form('new');A.qa341load=()=>form('load');
  /* 이어받은 손·가방 간식 */
  const rest=()=>{const h=localStorage.getItem('aic.heldRestore');if(!h||typeof holdAdd!=='function'||!me)return;localStorage.removeItem('aic.heldRestore');try{const L=JSON.parse(h);if(!HELD.length&&L.length){holdAdd(L.map(x=>x.k));L.forEach((x,i)=>{if(HELD[i]&&x.left!=null)HELD[i].left=x.left});QA115_OFF=true;refreshMe()}}catch(e){}};
@@ -6993,4 +6993,20 @@ html body.inhall #qa127map .g>i,html body.inhall #qa127map .g>span{width:6.25px}
  A.qa371map=()=>{T();const m=document.getElementById('qa127map');if(!m)return;m.classList.toggle('min')};
  setInterval(T,700);T()})();
 </script>
+<style id="qa372-css">/* QA372: 가방·수첩 등록 모달 — 피그마 414:4310(모바일)·414:4302(PC) */
+#qa338v.qa372{background:rgba(0,0,0,.52)!important;padding:16px!important;gap:0!important}
+#qa338v.qa372 .qa372c{box-sizing:border-box;width:min(350px,100%);display:flex;flex-direction:column;gap:34px;padding:24px;background:#211317;border:1px solid #574049;border-radius:20px;color:#f5ebdf;font-family:'Noto Sans KR',sans-serif}
+#qa338v.qa372 .tt{display:block;margin:0 0 -26px;font:600 20px/normal 'Noto Sans KR',sans-serif!important;color:#f5ebdf;text-align:left}
+#qa338v.qa372 .in{display:block;width:100%;margin:0;padding:0;max-width:none;max-height:none}
+#qa338v.qa372 .fm{width:100%!important;gap:24px!important}
+#qa338v.qa372 .fm p{margin:0 0 10px;font:400 13px/normal 'Noto Sans KR',sans-serif!important;color:#b8a5a9;opacity:.8;text-align:left;white-space:pre-line}
+#qa338v.qa372 .fm input{width:100%;height:48px!important;padding:0 14px!important;border-radius:12px!important;border:1px solid #574049!important;background:#39252c!important;color:#f5ebdf!important;font:400 14px/normal 'Noto Sans KR',sans-serif!important;outline:none;box-shadow:none!important}
+#qa338v.qa372 .fm input:focus{border-color:rgba(243,228,196,.6)!important}
+#qa338v.qa372 .fm input::placeholder{color:#b8a5a9!important;opacity:.8}
+#qa338v.qa372 .zb{display:flex!important;flex-wrap:nowrap!important;gap:8px!important;justify-content:stretch!important;width:100%}
+#qa338v.qa372 .zb button{all:unset;box-sizing:border-box;cursor:pointer;flex:0 0 100px;height:48px;border-radius:12px;border:1px solid rgba(243,228,196,.6);background:#211317;color:#f5ebdf;font:500 15px/46px 'Noto Sans KR',sans-serif;text-align:center}
+#qa338v.qa372 .zb button.pri{flex:1 1 auto;border-color:#f3e4c4;background:#f3e4c4;color:#211317;font-weight:600}
+#qa338v.qa372 .zb button:disabled{opacity:.5;cursor:default}
+#qa338v.qa372>p{display:none}
+</style>
 </body></html>

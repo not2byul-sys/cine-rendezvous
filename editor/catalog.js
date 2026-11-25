@@ -1,4 +1,4 @@
-export const palette = ['#B3202E','#D9822B','#D6A12A','#3F5A34','#2F6A6A','#2A3A5E','#6C4A6F','#6A3A1E','#E9DCC3','#AB9DD1','#7C7773','#E9A8B8'];
+export const palette = ['#A92A36','#CD8237','#D6A12A','#3F5A34','#2F6A6A','#2A3A5E','#6C4A6F','#6A3A1E','#E9DCC3','#AB9DD1','#7C7773','#E9A8B8'];
 export const parts = {top:'상의',bottom:'하의',hat:'모자',glasses:'안경',bag:'가방',shoes:'신발'};
 export const items = {
   glasses:[['none','없음'],['round','라운드 안경'],['sun','선글라스'],['square','사각 안경']],

@@ -114,7 +114,8 @@ footer button { height:52px; border-radius:6px; font:500 14px/20px Pretendard,'N
  main { padding-bottom:0; }
  .preview { padding-bottom:16px; }
  .preview .color-picker { grid-column:1 / -1; grid-row:2; width:100%; margin:0; gap:2px; }
- .preview .avatar { grid-row:1; height:120px; }
+ .preview .avatar { grid-row:1; height:152px; }
+ .preview .avatar canvas,.preview .avatar img { height:152px; max-height:152px; width:auto; max-width:120px; }/* QA381: 모바일 미리보기 발끝까지 */
  .color-picker-title { height:52px; }
  .color-target-btn { width:114px; }
  .part-picker { width:114px; }

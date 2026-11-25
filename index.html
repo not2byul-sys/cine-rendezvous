@@ -6593,7 +6593,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  const push=async op=>{const a=acct();if(!a||busy)return null;const sig=sigOf();if(op==='save'&&sig===last)return null;const d=snap();busy=true;const r=await post({op,id:a.id,pin:a.pin,data:d});busy=false;if(r.ok)last=sig;return r};
  /* o.mode: 'new' 저장하기 · 'load' 이어하기 */
  function form(mode,keep){const w=QA338.view({title:mode==='new'?'가방과 수첩을 사용해볼까요?':'이어하기'/* QA372: 피그마 414:4310 */,modal:1,html:`<div class="fm"><p>${mode==='new'?'아이디를 등록하면 가방과 수첩을 사용할 수 있고,\n기록을 저장할 수 있어요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
-   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'등록하기':'불러오기','go',1]]});try{w.classList.add('qa372');const c=document.createElement('div');c.className='qa372c';[...w.children].forEach(x=>c.appendChild(x));w.appendChild(c)}catch(e){}/* QA372: 카드 안에 제목·안내·입력·버튼 */
+   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new'){localStorage.setItem('aic.saveAsked','1');setTimeout(()=>toast('가방에 넣어둘게요. 등록하지 않으면 기록이 사라질 수 있어요.',3200),200)/* QA375 */}}],[mode==='new'?'등록하기':'불러오기','go',1]]});try{w.classList.add('qa372');const c=document.createElement('div');c.className='qa372c';[...w.children].forEach(x=>c.appendChild(x));w.appendChild(c)}catch(e){}/* QA372: 카드 안에 제목·안내·입력·버튼 */
   /* 입력값이 틀리면 창을 닫지 않도록 버튼을 직접 받는다 */
   w.addEventListener('click',async e=>{const b=e.target.closest('.zb button.pri');if(!b)return;e.stopImmediatePropagation();const id=w.querySelector('#qa341id').value.trim().toLowerCase(),pin=w.querySelector('#qa341pin').value.trim();
    if(!/^[a-z0-9_]{4,16}$/.test(id)||!/^\d{4}$/.test(pin)){toast(ERR.bad_input);return}b.disabled=true;
@@ -6662,7 +6662,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 <script id="qa342-lock">/* QA342: 등록 전에는 가방·수첩이 잠김. 물건은 양손(2개)까지만 */
 (function(){
  const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};
- const locked=()=>!reg();
+ const locked=()=>false/* QA375: 가방·수첩 잠금 없앰 — 처음 무언가를 얻을 때 한 번만 등록을 권함 */;
  const count=()=>{let n=0;try{n+=HELD.length}catch(e){}try{n+=API.tickets().length}catch(e){}return n};
  const MSG='양손이 가득 찼어요. 가방이 없으면 더 이상 들 수 없어요.\n등록하면 가방을 쓸 수 있고, 기록도 안전하게 저장돼요.';
  const tell=()=>QA338.view({html:`<div class="tx" style="font-size:16px">${esc(MSG)}</div>`,modal:1,btns:[['나중에'],['등록',()=>QA341.form('new'),1]]});
@@ -7057,5 +7057,11 @@ html body:not(.inhall) #ctxbar button{height:44px!important;min-height:0!importa
  const MAP={bag:'bag',book:'book',tt:'tt',avatar:'avatar'};
  setInterval(()=>{const pn=document.getElementById('pn'),k=pn&&!pn.hidden?pn.dataset.k:'';const v=document.getElementById('qa270');const k2=v&&!v.hidden&&v.dataset.k?v.dataset.k:'';
   document.querySelectorAll('#act>button').forEach(b=>b.classList.toggle('qa373on',!!b.dataset.a&&(MAP[b.dataset.a]===k||MAP[b.dataset.a]===k2)))},400)})();
+</script>
+<style id="qa375-css">#qa270 .qa375r{flex:none;margin:0;padding:12px 24px 16px;text-align:center;font:400 13px/1.4 'Noto Sans KR',sans-serif;color:#b8a5a9}#qa270 .qa375r button{all:unset;cursor:pointer;color:#f3e4c4;text-decoration:underline;text-underline-offset:3px;margin-left:6px}</style>
+<script id="qa375-reg">/* QA375: 등록 전이면 가방·수첩 창 아래에 작은 '등록하기' 링크 */
+(()=>{const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};
+ setInterval(()=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const has=d.querySelector('.qa375r');if(reg()){has&&has.remove();return}if(has)return;
+  const p=document.createElement('p');p.className='qa375r';p.innerHTML='등록하면 기록이 안전하게 저장돼요.<button type="button">등록하기</button>';p.querySelector('button').onclick=()=>{try{QA341.form('new')}catch(e){}};d.appendChild(p)},500)})();
 </script>
 </body></html>

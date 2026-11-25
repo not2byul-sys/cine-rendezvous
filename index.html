@@ -2743,7 +2743,7 @@ getvend:async d=>{closePanel();const ok=await AdService.show({kind:'vend',label:
  ics:d=>download('aic-timetable.ics',buildICS(+d.h),'text/calendar'),csv:()=>download('aic-timetable.csv',buildCSV(),'text/csv'),
  submit:()=>A.reqmail(),
  use:d=>{const it=API.useItem(+d.i);if(it&&me){const E={pop:'🍿',cola:'🥤',coffee:'☕',snack:'🍫',hotdog:'🌭',nacho:'🧀',pretzel:'🥨',churro:'🍩',ice:'🍦',candy:'🍬',latte:'☕',tea:'🍵',cake:'🍰',croi:'🥐'};say(me,(E[it.k]||'😋')+' 냠냠');me.userData.hop=.6}PANELS.bag()},
- enter:d=>{const tk=TK.find(k=>k.id===d.id);if(tk&&!tk.punched&&!$('pn').hidden&&document.querySelector('#pn .tcw [data-id="'+d.id+'"]')){/* QA170: 매표소 창의 이 티켓에 그대로 펀칭한 뒤 입장 */punchHere(tk).then(()=>{API.punch(tk.id);refTK();QA86_JUST=tk.id;enterHall(tk.id)});return}enterHall(d.id)},sit:()=>{if(!selSeat||!me)return;const sp=selSeat;hideSit();walkToSpot(me,sp)},sitx:hideSit,tix:()=>PANELS.tix(),bag:()=>PANELS.bag(),tt:()=>PANELS.tt(),chan:()=>PANELS.chan(),chsel:()=>toast('로비 이동은 서버 연동 후 지원돼요')};
+ enter:d=>{const tk=TK.find(k=>k.id===d.id);if(tk&&!tk.punched&&!$('pn').hidden&&document.querySelector('#pn .tcw [data-id="'+d.id+'"]')){/* QA170: 매표소 창의 이 티켓에 그대로 펀칭한 뒤 입장 */punchHere(tk).then(()=>{API.punch(tk.id);refTK();QA86_JUST=tk.id;enterHall(tk.id)});return}enterHall(d.id)},sit:()=>{if(!selSeat||!me)return;const sp=selSeat;hideSit();walkToSpot(me,sp)},sitx:hideSit,tix:()=>PANELS.tix(),bag:()=>PANELS.bag(),tt:()=>PANELS.tt(),chan:()=>{if(window.qa373Chan)return qa373Chan();PANELS.chan()},chsel:()=>toast('로비 이동은 서버 연동 후 지원돼요')};
 document.addEventListener('click',e=>{const a=e.target.closest('[data-a]');if(a&&A[a.dataset.a])A[a.dataset.a](a.dataset)});
 /* ---------- 관리자: 상영 시간표 관리 (비밀번호 1234 · 목업) ---------- */
 const ADMIN_SESSION_KEY='aic.admin.authenticated.v1';let ADM=store.get(ADMIN_SESSION_KEY)===true,ADMD=null;const ADM_ROUTE=/^\/admin19791020\/?$/.test(location.pathname);if(!ADM_ROUTE)ADM=false;/* QA276: 관리자는 /admin19791020 주소에서만 — 일반 주소에선 관리자 기능 없음 */const ADMPW='0722',PAL=['#9fd8c9','#e8a0c4','#9aa8e0','#f2c14e'];
@@ -3680,7 +3680,7 @@ function qaManualMove(c,dx,dz,dt){const u=c.userData,pressed=!!(dx||dz);
 /* ---------- loop ---------- */
 const clk=new THREE.Clock(),look=new THREE.Vector3(0,1,18),cp=new THREE.Vector3(),lk=new THREE.Vector3();let ac=0,CLOST=0;
 function qa363Done(k){try{return (JSON.parse(localStorage.getItem('aic.hintDone')||'{}')[k]||0)}catch(e){return 0}}function qa363Mark(k){try{const o=JSON.parse(localStorage.getItem('aic.hintDone')||'{}');o[k]=(o[k]||0)+1;localStorage.setItem('aic.hintDone',JSON.stringify(o))}catch(e){}}
-function hintFor(z){/* QA363: 조작 안내는 익숙해지면 생략 — 바닥 이동 3번, 의자 앉기 1번 */if(z==='L0'&&qa363Done('move')>=3||(z==='H1'||z==='H2')&&qa363Done('sit')>=1)return '';return({L0:'바닥을 눌러 이동 · 드래그로 둘러보기',L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉기',H2:'의자를 눌러 앉기',B:'영화클럽 아지트'})[z]||''}
+function hintFor(z){/* QA363: 조작 안내는 익숙해지면 생략 — 바닥 이동 3번, 의자 앉기 1번 */if(z==='L0'&&qa363Done('move')>=3||(z==='H1'||z==='H2')&&qa363Done('sit')>=1)return '';return({L0:'바닥을 눌러 이동해 보세요'/* QA373: 피그마 HUD v2 첫 방문 힌트 */,L1:'2층 발코니 · THEATER 2 입구',H1:'의자를 눌러 앉기',H2:'의자를 눌러 앉기',B:'영화클럽 아지트'})[z]||''}
 /* QA127: 관람 카메라 — 방향은 고정(정면, 살짝 내려봄), 거리만 내 자리가 화면에 들어올 때까지 뒤로 */
 function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=new THREE.Vector3(H.cx,H.base+SCY,-11)/* QA172: 스크린 정중앙 높이에서 수평으로 — 올려다보는 사다리꼴 없이 정면 직사각형 *//* QA148: 스크린을 올린 만큼 시선도 수평에 가깝게 — 스크린이 사다리꼴로 기울지 않게(영상 화면과 맞춤) */,d=L.clone().sub(P0).normalize(),r=new THREE.Vector3(1,0,0),u=new THREE.Vector3().crossVectors(r,d),tv=Math.tan(C.fov*Math.PI/360),th=tv*C.aspect,pts=[hv,new THREE.Vector3(hv.x,hv.y-.4,hv.z)],v=new THREE.Vector3(),cam=new THREE.Vector3();
  let D=Math.max(L.distanceTo(P0),SCW/2/(.97*th)+.01*0);const ok=()=>pts.every(p=>{v.copy(p).sub(cam);const z=v.dot(d);if(z<.6)return false;const x=v.dot(r)/(z*th),y=v.dot(u)/(z*tv);const pl=document.body.classList.contains('qa135play');return Math.abs(x)<=(pl?.9:.8)&&y>=(pl?-.88:-.72)&&y<=.85}/* QA136: 상영이 시작되면 내 자리 쪽으로 살짝 줌인 */);
@@ -6994,8 +6994,8 @@ html body.inhall #qa127map .g>i,html body.inhall #qa127map .g>span{width:6.25px}
  setInterval(T,700);T()})();
 </script>
 <style id="qa372-css">/* QA372: 가방·수첩 등록 모달 — 피그마 414:4310(모바일)·414:4302(PC) */
-#qa338v.qa372{background:rgba(0,0,0,.52)!important;padding:16px!important;gap:0!important}
-#qa338v.qa372 .qa372c{box-sizing:border-box;width:min(350px,100%);display:flex;flex-direction:column;gap:34px;padding:24px;background:#211317;border:1px solid #574049;border-radius:20px;color:#f5ebdf;font-family:'Noto Sans KR',sans-serif}
+#qa338v.qa372{background:rgba(16,8,12,.86)!important;padding:16px!important;gap:0!important}/* QA374: 모달 카드 대신 운영 화면처럼 전체 레이어 */
+#qa338v.qa372 .qa372c{box-sizing:border-box;width:min(350px,100%);display:flex;flex-direction:column;gap:34px;padding:24px;background:transparent;border:0;border-radius:0;color:#f5ebdf;font-family:'Noto Sans KR',sans-serif}
 #qa338v.qa372 .tt{display:block;margin:0 0 -26px;font:600 20px/normal 'Noto Sans KR',sans-serif!important;color:#f5ebdf;text-align:left}
 #qa338v.qa372 .in{display:block;width:100%;margin:0;padding:0;max-width:none;max-height:none}
 #qa338v.qa372 .fm{width:100%!important;gap:24px!important}
@@ -7009,4 +7009,53 @@ html body.inhall #qa127map .g>i,html body.inhall #qa127map .g>span{width:6.25px}
 #qa338v.qa372 .zb button:disabled{opacity:.5;cursor:default}
 #qa338v.qa372>p{display:none}
 </style>
+<style id="qa373-css">/* QA373: 로비 HUD — 피그마 326:1113(HUD v2)·348:1425(등록 전 Locked) · 상영관(body.inhall)은 QA371 */
+html body:not(.inhall){--q3t:16px;--q3s:16px;--q3b:calc(env(safe-area-inset-bottom,0px) + 24px)}
+@media (min-width:700px){html body:not(.inhall){--q3t:24px;--q3s:24px;--q3b:20px}}
+html body:not(.inhall) #chip{top:var(--q3t)!important;left:var(--q3s)!important;width:100px!important;max-width:none!important;height:44px!important;box-sizing:border-box;padding:0 12px!important;gap:4px!important;justify-content:space-between!important;border-radius:14px!important;background:rgba(28,20,22,.72)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;font:500 13px/1 'Noto Sans KR',sans-serif!important;color:#fff!important;zoom:1!important}
+html body:not(.inhall) #chip #chtx,html body:not(.inhall) #chip #cnt{font:500 13px/1 'Noto Sans KR',sans-serif!important;color:#fff!important;margin:0!important;letter-spacing:0!important}
+html body:not(.inhall) #chip #cnt{margin-left:4px!important;margin-right:auto!important}
+html body:not(.inhall) #chip svg{width:18px!important;height:18px!important;flex:none;fill:none;stroke:#fff;stroke-width:1.5;margin:0!important}
+html body:not(.inhall) #mpbar{top:var(--q3t)!important;right:var(--q3s)!important;gap:8px!important;zoom:1!important}
+html body:not(.inhall) #mpbar>button{width:44px!important;height:44px!important;min-width:0!important;padding:0!important;align-items:center!important;justify-content:center!important;border-radius:100px!important;background:rgba(28,20,22,.72)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#fff!important}
+html body:not(.inhall) #mpbar>button svg{width:18px!important;height:18px!important}
+html body:not(.inhall) .bar{bottom:var(--q3b)!important;padding:0!important}
+html body:not(.inhall) .bar #act{flex:none!important;width:auto!important;max-width:none!important;height:auto!important;padding:4px!important;gap:4px!important;border-radius:16px!important;background:rgba(28,20,22,.72)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;margin:0 auto!important;zoom:1!important}
+html body:not(.inhall) .bar #act>button{flex:none!important;width:64px!important;min-width:0!important;height:60px!important;padding:0!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;border-radius:12px!important;background:transparent!important;border:0!important;box-shadow:none!important;color:#fff!important;position:relative}
+html body:not(.inhall) .bar #act>button::before{display:none}
+html body:not(.inhall) .bar #act>button svg{width:16px!important;height:16px!important;margin:0!important;flex:none}
+html body:not(.inhall) .bar #act>button span{font:400 12px/20px 'Noto Sans KR',sans-serif!important;color:#fff!important;margin:0!important;letter-spacing:0!important}
+html body:not(.inhall) .bar #act>button:hover{background:#292929!important}
+html body:not(.inhall) .bar #act>button:active{background:#3a3a3a!important}
+html body:not(.inhall) .bar #act>button.qa373on{background:#2f2829!important}html body:not(.inhall) .bar #act>button.qa373on span{color:rgba(255,255,255,.92)!important}
+html body:not(.inhall) .bar #act>button:disabled{opacity:.38!important}
+html body:not(.inhall).qa342lock .bar #act [data-a="bag"]>*,html body:not(.inhall).qa342lock .bar #act [data-a="book"]>*{opacity:1!important}
+html body:not(.inhall).qa342lock .bar #act :is([data-a="bag"],[data-a="book"]) span{color:rgba(255,255,255,.6)!important}
+html body:not(.inhall).qa342lock .bar #act :is([data-a="bag"],[data-a="book"])::before{content:''!important;display:block!important;position:absolute!important;left:50%!important;top:calc(50% - 13px)!important;width:32px!important;height:28px!important;transform:translate(-50%,-50%)!important;border-radius:12px!important;background:#2f2829!important;z-index:0}
+html body:not(.inhall).qa342lock .bar #act [data-a="book"]::before{border-radius:10px!important}
+html body:not(.inhall).qa342lock .bar #act :is([data-a="bag"],[data-a="book"])::after{top:calc(50% - 13px)!important;width:14px!important;height:14px!important;background:#fff!important;z-index:1}
+html body:not(.inhall) #hint{position:fixed!important;left:50%!important;right:auto!important;bottom:calc(var(--q3b) + 84px)!important;transform:translateX(-50%)!important;width:auto!important;height:40px!important;box-sizing:border-box;padding:0 12px!important;display:flex!important;align-items:center;gap:8px;border-radius:12px!important;background:rgba(28,20,22,.72)!important;font:400 13px/20px 'Noto Sans KR',sans-serif!important;color:#fff!important;opacity:1!important;white-space:nowrap;text-shadow:none!important}
+html body:not(.inhall) #hint:empty{display:none!important}
+html body:not(.inhall) #hint::before{content:'';width:16px;height:16px;flex:none;background:#fff;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 14a8 8 0 0 1-8 8'/%3E%3Cpath d='M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2'/%3E%3Cpath d='M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1'/%3E%3Cpath d='M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10'/%3E%3Cpath d='M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15'/%3E%3C/svg%3E") center/contain no-repeat}
+html body:not(.inhall):has(#ctxbar button) #hint{display:none!important}
+html body:not(.inhall) #ctxbar{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:calc(var(--q3b) + 84px)!important;transform:translateX(-50%)!important;gap:8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;zoom:1!important}
+html body:not(.inhall) #ctxbar button{height:44px!important;min-height:0!important;padding:0 16px!important;border-radius:100px!important;background:rgba(28,20,22,.72)!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;color:#fff!important;font:500 14px/1 'Noto Sans KR',sans-serif!important;white-space:nowrap}
+#qa373ch{position:fixed;z-index:60;top:calc(var(--q3t) + 56px);left:var(--q3s);width:100px;box-sizing:border-box;padding:4px;border-radius:8px;background:rgba(28,20,22,.72);display:flex;flex-direction:column}
+#qa373ch[hidden]{display:none}
+#qa373ch button{all:unset;box-sizing:border-box;height:44px;width:100%;padding:0 12px;border-radius:6px;font:400 13px/17px 'Noto Sans KR',sans-serif;color:#fff;cursor:pointer}
+#qa373ch button.cur{background:#2f2829;color:rgba(255,255,255,.92)}
+#qa373ch button:not(.cur):hover{background:#292929}
+</style>
+<div id="qa373ch" hidden role="listbox" aria-label="채널 선택"></div>
+<script id="qa373-hud">/* QA373: 로비 HUD 보조 — 채널 선택 드롭다운(피그마 06), 열린 창의 퀵바 버튼 Active 표시(피그마 05) */
+(()=>{const ch=document.getElementById('qa373ch');
+ const N=()=>{try{return Math.min(3,CFG.CHANNELS.length)}catch(e){return 3}};
+ window.qa373Chan=()=>{if(!ch.hidden){ch.hidden=true;return}let cur=1;try{cur=+String(document.getElementById('cnt').textContent).trim()||1}catch(e){}
+  ch.innerHTML=Array.from({length:N()},(_,i)=>`<button type="button" role="option" data-i="${i}" class="${i+1===cur?'cur':''}" aria-selected="${i+1===cur}">채널 ${String(i+1).padStart(2,'0')}</button>`).join('');ch.hidden=false};
+ ch.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ch.hidden=true;if(!b.classList.contains('cur'))try{A.chsel({i:b.dataset.i})}catch(x){}});
+ document.addEventListener('pointerdown',e=>{if(!ch.hidden&&!e.target.closest('#qa373ch,#chip'))ch.hidden=true},true);
+ const MAP={bag:'bag',book:'book',tt:'tt',avatar:'avatar'};
+ setInterval(()=>{const pn=document.getElementById('pn'),k=pn&&!pn.hidden?pn.dataset.k:'';const v=document.getElementById('qa270');const k2=v&&!v.hidden&&v.dataset.k?v.dataset.k:'';
+  document.querySelectorAll('#act>button').forEach(b=>b.classList.toggle('qa373on',!!b.dataset.a&&(MAP[b.dataset.a]===k||MAP[b.dataset.a]===k2)))},400)})();
+</script>
 </body></html>

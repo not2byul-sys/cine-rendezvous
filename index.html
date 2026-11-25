@@ -697,13 +697,13 @@ svg.lucide, #act button svg { stroke-width:1.6!important; width:22px!important; 
 </style><meta name="cinema-build" content="qa11-winter-layout-20261112">
 <style id="cine-visual-20261110">
 #cine-first-load{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#f6f4ed;color:#b49a68;transition:opacity .55s ease,visibility .55s ease;opacity:1;visibility:visible}
-#cine-first-load.cine-loaded{opacity:0;visibility:hidden;pointer-events:none}
+#cine-first-load.cine-loaded{opacity:0;visibility:hidden;pointer-events:none}#cine-first-load .cine-load-caption:empty{display:none}#cine-first-load .cine-load-caption{order:2;margin-top:18px}
 /* QA340: 로딩 바(영사기 + 진행 막대 + %) — 첫 입장과 상영 전 공용 */
-.qa340ld{--c:#6b1f24;--h:#f6f4ed;display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px 14px;width:min(420px,72vw);margin-top:28px;color:var(--c)}
-.qa340ld svg{grid-column:1/-1;justify-self:center;width:52px;height:auto;fill:var(--c)}.qa340ld svg .h{fill:var(--h)}
-.qa340ld .b{height:14px;border:1.5px solid var(--c);border-radius:999px;padding:2px;box-sizing:border-box}.qa340ld .b i{display:block;height:100%;width:0;background:var(--c);border-radius:999px;transition:width .25s linear}
-.qa340ld .n{font:400 15px Georgia,'Noto Serif KR',serif;min-width:40px;text-align:right;color:#2a1d1f}
-#qa340cine{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#140c0e;pointer-events:none}#qa340cine .qa340ld{--c:#f6e7cc;--h:#140c0e;margin:0;width:min(360px,60%)}#qa340cine .n{color:#f6e7cc}
+.qa340ld{--c:#6b1f24;--h:#f6f4ed;position:relative;display:flex;flex-direction:column;align-items:center;gap:10px;width:min(210px,39vw);color:var(--c)}
+.qa340ld svg{width:52px;height:auto;fill:var(--c)}.qa340ld svg .h{fill:var(--h)}
+.qa340ld .b{width:100%;height:12px;border:1.5px solid var(--c);border-radius:999px;padding:2px;box-sizing:border-box}.qa340ld .b i{display:block;height:100%;width:0;background:var(--c);border-radius:999px;transition:width .25s linear}
+.qa340ld .n{position:absolute;left:calc(100% + 6px);bottom:0;font:400 15px/12px Georgia,'Noto Serif KR',serif;white-space:nowrap;color:#2a1d1f}/* QA344: 막대는 화면 가운데, %는 막대 오른쪽 6px */
+#qa340cine{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#140c0e;pointer-events:none}#qa340cine .qa340ld{--c:#f6e7cc;--h:#140c0e;width:min(210px,39%)}#qa340cine .n{color:#f6e7cc}
 #cine-first-load .cine-load-emblem{width:min(240px,42vw);height:auto;filter:drop-shadow(0 2px 4px rgba(177,148,102,.1));margin-bottom:20px}
 #cine-first-load .cine-load-emblem svg{width:100%;display:block}
 #cine-first-load .cine-load-title{font-family:'Noto Serif KR',Georgia,serif;font-size:clamp(15px,2vw,19px);line-height:1.3;letter-spacing:.04em;text-align:center;font-weight:400}
@@ -836,9 +836,7 @@ html body.cineseat #watch::before{content:"";width:14px;height:14px;flex:none;ba
 <div id="ctl" hidden style="display:none!important"><span class="cr" id="cr"></span><button id="snd">🔇 소리</button><button id="full">⛶ 크게 보기</button><button id="ext">↗</button><button id="stand">일어나기</button></div>
 <div id="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div><div id="pn" hidden></div><div id="ad" hidden></div><div id="punch" hidden></div>
 <div id="cine-first-load" aria-live="polite" role="status">
- <div class="cine-load-title">Welcome to Vintage Cinema</div>
- <div class="cine-load-name">씨네 랑데부</div>
- <div class="cine-load-rule"></div><div class="cine-load-caption">Step into 1979</div>
+ <div class="cine-load-caption"></div>
  <div class="qa340ld"><svg viewBox="0 0 48 44" aria-hidden="true"><circle cx="13" cy="10" r="8"/><circle cx="31" cy="10" r="8"/><g class="h"><circle cx="13" cy="10" r="2"/><circle cx="31" cy="10" r="2"/><circle cx="13" cy="5.6" r="1.3"/><circle cx="13" cy="14.4" r="1.3"/><circle cx="8.6" cy="10" r="1.3"/><circle cx="17.4" cy="10" r="1.3"/><circle cx="31" cy="5.6" r="1.3"/><circle cx="31" cy="14.4" r="1.3"/><circle cx="26.6" cy="10" r="1.3"/><circle cx="35.4" cy="10" r="1.3"/></g><rect x="7" y="18" width="28" height="15" rx="2"/><path d="M35 22l9-4v15l-9-4zM20 33l-6 10h3l4-7 4 7h3l-6-10z"/></svg><div class="b"><i></i></div><span class="n">0%</span></div>
 </div>
 <script id="qa340-load">/* QA340: 진행률은 실제 값을 알 수 없어 천천히 차오르다가 준비되면 100% */
@@ -2730,7 +2728,7 @@ const A={
  standme:()=>{if(!me||!me.userData.seat)return;standUp(me);hudUpd()},cineup:()=>{if(!me||!me.userData.seat)return;CWIDE=false;standUp(me);hudUpd()},
  close:closePanel,
  buy:async d=>{const s=SC[d.s];if(!s||!me)return;/* QA170: 매표소 창을 닫지 않고 광고 뒤 같은 티켓에서 이어서 펀칭 */const ok=await AdService.show({kind:'ticket',label:`${s.hall.name} 「${s.film.title}」 티켓 1장`});if(!ok){toast('광고를 끝까지 봐야 티켓을 받을 수 있어요');return}
-  const r=API.buyTicket(s);refTK();if(r.err){toast(r.err);return}paintSeats();/* QA17: 펀칭 전 완료 알림 문구 제거 */
+  if(window.QA342&&QA342.full())return;const r=API.buyTicket(s);refTK();if(r.err){toast(r.err);return}if(window.QA342&&QA342.locked())toast('티켓은 손에 들었어요');paintSeats();/* QA17: 펀칭 전 완료 알림 문구 제거 */
   await punchHere(r.ok);API.punch(r.ok.id);refTK();const hid=r.ok.hall;/* QA86: 순간이동 대신 펀칭 후 상영관 문으로 걸어 들어감 */if(me.userData.seat)standUp(me,true);toast(`${s.hall.name}으로 입장합니다`);QA86_JUST=r.ok.id;ENTER_TK=r.ok.id;hallChan(hid);HALLN[hid].entryUntil=performance.now()/1000+4;walkTo(me,HCX[hid],-1.7,'H'+hid,{after:qa142View})},
  fl:d=>PANELS._sel(d.i),
  getset:async d=>{closePanel();const ok=await AdService.show({kind:'popcorn',label:'매점 보상 · 팝콘 + 콜라'});if(!ok){toast('광고를 끝까지 보면 받을 수 있어요');return}API.addItem('pop');API.addItem('cola');toast(`🍿 ${FL[d.i][0]} 팝콘 + 🥤 콜라를 받았어요! (가방에서 확인)`)},
@@ -2904,7 +2902,7 @@ function qa20Ctx(zc,inH,sp,cine){const X=[],add=(a,t,x)=>X.push(`<button type="b
   else if(!cine){
    if(ORD&&ORD.st==='ready'&&!inH)add('oget','간식받기')/* QA94: 상영관에선 숨김 */;
    const nearSeat=!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length);
-   if(HELD.length&&!QA115_OFF&&!nearSeat&&!(window.QA255&&QA255.sel)){if(HELD.some(x=>!isFlower(x.k))&&!inH){if(EAT)X.push(`<span class="qa341st"><b>${esc(IT[EAT.it.k][1])} 먹는 중 · ${Math.max(1,Math.ceil((EAT.until-performance.now()/1000)/60))}분 남음</b><button type="button" data-a="qa341stop">그만 먹기</button></span>`);else add('eatn','먹기')}/* QA290: 의자·아이템을 고른 동안에는 손에 든 것 버튼을 숨김 *//* QA219: 상영관에선 퀵바 '간식먹기'로 *//* QA114: 들고 있으면 어디서든 먹기(관람 좌석만 예외 — 앉을 때 묻는 방식) */;/* QA136: 선물하기는 캐릭터를 골랐을 때만(캐릭터 메뉴) */;if(!inH&&!EAT)add('qa286bag','가방에 넣기')/* QA286: 손에 든 것을 가방에 넣기 · QA341: 버리기는 가방에서만 */}
+   if(HELD.length&&!QA115_OFF&&!nearSeat&&!(window.QA255&&QA255.sel)){if(HELD.some(x=>!isFlower(x.k))&&!inH){if(EAT)X.push(`<span class="qa341st"><b>${esc(IT[EAT.it.k][1])} 먹는 중 · ${Math.max(1,Math.ceil((EAT.until-performance.now()/1000)/60))}분 남음</b><button type="button" data-a="qa341stop">그만 먹기</button></span>`);else add('eatn','먹기')}/* QA290: 의자·아이템을 고른 동안에는 손에 든 것 버튼을 숨김 *//* QA219: 상영관에선 퀵바 '간식먹기'로 *//* QA114: 들고 있으면 어디서든 먹기(관람 좌석만 예외 — 앉을 때 묻는 방식) */;/* QA136: 선물하기는 캐릭터를 골랐을 때만(캐릭터 메뉴) */;if(!inH&&!EAT&&!(window.QA342&&QA342.locked()))add('qa286bag','가방에 넣기')/* QA286: 손에 든 것을 가방에 넣기 · QA341: 버리기는 가방에서만 */}
    if(sp&&(sp.kind!=='cine'||!document.body.classList.contains('cineseat'))){/* QA93: 상영 화면을 닫으면 상영관 좌석도 일어나기 */add('standme','일어나기');add('ctxwave','손 흔들기')}
    else if(!sp&&NEARSP&&Math.hypot(me.position.x-NEARSP.x,me.position.z-NEARSP.z)<1.8&&!(me.userData.path&&me.userData.path.length)){add('sitnear','앉기');if(HELD.some(x=>!isFlower(x.k)))add('siteat','앉아서 먹기')/* QA263 */}
    if(QA17_NOTK&&(zc==='L0'||zc==='L1'))add('ctxbooth','매표소 가기')/* QA260: 검표원을 눌렀을 때만 — 다른 걸 누르면 사라짐 */
@@ -3194,7 +3192,7 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none';CinemaAudio.updateButton()}
 function toLobby(){const u=me.userData;u.path=[];u.spot=null;u.after=null;me.position.set(0,0,17.3);u.lvl=0;me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;snapCam=true;closePanel()}
 function exitHall(k){if(!me)return;closePanel();const e=EXIT[k];walkTo(me,e.x,e.z+(k===1?1.6:.8),k===1?'L0':'L1')}
-/* QA88→QA96: 손에는 1개만, 나머지는 가방 */let QA88_N=0,QA115_OFF=false;function refreshMe(){const n=HELD.length,was=Math.max(0,QA88_N-1),now=Math.max(0,n-1);if(n>QA88_N||!n)QA115_OFF=false;if(now>was)toast(`나머지 ${now-was}개는 가방에 넣었어요`);QA88_N=n;if(me)setCarry(me,QA115_OFF?[]:HELD.slice(0,1))/* QA115: 다 먹으면 손은 빈손, 나머지는 가방에 그대로 *//* QA96: 손에는 1개만, 나머지는 가방 */;hudUpd()}
+/* QA88→QA96: 손에는 1개만, 나머지는 가방 */let QA88_N=0,QA115_OFF=false;function refreshMe(){const n=HELD.length,was=Math.max(0,QA88_N-1),now=Math.max(0,n-1);if(n>QA88_N||!n)QA115_OFF=false;if(now>was&&!(window.QA342&&QA342.locked()))toast(`나머지 ${now-was}개는 가방에 넣었어요`);QA88_N=n;if(me)setCarry(me,QA115_OFF?[]:HELD.slice(0,1))/* QA115: 다 먹으면 손은 빈손, 나머지는 가방에 그대로 *//* QA96: 손에는 1개만, 나머지는 가방 */;hudUpd()}
 function holdAdd(keys){keys.forEach(k=>HELD.push({k}));refreshMe()}
 function objectParticle(text){const last=String(text).trim().slice(-1),code=last.charCodeAt(0);if(code>=0xAC00&&code<=0xD7A3)return (code-0xAC00)%28?'을':'를';if(/\d/.test(last))return '013678'.includes(last)?'을':'를';return '를'}
 let GIFT_TARGET=null;const GIFT_EATERS=new Set();
@@ -3524,7 +3522,7 @@ Object.assign(A,{
   if(curZone(me)!==pt.zone||Math.hypot(me.position.x-pt.x,me.position.z-pt.z)>2.4){closePanel();say(me,'받으러 가요!');walkTo(me,pt.x,pt.z,pt.zone,{after:()=>A.oget()});return}
   closePanel();if(ORD.taking)return;ORD.taking=1;me.rotation.y=Math.atan2((sf?sf.position.x:pt.x)-me.position.x,(sf?sf.position.z:pt.z-1)-me.position.z);me.userData.reach=.8;if(sf)say(sf,'맛있게 드세요!');
   setTimeout(()=>{if(!ORD)return;if(sf&&sf.userData.r0!=null)sf.rotation.y=sf.userData.r0;counterShow([]);const over=HELD.length+ORD.items.length>1;ORD.items.forEach(k=>HELD.push({k}));ORD=null;refreshMe();hudUpd();if(!over)toast('손에 들었어요')/* QA94: 양손을 넘으면 refreshMe의 '가방에 넣었어요' 알림만 */},700)},
- eat1:d=>startEat(+d.i),qa341stop:()=>{if(!EAT)return;EAT.cancel=1;EAT.until=0;setTimeout(()=>{QA115_OFF=true;refreshMe();toast('남은 간식은 가방에 넣었어요')},80)},eatn:()=>startEat(),eatstop:()=>stopEat(),trash:()=>{/* QA88: 컨텍스트 '버리기'는 가방을 열어 고른 것을 그 자리에서 버림(휴지통 터치는 기존대로 걸어가서 버림) */if(!HELD.length){toast('버릴 것이 없어요');return}PANELS.trashpick()},trashhere:d=>{const i=+d.i,it=HELD[i];if(!it||it.slow)return;if(i===eatingI()){EAT=null;if(me&&me.userData.arms)me.userData.arms.forEach(a=>a.rotation.z=0)}/* QA95: 먹던 것도 그 자리에서 버림 */HELD.splice(i,1);QA88_N=HELD.length;refreshMe();toast('휴지통에 버렸습니다');if(HELD.length)PANELS.bag('trash');else closePanel()},trash1:d=>{const it=HELD[+d.i];if(!it)return;closePanel();const nm=IT[it.k][1];notice('간식 버리기',esc(nm)+objectParticle(nm)+' 정말 버리시겠어요?',[['버리기',()=>goTrash(it)],['취소',()=>askTrash()]])},trashall:()=>{closePanel();notice('간식 버리기','들고 있는 간식을 모두 버리시겠어요?',[['모두 버리기',()=>goTrash()],['취소',null]])},cstart:()=>{if(!curSp)return;CMODE='full';($('cine').classList.remove('lv'),document.body.classList.remove('cinelv'));const h=hallCfg(curSp.hall);ODS[curSp.hall]=mkS(h,nowFilm(h),nowS());curSc=null;syncCine();hudUpd()},
+ eat1:d=>startEat(+d.i),qa341stop:()=>{if(!EAT)return;EAT.cancel=1;EAT.until=0;setTimeout(()=>{if(window.QA342&&QA342.locked()){hudUpd();return}/* 가방이 없으면 손에 그대로 */QA115_OFF=true;refreshMe();toast('남은 간식은 가방에 넣었어요')},80)},eatn:()=>startEat(),eatstop:()=>stopEat(),trash:()=>{/* QA88: 컨텍스트 '버리기'는 가방을 열어 고른 것을 그 자리에서 버림(휴지통 터치는 기존대로 걸어가서 버림) */if(!HELD.length){toast('버릴 것이 없어요');return}PANELS.trashpick()},trashhere:d=>{const i=+d.i,it=HELD[i];if(!it||it.slow)return;if(i===eatingI()){EAT=null;if(me&&me.userData.arms)me.userData.arms.forEach(a=>a.rotation.z=0)}/* QA95: 먹던 것도 그 자리에서 버림 */HELD.splice(i,1);QA88_N=HELD.length;refreshMe();toast('휴지통에 버렸습니다');if(HELD.length)PANELS.bag('trash');else closePanel()},trash1:d=>{const it=HELD[+d.i];if(!it)return;closePanel();const nm=IT[it.k][1];notice('간식 버리기',esc(nm)+objectParticle(nm)+' 정말 버리시겠어요?',[['버리기',()=>goTrash(it)],['취소',()=>askTrash()]])},trashall:()=>{closePanel();notice('간식 버리기','들고 있는 간식을 모두 버리시겠어요?',[['모두 버리기',()=>goTrash()],['취소',null]])},cstart:()=>{if(!curSp)return;CMODE='full';($('cine').classList.remove('lv'),document.body.classList.remove('cinelv'));const h=hallCfg(curSp.hall);ODS[curSp.hall]=mkS(h,nowFilm(h),nowS());curSc=null;syncCine();hudUpd()},
  clive:()=>{if(!curSp)return;CMODE='live';($('cine').classList.add('lv'),document.body.classList.add('cinelv'));const h=hallCfg(curSp.hall),f=nowFilm(h);ODS[curSp.hall]=mkS(h,f,liveStart(f));curSc=null;syncCine();hudUpd()},
  csnd:()=>{$('snd').onclick();hudUpd()},cfull:()=>{setFull(!FULL);hudUpd()},cstand:()=>{if(!me||!me.userData.seat)return;/* QA83: 상단 X — 상영이 끝났든 아니든 앉은 채 착석 시점으로. 그만보기: 자리에 앉은 채 불 켜진 와이드 샷 */const sp=me.userData.seat;window.QA172FZ=true;document.body.classList.add('qa172end');closeCine();CWIDE=false/* QA171·172: 앉은 시점·화각 그대로 고정하고 불만 서서히 켜짐 */;FOVT=C.fov;document.body.classList.remove('cineseat');hudUpd()},cresume:()=>{const sp=me&&me.userData.seat;if(sp&&sp.kind==='cine'){releaseSeatCamera();CUSE=false;openCine(sp)}hudUpd()},cexit:()=>{if(!me)return;CWIDE=false;standUp(me,true);toLobby();hudUpd()},exithall:d=>{/* QA72: 착석 중에도 바로 퇴장 */const go=()=>{if(me&&me.userData.seat){CWIDE=false;standUp(me,true)}exitHall(+d.k);hudUpd()};/* QA230: 상영 중이면 한 번 묻기 */if(curSp&&!CINE_DONE&&window.QA134&&QA134.sheet){QA134.sheet('관람을 중단하고\n로비로 나가시겠습니까?',[{t:'아니오',fn:()=>{}},{t:'나가기',pri:true,fn:go}]);return}go()},eatmovie:()=>startEat(),
  getvend:async d=>{if(HELD.length>=MAXH){toast('가방이 가득 찼어요');return}closePanel();const ok=await AdService.show({kind:'vend',label:IT[d.k][1]+' 1개'});if(!ok){toast('광고를 끝까지 봐야 받을 수 있어요');return}holdAdd([d.k]);toast('🖐 손에 들었어요')}
@@ -5679,7 +5677,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
 <script id="qa194-js">/* QA194: 말풍선 정리(내 앞을 지나는 큰 말풍선 숨김·화면 크기 상한·겹치면 위로 비켜 쌓기) · 입구 분홍 발판 · 창가 사진 찍기+캐릭터 클로즈업 · NPC 대화 시 영화 카드 획득 */
 (function(){
  /* 1) 말풍선 */
- const BUBS=new Set(),_bub=window.bubble;if(typeof _bub==='function')window.bubble=function(t){const s=_bub(t);try{BUBS.add(s);if(!s.userData.px)s.visible=false/* QA260: 크기 맞추기 전 첫 프레임에 크게 번쩍 보이지 않게 */}catch(e){}return s};
+ const BUBS=new Set(),_bub=window.bubble;if(typeof _bub==='function')window.bubble=function(t){const s=_bub(t);try{if(innerWidth<=760){/* QA343: 모바일은 글자 1px 작게(14→13 비율) */const k=13/14;s.scale.x*=k;s.scale.y*=k;if(s.userData.px){s.userData.px[0]*=k;s.userData.px[1]*=k}}BUBS.add(s);if(!s.userData.px)s.visible=false/* QA260: 크기 맞추기 전 첫 프레임에 크게 번쩍 보이지 않게 */}catch(e){}return s};
  const V1=new THREE.Vector3(),V2=new THREE.Vector3(),V3=new THREE.Vector3(),WS=new THREE.Vector3();
  function tick(){try{if(typeof C==='undefined'||!C)return;const H=innerHeight,W=innerWidth,tf=2*Math.tan(C.fov*Math.PI/360),cam=C.position,dMe=me?cam.distanceTo(me.getWorldPosition(V3)):1e9,L=[];
   BUBS.forEach(s=>{if(!s.parent){BUBS.delete(s);return}const o=s.parent,u=s.userData;if(u.s0==null){u.s0=[s.scale.x,s.scale.y];u.cy0=s.center.y}
@@ -5687,7 +5685,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
    s.getWorldPosition(V1);const d=cam.distanceTo(V1);V2.copy(V1).project(C);if(V2.z>1||d<.05){s.visible=false;return}s.visible=true;
    const ps=o.getWorldScale(WS).y||1;let hpx;if(!u.px){const h0=u.s0[1]*ps,cap=(s.material.map&&s.material.map.image?s.material.map.image.height:120)*.62,raw=h0/(d*tf)*H,k=raw>cap?cap/raw:1;s.scale.set(u.s0[0]*k,u.s0[1]*k,1);hpx=Math.min(raw,cap);s.position.y=2.6+s.scale.y/2/* QA214: 줄어든 만큼 아래를 머리 위에 붙임(공중에 뜨지 않게) */}else hpx=s.scale.y*ps/(d*tf)*H;
    const wpx=hpx*(s.scale.x/(s.scale.y||1)),sx=(V2.x+1)/2*W,sy=(1-V2.y)/2*H;let base=0;try{const tg=o.getObjectByName('avatar-tag');if(tg&&tg.visible){tg.getWorldPosition(V3);const td=cam.distanceTo(V3);V3.project(C);const tsy=(1-V3.y)/2*H,th=tg.userData.px?tg.userData.px[1]:tg.scale.y*ps/(td*tf)*H,tTop=tsy-(1-tg.center.y)*th;base=(sy+u.cy0*hpx)-(tTop-4)}}catch(e){}/* QA214: 말풍선 아래를 이름표 바로 위에 붙임(앉은 사람·작아진 말풍선이 공중에 뜨지 않게) */L.push({s,u,d,hpx,base,x0:sx-wpx/2,x1:sx+wpx/2,top:sy-(1-u.cy0)*hpx,bot:sy+u.cy0*hpx})});
-  L.sort((a,b)=>a.d-b.d);const P=[];L.forEach(b=>{let off=b.base||0;for(let it=0;it<6;it++){let mv=0;for(const q of P){if(b.x1<q.x0||b.x0>q.x1)continue;const t=b.top-off,bo=b.bot-off;if(bo<=q.top||t>=q.bot)continue;mv=Math.max(mv,bo-q.top+6)}if(!mv)break;off+=mv}
+  L.sort((a,b)=>a.d-b.d);const P=[];L.forEach(b=>{{/* QA343: 말풍선이 화면 좌우로 잘리지 않게 안쪽으로 밀기 */const w=b.x1-b.x0,M=8;let dx=0;if(w>=W-2*M)dx=W/2-(b.x0+b.x1)/2;else if(b.x0<M)dx=M-b.x0;else if(b.x1>W-M)dx=W-M-b.x1;b.s.center.x=.5-dx/Math.max(1,w);b.x0+=dx;b.x1+=dx}let off=b.base||0;for(let it=0;it<6;it++){let mv=0;for(const q of P){if(b.x1<q.x0||b.x0>q.x1)continue;const t=b.top-off,bo=b.bot-off;if(bo<=q.top||t>=q.bot)continue;mv=Math.max(mv,bo-q.top+6)}if(!mv)break;off+=mv}
    const tg=b.u.cy0-off/Math.max(1,b.hpx);b.s.center.y+=(tg-b.s.center.y)*.3;const eff=(b.u.cy0-b.s.center.y)*b.hpx;P.push({x0:b.x0,x1:b.x1,top:b.top-eff,bot:b.bot-eff})})/* 연달아 생긴 말풍선이 겹치면 먼 쪽을 위로 비켜 쌓음 */
  }catch(e){}finally{requestAnimationFrame(tick)}}requestAnimationFrame(tick);
 
@@ -5839,12 +5837,12 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
  window.QA234PICK=pick})();
 /* QA244: 첫 입장 때 퀵바 '캐릭터' 위에 검정 말풍선 안내(한 번만) */
 (function(){const K='aic.tipAvatar';let seen=false;try{seen=!!localStorage.getItem(K)}catch(e){}if(seen)return;
- const st=document.createElement('style');st.textContent="#qa244tip{position:fixed;z-index:40;transform:translate(-50%,-100%);padding:8px 12px;border-radius:10px;background:rgba(18,12,14,.92);color:#fff;font:500 13px/18px 'Noto Sans KR',sans-serif;letter-spacing:-.13px;white-space:nowrap;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .35s}#qa244tip.on{opacity:1}#qa244tip::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(18,12,14,.92)}";document.head.appendChild(st);
+ const st=document.createElement('style');st.textContent="#qa244tip{position:fixed;z-index:40;transform:translate(-50%,-100%);padding:8px 12px;border-radius:10px;background:rgba(18,12,14,.92);color:#fff;font:500 13px/18px 'Noto Sans KR',sans-serif;letter-spacing:-.13px;white-space:nowrap;pointer-events:none;box-shadow:0 6px 16px rgba(0,0,0,.3);opacity:0;transition:opacity .35s}#qa244tip.on{opacity:1}@media(max-width:760px){#qa244tip{font-size:12px;max-width:calc(100vw - 16px);box-sizing:border-box}}#qa244tip::after{content:'';position:absolute;left:calc(50% + var(--ax,0px));top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:rgba(18,12,14,.92)}";document.head.appendChild(st);
  let el=null,t0=0;const btn=()=>[...document.querySelectorAll('#act button[data-a="avatar"]')].find(b=>b.offsetParent);
  const close=()=>{if(el){el.classList.remove('on');const e_=el;setTimeout(()=>e_.remove(),400);el=null}};
  (function loop(){if(seen&&!el)return;requestAnimationFrame(loop);const b=btn();
   if(!el){if(!b||!me||(document.getElementById('join')&&!document.getElementById('join').hidden))return;seen=true;try{localStorage.setItem(K,'1')}catch(e){}el=document.createElement('div');el.id='qa244tip';el.textContent='여기서 의상을 바꿀 수 있어요';document.body.appendChild(el);t0=performance.now();requestAnimationFrame(()=>el&&el.classList.add('on'));b.addEventListener('click',close,{once:true})}
-  if(!b||performance.now()-t0>10000){close();return}const r=b.getBoundingClientRect(),bar=document.getElementById('act'),bt=bar?bar.getBoundingClientRect().top:r.top;el.style.left=(r.left+r.width/2)+'px';el.style.top=(bt-12)+'px'})()})();
+  if(!b||performance.now()-t0>10000){close();return}const r=b.getBoundingClientRect(),bar=document.getElementById('act'),bt=bar?bar.getBoundingClientRect().top:r.top;{/* QA343: 화면 밖으로 나가지 않게 */const w=el.offsetWidth,cx=r.left+r.width/2,x=Math.max(8+w/2,Math.min(innerWidth-8-w/2,cx));el.style.left=x+'px';el.style.setProperty('--ax',(cx-x)+'px')}el.style.top=(bt-12)+'px'})()})();
 /* QA245: 앉아 있거나 자리에 고정된 NPC도 가끔 혼잣말 — 내가 가까이 있을 때만 */
 (function(){setInterval(()=>{try{if(!me||document.hidden)return;const z=curZone(me);if(z[0]==='H'&&curSp)return;const c_=NPCS.filter(c=>c.visible&&c.userData.static&&!c.userData.buff&&!c.userData.b&&curZone(c)===z&&Math.hypot(c.position.x-me.position.x,c.position.z-me.position.z)<9);if(!c_.length||Math.random()<.35)return;const c=c_[Math.random()*c_.length|0];(typeof sayAmb==='function'?sayAmb:say)(c,npcTalkLine(c))}catch(e){}},18000/* QA302: 빈도 절반 */)})();
 /* QA234: 이름표 옆에 먹고 있는 간식 이모지 */
@@ -5959,6 +5957,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  const userKeys=()=>{const L=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&!keep(k))L.push(k)}return L};
  const start=()=>{try{const bak={};userKeys().forEach(k=>{bak[k]=localStorage.getItem(k)});localStorage.setItem(B,JSON.stringify(bak));Object.keys(bak).forEach(k=>localStorage.removeItem(k));localStorage.setItem(F,'1');try{sessionStorage.clear()}catch(e){}}catch(e){toast('저장 공간이 부족해요');return}location.reload()};
  const end=()=>{try{const bak=JSON.parse(localStorage.getItem(B)||'{}');userKeys().forEach(k=>localStorage.removeItem(k));Object.entries(bak).forEach(([k,v])=>{if(v!=null)localStorage.setItem(k,v)});localStorage.removeItem(B);localStorage.removeItem(F);try{sessionStorage.clear()}catch(e){}}catch(e){}location.reload()};
+ /* QA342: 모든 방문자의 유저 기록을 한 번 지움(관리자 설정·로그인은 유지). 값을 바꾸면 다시 한 번 지워짐 */try{const RV='20261125a';if(localStorage.getItem('aic.resetRev')!==RV){const adm=['aic.admin.authenticated.v1','aic.resetRev'];userKeys().filter(k=>!adm.includes(k)).forEach(k=>localStorage.removeItem(k));localStorage.setItem('aic.resetRev',RV);try{sessionStorage.clear()}catch(e){}location.reload();return}}catch(e){}
  Object.assign(A,{admfresh:()=>{if(!ADM)return;closePanel();notice('첫 입장 유저 모드','처음 들어온 상태로 다시 열어요.<br>끝내면 지금 기록으로 돌아와요.',[['시작',start],['취소',()=>{}]])},qa264end:end});
  let on=false;try{on=localStorage.getItem(F)==='1'}catch(e){}if(!on)return;
  const st=document.createElement('style');st.textContent="#qa264{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:999px;background:rgba(18,12,14,.82);color:#fff;font:500 12px/1 'Noto Sans KR',sans-serif;box-shadow:0 6px 16px rgba(0,0,0,.3)}#qa264 button{all:unset;cursor:pointer;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.14)}#qa264 button:hover{background:rgba(255,255,255,.24)}";document.head.appendChild(st);
@@ -6447,8 +6446,9 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
 #qa270 .qa338t:hover{background:#f6e7cc;color:#2a1d1f}
 #qa270 .qa338t svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 #qa270 .cell:hover .n{opacity:0}
+body.qa342lock #act [data-a="bag"],body.qa342lock #act [data-a="book"]{position:relative}body.qa342lock #act [data-a="bag"]>*,body.qa342lock #act [data-a="book"]>*{opacity:.38}body.qa342lock #act [data-a="bag"]::after,body.qa342lock #act [data-a="book"]::after{content:'';position:absolute;top:4px;left:calc(50% + 6px);width:14px;height:14px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1.5A1.5 1.5 0 0 1 20 11.500v9A1.5 1.5 0 0 1 18.500 22h-13A1.5 1.5 0 0 1 4 20.500v-9A1.5 1.5 0 0 1 5.500 10zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10V7a5 5 0 0 1 10 0v3h1.5A1.5 1.5 0 0 1 20 11.500v9A1.5 1.5 0 0 1 18.500 22h-13A1.5 1.5 0 0 1 4 20.500v-9A1.5 1.5 0 0 1 5.500 10zm2 0h6V7a3 3 0 0 0-6 0z'/%3E%3C/svg%3E") center/contain no-repeat}
 #ctxbar .qa341st{flex:none;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 4px 0 14px;border-radius:999px;background:var(--sc-bg,rgba(28,20,22,.72));border:1px solid var(--sc-bd,rgba(255,255,255,.12));color:var(--sc-fg,#faf5f0);font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap;pointer-events:auto;box-sizing:border-box}#ctxbar .qa341st b{font-weight:500}#ctxbar .qa341st button{height:28px!important;padding:0 10px!important;font-size:12px!important;box-shadow:none!important;background:rgba(255,255,255,.14)!important}
-#qa338v .fm{display:flex;flex-direction:column;gap:10px;width:min(80vw,300px)}#qa338v .fm p{text-align:left;line-height:1.5}#qa338v .fm input{height:44px;border-radius:8px;border:1px solid #b8a5a9;background:rgba(255,255,255,.08);color:#f5ebdf;padding:0 12px;font:400 16px Pretendard,'Noto Sans KR',sans-serif;box-sizing:border-box;width:100%}#qa270 .qa341s{margin-left:auto;margin-right:8px;height:32px;padding:0 12px;border:1px solid var(--sub);border-radius:999px;font-size:13px;align-self:center}.qa341c{all:unset;cursor:pointer;display:block;margin:10px auto 0;font:400 13px 'Noto Sans KR',sans-serif;color:#5b2a2a;text-decoration:underline;text-align:center}
+#qa338v .fm{display:flex;flex-direction:column;gap:10px;width:min(80vw,300px)}#qa338v .fm p{text-align:left;line-height:1.5}#qa338v .fm input{height:44px;border-radius:8px;border:1px solid #b8a5a9;background:rgba(255,255,255,.08);color:#f5ebdf;padding:0 12px;font:400 16px Pretendard,'Noto Sans KR',sans-serif;box-sizing:border-box;width:100%}#qa270 .qa341s{margin-left:auto;margin-right:8px;height:32px;padding:0 12px;border:1px solid var(--sub);border-radius:999px;font-size:13px;align-self:center}.qa341c{all:unset;cursor:pointer;position:absolute;left:0;right:0;top:calc(100% + 14px);font:400 14px 'Noto Sans KR',sans-serif;color:#f6e7cc;text-decoration:underline;text-underline-offset:3px;text-align:center}
 .qa340th{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.qa340th img{width:160px;aspect-ratio:16/9;object-fit:cover;border-radius:4px}
 #qa338v{position:fixed;inset:0;z-index:96;background:rgba(16,8,12,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;color:#f5ebdf;font-family:Pretendard,'Noto Sans KR',sans-serif}
 #qa338v .tt{font:600 18px/1.4 Pretendard,'Noto Sans KR',sans-serif}
@@ -6457,7 +6457,7 @@ html body.cineseat #hb button#qa133full{display:inline-flex!important;width:36px
 #qa338v .in img.cd{border-radius:6.49%/4.62%;box-shadow:0 14px 34px rgba(0,0,0,.4)}
 #qa338v .in img.ph{border-radius:6px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
 #qa338v .in .tk{width:min(86vw,420px)}
-#qa338v .in .tx{font:500 18px/1.6 Pretendard,'Noto Sans KR',sans-serif;text-align:center;white-space:pre-line}
+#qa338v .in .tx{font:500 18px/1.6 Pretendard,'Noto Sans KR',sans-serif;text-align:center;white-space:pre-line;word-break:keep-all}
 #qa338v p{margin:0;color:#b8a5a9;font:400 14px Pretendard,'Noto Sans KR',sans-serif;text-align:center}
 #qa338v .zb{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 #qa338v .zb button{all:unset;cursor:pointer;height:40px;padding:0 20px;border-radius:999px;border:1px solid #b8a5a9;color:#f5ebdf;font:500 14px/40px Pretendard,'Noto Sans KR',sans-serif;box-sizing:border-box}
@@ -6566,29 +6566,47 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  let last='',busy=false;
  const push=async op=>{const a=acct();if(!a||busy)return null;const d=snap(),sig=JSON.stringify(d);if(op==='save'&&sig===last)return null;busy=true;const r=await post({op,id:a.id,pin:a.pin,data:d});busy=false;if(r.ok)last=sig;return r};
  /* o.mode: 'new' 저장하기 · 'load' 이어하기 */
- function form(mode,keep){const w=QA338.view({title:mode==='new'?'기록을 저장할까요?':'이어하기',modal:1,html:`<div class="fm"><p>${mode==='new'?'아이디와 비밀번호를 정하면 다른 기기에서도 이어서 할 수 있어요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
-   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'저장':'불러오기','go',1]]});
+ function form(mode,keep){const w=QA338.view({title:mode==='new'?'가방과 수첩을 쓸까요?':'이어하기',modal:1,html:`<div class="fm"><p>${mode==='new'?'아이디와 비밀번호를 등록하면 가방과 수첩을 쓸 수 있고, 기록도 안전하게 저장돼요.':'저장할 때 정한 아이디와 비밀번호를 적어 주세요.'}</p><input id="qa341id" placeholder="아이디 (영문·숫자 4~16자)" maxlength="16" autocapitalize="off" autocomplete="off" value="${esc(keep&&keep.id||'')}"><input id="qa341pin" placeholder="비밀번호 (숫자 4자리)" maxlength="4" inputmode="numeric" type="password" autocomplete="off"></div>`,
+   btns:[[mode==='new'?'나중에':'취소',()=>{if(mode==='new')localStorage.setItem('aic.saveAsked','1')}],[mode==='new'?'등록':'불러오기','go',1]]});
   /* 입력값이 틀리면 창을 닫지 않도록 버튼을 직접 받는다 */
   w.addEventListener('click',async e=>{const b=e.target.closest('.zb button.pri');if(!b)return;e.stopImmediatePropagation();const id=w.querySelector('#qa341id').value.trim().toLowerCase(),pin=w.querySelector('#qa341pin').value.trim();
    if(!/^[a-z0-9_]{4,16}$/.test(id)||!/^\d{4}$/.test(pin)){toast(ERR.bad_input);return}b.disabled=true;
-   if(mode==='new'){localStorage.setItem('aic.acct',JSON.stringify({id,pin}));last='';const r=await push('create');if(!r||!r.ok){localStorage.removeItem('aic.acct');b.disabled=false;toast(ERR[r&&r.error]||'저장하지 못했어요');return}localStorage.setItem('aic.saveAsked','1');QA338.close();toast('저장했어요')}
+   if(mode==='new'){localStorage.setItem('aic.acct',JSON.stringify({id,pin}));last='';const r=await push('create');if(!r||!r.ok){const e=r&&r.error;if(e==='taken'||e==='locked'||e==='bad_input'){localStorage.removeItem('aic.acct');b.disabled=false;toast(ERR[e]);return}/* 서버에 닿지 않아도 가방은 열어 줌 */localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수첩이 열렸어요 · 지금은 이 브라우저에만 저장돼요');try{hudUpd()}catch(x){}return}localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수첩이 열렸어요');try{hudUpd()}catch(x){}}
    else{const r=await post({op:'load',id,pin});if(!r.ok){b.disabled=false;toast(ERR[r.error]||'불러오지 못했어요');return}Object.entries(r.data||{}).forEach(([k,v])=>{if(KEYS.includes(k))try{localStorage.setItem(k,v)}catch(e){}});if(r.data&&r.data.held)try{localStorage.setItem('aic.heldRestore',r.data.held)}catch(e){}localStorage.setItem('aic.acct',JSON.stringify({id,pin}));localStorage.setItem('aic.saveAsked','1');location.reload()}},true);
   setTimeout(()=>{const i=w.querySelector('#qa341id');if(i)i.focus()},50)}
  window.QA341={form,acct,push};A.qa341new=()=>form('new');A.qa341load=()=>form('load');
  /* 이어받은 손·가방 간식 */
  const rest=()=>{const h=localStorage.getItem('aic.heldRestore');if(!h||typeof holdAdd!=='function'||!me)return;localStorage.removeItem('aic.heldRestore');try{const L=JSON.parse(h);if(!HELD.length&&L.length){holdAdd(L.map(x=>x.k));L.forEach((x,i)=>{if(HELD[i]&&x.left!=null)HELD[i].left=x.left});QA115_OFF=true;refreshMe()}}catch(e){}};
  /* 첫 입장 티켓: 이어하기 */
- {const go=document.getElementById('go');if(go&&!acct()){const b=document.createElement('button');b.type='button';b.className='qa341c';b.textContent='이어하기';b.onclick=e=>{e.preventDefault();e.stopPropagation();form('load')};go.insertAdjacentElement('afterend',b)}}
+ {const go=document.getElementById('go');if(go&&!acct()){const b=document.createElement('button');b.type='button';b.className='qa341c';b.textContent='이어하기';b.onclick=e=>{e.preventDefault();e.stopPropagation();form('load')};(document.getElementById('jtw')||go.parentNode).appendChild(b)/* QA345: 티켓 안쪽은 절대 배치라 겹침 → 티켓 아래에 */}}
  setInterval(()=>{if(typeof me==='undefined'||!me)return;rest();
   const a=acct(),bag=document.getElementById('qa270');
-  /* 가방·수첩 머리글의 '저장하기' — 아직 등록하지 않은 사람에게만 */
-  if(bag&&!bag.classList.contains('qa338tt')&&!a&&!bag.querySelector('.qa341s')){const x=bag.querySelector('header .close');if(x){const b=document.createElement('button');b.type='button';b.className='qa341s';b.textContent='저장하기';b.onclick=e=>{e.stopPropagation();form('new')};x.insertAdjacentElement('beforebegin',b)}}
   /* 처음 무언가를 간직했을 때 한 번만 묻는다 */
-  if(!a&&!localStorage.getItem('aic.saveAsked')&&!document.getElementById('qa338v')&&!document.getElementById('qa270')&&!document.getElementById('qa336v')&&(J('aic.cards',[]).length||J('aic.keeps',[]).length||Object.keys(J('aic.wraps',{})).length))form('new');
+  if(!a&&!localStorage.getItem('aic.saveAsked')&&!document.getElementById('qa338v')&&!document.getElementById('qa270')&&!document.getElementById('qa336v')&&(J('aic.cards',[]).length||J('aic.keeps',[]).length||Object.keys(J('aic.wraps',{})).length||(window.QA342&&QA342.count()>0)))form('new');
  },2500);
  setInterval(()=>{push('save')},20000);addEventListener('pagehide',()=>{const a=acct();if(!a)return;try{navigator.sendBeacon('/api/save',new Blob([JSON.stringify({op:'save',id:a.id,pin:a.pin,data:snap()})],{type:'application/json'}))}catch(e){}});
  /* 먹는 중: 남은 분이 바뀌면 액션바도 갱신 */
  let m0=-1;setInterval(()=>{try{if(!EAT){m0=-1;return}const m=Math.ceil((EAT.until-performance.now()/1000)/60);if(m!==m0){m0=m;hudUpd()}}catch(e){}},2000);
+})();
+</script>
+<script id="qa342-lock">/* QA342: 등록 전에는 가방·수첩이 잠김. 물건은 양손(2개)까지만 */
+(function(){
+ const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};
+ const locked=()=>!reg();
+ const count=()=>{let n=0;try{n+=HELD.length}catch(e){}try{n+=API.tickets().length}catch(e){}return n};
+ const MSG='양손이 가득 찼어요. 가방이 없으면 더 이상 들 수 없어요.\n등록하면 가방을 쓸 수 있고, 기록도 안전하게 저장돼요.';
+ const tell=()=>QA338.view({html:`<div class="tx" style="font-size:16px">${esc(MSG)}</div>`,modal:1,btns:[['나중에'],['등록',()=>QA341.form('new'),1]]});
+ const full=()=>{if(locked()&&count()>=2){tell();return true}return false};
+ window.QA342={locked,count,full,tell};
+ /* 잠긴 가방·수첩을 누름: 아직 아무것도 없으면 얻는 곳을 알려 주고, 가진 게 있으면 등록 창 */
+ const has=()=>{try{return count()>0||JSON.parse(localStorage.getItem('aic.cards')||'[]').length>0||JSON.parse(localStorage.getItem('aic.keeps')||'[]').length>0}catch(e){return false}};
+ const go=(pt,k)=>{try{closePanel()}catch(e){}try{approachObject({pt,fn:()=>openPanel(k)},null)}catch(e){}};
+ const ask=()=>{if(has()){QA341.form('new');return}QA338.view({html:'<div class="tx" style="font-size:16px">해제하려면 아이템을 획득하세요</div>',btns:[['티켓 구매',()=>{try{qa17GoBooth()}catch(e){}}],['간식 구매',()=>go({x:6.0,z:12.2,zone:'L0'},'shop')],['닫기']]})};
+ /* 받기: 2개를 넘기지 않음 */
+ {const _h=holdAdd;holdAdd=function(keys){if(locked()){const room=2-count();if(room<=0){tell();return}keys=keys.slice(0,room)}const r=_h.call(this,keys);if(locked()&&count()>=2&&!sessionStorage.getItem('qa342told')){sessionStorage.setItem('qa342told','1');setTimeout(tell,900)}return r}}
+ /* 가방·수첩 열기 */
+ {const _b=A.bag,_k=A.book;A.bag=function(){if(locked()){ask();return}return _b.apply(this,arguments)};A.book=function(){if(locked()){ask();return}return _k.apply(this,arguments)}}
+ const paint=()=>document.body.classList.toggle('qa342lock',locked());paint();setInterval(paint,1500);
 })();
 </script>
 <style id="qa336-css">#qa270 .cell img.p3{width:68px;height:68px;object-fit:contain;flex:none;pointer-events:none}

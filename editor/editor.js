@@ -1,7 +1,7 @@
 import {palette, parts, items, itemColors, asset, characters as samples, defaults} from './catalog.js';
 
 // renderPreview only mutates the supplied preview host. save resolves after persistence.
-export async function openAvatarEditor({initial={}, baseline={}, characters=samples, renderPreview, disposePreview, save}={}) {
+export async function openAvatarEditor({initial={}, baseline={}, characters=samples, patterns=[], renderPreview, disposePreview, save}={}) {
   if (!characters.length || typeof save !== 'function') throw new Error('characters와 save 함수를 확인해 주세요.');
   const merge = (base, value) => ({...base,...value,items:{...base.items,...value.items},colors:{...base.colors,...value.colors}});
   const base = merge(defaults, baseline);
@@ -61,12 +61,13 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   function pickOpen(on){pickList.hidden=!on;pickBtn.setAttribute('aria-expanded',String(on));}
   pickBtn.onclick=e=>{e.stopPropagation();pickOpen(pickList.hidden);};
   dialog.addEventListener('click',e=>{if(!pickList.hidden&&!e.target.closest('.color-picker-title'))pickOpen(false);});
-  const selectableParts=['top','bottom','hat','glasses','bag','shoes'];
+  const selectableParts=['top','bottom','hat','glasses','bag','shoes'], patParts=['top','bottom','hat'];/* 패턴은 상의·하의·모자만 */
   function setSelectedPart(key){
     if(!selectableParts.includes(key))return;
     selectedPart=key;
     q('.color-target').textContent=parts[key];
     for(const b of colorChips.children){
+      if(b.dataset.pat){b.hidden=!patParts.includes(key);b.setAttribute('aria-pressed',String(draft.colors[key]===b.dataset.pat));continue;}
       b.setAttribute('aria-pressed',String(draft.colors[key]?.toUpperCase()===b.dataset.hex));
     }
     for(const b of q('.part-picker').querySelectorAll('[data-part]')){
@@ -78,6 +79,14 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     chip.className='color-chip';chip.dataset.hex=hex.toUpperCase();
     chip.style.setProperty('--chip',hex);
     chip.title=hex;chip.setAttribute('aria-label',hex+' 색상 적용');
+    colorChips.append(chip);
+  }
+  /* 색 대신 패턴: 칩을 누르면 그 부위를 패턴으로(색 칩을 누르면 다시 민무늬) */
+  for(const p of patterns){
+    const chip=button('',()=>{draft.colors[selectedPart]=p.id;setSelectedPart(selectedPart);update();});
+    chip.className='color-chip pat';chip.dataset.pat=p.id;
+    chip.style.setProperty('--chip',`url(${p.img}) center / 64px repeat`);
+    chip.setAttribute('aria-label','패턴 적용');
     colorChips.append(chip);
   }
   setSelectedPart(selectedPart);

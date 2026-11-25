@@ -995,7 +995,8 @@ try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.
 
 /* QA78: 이름표·말풍선은 원근과 상관없이 화면에서 같은 크기(px)로 보임. 이름표는 멀어지면 흐려짐 */let QA78_K=0;const QA78_TAGS=[];function qa78Fix(s,wpx,hpx){s.material.sizeAttenuation=false;s.material.needsUpdate=true;s.userData.px=[wpx,hpx];s.scale.set(wpx*QA78_K,hpx*QA78_K,1);return s}
 /* 부모(아바타)의 크기 배율이 스프라이트에 곱해지므로 그만큼 나눠 화면 크기를 맞춤 */const QA78_V=new THREE.Vector3();function qa78Scale(o){const p=o.userData.px,ps=o.parent?o.parent.getWorldScale(QA78_V).y||1:1;o.scale.set(p[0]*QA78_K/ps,p[1]*QA78_K/ps,1)}
-function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(s);qa78Scale(s)}
+function qa359Occ(c,s){/* QA359: 말풍선도 앞 물체에 가려짐 — 나와 대화 상대는 항상 보임 */try{const m=s.material;m.depthWrite=false;m.depthTest=!(c===me||ACTOR_SESSION&&ACTOR_SESSION.target===c)}catch(e){}return s}
+function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(qa359Occ(c,s));qa78Scale(s)}
 let seatedHall=0,QA85_CINE=false;var FOVT=0,QA171BL=0;const V171=new THREE.Vector3();function rs(ev){const f0=C.fov;R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?62:44)/* QA128: 관람 화각을 좁혀 원근 왜곡↓ */:(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;FOVT=C.fov;/* QA171: 앉아 있을 때는 화각을 한 번에 바꾸지 않고 천천히 */try{if(!(ev&&ev.type==='resize')&&me&&me.userData.seat&&me.userData.seat.kind==='cine'&&f0)C.fov=f0}catch(e){}C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 S.add(new THREE.HemisphereLight(0xf1eee6,0x697783,.74));
 const dl=new THREE.DirectionalLight(0xfff2dc,.26);dl.position.set(-8,20,14);S.add(dl);
@@ -1005,10 +1006,10 @@ function boxUV(g,w,h,d,t){const uv=g.attributes.uv,D=[[d,h],[d,h],[w,d],[w,d],[w
 const B=(w,h,d,c,x,y,z,p=S)=>{const g=new THREE.BoxGeometry(w,h,d),mt=mat(c);if(mt.userData.tile)boxUV(g,w,h,d,mt.userData.tile);const m=new THREE.Mesh(g,mt);m.position.set(x,y,z);p.add(m);return m};
 /* G = 알약의 치수(캔버스 px): 높이 h · 글자 좌우 여백 pl·pr · 「나」 원의 왼쪽 여백 bl·지름 bd·글자와의 간격 gap */
 function tag(t,bg,fg,fs,k=1,dt=false,meB=false,G={h:fs+20,pl:14,pr:14,bl:8,bd:fs+8,gap:12}){const c=document.createElement('canvas'),x=c.getContext('2d'),f=`400 ${fs}px "Noto Sans KR",sans-serif`/* QA109: 이름표 한 단계 얇게(500→400) */;x.font=f;const h=G.h,bd=meB?G.bd:0,tx=meB?G.bl+bd+G.gap:G.pl/* QA190: 내 이름표 앞 원형 「나」 라벨 */,ef=`400 ${Math.round(fs*1.15)}px "Noto Sans KR",sans-serif`,w=Math.ceil(emoW(x,t,f,ef)+tx+G.pr);c.width=w;c.height=h;x.font=f;x.fillStyle=bg;x.beginPath();x.roundRect?x.roundRect(0,0,w,h,h/2):x.rect(0,0,w,h);x.fill();x.fillStyle=fg;x.textBaseline='alphabetic';{const mt=x.measureText(t),a=mt.actualBoundingBoxAscent||fs*.8,d=mt.actualBoundingBoxDescent||fs*.1;emoDraw(x,t,tx,h/2+(a-d)/2,f,ef)}/* QA116: 글자 실제 높이로 세로 가운데 */if(meB){const bx=G.bl+bd/2;x.fillStyle='#e9c46a';x.beginPath();x.arc(bx,h/2,bd/2,0,7);x.fill();x.fillStyle='#2a141c';x.font=`700 ${Math.round(bd*.52)}px "Noto Sans KR",sans-serif`;x.textAlign='center';const m2=x.measureText('나'),a2=m2.actualBoundingBoxAscent||bd*.4,d2=m2.actualBoundingBoxDescent||0;x.fillText('나',bx,h/2+(a2-d2)/2);x.textAlign='left'}
- const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:dt}));s.scale.set(k*w/(fs*3.2),k*h/(fs*3.2),1);s.renderOrder=10;return s}
+ const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:dt,depthWrite:false}));s.scale.set(k*w/(fs*3.2),k*h/(fs*3.2),1);s.renderOrder=10;return s}
 /* QA326: 아바타 이름표 — 카메라 기본 거리(3~6m, QA260 배율 1.15)에서 알약 높이 28px · 글자 11px(산사 실측 비례). 3배로 그려 선명하게 */
 const NAMETAG={fs:33,k:1/(3*1.15),G:{h:84,pl:33,pr:32,bl:17,bd:57,gap:20}};
-function nameTag(text,isMe){const t=tag(text,'rgba(42,20,28,.88)','#fff',NAMETAG.fs,1,false,isMe,NAMETAG.G),im=t.material.map.image;return qa78Fix(t,im.width*NAMETAG.k,im.height*NAMETAG.k)}
+function nameTag(text,isMe){const t=tag(text,'rgba(42,20,28,.88)','#fff',NAMETAG.fs,1,!isMe/* QA359: 남의 이름표는 앞 물체에 가려짐 */,isMe,NAMETAG.G),im=t.material.map.image;return qa78Fix(t,im.width*NAMETAG.k,im.height*NAMETAG.k)}
 function art(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');fn(x,w,h);const t=new THREE.CanvasTexture(c);if(/Noto|Cinzel|Jost|Damion/.test(String(fn)))(window.ART_REDRAW||(window.ART_REDRAW=[])).push({c,x,fn,t,w,h});return t}
 /* QA97: 폰트 CSS를 나중에 받으므로, 웹폰트를 쓰는 캔버스 그림(포스터·간판)은 폰트가 도착하면 한 번 다시 그림 */try{if(document.fonts){let tm=0;const fam=new Set();document.fonts.addEventListener('loadingdone',e=>{(e.fontfaces||[]).forEach(f=>fam.add(String(f.family).replace(/["']/g,'')));clearTimeout(tm);tm=setTimeout(()=>{const F=[...fam];fam.clear();if(!F.length)return;(window.ART_REDRAW||[]).forEach(a=>{if((a.k||0)>=2)return;const src=a.src||(a.src=String(a.fn));if(!F.some(f=>src.includes(f)))return;a.k=(a.k||0)+1;try{a.x.save();a.x.setTransform(1,0,0,1,0,0);a.x.clearRect(0,0,a.w,a.h);a.x.restore();a.fn(a.x,a.w,a.h);a.t.needsUpdate=true}catch(err){}})},800)})}}catch(e){}/* 도착한 폰트를 쓰는 그림만, 그림당 최대 2번 */
 const rng=s=>()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
@@ -1886,7 +1887,7 @@ const currentPosterCv=document.createElement('canvas');currentPosterCv.width=512
 {const m_=layBeg();plane(1.92,2.4,currentPosterTex,4.9,6.3,LB+.16,0);B(2.16,2.64,.1,WD,4.9,6.3,LB+.09);hitbox(4.9,6.3,LB+.4,2.24,2.72,.6,{ctx:'상영 안내 보기',info:'이번 주 상영작과 시간표가 붙은 안내판이에요.',fn:()=>showBoard(currentPosterCv),pt:{x:4.9,z:LB+1.2,zone:'L1'}});layEnd(m_,'ttb','현재 상영작 포스터 (2층)',1,{wall:'z',lo:-LW+1.5,hi:LW-1.5})}
 /* 벽등 */
 [[LW-.24,6.65,-Math.PI/2],[LW-.24,LD-.8,-Math.PI/2]].forEach(([x,z,r],i)=>{const m_=layBeg();sconce(x,2.9,z,r);halo(x+(x<0?.3:-.3),3.15,z,0xffd9a0,1.3,.5);layEnd(m_,'scs'+i,'벽등 (옆벽)',0,{wall:'x',lo:BF+.5,hi:LD-.5})});
-/* QA353: 벽등을 두 배로 — 오른쪽 벽 2 · 왼쪽 벽 4 · 2층 뒷벽 2 */[[LW-.24,4.2,-Math.PI/2],[LW-.24,17.4,-Math.PI/2],[-(LW-.24),4.2,Math.PI/2],[-(LW-.24),8.4,Math.PI/2],[-(LW-.24),13.2,Math.PI/2],[-(LW-.24),17.4,Math.PI/2]].forEach(([x,z,r],i)=>{const m_=layBeg();sconce(x,2.9,z,r);halo(x+(x<0?.3:-.3),3.15,z,0xffd9a0,1.3,.5);layEnd(m_,'scx'+i,'벽등 (옆벽 추가)',0,{wall:'x',lo:BF+.5,hi:LD-.5})});
+/* QA353: 벽등을 두 배로 — 오른쪽 벽 2 · 왼쪽 벽 4 · 2층 뒷벽 2 *//* QA360: 계단·창·포스터·책장과 겹치지 않게 그 위 빈 벽(높이 4.85)으로 옮김 */[[LW-.24,10.6,-Math.PI/2],[LW-.24,16,-Math.PI/2],[-(LW-.24),8.2,Math.PI/2],[-(LW-.24),11.6,Math.PI/2],[-(LW-.24),15.7,Math.PI/2],[-(LW-.24),19,Math.PI/2]].forEach(([x,z,r],i)=>{const m_=layBeg();sconce(x,4.85,z,r);halo(x+(x<0?.3:-.3),5.1,z,0xffd9a0,1.3,.5);layEnd(m_,'scx'+i,'벽등 (옆벽 추가)',0,{wall:'x',lo:BF+.5,hi:LD-.5})});
 [-3.9,3.9].forEach(x=>{const m_=layBeg();sconce(x,5.7,LB+.1,0);halo(x,5.95,LB+.35,0xffd9a0,1.3,.5);layEnd(m_,'scy'+x,'벽등 (2층 뒷벽 추가)',1,{wall:'z',lo:-LW+.6,hi:LW-.6})});
 /* QA353: 천장 보조등을 두 배로 — 불빛 계산이 늘지 않게 모양과 번짐만 */[[-4.6,4.25],[4.6,4.25],[-4.6,15.8],[4.6,15.8]].forEach(([x,z],i)=>{const m_=layBeg(),g=new THREE.Group();g.position.set(x,8.8,z);S.add(g);const ring=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,.05,28),new THREE.MeshPhongMaterial({color:BR,shininess:80,specular:0x887744}));ring.position.y=-.03;g.add(ring);const dm=new THREE.Mesh(new THREE.SphereGeometry(.44,24,12,0,Math.PI*2,Math.PI*.5,Math.PI*.5),new THREE.MeshBasicMaterial({color:0xfff3df,side:THREE.DoubleSide}));dm.scale.y=.42;dm.position.y=-.05;g.add(dm);const hl=new THREE.Sprite(new THREE.SpriteMaterial({map:haloTex,color:0xffdcaa,transparent:true,opacity:.42,blending:THREE.AdditiveBlending,depthWrite:false}));hl.position.y=-.3;hl.scale.setScalar(3.2);g.add(hl);layEnd(m_,'pendx'+i,'천장 보조등',0,{ceil:1})});
 const _lB=layBeg();/* 02 매표소: 둥근 마호가니 유리 부스 (TICKETS · ADMISSION · 황동 벨) */
@@ -2639,15 +2640,17 @@ function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.M
  if(PUNCHING)return;PUNCHING=true;$('nick').blur();punchJoin(()=>enterNow(nm))}
 /* QA05: 50 independent 1970s avatar styles (10 coat palettes × 5 hair/hat sets).
    Keep the look stable within one browser tab and never affect guest NPC looks. */
+/* QA358: 유저 캐릭터(자동 50종 + 꾸미기 프리셋)의 의상 색을 밝은 톤으로 — 색상은 그대로, 명도만 흰색 쪽으로 22% */
+function qa358Lift(o){if(typeof THREE==='undefined')return o;const c=new THREE.Color(),h={},L=v=>{if(typeof v!=='number')return v;c.setHex(v);c.getHSL(h);return c.setHSL(h.h,Math.min(1,h.s*1.16),h.l+(1-h.l)*.06).getHex()};['coat','dress','skirt','pants','shirt','scarf','hatc','tie','tneck'].forEach(k=>{if(o[k]!=null)o[k]=L(o[k])});['pat','dressPat','skirtPat'].forEach(k=>{const p=o[k];if(Array.isArray(p)){p[1]=L(p[1]);p[2]=Array.isArray(p[2])?p[2].map(L):L(p[2])}});return o}
 const USER_LOOK50=Array.from({length:50},(_,i)=>{
  const cols=[0xb08a5c,0x6e7354,0x884451,0x37545b,0xa86943,0x736246,0x7c7773,0x917952,0x6c4a6f,0x47644f];
  const patterns=['check','hound','tartan','window','cord','herring','tweed','stripe','check','tweed'];
  const hairs=['bob','short','wavy','curly','short','pomp','flip','slick','beehive','afro','bun','mop','pony']/* QA160 */,hats=[null,'flat','cloche','beret','fedora'];
  const p=i%10,f=(i/10)|0,c=cols[p];
- return {skin:[SK.lt,SK.md,SK.tn,SK.dk,SK.lt][f],hair:[0x5a3a26,0x2e201c,0x6b4632,0x2b2526,0x81533c][f],
+ return (typeof qa358Lift==='function'?qa358Lift:o=>o)({skin:[SK.lt,SK.md,SK.tn,SK.dk,SK.lt][f],hair:[0x5a3a26,0x2e201c,0x6b4632,0x2b2526,0x81533c][f],
    hs:hairs[(i*7+f)%hairs.length],coat:c,pat:[patterns[p],c,0x2c2420],shirt:[0xf1e8d4,0xe6d3b2,0xd6d6ce][p%3],
    pants:[0x493e32,0x353a3c,0x5b4e42,0x454038,0x3b3835][p%5],
-   ...(hats[f]?{hat:hats[f],hatc:c}:{}),...(p%4===0?{scarf:0xe3c19e}:{})};
+   ...(hats[f]?{hat:hats[f],hatc:c}:{}),...(p%4===0?{scarf:0xe3c19e}:{})});
 });
 /* QA07: nicknames are the public guest identity; do not use a viewer-specific ME preset. */
 function qaGuestName(name){return String(name||'관객').replace(/\s+/g,' ').trim().slice(0,14).normalize('NFC')}
@@ -4764,6 +4767,7 @@ const QA40={thumbs:null,sel:null,announceT:0};
 const hex6=n=>n.toString(16).padStart(6,'0');
 const QA66={items:{gl:['none','round','sun','square'],hat:['none','beret','flatcap','fedora','cloche','bowler'],bag:['none','crossbody','shoulder','rattan'],shoes:['loafer','ballet','sneaker','ankle','knee','maryjane']},legacy:{gl:{'0':'none','1':'round','2':'sun'},hat:{flat:'flatcap',cap:'flatcap'},bag:{cross:'crossbody'},shoes:{}},open:false,P:null};
 /* 'auto~닉네임'은 그 닉네임으로 정해진 기본 캐릭터를 고정한 것(닉네임을 바꿔도 모습 유지) */
+try{LOOK10.forEach(l=>qa358Lift(l.o))}catch(e){}/* QA358 */
 function qa66Base(id,name){const L=LOOK10.find(l=>l.id===id);let seed=name||(me&&me.userData.displayName)||'관객';if(!L&&String(id).startsWith('auto~'))try{seed=decodeURIComponent(String(id).slice(5))||seed}catch(e){}return JSON.parse(JSON.stringify(L?L.o:qaUserLook(seed)))}
 /* 캐릭터 원래 모습의 악세서리를 편집기 ID로 */
 function qa66Nat(o){return {gl:o.sung?'sun':o.gsq?'square':(o.glasses!=null&&o.glasses!==false)?'round':'none',hat:!o.hat?'none':({beret:'beret',flat:'flatcap',cap:'flatcap',fedora:'fedora',cloche:'cloche',bowler:'bowler'})[o.hat]||'other',bag:!o.bag?'none':({cross:'crossbody',shoulder:'shoulder',rattan:'rattan'})[o.bag]||'other',shoes:o.shoeStyle||'default'}}
@@ -6579,7 +6583,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  const KEYS=['aic.cards','aic.keeps','aic.wraps','aic.meet','aic.memos','aic.club','aic.quiz','aic.visits','aic.cardday','aic.nick'];
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}};
  const acct=()=>J('aic.acct',null),snap=()=>{const o={};KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v!=null)o[k]=v});try{o.held=JSON.stringify(HELD.map(x=>({k:x.k,left:x.left})))}catch(e){}return o};
- const post=async b=>{try{const r=await fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});return await r.json()}catch(e){return {ok:false,error:'net'}}};
+ const post=async b=>{const vis=b.op!=='save'&&window.QA356;if(vis)QA356.show();try{const r=await fetch('/api/save',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)});return await r.json()}catch(e){return {ok:false,error:'net'}}finally{if(vis)QA356.hide()}};
  const ERR={taken:'이미 쓰는 아이디예요',wrong:'아이디나 비밀번호가 달라요',none:'저장된 기록이 없어요',locked:'잠시 뒤에 다시 해 주세요',bad_input:'아이디는 영문·숫자 4~16자, 비밀번호는 숫자 4자리예요'};
  let last='',busy=false;
  const sigOf=()=>{let g='';KEYS.forEach(k=>{g+=(localStorage.getItem(k)||'').length+','});try{g+=HELD.map(x=>x.k+(x.left==null?'':Math.round(x.left*20))).join('')}catch(e){}return g};/* QA354: 값 길이만 비교(전체를 문자열로 만들지 않음) */
@@ -6635,6 +6639,21 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
   const lit=(g,on)=>g.traverse(o=>{const m=o.isMesh&&o.material;if(!m||Array.isArray(m)||!m.emissive||m.visible===false)return;if(!o.userData.qhov){o.material=m.clone();o.userData.qhov=o.material.emissive.clone()}const e0=o.userData.qhov;o.material.emissive.setRGB(e0.r+(on?.1:0),e0.g+(on?.1:0),e0.b+(on?.1:0))});
   const target=o=>{const ud=o.userData;if(ud.qa255)return ud.qa255.top;if(ud.spot&&ud.spot.kind!=='cine'){const it=LAYI.find(i=>i.spots.some(e=>e.s===ud.spot));if(!it)return null;const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);return gs.sort((a,b)=>Math.hypot(a.position.x-ud.spot.x,a.position.z-ud.spot.z)-Math.hypot(b.position.x-ud.spot.x,b.position.z-ud.spot.z))[0]||null}if(ud.act&&o.material&&o.material.visible!==false)return o;return null};
   R.domElement.addEventListener('pointermove',e=>{const n=performance.now();if(n-t<90||!me||e.buttons)return;t=n;const b=R.domElement.getBoundingClientRect();v.set((e.clientX-b.left)/b.width*2-1,-(e.clientY-b.top)/b.height*2+1);rc.setFromCamera(v,C);let g=null;try{const hs=rc.intersectObjects([...INTER,...spotMeshes,...(window.QA255HIT||[])],false);if(hs.length)g=target(hs[0].object)}catch(x){}if(g===cur)return;if(cur)lit(cur,false);cur=g;if(cur)lit(cur,true);R.domElement.style.cursor=cur?'pointer':''})}
+})();
+</script>
+<style id="qa356-css">/* QA356: 잠깐 기다리는 지점의 로딩 스피너(아지트 입장과 같은 모양, 화면은 가리지 않음) */
+#qa356spin{position:fixed;left:50%;top:50%;z-index:97;transform:translate(-50%,-50%);width:64px;height:64px;border-radius:16px;background:rgba(18,10,10,.72);display:grid;place-items:center;pointer-events:none}
+#qa356spin[hidden]{display:none}
+#qa356spin i{width:34px;height:34px;border-radius:50%;border:3px solid rgba(246,231,204,.25);border-top-color:#f6e7cc;animation:clspin .9s linear infinite;box-sizing:border-box}
+</style>
+<script id="qa356-spin">(function(){
+ let el=null,n=0,tm=0;const show=()=>{n++;if(!el){el=document.createElement('div');el.id='qa356spin';el.innerHTML='<i></i>';document.body.appendChild(el)}el.hidden=false;clearTimeout(tm);tm=setTimeout(()=>{n=0;el.hidden=true},9000)/* 어떤 경우에도 9초 뒤엔 사라짐 */};
+ const hide=()=>{n=Math.max(0,n-1);if(!n&&el){el.hidden=true;clearTimeout(tm)}};
+ const wrap=async f=>{show();try{return await f()}finally{hide()}};
+ window.QA356={show,hide,wrap};
+ /* 사진 찍기 */{const _p=qa20Photo;qa20Photo=function(){return wrap(()=>_p.apply(this,arguments))}}
+ /* 살펴보기 → 카드 만드는 동안 */{const _i=A.qa255info;if(_i)A.qa255info=function(){return wrap(()=>_i.apply(this,arguments))}}
+ /* 말걸기 → 캐릭터 카드가 뜰 때까지 */{const _a=window.qa194Award;if(_a)window.qa194Award=function(g,name){const had=qa255Cards.list().length,r=_a.apply(this,arguments);try{const D=JSON.parse(localStorage.getItem('aic.cardday')||'{}');if(!qa255Cards.list().some(x=>x.n===name)&&D.n>0&&!document.getElementById('qa338v')){show();const t0=performance.now();const iv=setInterval(()=>{if(document.getElementById('qa338v')||performance.now()-t0>6000){clearInterval(iv);hide()}},150)}}catch(e){}return r}}
 })();
 </script>
 <script id="qa342-lock">/* QA342: 등록 전에는 가방·수첩이 잠김. 물건은 양손(2개)까지만 */

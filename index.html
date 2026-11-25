@@ -1578,7 +1578,7 @@ function softenAvatarOverhead(root){return/* QA257: 캐릭터 머리 위 조명 
  lights=lights.replace(/(get(?:Directional|Point|Spot)LightInfo\([^;]+;)/g,'$1\n directLight.color *= ( inverseTransformDirection( directLight.direction, viewMatrix ).y > 0.25 ? 0.9 : 1.0 );');
  lights=lights.replace(/getHemisphereLightIrradiance\(\s*hemisphereLight,\s*geometry\s*\)/g,'( getHemisphereLightIrradiance( hemisphereLight, geometry ) * ( inverseTransformDirection( geometry.normal, viewMatrix ).y > 0.0 ? 0.9 : 1.0 ) )');
  shader.fragmentShader=shader.fragmentShader.replace('#include <lights_fragment_begin>',lights)};m.customProgramCacheKey=()=> 'avatar-overhead-90-v1';copies.set(material,m);return m};root.traverse(o=>{if(o.isMesh&&o.material)o.material=Array.isArray(o.material)?o.material.map(convert):convert(o.material)})}
-/* QA249: NPC 의상을 화사하게(채도·밝기 올림) — 내 캐릭터는 고른 색 그대로 */const _vc=new THREE.Color(),_vh={},_vw=new THREE.Color(0xffffff);const CT_DEF={sat:1.3,cap:.74,pull:.1,surf:.97,emis:.26,shin:7,expo:1.13}/* QA357: 캐릭터 한 톤 밝게(밝기 1.05→1.13, 표면 .9→.97, 자체 빛 .2→.26) — 색상·채도는 그대로 */,CTONE=Object.assign({},CT_DEF,(o=>o&&typeof o==='object'?o:{})(store.get('aic.charTone')))/* QA262: 캐릭터 색 보정 — 관리자에서 조정 */,VRAW=new Map();function VIVR(c){const r=VIV(c);VRAW.set(r,c);return r}
+/* QA249: NPC 의상을 화사하게(채도·밝기 올림) — 내 캐릭터는 고른 색 그대로 */const _vc=new THREE.Color(),_vh={},_vw=new THREE.Color(0xffffff);const CT_DEF={sat:1.3,cap:.74,pull:.1,surf:.9,emis:.2,shin:7,expo:1.05},CTONE=Object.assign({},CT_DEF,(o=>o&&typeof o==='object'?o:{})(store.get('aic.charTone')))/* QA262: 캐릭터 색 보정 — 관리자에서 조정 */,VRAW=new Map();function VIVR(c){const r=VIV(c);VRAW.set(r,c);return r}
 function VIV(c){_vc.set(c);_vc.getHSL(_vh);let h=_vh.h,sat=_vh.s,l=_vh.l;if(l>.92||l<.05||sat<.12)return c;const cap=CTONE.cap-Math.max(0,l-.55)*.7;sat=Math.max(sat,Math.min(cap,sat*CTONE.sat+.06*(CTONE.sat-1)/.3));if(l>.3)l+=(.5-l)*CTONE.pull;_vc.setHSL(h,Math.min(1,sat),l);return _vc.getHex()/* QA257·262: 맑고 진하게 — 수치는 CTONE(관리자) */}
 function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);{/* QA262: 내 캐릭터 포함 모든 캐릭터 같은 수치 */o=Object.assign({},o);['coat','shirt','pants','skirt','dress','scarf','hatc','legs','tie','vest','apron','sweater'].forEach(k=>{if(typeof o[k]==='number')o[k]=VIVR(o[k])});if(o.pants==null&&!o.staff&&!o.me)o.pants=VIVR([0x6e6a66,0x4a4a52,0x5a4a3a][Math.random()*3|0]);if(col!=null&&col!==0)col=VIVR(col)}
  const g=new THREE.Group(),n=new THREE.Group();g.add(n);
@@ -2639,15 +2639,17 @@ function enterAs(nm){nm=(nm||'').replace(/\s+/g,' ').trim().slice(0,14);window.M
  if(PUNCHING)return;PUNCHING=true;$('nick').blur();punchJoin(()=>enterNow(nm))}
 /* QA05: 50 independent 1970s avatar styles (10 coat palettes × 5 hair/hat sets).
    Keep the look stable within one browser tab and never affect guest NPC looks. */
+/* QA358: 유저 캐릭터(자동 50종 + 꾸미기 프리셋)의 의상 색을 밝은 톤으로 — 색상은 그대로, 명도만 흰색 쪽으로 22% */
+function qa358Lift(o){if(typeof THREE==='undefined')return o;const c=new THREE.Color(),h={},L=v=>{if(typeof v!=='number')return v;c.setHex(v);c.getHSL(h);return c.setHSL(h.h,Math.min(1,h.s*1.04),h.l+(1-h.l)*.22).getHex()};['coat','dress','skirt','pants','shirt','scarf','hatc','tie','tneck'].forEach(k=>{if(o[k]!=null)o[k]=L(o[k])});['pat','dressPat','skirtPat'].forEach(k=>{const p=o[k];if(Array.isArray(p)){p[1]=L(p[1]);p[2]=Array.isArray(p[2])?p[2].map(L):L(p[2])}});return o}
 const USER_LOOK50=Array.from({length:50},(_,i)=>{
  const cols=[0xb08a5c,0x6e7354,0x884451,0x37545b,0xa86943,0x736246,0x7c7773,0x917952,0x6c4a6f,0x47644f];
  const patterns=['check','hound','tartan','window','cord','herring','tweed','stripe','check','tweed'];
  const hairs=['bob','short','wavy','curly','short','pomp','flip','slick','beehive','afro','bun','mop','pony']/* QA160 */,hats=[null,'flat','cloche','beret','fedora'];
  const p=i%10,f=(i/10)|0,c=cols[p];
- return {skin:[SK.lt,SK.md,SK.tn,SK.dk,SK.lt][f],hair:[0x5a3a26,0x2e201c,0x6b4632,0x2b2526,0x81533c][f],
+ return (typeof qa358Lift==='function'?qa358Lift:o=>o)({skin:[SK.lt,SK.md,SK.tn,SK.dk,SK.lt][f],hair:[0x5a3a26,0x2e201c,0x6b4632,0x2b2526,0x81533c][f],
    hs:hairs[(i*7+f)%hairs.length],coat:c,pat:[patterns[p],c,0x2c2420],shirt:[0xf1e8d4,0xe6d3b2,0xd6d6ce][p%3],
    pants:[0x493e32,0x353a3c,0x5b4e42,0x454038,0x3b3835][p%5],
-   ...(hats[f]?{hat:hats[f],hatc:c}:{}),...(p%4===0?{scarf:0xe3c19e}:{})};
+   ...(hats[f]?{hat:hats[f],hatc:c}:{}),...(p%4===0?{scarf:0xe3c19e}:{})});
 });
 /* QA07: nicknames are the public guest identity; do not use a viewer-specific ME preset. */
 function qaGuestName(name){return String(name||'관객').replace(/\s+/g,' ').trim().slice(0,14).normalize('NFC')}
@@ -4764,6 +4766,7 @@ const QA40={thumbs:null,sel:null,announceT:0};
 const hex6=n=>n.toString(16).padStart(6,'0');
 const QA66={items:{gl:['none','round','sun','square'],hat:['none','beret','flatcap','fedora','cloche','bowler'],bag:['none','crossbody','shoulder','rattan'],shoes:['loafer','ballet','sneaker','ankle','knee','maryjane']},legacy:{gl:{'0':'none','1':'round','2':'sun'},hat:{flat:'flatcap',cap:'flatcap'},bag:{cross:'crossbody'},shoes:{}},open:false,P:null};
 /* 'auto~닉네임'은 그 닉네임으로 정해진 기본 캐릭터를 고정한 것(닉네임을 바꿔도 모습 유지) */
+try{LOOK10.forEach(l=>qa358Lift(l.o))}catch(e){}/* QA358 */
 function qa66Base(id,name){const L=LOOK10.find(l=>l.id===id);let seed=name||(me&&me.userData.displayName)||'관객';if(!L&&String(id).startsWith('auto~'))try{seed=decodeURIComponent(String(id).slice(5))||seed}catch(e){}return JSON.parse(JSON.stringify(L?L.o:qaUserLook(seed)))}
 /* 캐릭터 원래 모습의 악세서리를 편집기 ID로 */
 function qa66Nat(o){return {gl:o.sung?'sun':o.gsq?'square':(o.glasses!=null&&o.glasses!==false)?'round':'none',hat:!o.hat?'none':({beret:'beret',flat:'flatcap',cap:'flatcap',fedora:'fedora',cloche:'cloche',bowler:'bowler'})[o.hat]||'other',bag:!o.bag?'none':({cross:'crossbody',shoulder:'shoulder',rattan:'rattan'})[o.bag]||'other',shoes:o.shoeStyle||'default'}}

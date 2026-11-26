@@ -5776,7 +5776,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
   PR.setClearColor(0,0);PR.render(sc,cam);return PR.domElement.toDataURL('image/png')}
  A.qa255info=async()=>{const s_=QA255.sel;if(!s_)return;QA255.sel=null;hudUpd();const d=P[s_.k];if(!d)return;const C_=qa255Cards,L=C_.list(),have=L.find(x=>x.n===d.name);
   if(have){QA338.view({img:have.src,card:1});return}
-  let por='';try{por=shot(s_.top)}catch(e){}const src=await qa255Compose(d.name,por,0,'',null,{pre:'I',no:d.no,rows:d.rows});qa255Fly(src,()=>{const L2=C_.list();if(!L2.some(x=>x.n===d.name)){L2.push({n:d.name,src,t:Date.now(),no:d.no,item:1});C_.save()}},null,{nm:d.name,text:d.story||'',item:1},(()=>{const k=d.kind||'아이템';try{return k+objectParticle(k)+' 살펴보고 아이템 카드를 얻었어요.'}catch(e){return '살펴보고 아이템 카드를 얻었어요.'}})()/* QA396 */)};
+  let por='';try{por=shot(s_.top)}catch(e){}const src=await qa255Compose(d.name,por,0,'',null,{pre:'I',no:d.no,rows:d.rows});qa255Fly(src,()=>{const L2=C_.list();if(!L2.some(x=>x.n===d.name)){L2.push({n:d.name,src,t:Date.now(),no:d.no,item:1});C_.save()}},null,{nm:d.name,text:d.story||'',item:1},(()=>{const k=d.kind||'아이템';try{return k+objectParticle(k)+' 살펴보고\n아이템 카드를 얻었어요.'/* QA424: 획득 화면 2줄 규칙 */}catch(e){return '살펴보고 아이템 카드를 얻었어요.'}})()/* QA396 */)};
  window.qa255Shot=shot;window.qa255P=P;
 })();
 </script>
@@ -6713,10 +6713,10 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 #qa338v.qa406.q422 .blk>p{position:absolute;left:0;right:0;top:350px;height:22px;margin:0;text-align:center;font:400 14px/22px Pretendard,'Noto Sans KR',sans-serif;color:#b8a5a9;opacity:.8}
 #qa338v.qa406.q422 .blk>.zb{position:absolute;left:0;right:0;top:386px;width:auto;max-width:none;display:flex;justify-content:center}
 #qa338v.qa406.q422 .blk>.zb button.rc{height:40px;padding:0 22px;gap:10px;border:1px solid rgba(184,165,169,.6);border-radius:999px;background:transparent;color:#fff;font:500 15px/38px Pretendard,'Noto Sans KR',sans-serif}
-#qa338v.qa406.q422 .blk>.zb button.rc svg{width:15px;height:15px;transition:transform .7s cubic-bezier(.3,.7,.3,1)}
+#qa338v.qa406.q422 .blk>.zb button.rc svg{width:18px;height:18px;transition:transform .7s cubic-bezier(.3,.7,.3,1)}
 #qa338v.qa406.q422>.zb{position:static;width:auto;max-width:none}
 #qa338v.qa406.q422>.zb button.go{position:fixed;left:50%;right:auto;transform:translateX(-50%);width:min(364px,calc(100% - 38px));bottom:calc(env(safe-area-inset-bottom,0px) + 32px);height:54px;line-height:54px;margin:0;padding:0;border-radius:999px;background:#f6e5cb;border-color:#f6e5cb;color:#2a141c;font:600 17px/54px Pretendard,'Noto Sans KR',sans-serif;display:flex;align-items:center;justify-content:center}
-@media (min-width:700px){#qa338v.qa406.q422>.zb button.go{bottom:40px}#qa338v.qa406.q422 .blk{top:max(16px,calc((100dvh - 94px - 426px) * .631))}}
+@media (min-width:700px){#qa338v.qa406.q422>.zb button.go{bottom:60px}/* QA424: PC는 바닥에서 60px */#qa338v.qa406.q422 .blk{top:max(16px,calc((100dvh - 114px - 426px) * .631))}}
 /* QA422: 첫 입장 캐릭터 선택 = 목업(프레임 516px → 402px 비율로 실측) */
 #qa338v.qa406{background:#211317}#qa338v.qa406 .tt{font-size:22px}/* QA421: +2px */@media (min-width:700px){#qa338v.qa406 .zb button.go{bottom:40px}}/* QA421: PC는 바닥에서 띄움 */#qa338v.qa406 .in{position:relative}#qa338v.qa406 .stage{position:relative;width:min(64vw,260px);aspect-ratio:3/4;max-height:52dvh}
 #qa338v.qa406 .stage canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .3s}#qa338v.qa406 .stage canvas.on{opacity:1}
@@ -6734,7 +6734,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 window.qa422Free=async n=>{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),1500);try{const r=await (await fetch('/api/save?name='+encodeURIComponent(n),{signal:ctl.signal})).json();if(!r||!r.ok)return n;const T=new Set((r.taken||[]).map(x=>String(x).toLowerCase())),lo=x=>x.normalize('NFC').trim().toLowerCase();if(!T.has(lo(n)))return n;const base=[...n].length+2>14?[...n].slice(0,11).join('')+'…':n;for(const L of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'){const v=base+' '+L;if(!T.has(lo(v)))return v}return n}catch(e){return n}finally{clearTimeout(tm)}};
 window.qa406Dice=function(nm,done){let busy=false,spin=.7,av=null,seed=nm,top=2;const w=document.createElement('div');w.id='qa338v';w.className='qa406 q422';w.setAttribute('role','dialog');w.setAttribute('aria-label','입장 캐릭터 확인');
   /* QA422: 목업(첫 입장 캐릭터 선택) 그대로 — 제목·이름표·캐릭터·안내·다시 보기는 한 덩어리, 이대로 입장은 아래 고정 */
-  w.innerHTML='<div class="blk"><b class="tt">이대로 입장할까요?</b><span class="nm" aria-live="polite"></span><div class="stage"></div><p>모습이 마음에 들면 나중에 바꿀 수도 있어요.</p><div class="zb"><button type="button" class="rc"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 2.64-6.36L3 8"/><path d="M3 3v5h5"/><circle cx="12" cy="12" r="2.2"/></svg>다시 보기</button></div></div><div class="zb"><button type="button" class="pri go">이대로 입장</button></div>';
+  w.innerHTML='<div class="blk"><b class="tt">이대로 입장할까요?</b><span class="nm" aria-live="polite"></span><div class="stage"></div><p>모습이 마음에 들면 나중에 바꿀 수도 있어요.</p><div class="zb"><button type="button" class="rc">'+DICE+'다시 뽑기</button></div></div><div class="zb"><button type="button" class="pri go">이대로 입장</button></div>';
   ['pointerdown','pointerup','touchstart','touchend','wheel','click'].forEach(t=>w.addEventListener(t,e=>e.stopPropagation()));document.body.appendChild(w);
   const st=w.querySelector('.stage'),nmEl=w.querySelector('.nm'),bc=w.querySelector('.rc'),bg=w.querySelector('.go');
   const Wd=st.clientWidth||240,Hd=st.clientHeight||320,r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio||1));r.setSize(Wd,Hd,false);try{r.outputEncoding=R.outputEncoding}catch(e){}st.prepend(r.domElement);

@@ -131,3 +131,29 @@ footer button { height:52px; border-radius:6px; font:500 14px/20px Pretendard,'N
 /* QA408: 스타일 칩 — 입은 모습이 보이게 세로로 */
 .grid.styles button { height:132px; gap:4px; }
 .grid.styles img,.grid.styles .none { width:72px; height:96px; object-fit:contain; }
+/* QA411: 모바일 — 색상은 네 번째 탭, 이름은 버튼 + 수정 모달 */
+.name-row,nav [data-tab=color] { display:none; }
+.options .color-picker { width:100%; margin:0; padding:4px 0 8px; }
+.nm-modal { width:min(320px,calc(100vw - 48px)); padding:24px 20px 20px; border:1px solid var(--line); border-radius:14px; background:#2b1b20; color:var(--fg); }
+.nm-modal::backdrop { background:rgba(10,4,6,.6); }
+.nm-modal form { display:flex; flex-direction:column; gap:10px; }
+.nm-modal h3 { margin:0 0 4px; font:700 17px/1.3 Pretendard,'Noto Sans KR',sans-serif; color:#f3e4c4; }
+.nm-modal input { height:48px; padding:0 14px; border:1px solid var(--line); border-radius:8px; background:#211317; color:var(--fg); font:500 16px Pretendard,'Noto Sans KR',sans-serif; }
+.nm-modal small { color:var(--sub); font-size:12px; }
+.nm-btns { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+.nm-btns button { height:46px; border-radius:6px; border:1px solid var(--sub); color:var(--sub); background:transparent; font:500 14px Pretendard,'Noto Sans KR',sans-serif; }
+.nm-btns .pri { border:0; background:#f3e4c4; color:#211317; }
+.nm-btns .pri:disabled { opacity:.45; }
+@media(max-width:760px){
+ nav [data-tab=color] { display:revert; }
+ .preview label { display:none; }
+ .name-row { grid-column:1; grid-row:1; align-self:center; display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0; }
+ .nm-label { font-size:12px; color:var(--sub); }
+ .nm-view { max-width:100%; font:700 19px/1.3 Pretendard,'Noto Sans KR',sans-serif; color:#f3e4c4; overflow-wrap:anywhere; }
+ .nm-edit { height:34px; padding:0 14px; border:1px solid var(--line); border-radius:999px; color:var(--fg); font:500 13px Pretendard,'Noto Sans KR',sans-serif; background:transparent; }
+ .preview { min-height:0; }
+ .options .color-chips { grid-template-columns:repeat(8,30px); gap:10px 0; }
+}
+@media(max-width:760px){ .preview .color-picker { display:none; } }
+dialog.nm-modal { position:fixed; inset:0; margin:auto; height:max-content; max-height:calc(100dvh - 48px); min-height:0; display:block; overflow:visible; }
+dialog.nm-modal:not([open]) { display:none; }

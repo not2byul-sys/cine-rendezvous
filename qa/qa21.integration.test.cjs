@@ -130,7 +130,7 @@ test('QA94 mission and combined-state fixes',()=>{
  assert(source.includes("/* QA338: 사진 찍기는 퀵바 카메라로 */")&&source.includes("A.camshot="))/* QA338: 장소 제한 없이 퀵바 카메라 */;
  assert(source.includes("const seatNear=!!me.userData.seat&&"));
  assert(source.includes("selectAvatar(t,{gift:1})"));
- const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(!ed.includes("color:'색상'")&&ed.includes('닉네임<input')&&ed.includes("className='color-chip'"));/* QA125: 색상 탭 → 왼쪽 컬러칩, 닉네임 문구 */
+ const ed=require('fs').readFileSync(require('path').join(__dirname,'..','editor','editor.js'),'utf8');assert(ed.includes("{color:'색상'}")/* QA411: 색상 탭은 모바일에서만(PC는 CSS로 숨김) */&&ed.includes('닉네임<input')&&ed.includes("className='color-chip'"));/* QA125: 색상 탭 → 왼쪽 컬러칩, 닉네임 문구 */
 });
 
 test('QA95 performance and eating fixes',()=>{

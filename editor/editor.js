@@ -17,8 +17,8 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const dialog=document.createElement('dialog');
   dialog.setAttribute('aria-labelledby','editor-title');
   dialog.innerHTML=`<header><div><h2 id="editor-title">복고풍 캐릭터 꾸미기</h2><p>오늘 극장에서 만날 나의 모습</p></div><button class="close" aria-label="닫기"><img alt=""></button></header>
-  <main><section class="preview"><label>닉네임<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div><div class="color-picker" aria-label="아이템 색상 선택"><div class="color-picker-title"><span class="cp-t">색상</span><button type="button" class="color-target-btn" aria-haspopup="listbox" aria-expanded="false"><span class="color-target">상의</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="part-picker" role="listbox" aria-label="색상 변경 아이템" hidden></div></div><div class="color-chips"></div></div></section>
-  <section class="controls"><nav aria-label="꾸미기 메뉴"></nav><div class="options"></div></section><footer><button class="reset">초기화</button><button class="save">저장</button></footer></main><output role="alert"></output>`;
+  <main><section class="preview"><div class="name-row"><span class="nm-label">닉네임</span><b class="nm-view"></b><button type="button" class="nm-edit">이름 수정</button></div><label>닉네임<input maxlength="14" aria-describedby="hint"><small id="hint">최대 14자까지 입력할 수 있어요</small></label><div class="avatar"></div><div class="color-picker" aria-label="아이템 색상 선택"><div class="color-picker-title"><span class="cp-t">색상</span><button type="button" class="color-target-btn" aria-haspopup="listbox" aria-expanded="false"><span class="color-target">상의</span><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="part-picker" role="listbox" aria-label="색상 변경 아이템" hidden></div></div><div class="color-chips"></div></div></section>
+  <section class="controls"><nav aria-label="꾸미기 메뉴"></nav><div class="options"></div></section><footer><button class="reset">초기화</button><button class="save">저장</button></footer></main><output role="alert"></output><dialog class="nm-modal" aria-labelledby="nm-title"><form method="dialog"><h3 id="nm-title">이름 수정</h3><input maxlength="14" aria-describedby="nm-hint"><small id="nm-hint">최대 14자까지 입력할 수 있어요</small><div class="nm-btns"><button value="cancel" formnovalidate>취소</button><button value="ok" class="pri">확인</button></div></form></dialog>`;
   root.append(dialog); document.body.append(host);
   try {await ready;} catch(e){host.remove();throw e;}
   const q=s=>dialog.querySelector(s);
@@ -26,7 +26,8 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const input=q('input'), panel=q('.options'), previewHost=q('.avatar');
   const make=(tag,cls,txt)=>{const n=document.createElement(tag);n.className=cls;if(txt)n.textContent=txt;return n;};
   const button=(label,run)=>{const n=make('button','',label);n.onclick=run;return n;};
-  const tabs=styles?{character:'캐릭터', style:'스타일', accessory:'악세서리'}:{character:'캐릭터', accessory:'악세서리'};/* QA408: 1970년대 파리 스타일 */
+  const tabs=Object.assign(styles?{character:'캐릭터', style:'스타일', accessory:'악세서리'}:{character:'캐릭터', accessory:'악세서리'},{color:'색상'});/* QA408: 1970년대 파리 스타일 · QA411: 모바일은 색상을 네 번째 탭으로(PC에선 탭 숨김) */
+  const mq=matchMedia('(max-width:760px)'),picker=q('.color-picker'),previewSec=q('.preview');
   function preview(){
     if(renderPreview){renderPreview(previewHost,structuredClone(draft));return;}
     const c=characters.find(x=>x.id===draft.character);
@@ -35,6 +36,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   }
   function update(){
     q('.save').disabled=busy || !draft.nickname.trim() || draft.nickname.length>14;
+    q('.nm-view').textContent=draft.nickname;
     for(const n of panel.querySelectorAll('[data-value]')){
       const value=n.dataset.group==='character'?draft.character:draft[n.dataset.kind][n.dataset.group];
       n.setAttribute('aria-pressed',String(n.dataset.value===value));
@@ -93,7 +95,8 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   function draw(){
     for(const n of q('nav').children)n.setAttribute('aria-pressed',String(n.dataset.tab===active));
     panel.replaceChildren();panel.scrollTop=0;
-    if(active==='character'){
+    if(active==='color'){panel.append(picker);} else if(picker.parentNode!==previewSec)previewSec.append(picker);
+    if(active==='color'){} else if(active==='character'){
       const grid=make('div','grid chars');panel.append(grid);
       for(const c of characters)option(grid,'character',c.id,c.label,null,c.image);
     } else if(active==='style'){
@@ -124,6 +127,12 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     const tab=button(label,()=>{active=key;draw();});tab.dataset.tab=key;q('nav').append(tab);
   }
   input.value=draft.nickname;input.oninput=()=>{draft.nickname=input.value;update();};
+  /* QA411: 모바일 이름 수정 — 버튼을 누르면 이름 수정 모달 */
+  const nm=q('.nm-modal'),nmIn=nm.querySelector('input'),nmOk=nm.querySelector('[value=ok]');
+  nmIn.oninput=()=>{nmOk.disabled=!nmIn.value.trim();};
+  q('.nm-edit').onclick=()=>{nmIn.value=draft.nickname;nmOk.disabled=!nmIn.value.trim();nm.showModal();nmIn.focus();nmIn.select();};
+  nm.onclose=()=>{if(nm.returnValue==='ok'&&nmIn.value.trim()){draft.nickname=nmIn.value.trim();input.value=draft.nickname;update();}nm.returnValue='';q('.nm-edit').focus();};
+  mq.addEventListener?.('change',()=>{if(!mq.matches&&active==='color'){active='character';draw();}});
   q('.reset').onclick=()=>{draft=structuredClone(base);input.value=draft.nickname;update();};
   q('.close').onclick=()=>dialog.close();
   dialog.oncancel=e=>{if(busy)e.preventDefault();};

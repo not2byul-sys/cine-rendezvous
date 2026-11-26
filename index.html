@@ -2668,7 +2668,7 @@ function replaceCastActor(old,name){const u=old.userData,sp=u.seat,home=u.home,z
  if(sp){sp.taken=null;sit(fresh,sp)}else if(home&&home.taken===old)home.taken=fresh;
  const replace=arr=>{const i=arr.indexOf(old);if(i>=0)arr[i]=fresh};replace(NPCS);Object.values(HNPC).forEach(replace);Object.values(HALLG).forEach(replace);if(typeof CLUBN!=='undefined')replace(CLUBN);if(typeof CLUBG!=='undefined')replace(CLUBG);if(HSET.has(old)){HSET.delete(old);HSET.add(fresh)}
  const belongs=o=>{for(let n=o;n;n=n.parent)if(n===old)return true;return false};for(let i=INTER.length-1;i>=0;i--)if(belongs(INTER[i]))INTER.splice(i,1);for(let i=AVATAR_HITS.length-1;i>=0;i--)if(belongs(AVATAR_HITS[i]))AVATAR_HITS.splice(i,1);S.remove(old);return fresh}
-function queueCastRotation(){const actors=castActors(),pool=castShuffle(Object.keys(LOOK).filter(n=>CHARINFO[n]&&!RESIDENTS.has(n)&&!CLUBCAST.includes(n)/* QA385: 아지트 전용 인물은 로비에 안 나옴 · 마커스 교수는 로비로 */));castPending=actors.map((actor,i)=>({actor,name:pool[i%pool.length]}));for(let i=0;i<castPending.length;i++){const q=castPending[i];if(q.name===q.actor.userData.displayName&&castPending.length>1){const j=(i+1)%castPending.length;[q.name,castPending[j].name]=[castPending[j].name,q.name]}}  /* The first club cast is already shuffled at creation. Rotate only on subsequent intervals. */
+function queueCastRotation(){const actors=castActors(),pool=castShuffle(Object.keys(LOOK).filter(n=>CHARINFO[n]&&!RESIDENTS.has(n)&&!CLUBCAST.includes(n)&&n!=='마커스 교수'/* QA398 · QA385: 아지트 전용 인물은 로비에 안 나옴 · 마커스 교수는 로비로 */));castPending=actors.map((actor,i)=>({actor,name:pool[i%pool.length]}));for(let i=0;i<castPending.length;i++){const q=castPending[i];if(q.name===q.actor.userData.displayName&&castPending.length>1){const j=(i+1)%castPending.length;[q.name,castPending[j].name]=[castPending[j].name,q.name]}}  /* The first club cast is already shuffled at creation. Rotate only on subsequent intervals. */
     if(!clubCastInitialized){clubCastInitialized=true;return}
     /* QA385: 아지트 인물은 고정(교체 없음) */}
 
@@ -4455,7 +4455,7 @@ function relocateClubPieces(mark,from,to,angle){
   /* QA298: 책장과 필름장 사이 스탠드 조명 제거 */floorLamp(X+4.05,Z-3.6,1.0);/* 오른쪽 소파 뒤 */floorLamp(X-4.05,Z-3.6,1.0);/* 왼쪽 소파 뒤 */
  }
  for(let i=n0;i<S.children.length;i++){const o=S.children[i];CLUBG.push(o);HSET.add(o);if(o.isLight)o.intensity=0;o.visible=false}
- /* QA385: 아지트 고정 인물 4명 — 고뇌하는 파리지앵 둘(왼쪽 소파 나란히) · 배우(오른쪽 소파) · 평론가(뒤 소파) */const CL=CLUBCAST.map(n=>[n,0,LOOK[n]||{}]);
+ /* QA385: 아지트 고정 인물 4명 — 고뇌하는 파리지앵 둘(왼쪽 소파 나란히) · 배우(오른쪽 소파) · 평론가(뒤 소파) */const CL=[...CLUBCAST,'마커스 교수'/* QA398: 마커스 교수 다시 아지트로 */].map(n=>[n,0,LOOK[n]||{}]);
  const sps=SPOTS.filter(q=>q.zone==='B');CL.forEach(([nm,col,o],i)=>{const c=mk(nm,col,LOOK[nm]||o);c.userData.npc=true;CLUBN.push(c);CLUBG.push(c);HSET.add(c);c.visible=false;const sp=sps[[0,1,4,7][i]];if(nm==='마커스 교수'){
    c.position.set(BCX-6.5,0,BCZ-3.8);c.userData.marcusExplore=true;
    c.userData.roamHome=c.position.clone();c.userData.roamNext=performance.now()/1000+2;

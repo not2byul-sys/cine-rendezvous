@@ -67,10 +67,10 @@ function tagContext() {
   return ctx;
 }
 
-test('이름표: 카메라 기본 거리(배율 1.15)에서 알약 높이 26px(QA388: 위아래 1px씩 줄임) · 글자 11px', () => {
+test('이름표: 카메라 기본 거리(배율 1.15)에서 알약 높이 27px · 글자 12px(QA395)', () => {
   const ctx = tagContext(), t = ctx.nameTag('다정한 나무', false), [w, h] = t.userData.px;
-  assert(Math.abs(h * 1.15 - 26) < 0.01, String(h * 1.15));
-  assert(Math.abs(ctx.NAMETAG.fs * ctx.NAMETAG.k * 1.15 - 11) < 0.01);
+  assert(Math.abs(h * 1.15 - 27) < 0.01, String(h * 1.15));
+  assert(Math.abs(ctx.NAMETAG.fs * ctx.NAMETAG.k * 1.15 - 12) < 0.01);
   /* 글자 좌우 여백 9 · 8.7(QA388: 2px씩 줄임) */
   const im = t.material.map.image, textW = 6 * 30;
   assert.equal(im.width, textW + 27 + 26); assert.equal(ctx.drawn.find(d => d[0] === 'name')[2], 27);

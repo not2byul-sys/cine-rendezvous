@@ -703,7 +703,7 @@ svg.lucide, #act button svg { stroke-width:1.6!important; width:22px!important; 
 .qa340ld svg{width:52px;height:auto;fill:var(--c)}.qa340ld svg .h{fill:var(--h)}
 .qa340ld .b{width:100%;height:12px;border:1.5px solid var(--c);border-radius:999px;padding:2px;box-sizing:border-box}.qa340ld .b i{display:block;height:100%;width:0;background:var(--c);border-radius:999px;transition:width .25s linear}
 .qa340ld .n{position:absolute;left:calc(100% + 6px);bottom:0;font:400 15px/12px Georgia,'Noto Serif KR',serif;white-space:nowrap;color:#2a1d1f}/* QA344: 막대는 화면 가운데, %는 막대 오른쪽 6px */
-/* QA362 · QA376: 인트로 로딩 — 피그마 329:1191 최신(#211317 배경 · 영사기 52 · 간격 28 · 막대 162×10 · % 14) */#cine-first-load{background:#211317}html:not([data-cinema-ready]),html:not([data-cinema-ready]) body{background:#211317!important}#cine-first-load .qa340ld{--c:#d4c3a2;--h:#211317;width:200px;gap:28px}#cine-first-load .qa340ld svg{width:52px;height:47.667px}#cine-first-load .qa340ld .b{align-self:flex-start;width:162px;height:10px;margin:2px 0;border:0;padding:0;background:#58484b;border-radius:999px;display:block;overflow:hidden}#cine-first-load .qa340ld .b i{height:10px;border-radius:999px;background:#d4c3a2}#cine-first-load .qa340ld .n{left:auto;right:0;bottom:-2px;font:500 14px/14px 'Noto Sans KR',sans-serif;color:#d4c3a2}#cine-first-load .cine-load-retry{color:#d4c3a2}
+/* QA362 · QA376: 인트로 로딩 — 피그마 329:1191 최신(#211317 배경 · 영사기 52 · 간격 28 · 막대 162×10 · % 14) */#cine-first-load{background:#211317}html:not([data-cinema-ready]),html:not([data-cinema-ready]) body{background:#211317!important}#cine-first-load .qa340ld{--c:#d4c3a2;--h:#211317;width:200px;gap:28px}#cine-first-load .qa340ld svg{width:52px;height:47.667px}#cine-first-load .qa340ld .b{align-self:flex-start;width:162px;height:10px;margin:2px 0;border:0;padding:0;background:#58484b;border-radius:999px;display:block;overflow:hidden}#cine-first-load .qa340ld .b i{height:10px;border-radius:999px;background:#d4c3a2}#cine-first-load .qa340ld .n{left:auto;right:0;bottom:-2px;font:500 14px/14px 'Noto Sans KR',sans-serif;color:#d4c3a2}#cine-first-load .qa340ld .n{display:none}#cine-first-load .qa340ld .b{align-self:center}/* QA407: 첫 화면 로딩바 퍼센트 숫자 삭제 · 막대 가운데 */#cine-first-load .cine-load-retry{color:#d4c3a2}
 #qa340cine{position:absolute;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;background:#140c0e;pointer-events:none}#qa340cine .qa340ld{--c:#f6e7cc;--h:#140c0e;width:min(210px,39%)}#qa340cine .n{color:#f6e7cc}
 #cine-first-load .cine-load-emblem{width:min(240px,42vw);height:auto;filter:drop-shadow(0 2px 4px rgba(177,148,102,.1));margin-bottom:20px}
 #cine-first-load .cine-load-emblem svg{width:100%;display:block}
@@ -1001,7 +1001,7 @@ try{if(localStorage.getItem('aic.wallrev')!=='13'){localStorage.removeItem('aic.
 /* QA78: 이름표·말풍선은 원근과 상관없이 화면에서 같은 크기(px)로 보임. 이름표는 멀어지면 흐려짐 */let QA78_K=0;const QA78_TAGS=[];function qa78Fix(s,wpx,hpx){s.material.sizeAttenuation=false;s.material.needsUpdate=true;s.userData.px=[wpx,hpx];s.scale.set(wpx*QA78_K,hpx*QA78_K,1);return s}
 /* 부모(아바타)의 크기 배율이 스프라이트에 곱해지므로 그만큼 나눠 화면 크기를 맞춤 */const QA78_V=new THREE.Vector3();function qa78Scale(o){const p=o.userData.px,ps=o.parent?o.parent.getWorldScale(QA78_V).y||1:1;o.scale.set(p[0]*QA78_K/ps,p[1]*QA78_K/ps,1)}
 function qa359Occ(c,s){/* QA359: 말풍선도 앞 물체에 가려짐 — 나와 대화 상대는 항상 보임 */try{const m=s.material;m.depthWrite=false;m.depthTest=!(c===me||ACTOR_SESSION&&ACTOR_SESSION.target===c)}catch(e){}return s}
-function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;if(s.parent!==c)c.add(s);return}const t=c.getObjectByName('avatar-tag');s.position.y=t?t.position.y:2.2;s.center.set(.5,-18/s.userData.px[1]);c.add(qa359Occ(c,s));qa78Scale(s)}
+function qa78Bubble(c,s){const t=c.getObjectByName('avatar-tag'),tv=t&&t.visible!==false,tH=t&&t.userData.px?t.userData.px[1]:27,gap=tv?4+tH+6:6/* QA409: 말풍선은 이름표 바로 위, 이름표 없으면 머리 바로 위 */;if(!s.userData.px){let base=t?t.position.y:(c.userData&&c.userData.headTop)||2.1,k=.01;try{const W_=new THREE.Vector3();c.getWorldPosition(W_);W_.y+=base;const d=Math.max(.5,C.position.distanceTo(W_)),ppu=innerHeight/(2*d*Math.tan(C.fov*Math.PI/360)),ws=c.getWorldScale(new THREE.Vector3()).y||1;k=1/ppu/ws}catch(e){}s.position.y=base+gap*k+s.scale.y/2;if(s.parent!==c)c.add(s);return}s.position.y=t?t.position.y:(c.userData&&c.userData.headTop)||2.2;s.center.set(.5,-gap/s.userData.px[1]);c.add(qa359Occ(c,s));qa78Scale(s)}
 let seatedHall=0,QA85_CINE=false;var FOVT=0,QA171BL=0;const V171=new THREE.Vector3();function rs(ev){const f0=C.fov;R.setSize(innerWidth,innerHeight);C.aspect=innerWidth/innerHeight;C.fov=seatedHall?(C.aspect<1?62:44)/* QA128: 관람 화각을 좁혀 원근 왜곡↓ */:(C.aspect<1?70:56);/* QA85: 관람 시점은 기준 버전(스크린 폭 14.2)과 같은 크기로 보이도록 시야각을 좁힘 */if(QA85_CINE)C.fov=2*Math.atan(Math.tan(C.fov*Math.PI/360)*SCW/14.2)*180/Math.PI;FOVT=C.fov;/* QA171: 앉아 있을 때는 화각을 한 번에 바꾸지 않고 천천히 */try{if(!(ev&&ev.type==='resize')&&me&&me.userData.seat&&me.userData.seat.kind==='cine'&&f0)C.fov=f0}catch(e){}C.updateProjectionMatrix()}addEventListener('resize',rs);rs();
 S.add(new THREE.HemisphereLight(0xf1eee6,0x697783,.74));
 const dl=new THREE.DirectionalLight(0xfff2dc,.26);dl.position.set(-8,20,14);S.add(dl);
@@ -1574,6 +1574,27 @@ if(LOOK['쥬느비에브'])LOOK['쥬느비에브']=Object.assign({},LOOK['쥬느
  '카미유':{bot:'mini',dress:PL.pink,dressPat:QA381P.p4.slice(),legs:PL.crm,shoe:PL.crm,shoeStyle:'knee'}/* 모드 A라인 원피스 + 흰 롱부츠 */,
  '마들렌 할머니':{scarf:PL.red,scarfLong:1}/* 긴 니트 머플러 */
 };Object.keys(F).forEach(n=>{if(LOOK[n]){const o=Object.assign({},LOOK[n],CL,F[n]);Object.keys(o).forEach(k=>o[k]===undefined&&delete o[k]);LOOK[n]=o}})}
+/* QA408: 꾸미기 스타일(이름 + 모양) — 색·무늬는 사용자 팔레트/패턴. 고른 상의 색이 있으면 그 색으로 */
+const QA408P={crm:0xE9DCC3,navy:0x2A3A5E,plum:0x6C4A6F,brn:0x6A3A1E,olv:0x3F5A34,mus:0xD6A12A,red:0xA92A36,ink:0x1c1a1a};
+const QA408S={top:{mari:['마리니에르',(o,c)=>{o.pat=['breton',QA408P.crm,[c!=null?c:QA408P.navy],[4,1.1]];o.open=0;o.nobtn=1}],
+ peacoat:['피코트',(o,c)=>{o.coat=c!=null?c:QA408P.navy;o.dbl=1;o.shirt='stripe'}],
+ aran:['아란 니트',(o,c)=>{o.pat=c!=null?['cable',c,[new THREE.Color(c).multiplyScalar(.85).getHex()]]:QA381P.p8.slice();o.coat=c!=null?c:0xefe49c;o.open=0;o.nobtn=1;o.tneck=o.coat}],
+ fair:['페어아일',(o,c)=>{o.coat=c!=null?c:QA408P.plum;o.open=0;o.fair=[QA408P.crm,QA408P.mus]}],
+ shear:['시어링',(o,c)=>{o.coat=c!=null?c:QA408P.brn;o.open=1;o.shear=QA408P.crm;o.shirt=QA408P.crm}],
+ safari:['사파리',(o,c)=>{o.coat=c!=null?c:QA408P.olv;o.open=1;o.pockets=1;o.belt=QA408P.brn;o.shirt=QA408P.crm}],
+ cord:['코듀로이',(o,c)=>{o.coat=c!=null?c:QA408P.brn;o.pat=['cord',o.coat,new THREE.Color(o.coat).multiplyScalar(.7).getHex()];o.open=1;o.shirt=QA408P.ink;o.tneck=QA408P.ink}],
+ tee:['타이포 티',(o,c,n)=>{o.coat=c!=null?c:QA408P.crm;o.tee=1;o.teeTxt=(hash('qa408:'+(n||''))>>>0)%4;o.open=0;o.nobtn=1}],
+ tneck:['터틀넥',(o,c)=>{o.coat=c!=null?c:QA408P.ink;o.open=0;o.nobtn=1;o.tneck=o.coat}]},
+ bottom:{longsk:['주름 롱스커트',(o,c)=>{o.skirt=c!=null?c:(o.skirt||o.pants||0x2a2624);o.bot='long'}],
+ mini:['미니스커트',(o,c)=>{o.skirt=c!=null?c:(o.skirt||o.pants||0x2a2624);o.bot='mini'}],
+ mod:['모드 원피스',(o,c)=>{o.dress=c!=null?c:(o.coat!=null&&!o.pat?o.coat:QA408P.mus);o.bot='mini';if(!o.legs)o.legs=QA408P.red}],
+ flare:['나팔바지',(o,c)=>{o.pants=c!=null?c:(o.pants||0x4a3b37);o.flare=1;o.bot='flare'}]}};
+function qa408Apply(o,c,name){const T=QA408S.top[c.ts],B=QA408S.bottom[c.bs];if(T){if(o.dress&&!B){o.skirt=o.dress}delete o.dress;delete o.dressPat;['open','dbl','vest','tie','bow','apron','pockets','belt','tee','teeTxt','fair','shear','tneck','nobtn','critic','pat','softPat'].forEach(k=>delete o[k]);T[1](o,c.top,name)}
+ if(B){['skirt','skirtPat','dress','dressPat','flare','bot'].forEach(k=>delete o[k]);if(c.bs!=='mod'&&c.bs!=='flare')delete o.pants;if(c.bs==='mod')['pat','open','dbl','pockets','belt','tee','fair','shear'].forEach(k=>delete o[k]);B[1](o,c.bot,name)}
+ if(c.mf){o.scarf=o.scarf||QA408P.red;o.scarfLong=1}return o}
+/* QA408: 카드 뒷면 「오늘의 차림」 */const QA408FIT={'앙드레':'네이비 피코트에 줄무늬 마리니에르','가스통':'어부들이 입던 아란 케이블 니트','시몬':'페어아일 무늬 카디건','이베트':'머스터드 미니 원피스, 빨간 타이츠','앨런':'코듀로이 수트에 검은 터틀넥','클로에':'눈길에 든든한 무스탕 코트','에밀 감독':'주머니 넷 달린 사파리 재킷','필리프':'하운드투스 재킷에 검은 터틀넥','카미유':'모드 미니 원피스, 흰 롱부츠','마들렌 할머니':'손녀가 떠 준 긴 니트 머플러','쥘리에트':'«Sous les pavés» 타이포 티, 주름 롱스커트','엘로디':'«C’est le pied» 타이포 티, 주름 롱스커트','앙투안 두아넬':'«Salut les copains» 타이포 티'};
+window.qa408Fit=n=>{if(QA408FIT[n])return QA408FIT[n];try{if(me&&n===me.userData.displayName){const sv=qa40Saved();const c=sv&&sv.c||{},L=[QA408S.top[c.ts]&&QA408S.top[c.ts][0],QA408S.bottom[c.bs]&&QA408S.bottom[c.bs][0],c.mf&&'긴 머플러'].filter(Boolean);return L.join(', ')}}catch(e){}return ''};
+/* QA408: 서로의 패션·자기 패션 이야기(말걸기) */const QA408TALK={'앙드레':['이 피코트는 항구에서 일하던 형한테 물려받은 거예요.','가스통 영감님 니트 좀 봐요. 바닷바람도 못 뚫겠어요.'],'가스통':['아내가 겨우내 떠 준 아란 니트라오. 꽈배기 하나하나가 다 정성이지.','요즘 젊은이들은 줄무늬를 그렇게 좋아하더군. 앙드레 녀석까지.'],'시몬':['가슴께 무늬는 페어아일이에요. 책 읽다 졸면 무늬가 눈에 아른거려요.','이베트 씨 미니 원피스, 우리 때는 상상도 못 했죠. 그래도 참 예뻐요.'],'이베트':['빨간 타이츠는 무대 조명 아래에서 제일 예뻐 보여요.','카미유의 하얀 부츠 봤어요? 나도 한 켤레 갖고 싶어요.'],'앨런':['코듀로이는 영화 세 편을 내리 봐도 구겨지지 않아요.','검은 터틀넥은 극장에 어울려요. 어둠 속에서 얼굴만 남거든요.'],'클로에':['이 무스탕 코트 하나면 눈 오는 날 줄 서는 것도 괜찮아요.','에밀 감독님 사파리 재킷, 촬영장에서 바로 온 것 같지 않아요?'],'에밀 감독':['주머니가 넷이라 콘티, 연필, 필름 통이 다 들어가요.','오늘 로비는 의상 팀이 따로 있는 것 같네요. 다들 한 장면 같아요.'],'필리프':['하운드투스엔 검은 터틀넥이지. 평론가의 제복이라고 해 두지.','카미유는 미니 원피스가 잘 어울리는군. 스크린에서도 그렇게 빛나야 할 텐데.'],'카미유':['흰 롱부츠는 오디션 날 신는 행운의 부츠예요.','필리프 씨는 일 년 내내 터틀넥만 입는 것 같아요.'],'마들렌 할머니':['이 머플러는 손녀가 떠 준 거라 길어도 그냥 두르고 다녀요.','요즘 아가씨들 치마가 짧아져서 내 무릎이 다 시리네.'],'쥘리에트':['티셔츠 글씨는 내가 직접 실크스크린으로 찍었어요.','다들 무늬가 하나씩 있네요. 로비가 화집 같아요.'],'엘로디':['«C’est le pied», 요즘 우리끼리 제일 많이 하는 말이에요.','줄무늬 목도리는 카메라 끈이랑 색을 맞췄어요.'],'앙투안 두아넬':['«Salut les copains», 라디오 듣다가 산 티셔츠예요.']};
 function qa381PM(pt,rep){const tx=patTex(pt[0],pt[1],pt[2]).clone();tx.needsUpdate=true;tx.repeat.set(...(pt[3]||rep));return new THREE.MeshPhongMaterial({map:tx,shininess:10,emissive:0x2a2a2a})}
 /* NPC 터치 시 자기소개: 출연 영화 · 연도 · 맡은 역할(1인칭) */
 /* NPC 자기소개 말풍선(HTML): 머리 위에 따라붙고 「영화 상세정보」 버튼 → 새 창 */
@@ -1801,6 +1822,7 @@ function mk(name,col,o={}){if(o.ch&&CHAR[o.ch])o=Object.assign({},CHAR[o.ch],o);
   /* 멀리 있으면 NPC 앞 1.3m까지 다가가서 말하기 */if(d>2.4||curZone(me)!==zn){const ux=d>.01?dx/d:0,uz=d>.01?dz/d:1;walkTo(me,g.position.x+ux*1.3,g.position.z+uz*1.3,zn,{after:talk})}else talk()},pt:{x:0,z:0,zone:'L0'}};INTER.push(hb)}
  if(!o.originalViewing)softenAvatarOverhead(n);setTimeout(()=>{softenObject(g);try{charTone(g);qa258Pop(g,1)}catch(e){}},0);
  if(name){g.userData.displayName=name;g.userData.isPlayer=!!o.me;const gh=new THREE.Mesh(new THREE.BoxGeometry(.95,2.1,.85),new THREE.MeshBasicMaterial({visible:false}));gh.position.y=1.05;gh.userData.giftAvatar=g;g.add(gh);AVATAR_HITS.push(gh)}
+ /* QA409: 이름표는 머리·모자 꼭대기 바로 위(아랫변 기준) — 카메라가 높아도 모자를 가리지 않게 */try{const hb=new THREE.Box3();g.updateMatrixWorld(true);hb.setFromObject(n)/* 몸 전체 중 가장 높은 곳 = 머리·모자 꼭대기 */;const top=isFinite(hb.max.y)?hb.max.y/(g.scale.y||1):2.1;g.userData.headTop=top;const t=g.getObjectByName('avatar-tag');if(t){t.position.y=top+.02;const ph=t.userData.px?t.userData.px[1]:27;t.center.set(.5,-4/ph)}}catch(e){}
  return g}
 /* 관람 화면의 앞줄 관객: 로비의 mk() 모델·재질을 그대로 쓰는 투명 3D 레이어. */
 var AUD3D=null;
@@ -2658,7 +2680,7 @@ function bubble(t){
  x.font=f;const lines=[];let cur='';
  for(const ch of String(t||'')){
   if(ch==='\n'){lines.push(cur);cur='';continue}
-  if(cur&&emoW(x,cur+ch,f,ef)>maxW){lines.push(cur);cur=ch}else cur+=ch;
+  if(cur&&emoW(x,cur+ch,f,ef)>maxW&&!/[.,!?…·)」』\]~]/.test(ch)/* QA409: 마침표 등은 줄 첫머리로 넘기지 않음 */){lines.push(cur);cur=ch}else cur+=ch;
  }
  if(cur||!lines.length)lines.push(cur);
  const onlyE=lines.every(l=>!l.replace(/\s/g,'')||emoSplit(l.replace(/\s/g,'')).every(p=>p.e))/* QA252: 박수처럼 이모지만 있으면 좌우 여백 없이 딱 맞게 */;
@@ -4503,6 +4525,7 @@ function relocateClubPieces(mark,from,to,angle){
    c.userData.roamHome=c.position.clone();c.userData.roamNext=performance.now()/1000+2;
   }else if(sp){sp.taken=c;setTimeout(()=>{sp.taken=null;sit(c,sp)},0)}})}
 /* QA385: 아지트 인물별 혼잣말 */const CLUB_SAY={'뤼시앵':['영화가 끝나면 다시 현실이죠. 우리는 뭘 위해 사는 걸까요.','카뮈를 읽다가 왔어요. 오늘 밤은 부조리한 영화가 어울리겠네요.','스크린 속 인물들은 적어도 자기가 뭘 원하는지 알잖아요.'],'엘로디':['찍고 싶은 게 없어서 카메라를 서랍에 넣어 뒀어요.','흑백 화면을 보고 있으면 마음이 조용해져요.','언젠가 이 아지트 사람들 얼굴을 다 찍어 보고 싶어요.'],'카미유':['대사는 다 외웠는데, 카메라 앞에서 숨 쉬는 법은 아직 모르겠어요.','무대에선 객석이 보이는데, 영화는 렌즈만 보이겠죠?','좋아하는 배우의 눈빛을 몇 번이고 돌려 보는 중이에요.'],'필리프':['이번 주 원고 마감이 내일이라네. 그래도 영화 한 편은 더 봐야지.','별점은 핑계일 뿐이야. 진짜 평론은 장면 하나를 오래 기억하게 하는 거지.','저 장면의 조명, 촬영감독이 꽤 고집을 부렸겠군.']};
+['엘로디','필리프','카미유'].forEach(n=>{try{if(CLUB_SAY[n]&&typeof QA408TALK!=='undefined'&&QA408TALK[n])CLUB_SAY[n]=CLUB_SAY[n].concat(QA408TALK[n])}catch(e){}})/* QA408: 아지트 혼잣말에도 패션 이야기 */;
 const CLUB_LINES=['「화양연화」는 복도 장면만으로 완벽해요','흑백영화는 빛이 주인공이에요','열린 결말이 더 오래 남지 않아요?','오늘은 누벨바그 얘기해볼까요?','롱테이크 좋아하는 사람 손! 🙋','영화음악만 들어도 장면이 떠올라요','이번 주 토론 주제, 인생 엔딩 장면이에요','극장에서 본 영화는 기억이 달라요','감독판이 더 좋았던 영화 있어요?','한줄평 보드에 한마디 남겨줘요 📌','자막 없이 보면 표정이 더 보여요','재개봉하면 꼭 다시 보고 싶은 영화는?'];
 function clubTick(t){clubDim();const inB=me&&curZone(me)==='B'&&!$('pn').hidden===false;clubVid(!!(me&&curZone(me)==='B')&&!CLUBSTOP);clubHover();if(REC.on>=0&&!(me&&curZone(me)==='B'))REC.stop();if(window.RECPL){RECPL.arm.rotation.y+=((REC.on>=0?-.18:.35)-RECPL.arm.rotation.y)*.08;if(REC.on>=0)RECPL.plat.rotation.y-=.058}if(window.CLUBREELS&&me&&curZone(me)==='B'&&!CLUBSTOP)CLUBREELS.forEach((r,i)=>r.rotation.z-=(i?.9:1.3)*.016);ytLayerPos();if(CLV)clubVidPos();if(!me||curZone(me)!=='B')return;clubScr(t);const nw=performance.now()/1000;CLUBN.forEach((c,i)=>{const u=c.userData;if(u.nt==null)u.nt=nw+6+i*6.4;if(nw>u.nt){u.nt=nw+22+Math.random()*12;if(!u.giftEating&&!(u.storyUntil>nw)){
    const alone=u.displayName==='마커스 교수'&&Math.hypot(c.position.x-me.position.x,c.position.z-me.position.z)>3.2;
@@ -4767,7 +4790,7 @@ document.documentElement.dataset.cinemaReady='qa14-figma-christmas';
 /* QA368: 입장 티켓 단계 삭제 — 로딩이 끝나면 바로 로비로. 닉네임은 지난번 것 또는 랜덤(캐릭터 메뉴에서 바꿀 수 있음). 티켓 펀칭은 상영관 입장 때만 */
 try{if(!me&&!window.QA368_OFF){let nm='';try{nm=(localStorage.getItem('aic.nick')||'').trim().slice(0,14)}catch(e){}
  /* QA395 · QA399: 예전 랜덤 이름 한 번 전환 — 연도 붙은 이름은 연도만 빼고, TOP 100에 없는 옛 이름은 새로 뽑기. 기본 캐릭터 모습은 예전 이름 기준 그대로 유지 */try{const OLD=['카사블랑카','로마의 휴일','시민 케인','티파니에서 아침을','이창','현기증','사랑은 비를 타고','시네마 천국','중경삼림','화양연화','쉘부르의 우산','아멜리에','라라랜드','남과 여','올드보이','대부','택시 드라이버','8월의 크리스마스','하녀','마지막 황제','미치광이 피에로','네 멋대로 해라','400번의 구타','8과 1/2','길','자전거 도둑','달콤한 인생','멋진 인생','선셋 대로','제3의 사나이','아파트 열쇠를 빌려드립니다','졸업','비포 선라이즈','하나 그리고 둘','동경 이야기','라쇼몽','피아니스트','패왕별희','첨밀밀','살인의 추억'];
-  const Y_=window.QA399Y&&QA399Y[nm],AN=/이웃집 토토로|원령공주/.test(nm)/* QA405: 애니메이션 제목 삭제 — 그 이름이면 새로 뽑기 */;if(nm&&(AN||Y_||OLD.includes(nm)&&!RAND_FILMS.includes(nm))){const nn=!AN&&Y_||RAND_FILMS[Math.random()*RAND_FILMS.length|0],lk=localStorage.getItem('aic.look')||'';if(!lk||/^auto(,|$)/.test(lk))localStorage.setItem('aic.look','auto~'+encodeURIComponent(nm)+(lk?lk.slice(4):''));localStorage.setItem('aic.nick',nn);nm=nn}}catch(e){}if(!nm)nm=RAND_FILMS[Math.random()*RAND_FILMS.length|0];window.MYNAME=nm;try{$('nick').value=nm}catch(e){}enterNow(nm);
+  const Y_=window.QA399Y&&QA399Y[nm],AN=/이웃집 토토로|원령공주/.test(nm)/* QA405: 애니메이션 제목 삭제 — 그 이름이면 새로 뽑기 */;if(nm&&(AN||Y_||OLD.includes(nm)&&!RAND_FILMS.includes(nm))){const nn=!AN&&Y_||RAND_FILMS[Math.random()*RAND_FILMS.length|0],lk=localStorage.getItem('aic.look')||'';if(!lk||/^auto(,|$)/.test(lk))localStorage.setItem('aic.look','auto~'+encodeURIComponent(nm)+(lk?lk.slice(4):''));localStorage.setItem('aic.nick',nn);nm=nn}}catch(e){}const first=!nm,go=n=>{window.MYNAME=n;try{$('nick').value=n}catch(e){}enterNow(n)};if(!nm)nm=RAND_FILMS[Math.random()*RAND_FILMS.length|0];/* QA406: 처음 온 사람은 캐릭터·이름 카드를 먼저 확인(이대로 입장 / 다시 뽑기) */if(first&&!/[?&]nodice/.test(location.search)){let k=0;const w=()=>window.qa406Dice?qa406Dice(nm,go):++k<100?setTimeout(w,50):go(nm);w()}else go(nm);
  const g=()=>{try{BGM.start();BGM.btn()}catch(e){}};addEventListener('pointerdown',g,{once:true,capture:true});addEventListener('keydown',g,{once:true,capture:true})/* 소리는 첫 터치 때 시작(브라우저 정책) */}}catch(e){console.warn('QA368',e)}
 </script>
 <script id="qa21-reviews">/* QA21: 영화 좋아요·한줄평 (미니멈 스펙)
@@ -4881,8 +4904,8 @@ try{LOOK10.forEach(l=>{l.o=qa381Auto(l.id,l.o)/* QA381 */;qa358Lift(l.o)})}catch
 function qa66Base(id,name){const L=LOOK10.find(l=>l.id===id);let seed=name||(me&&me.userData.displayName)||'관객';if(!L&&String(id).startsWith('auto~'))try{seed=decodeURIComponent(String(id).slice(5))||seed}catch(e){}return JSON.parse(JSON.stringify(L?L.o:qaUserLook(seed)))}
 /* 캐릭터 원래 모습의 악세서리를 편집기 ID로 */
 function qa66Nat(o){return {gl:o.sung?'sun':o.gsq?'square':(o.glasses!=null&&o.glasses!==false)?'round':'none',hat:!o.hat?'none':({beret:'beret',flat:'flatcap',cap:'flatcap',fedora:'fedora',cloche:'cloche',bowler:'bowler'})[o.hat]||'other',bag:!o.bag?'none':({cross:'crossbody',shoulder:'shoulder',rattan:'rattan'})[o.bag]||'other',shoes:o.shoeStyle||'default'}}
-function qa44Parse(str){const p=String(str||'').split(',');if(p[0]!=='auto'&&!/^auto~[A-Za-z0-9%._~!*'()-]{1,200}$/.test(p[0])&&!LOOK10.some(l=>l.id===p[0]))return null;const col=v=>/^[0-9a-f]{6}$/i.test(v||'')?parseInt(v,16):null,pid=v=>v&&QA381P[v]?v:null/* QA381: 패턴 ID */,it=(k,v)=>{v=QA66.legacy[k][v]||v;return QA66.items[k].includes(v)?v:'-'};return {id:p[0],c:{top:col(p[1]),bot:col(p[2]),gl:it('gl',p[3]),hat:it('hat',p[4]),bag:it('bag',p[5]),shoes:it('shoes',p[6]),hatc:col(p[7]),glc:col(p[8]),bagc:col(p[9]),shoec:col(p[10]),tp:pid(p[11]),bp:pid(p[12]),hp:pid(p[13])}}}
-function qa44Spec(id,c){const h=v=>v==null?'-':hex6(v);return [id,h(c.top),h(c.bot),c.gl||'-',c.hat||'-',c.bag||'-',c.shoes||'-',h(c.hatc),h(c.glc),h(c.bagc),h(c.shoec)].concat(c.tp||c.bp||c.hp?[c.tp||'-',c.bp||'-',c.hp||'-']:[]).join(',')}/* QA381: 패턴은 뒤에 덧붙여 예전 접속자와도 호환 */
+function qa44Parse(str){const p=String(str||'').split(',');if(p[0]!=='auto'&&!/^auto~[A-Za-z0-9%._~!*'()-]{1,200}$/.test(p[0])&&!LOOK10.some(l=>l.id===p[0]))return null;const col=v=>/^[0-9a-f]{6}$/i.test(v||'')?parseInt(v,16):null,pid=v=>v&&QA381P[v]?v:null/* QA381: 패턴 ID */,it=(k,v)=>{v=QA66.legacy[k][v]||v;return QA66.items[k].includes(v)?v:'-'};return {id:p[0],c:{top:col(p[1]),bot:col(p[2]),gl:it('gl',p[3]),hat:it('hat',p[4]),bag:it('bag',p[5]),shoes:it('shoes',p[6]),hatc:col(p[7]),glc:col(p[8]),bagc:col(p[9]),shoec:col(p[10]),tp:pid(p[11]),bp:pid(p[12]),hp:pid(p[13]),ts:QA408S.top[p[14]]?p[14]:null,bs:QA408S.bottom[p[15]]?p[15]:null,mf:p[16]==='1'}}}
+function qa44Spec(id,c){const h=v=>v==null?'-':hex6(v);return [id,h(c.top),h(c.bot),c.gl||'-',c.hat||'-',c.bag||'-',c.shoes||'-',h(c.hatc),h(c.glc),h(c.bagc),h(c.shoec)].concat((()=>{const e=[c.tp||'-',c.bp||'-',c.hp||'-',c.ts||'-',c.bs||'-',c.mf?'1':'-'];while(e.length&&e[e.length-1]==='-')e.pop();return e})()).join(',')}/* QA408: 스타일(상의·하의·긴 머플러)도 뒤에 덧붙임 *//* QA381: 패턴은 뒤에 덧붙여 예전 접속자와도 호환 */
 function qa44Build(id,c,name){const o=qa66Base(id,name);c=c||{};
  /* QA381: 색 칩 = 민무늬 색, 패턴 칩 = 패턴 고유 색(둘 중 하나) */const PP=k=>QA381P[k]?QA381P[k].slice():null;
  if(c.top!=null){if(o.dress){o.dress=c.top;o.dressPat=null}else{o.coat=c.top;o.pat=null}}else if(PP(c.tp)){if(o.dress)o.dressPat=PP(c.tp);else{o.pat=PP(c.tp);if(o.vest&&!o.critic)delete o.vest}}
@@ -4895,7 +4918,7 @@ function qa44Build(id,c,name){const o=qa66Base(id,name);c=c||{};
  if(c.bagc!=null)o.bagc=c.bagc;
  if(c.shoes&&c.shoes!=='-')o.shoeStyle=c.shoes;
  if(c.shoec!=null)o.shoe=c.shoec;
- o.lookId=qa44Spec(id,c);return o}
+ qa408Apply(o,c,name);o.lookId=qa44Spec(id,c);return o}
 function qa40Saved(){try{const v=localStorage.getItem('aic.look');return v?qa44Parse(v):null}catch(e){return null}}
 function qa40MyLook(name){const s=qa40Saved();return s?qa44Build(s.id,s.c,name):qaUserLook(name)}
 /* 같은 아바타 객체를 유지한 채 몸(모델)·이름표만 새로 갈아 끼움 — 위치·좌석·들고 있는 물건은 그대로 */
@@ -4921,9 +4944,10 @@ function qa40Thumbs(){if(QA40.thumbs)return QA40.thumbs;const imgs=qa40Render(LO
 /* ---------- QA66: 캐릭터 꾸미기 창(editor/editor.js) 연결 ---------- */
 const QA66_HEX=v=>v==null?null:'#'+hex6(v).toUpperCase(),QA66_NUM=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v)?parseInt(v.slice(1),16):null;
 /* 저장값 → 편집기 초안(catalog.js의 defaults 구조) */
-function qa66Draft(id,c,name){const nat=qa66Nat(qa66Base(id,name)),pick=k=>(!c[k]||c[k]==='-')?nat[k]:c[k];return {nickname:name,character:id,items:{glasses:pick('gl'),hat:pick('hat'),bag:pick('bag'),shoes:pick('shoes')},colors:{top:c.tp?'pat:'+c.tp:QA66_HEX(c.top),bottom:c.bp?'pat:'+c.bp:QA66_HEX(c.bot),hat:c.hp?'pat:'+c.hp:QA66_HEX(c.hatc),glasses:QA66_HEX(c.glc),bag:QA66_HEX(c.bagc),shoes:QA66_HEX(c.shoec)}}}
+/* QA408: 꾸미기 스타일 칩(이름 + 입은 모습 썸네일, 기본 캐릭터 기준으로 한 번만 그림) */function qa408Styles(id,name){const key=id+'|'+name;if(QA40.styKey!==key){const T=Object.keys(QA408S.top),B=Object.keys(QA408S.bottom),looks=[...T.map(k=>qa44Build(id,{ts:k},name)),...B.map(k=>qa44Build(id,{bs:k},name)),qa44Build(id,{mf:true},name)],im=qa40Render(looks);QA40.styKey=key;QA40.sty={top:[['none','기본',null],...T.map((k,i)=>[k,QA408S.top[k][0],im[i]])],bottom:[['none','기본',null],...B.map((k,i)=>[k,QA408S.bottom[k][0],im[T.length+i]])],muffler:[['off','없음',null],['on','긴 머플러',im[T.length+B.length]]]}}return QA40.sty}
+function qa66Draft(id,c,name){const nat=qa66Nat(qa66Base(id,name)),pick=k=>(!c[k]||c[k]==='-')?nat[k]:c[k];return {nickname:name,character:id,items:{glasses:pick('gl'),hat:pick('hat'),bag:pick('bag'),shoes:pick('shoes')},colors:{top:c.tp?'pat:'+c.tp:QA66_HEX(c.top),bottom:c.bp?'pat:'+c.bp:QA66_HEX(c.bot),hat:c.hp?'pat:'+c.hp:QA66_HEX(c.hatc),glasses:QA66_HEX(c.glc),bag:QA66_HEX(c.bagc),shoes:QA66_HEX(c.shoec)},style:{top:c.ts||'none',bottom:c.bs||'none',muffler:c.mf?'on':'off'}}}
 /* 편집기 초안 → 저장값. 캐릭터의 원래 악세서리와 같으면 '-'로 저장해 원래 소품(스카프·손가방 등)을 보존 */
-function qa66FromDraft(d,name){const id=d.character,nat=qa66Nat(qa66Base(id,name)),it=(k,v)=>(v===nat[k]||v==='other'||v==='default')?'-':v,I=d.items||{},K=d.colors||{},pk=v=>typeof v==='string'&&v.startsWith('pat:')&&QA381P[v.slice(4)]?v.slice(4):null;return {id,c:{tp:pk(K.top),bp:pk(K.bottom),hp:pk(K.hat),top:QA66_NUM(K.top),bot:QA66_NUM(K.bottom),gl:it('gl',I.glasses),hat:it('hat',I.hat),bag:it('bag',I.bag),shoes:it('shoes',I.shoes),hatc:QA66_NUM(K.hat),glc:QA66_NUM(K.glasses),bagc:QA66_NUM(K.bag),shoec:QA66_NUM(K.shoes)}}}
+function qa66FromDraft(d,name){const id=d.character,nat=qa66Nat(qa66Base(id,name)),it=(k,v)=>(v===nat[k]||v==='other'||v==='default')?'-':v,I=d.items||{},K=d.colors||{},pk=v=>typeof v==='string'&&v.startsWith('pat:')&&QA381P[v.slice(4)]?v.slice(4):null;return {id,c:{tp:pk(K.top),bp:pk(K.bottom),hp:pk(K.hat),top:QA66_NUM(K.top),bot:QA66_NUM(K.bottom),gl:it('gl',I.glasses),hat:it('hat',I.hat),bag:it('bag',I.bag),shoes:it('shoes',I.shoes),hatc:QA66_NUM(K.hat),glc:QA66_NUM(K.glasses),bagc:QA66_NUM(K.bag),shoec:QA66_NUM(K.shoes),ts:d.style&&QA408S.top[d.style.top]?d.style.top:null,bs:d.style&&QA408S.bottom[d.style.bottom]?d.style.bottom:null,mf:!!(d.style&&d.style.muffler==='on')}}}
 /* 착용 미리보기: 전용 렌더러·카메라 하나를 재사용하고, 선택할 때마다 프리뷰 아바타만 새로 만듦 */
 function qa66DropAvatar(P){if(!P||!P.av)return;P.sc.remove(P.av);P.av.traverse(q=>{if(q.userData&&q.userData.giftAvatar){const i=AVATAR_HITS.indexOf(q);if(i>=0)AVATAR_HITS.splice(i,1)}if(q.geometry&&q.geometry.dispose)q.geometry.dispose();if(q.material)(Array.isArray(q.material)?q.material:[q.material]).forEach(m=>{if(m&&m.dispose)m.dispose()})});P.av=null}
 function qa66Preview(host,draft){let P=QA66.P;if(!P||P.host!==host){qa66Dispose(host);const W=384,H=488,r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(1);r.setSize(W,H,false);try{r.outputEncoding=R.outputEncoding}catch(e){}
@@ -4945,7 +4969,7 @@ async function qa40Open(){if(!me||QA66.open)return;QA66.open=true;try{closePanel
  try{const {openAvatarEditor}=await import('./editor/editor.js'),name=me.userData.displayName||'관객',sv=qa40Saved()||{id:'auto',c:{}},th=qa40Thumbs();
     const autoId=String(sv.id).startsWith('auto')?sv.id:'auto';if(QA40.autoKey!==autoId+'|'+name){QA40.autoKey=autoId+'|'+name;QA40.autoImg=qa40Render([qa66Base(autoId,name)])[0]||''}
   const characters=[{id:autoId,label:'기본 캐릭터',image:QA40.autoImg},...LOOK10.map(L=>({id:L.id,label:L.n,image:th[L.id]}))];
-  await openAvatarEditor({patterns:qa381Chips(),characters,initial:qa66Draft(sv.id,sv.c,name),baseline:qa66Draft(sv.id,{},name),renderPreview:qa66Preview,disposePreview:qa66Dispose,save:qa66Save});qa66Shield()}
+  await openAvatarEditor({patterns:qa381Chips(),styles:qa408Styles(autoId,name),characters,initial:qa66Draft(sv.id,sv.c,name),baseline:qa66Draft(sv.id,{},name),renderPreview:qa66Preview,disposePreview:qa66Dispose,save:qa66Save});qa66Shield()}
  catch(e){QA66.open=false;console.warn('avatar editor',e);try{toast('캐릭터 꾸미기 창을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.')}catch(_){}}}
 if(typeof A!=='undefined')A.avatar=()=>qa40Open();
 </script>
@@ -4995,7 +5019,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 })();
 </script>
 <script id="qa109-seated-tag">/* QA109: 앉으면 이름표를 머리 바로 위로(서 있을 때 머리와 이름표 간격을 그대로 유지) */
-(function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=Math.min(u.tagY0,V.y+.48)/* QA123: 앉으면 머리 바로 위(.48) */;if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();
+(function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=u.headTop!=null?V.y+(u.headTop-1.6)+.02:Math.min(u.tagY0,V.y+.48)/* QA123: 앉으면 머리 바로 위 · QA409: 모자 높이까지 */;if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();
 </script>
 <script id="qa110-preshow">/* QA110 → QA171: 상영 전 인트로 — 관리자에 등록한 인트로 영화(기본: 1979 뉴스)를 차례로 튼 뒤, 인트로가 소리와 함께 페이드아웃되고 본편이 소리와 함께 페이드인. 인트로 동안 본편은 멈춰 있어 소리가 겹치지 않음. 영화가 끝나면 엔딩 자막이 올라가고 FIN → 앉은 자리 그대로 불이 서서히 켜짐 */
 (function(){const KEY='aic.preshow',NEWS0='media/news-1979.mp4';
@@ -5824,7 +5848,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
   BUBS.forEach(s=>{if(!s.parent){BUBS.delete(s);return}const o=s.parent,u=s.userData;if(u.s0==null){u.s0=[s.scale.x,s.scale.y];u.cy0=s.center.y}
    if(o!==me&&me&&cam.distanceTo(o.getWorldPosition(V2))<dMe-.6){s.visible=false;return}/* 내 앞(카메라와 나 사이)을 지나는 아바타의 말풍선은 숨김 */
    s.getWorldPosition(V1);const d=cam.distanceTo(V1);V2.copy(V1).project(C);if(V2.z>1||d<.05){s.visible=false;return}s.visible=true;
-   const ps=o.getWorldScale(WS).y||1;let hpx;if(!u.px){const h0=u.s0[1]*ps,cap=(s.material.map&&s.material.map.image?s.material.map.image.height:120)*.62,raw=h0/(d*tf)*H,k=raw>cap?cap/raw:1;s.scale.set(u.s0[0]*k,u.s0[1]*k,1);hpx=Math.min(raw,cap);s.position.y=2.6+s.scale.y/2/* QA214: 줄어든 만큼 아래를 머리 위에 붙임(공중에 뜨지 않게) */}else hpx=s.scale.y*ps/(d*tf)*H;
+   const ps=o.getWorldScale(WS).y||1;let hpx;if(!u.px){const h0=u.s0[1]*ps,cap=(s.material.map&&s.material.map.image?s.material.map.image.height:120)*.62,raw=h0/(d*tf)*H,k=raw>cap?cap/raw:1;s.scale.set(u.s0[0]*k,u.s0[1]*k,1);hpx=Math.min(raw,cap);{const ht=o.userData&&o.userData.headTop;s.position.y=(ht!=null?ht+6*d*tf/H/ps:2.6)+s.scale.y/2}/* QA214: 줄어든 만큼 아래를 머리 위에 붙임 · QA409: 이름표 없는 인물은 머리·모자 꼭대기 6px 위 */}else hpx=s.scale.y*ps/(d*tf)*H;
    const wpx=hpx*(s.scale.x/(s.scale.y||1)),sx=(V2.x+1)/2*W,sy=(1-V2.y)/2*H;let base=0;try{const tg=o.getObjectByName('avatar-tag');if(tg&&tg.visible){tg.getWorldPosition(V3);const td=cam.distanceTo(V3);V3.project(C);const tsy=(1-V3.y)/2*H,th=tg.userData.px?tg.userData.px[1]:tg.scale.y*ps/(td*tf)*H,tTop=tsy-(1-tg.center.y)*th;base=(sy+u.cy0*hpx)-(tTop-4)}}catch(e){}/* QA214: 말풍선 아래를 이름표 바로 위에 붙임(앉은 사람·작아진 말풍선이 공중에 뜨지 않게) */L.push({s,u,d,hpx,base,x0:sx-wpx/2,x1:sx+wpx/2,top:sy-(1-u.cy0)*hpx,bot:sy+u.cy0*hpx})});
   /* QA352: 내가 말을 건 상대(대화가 끝난 뒤 12초까지)는 화면 밖이어도 말풍선을 화면 끝에 붙여 보여 줌 */try{if(typeof ACTOR_SESSION!=='undefined'&&ACTOR_SESSION&&ACTOR_SESSION.target){tick.pt=ACTOR_SESSION.target;tick.at=performance.now()}}catch(e){}const PT=performance.now()-(tick.at||-1e9)<12000?tick.pt:null;
   L.sort((a,b)=>a.d-b.d);const P=[];L.forEach(b=>{{/* QA343: 말풍선이 화면 좌우로 잘리지 않게 안쪽으로 밀기 */const w=b.x1-b.x0,M=8,cx=(b.x0+b.x1)/2;if((cx<0||cx>W)&&b.s.parent!==PT){b.s.visible=false;b.s.center.x=.5;return}/* QA350: 말하는 사람이 화면 밖이면 말풍선도 숨김(혼자 따라 들어오지 않게) */let dx=0;if(w>=W-2*M)dx=W/2-cx;else if(b.x0<M)dx=M-b.x0;else if(b.x1>W-M)dx=W-M-b.x1;b.s.center.x=.5-dx/Math.max(1,w);b.x0+=dx;b.x1+=dx}let off=b.base||0;for(let it=0;it<6;it++){let mv=0;for(const q of P){if(b.x1<q.x0||b.x0>q.x1)continue;const t=b.top-off,bo=b.bot-off;if(bo<=q.top||t>=q.bot)continue;mv=Math.max(mv,bo-q.top+6)}if(!mv)break;off+=mv}
@@ -6057,7 +6081,7 @@ function qa263Met(n){try{return (JSON.parse(localStorage.getItem('aic.greeted'))
  const T=()=>ACTOR_SESSION&&ACTOR_SESSION.target;
  const reMenu=g=>setTimeout(()=>{if(ACTOR_SESSION&&ACTOR_SESSION.target===g)showActorMenu(g,true)},50);
  const chatLine=g=>{const n=g.userData.displayName,z=String(curZone(g));if(z[0]==='H'&&typeof hallLine==='function')return {t:hallLine(g)};const q=typeof QA18_GIFT!=='undefined'&&QA18_GIFT[n],r=Math.random(),pk=P=>P[Math.random()*P.length|0];
-  if(q&&q[1]&&r<.2)return {t:q[1],kind:'힌트'};if(r<.45)return {t:pk(Math.random()<.4?OWNER_RUMORS:ODD_RUMORS),kind:'소문'};if(r<.6)return {t:pk(RUMORS),kind:'힌트'};
+  if(q&&q[1]&&r<.2)return {t:q[1],kind:'힌트'};{const F_=typeof QA408TALK!=='undefined'&&QA408TALK[n];if(F_&&r<.36)return {t:pk(F_)}}/* QA408: 패션 이야기 */if(r<.45)return {t:pk(Math.random()<.4?OWNER_RUMORS:ODD_RUMORS),kind:'소문'};if(r<.6)return {t:pk(RUMORS),kind:'힌트'};
   /* 자기 캐릭터다운 이야기(자기소개 문장은 빼고) */let info='';try{info=CHARINFO[n]||''}catch(e){}const own=(typeof npcLines==='function'?npcLines(n):[]).filter(l=>l&&!(info&&(info.includes(l)||l.includes(info.slice(0,14)))));if(own.length&&r<.88)return {t:pk(own)};return {t:pk(THEATER_INFO),kind:'안내'}};
  Object.assign(A,{
   actorHello:()=>{const g=T();if(!g)return;sayB(me,'안녕하세요!',3);met(g.userData.displayName);setTimeout(()=>{if(g.visible)npcCard(g,g.userData.displayName)},900);reMenu(g)},
@@ -6616,7 +6640,7 @@ body.qa342lock #act [data-a="bag"],body.qa342lock #act [data-a="book"]{position:
 #qa338v .flip{perspective:1400px;cursor:pointer}#qa338v .fi{position:relative;transition:transform .5s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}#qa338v .flip.on .fi{transform:rotateY(180deg)}
 #qa338v .fi img{backface-visibility:hidden;-webkit-backface-visibility:hidden}
 #qa338v .bk{position:absolute;inset:0;transform:rotateY(180deg);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:#fff;color:#141414;border-radius:6.49%/4.62%;padding:28px 24px;box-sizing:border-box;display:flex;flex-direction:column;gap:12px;overflow:auto}
-#qa338v .bk b{font-size:20px;font-weight:700}#qa338v .bk span{font-size:16px;line-height:1.65;color:#2a2a2a;white-space:pre-wrap}
+#qa338v .bk b{font-size:20px;font-weight:700}#qa338v .bk span{font-size:16px;line-height:1.65;color:#2a2a2a;white-space:pre-wrap}#qa338v .bk .fit{margin-top:auto;padding-top:12px;border-top:1px solid #e6e0d6;font-size:13px;line-height:1.5;color:#5a4a4e;display:flex;flex-direction:column;gap:2px}#qa338v .bk .fit em{font-style:normal;font-weight:700;font-size:12px;color:#8a7a6e}/* QA408 */
 /* 카메라: 화면 UI를 걷고 정사각 틀만 */
 body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar,body.qa338cam #ctxbar,body.qa338cam #hint,body.qa338cam #qa127map,body.qa338cam #qa244tip,body.qa338cam #actorMenu,body.qa338cam #qa17cta{display:none!important}
 #qa338cam{position:fixed;inset:0;z-index:60;pointer-events:none;display:flex;align-items:center;justify-content:center}
@@ -6641,6 +6665,30 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
   if(need&&!el){el=document.createElement('div');el.id='qa340cine';el.innerHTML=H;c.appendChild(el);qa340Run(el,()=>false)}
   else if(!need&&el){const e=el;el=null;const b=e.querySelector('.b i'),n=e.querySelector('.n');if(b)b.style.width='100%';if(n)n.textContent='100%';setTimeout(()=>e.remove(),250)}},200)})();
 </script>
+<script id="qa406-dice">/* QA406: 첫 입장 — 랜덤 캐릭터·이름을 캐릭터 카드로 보여 주고 「이대로 입장」 / 「다시 뽑기」(주사위). 화면은 아이템 획득 화면(qa338v)과 같은 스타일 */
+(function(){
+ const css=document.createElement('style');css.textContent=`#qa338v.qa406 .in{position:relative}#qa338v.qa406 .in img.cd{width:min(72vw,300px);max-height:58dvh;height:auto;opacity:0;transition:opacity .25s}#qa338v.qa406 .in img.cd.on{opacity:1}
+#qa338v.qa406 .roll img.cd{animation:qa406r .7s ease-in-out infinite}#qa338v.qa406 .pop img.cd{animation:qa406p .42s cubic-bezier(.2,1.4,.4,1)}
+@keyframes qa406r{0%{transform:rotate(0) scale(1)}25%{transform:rotate(-5deg) scale(.95)}50%{transform:rotate(4deg) scale(.96)}75%{transform:rotate(-2deg) scale(.97)}100%{transform:rotate(0) scale(1)}}
+@keyframes qa406p{0%{transform:scale(.9);opacity:.5}100%{transform:none;opacity:1}}
+#qa338v.qa406 .zb button{display:inline-flex;align-items:center;gap:6px}#qa338v.qa406 .zb svg{width:18px;height:18px;transition:transform .7s cubic-bezier(.3,.7,.3,1)}#qa338v.qa406 .zb button:disabled{opacity:.55;cursor:default}`;document.head.appendChild(css);
+ const DICE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.3" fill="currentColor" stroke="none"/></svg>';
+ const day=()=>{const d=new Date();return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0')};
+ const free=g=>{try{g.traverse(o=>{if(o.geometry)o.geometry.dispose();const m=o.material;if(m&&m.userData&&m.userData.print&&m.map)m.map.dispose()})}catch(e){}};
+ const cardOf=async n=>{let por='';try{const g=mk(n,0,Object.assign({},qaUserLook(n),{me:1,notag:1}));por=qa194Portrait(g);free(g)}catch(e){}try{return await qa255Compose(n,por,0,'',null,{pre:'NO.',no:1,rows:[['직업','관객'],['출연','오늘의 주인공'],['만남',day()+' · 씨네 랑데뷰 로비']]})}catch(e){return por}};
+ const pick=prev=>{let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===prev&&RAND_FILMS.length>1);return n};
+ window.qa406Dice=async function(nm,done){let busy=true,turn=0;const w=document.createElement('div');w.id='qa338v';w.className='qa406';w.setAttribute('role','dialog');w.setAttribute('aria-label','입장 캐릭터 확인');
+  w.innerHTML='<b class="tt">이대로 입장할까요?</b><div class="in"><img class="cd" alt=""></div><p>모습과 이름은 캐릭터 메뉴에서 언제든 바꿀 수 있어요.</p><div class="zb"><button type="button" class="dice" disabled>'+DICE+'다시 뽑기</button><button type="button" class="pri go" disabled>이대로 입장</button></div>';
+  ['pointerdown','pointerup','touchstart','touchend','wheel','click'].forEach(t=>w.addEventListener(t,e=>e.stopPropagation()));
+  document.body.appendChild(w);const img=w.querySelector('img'),inn=w.querySelector('.in'),bd=w.querySelector('.dice'),bg=w.querySelector('.go'),sv=bd.querySelector('svg');let rot=0;
+  const show=async n=>{const t=++turn,src=await cardOf(n);if(t!==turn)return;img.src=src;img.alt=n+' 캐릭터 카드';img.classList.add('on')};
+  const lock=on=>{busy=on;bd.disabled=bg.disabled=on};
+  await show(nm);lock(false);bg.focus();
+  bd.onclick=async()=>{if(busy)return;lock(true);rot+=360;sv.style.transform=`rotate(${rot}deg)`;inn.classList.remove('pop');inn.classList.add('roll');const n=pick(nm),t0=performance.now();await new Promise(r=>setTimeout(r,30));const src=await cardOf(n);await new Promise(r=>setTimeout(r,Math.max(0,650-(performance.now()-t0))));nm=n;img.src=src;img.alt=n+' 캐릭터 카드';inn.classList.remove('roll');void inn.offsetWidth;inn.classList.add('pop');lock(false)};
+  bg.onclick=()=>{if(busy)return;w.remove();done(nm)};
+  w.addEventListener('keydown',e=>{if(e.key==='Enter'&&!busy){e.preventDefault();bg.click()}})};
+})();
+</script>
 <script id="qa338-view">/* QA338: 크게 보기·카드 획득·버리기 확인을 한 가지 화면으로. 가방·수첩 슬롯은 누르면 크게 보기, 올리면 휴지통만 */
 (function(){
  const J=(k,d)=>{try{const v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v}catch(e){return d}},W=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
@@ -6648,7 +6696,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
  let V=null;const close=()=>{if(V){V.remove();V=null}};
  /* o={img|html, card, photo, title, cap, back:{nm,text}, modal, btns:[[글자,함수,강조]]} */
  function view(o){close();const btns=(o.btns||[['닫기']]).slice();if(o.back)btns.unshift(['뒷면 보기','flip']);const cls=o.card?'cd':o.photo?'ph':'';
-  const im=o.img?`<img class="${cls}" alt="" src="${o.img}">`:'',body=o.html||(o.back?`<div class="flip"><div class="fi">${im}<div class="bk"><b>${esc(o.back.item?(o.back.nm||'')+' 이야기':o.back.nm?o.back.nm+'의 한마디':'한마디')}</b><span>${esc(o.back.text)}</span></div></div></div>`:im);
+  const im=o.img?`<img class="${cls}" alt="" src="${o.img}">`:'',body=o.html||(o.back?`<div class="flip"><div class="fi">${im}<div class="bk"><b>${esc(o.back.item?(o.back.nm||'')+' 이야기':o.back.nm?o.back.nm+'의 한마디':'한마디')}</b><span>${esc(o.back.text)}</span>${(()=>{const f=!o.back.item&&o.back.nm&&window.qa408Fit?qa408Fit(o.back.nm):'';return f?`<small class="fit"><em>오늘의 차림</em>${esc(f)}</small>`:''})()}</div></div></div>`:im);
   const w=document.createElement('div');w.id='qa338v';w.innerHTML=(o.title?`<b class="tt">${esc(o.title)}</b>`:'')+`<div class="in">${body}</div>`+(o.cap?`<p>${esc(o.cap)}</p>`:'')+'<div class="zb">'+btns.map((b,i)=>`<button type="button" data-i="${i}"${b[2]?' class="pri"':''}>${b[0]}</button>`).join('')+'</div>';
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
   const flip=()=>{const f=w.querySelector('.flip');if(!f)return;const on=f.classList.toggle('on'),t=w.querySelector('.zb button[data-i="0"]');if(t)t.textContent=on?'앞면 보기':'뒷면 보기'};

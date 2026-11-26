@@ -1,9 +1,9 @@
 import {palette, parts, items, itemColors, asset, characters as samples, defaults} from './catalog.js';
 
 // renderPreview only mutates the supplied preview host. save resolves after persistence.
-export async function openAvatarEditor({initial={}, baseline={}, characters=samples, patterns=[], renderPreview, disposePreview, save}={}) {
+export async function openAvatarEditor({initial={}, baseline={}, characters=samples, patterns=[], styles=null, renderPreview, disposePreview, save}={}) {
   if (!characters.length || typeof save !== 'function') throw new Error('characters와 save 함수를 확인해 주세요.');
-  const merge = (base, value) => ({...base,...value,items:{...base.items,...value.items},colors:{...base.colors,...value.colors}});
+  const merge = (base, value) => ({...base,...value,items:{...base.items,...value.items},colors:{...base.colors,...value.colors},style:{top:'none',bottom:'none',muffler:'off',...base.style,...value.style}});
   const base = merge(defaults, baseline);
   if (!characters.some(c=>c.id===base.character)) base.character=characters[0].id;
   let draft=merge(base,initial), active='character', busy=false, selectedPart='top';
@@ -26,7 +26,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const input=q('input'), panel=q('.options'), previewHost=q('.avatar');
   const make=(tag,cls,txt)=>{const n=document.createElement(tag);n.className=cls;if(txt)n.textContent=txt;return n;};
   const button=(label,run)=>{const n=make('button','',label);n.onclick=run;return n;};
-  const tabs={character:'캐릭터', accessory:'악세서리'};
+  const tabs=styles?{character:'캐릭터', style:'스타일', accessory:'악세서리'}:{character:'캐릭터', accessory:'악세서리'};/* QA408: 1970년대 파리 스타일 */
   function preview(){
     if(renderPreview){renderPreview(previewHost,structuredClone(draft));return;}
     const c=characters.find(x=>x.id===draft.character);
@@ -96,6 +96,13 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     if(active==='character'){
       const grid=make('div','grid chars');panel.append(grid);
       for(const c of characters)option(grid,'character',c.id,c.label,null,c.image);
+    } else if(active==='style'){
+      for(const [key,label] of [['top','상의 스타일'],['bottom','하의 스타일'],['muffler','소품']]){
+        const section=make('section','group'),heading=make('h3','',label),reset=button('↻',()=>{draft.style[key]=base.style[key];update();});
+        reset.setAttribute('aria-label',label+' 초기화');heading.append(reset);
+        const grid=make('div','grid styles');section.append(heading,grid);panel.append(section);
+        for(const [id,name,img] of (styles[key]||[]))option(grid,key,id,name,'style',img);
+      }
     } else {
       const color=false, kind='items', shortcuts=make('div','shortcuts');
       panel.append(shortcuts);

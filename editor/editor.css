@@ -128,3 +128,6 @@ footer button { height:52px; border-radius:6px; font:500 14px/20px Pretendard,'N
  footer { position:static; flex:none; margin:0 -16px; height:auto; padding:12px 20px max(24px,env(safe-area-inset-bottom)); background:#211317; grid-template-columns:117px minmax(0,1fr); }
  footer button { height:52px; }
 }
+/* QA408: 스타일 칩 — 입은 모습이 보이게 세로로 */
+.grid.styles button { height:132px; gap:4px; }
+.grid.styles img,.grid.styles .none { width:72px; height:96px; object-fit:contain; }

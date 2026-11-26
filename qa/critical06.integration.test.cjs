@@ -66,7 +66,7 @@ test('NPC touch introduces the character directly, without a social tooltip', ()
   ctx.selectAvatar(target); assert.equal(calls.some(x => x[0] === 'talk'), false);
   arrive(); assert(calls.some(x => x[0] === 'talk' && x[1] === target));
   /* QA271: 탭하면 자기소개 + 메뉴(말걸기·같이 사진찍기) */
-  assert(nodes.get('actorMenu').innerHTML.includes('말걸기')); assert(nodes.get('actorMenu').innerHTML.includes('같이 사진찍기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
+  assert(nodes.get('actorMenu').innerHTML.includes('더 들려주세요')); assert(nodes.get('actorMenu').innerHTML.includes('같이 사진찍기')); assert(!nodes.get('actorMenu').innerHTML.includes('<svg'));
 });
 
 test('the flower seller and Alfredo use the same immediate pause and approach', () => {

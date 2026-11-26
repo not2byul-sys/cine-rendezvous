@@ -26,8 +26,8 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const input=q('input'), panel=q('.options'), previewHost=q('.avatar');
   const make=(tag,cls,txt)=>{const n=document.createElement(tag);n.className=cls;if(txt)n.textContent=txt;return n;};
   const button=(label,run)=>{const n=make('button','',label);n.onclick=run;return n;};
-  const tabs=Object.assign(styles?{character:'캐릭터', style:'스타일', accessory:'악세서리'}:{character:'캐릭터', accessory:'악세서리'},{color:'색상'});/* QA408: 1970년대 파리 스타일 · QA411: 모바일은 색상을 네 번째 탭으로(PC에선 탭 숨김) */
-  const mq=matchMedia('(max-width:760px)'),picker=q('.color-picker'),previewSec=q('.preview');
+  const tabs=Object.assign(styles?{character:'캐릭터', style:'스타일', accessory:'악세서리'}:{character:'캐릭터', accessory:'악세서리'},{color:'색상'});/* QA408: 1970년대 파리 스타일 · QA411·QA421: 색상은 네 번째 탭(PC·모바일 같음) */
+  const picker=q('.color-picker'),previewSec=q('.preview');
   function preview(){
     if(renderPreview){renderPreview(previewHost,structuredClone(draft));return;}
     const c=characters.find(x=>x.id===draft.character);
@@ -132,7 +132,6 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   nmIn.oninput=()=>{nmOk.disabled=!nmIn.value.trim();};
   q('.nm-edit').onclick=()=>{nmIn.value=draft.nickname;nmOk.disabled=!nmIn.value.trim();nm.showModal();nmIn.focus();nmIn.select();};
   nm.onclose=()=>{if(nm.returnValue==='ok'&&nmIn.value.trim()){draft.nickname=nmIn.value.trim();input.value=draft.nickname;update();}nm.returnValue='';q('.nm-edit').focus();};
-  mq.addEventListener?.('change',()=>{if(!mq.matches&&active==='color'){active='character';draw();}});
   q('.reset').onclick=()=>{draft=structuredClone(base);input.value=draft.nickname;update();};
   q('.close').onclick=()=>dialog.close();
   dialog.oncancel=e=>{if(busy)e.preventDefault();};

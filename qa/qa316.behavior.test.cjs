@@ -17,8 +17,9 @@ function actor(name = '관객') {
 }
 
 function bubbleContext() {
-  let now = 100000; const shown = [], ticks = [];
-  const ctx = { performance: { now: () => now }, setInterval: f => { ticks.push(f); return 1; }, ACTOR_SESSION: null, me: {}, curZone: () => 'L0' };
+  let now = 100000; const shown = [], ticks = [], store = {};
+  const ctx = { performance: { now: () => now }, setInterval: f => { ticks.push(f); return 1; }, ACTOR_SESSION: null, me: { position: { x: 0, z: 0 } }, curZone: () => 'L0',
+    localStorage: { getItem: k => store[k] ?? null, setItem: (k, v) => { store[k] = String(v); } }, JSON, Math, Date };
   ctx.window = ctx;
   ctx.say = (c, t) => { shown.push({ who: c.n, t, at: now }); };
   ctx.sayB = (c, t) => { shown.push({ who: c.n, t, at: now }); };
@@ -26,48 +27,42 @@ function bubbleContext() {
   const open = '<script id="qa291-queue">';
   vm.runInContext(section(open, '</script>').slice(open.length), ctx);
   const advance = ms => { const end = now + ms; while (now < end) { now = Math.min(end, now + 240); ticks.forEach(f => f()); } };
-  return { ctx, shown, advance, t0: now, clock: () => now, npc: n => ({ n, visible: true }) };
+  const npc = (n, x = 1) => ({ n, visible: true, position: { x, z: 0 }, userData: { displayName: n }, remove() {} });
+  return { ctx, shown, advance, t0: now, clock: () => now, npc };
 }
 
 test('말을 걸면 내 말풍선과 NPC 대답이 기다리지 않고 바로 뜬다', () => {
   const { ctx, shown, advance, t0, npc } = bubbleContext(), me = npc('나'), g = npc('마들렌');
-  ctx.sayB(g, '자기소개', 8);            // 누르면 뜨는 자기소개
+  ctx.sayB(g, '자기소개', 8);
   advance(480);
-  ctx.sayB(me, '반가워요!', 3);          // 말걸기
+  ctx.sayB(me, '반가워요!', 3);
   advance(900);
-  ctx.sayB(g, '대답', 6);                // 0.9초 뒤 대답
+  ctx.sayB(g, '대답', 6);
   assert.deepEqual(shown.map(x => x.t), ['자기소개', '반가워요!', '대답']);
-  assert.equal(shown[1].at - t0, 480);   // 누른 순간
-  assert.equal(shown[2].at - shown[1].at, 900); // 예약된 0.9초 그대로 — 대기열 지연 없음
+  assert.equal(shown[1].at - t0, 480);
+  assert.equal(shown[2].at - shown[1].at, 900);
 });
 
-test('NPC 혼잣말은 한 번에 하나씩, 간격을 두고 차례로 뜬다', () => {
-  const { ctx, shown, advance, t0, npc } = bubbleContext();
-  ['a', 'b', 'c'].forEach(n => ctx.sayAmb(npc(n), '혼잣말 ' + n));
+test('QA421 NPC 혼잣말은 10초 간격으로 차례로, NPC마다 하루 한 번만', () => {
+  const { ctx, shown, advance, npc } = bubbleContext();
+  const a = npc('a'), b = npc('b');
+  ctx.sayAmb(a, '혼잣말 a'); ctx.sayAmb(b, '혼잣말 b');
   assert.equal(shown.length, 1);
-  advance(2400); assert.equal(shown.length, 1);
-  advance(480); assert.equal(shown.length, 2);
-  advance(2640); assert.equal(shown.length, 3);
-  assert.deepEqual(shown.map(x => x.who), ['a', 'b', 'c']);
-  assert(shown[1].at - shown[0].at >= 2600 && shown[2].at - shown[1].at >= 2600);
+  advance(9600); assert.equal(shown.length, 1);
+  advance(720); assert.equal(shown.length, 2);
+  assert(shown[1].at - shown[0].at >= 10000);
+  advance(11000); ctx.sayAmb(a, '또 a'); advance(11000);
+  assert.equal(shown.length, 2);                 // 오늘은 이미 말함
 });
 
-test('대화 직후와 대화 중에는 혼잣말이 끼어들지 않고, 너무 늦은 혼잣말은 버린다', () => {
-  const { ctx, shown, advance, npc } = bubbleContext(), me = npc('나');
-  ctx.say(me, '안녕하세요');
-  ctx.sayAmb(npc('a'), '끼어들기');
-  assert.equal(shown.length, 1);                 // 직접 대화 직후 2.2초는 대기
-  advance(2400); assert.equal(shown.length, 2);
-  ctx.ACTOR_SESSION = { target: {} };            // NPC와 대화 메뉴가 열려 있는 동안
-  advance(3000);
-  ctx.sayBAmb(npc('b'), '대화 중 혼잣말');
-  advance(4000); assert.equal(shown.length, 2);
-  ctx.ACTOR_SESSION = null; advance(480);
-  assert.equal(shown.length, 3);                 // 대화가 끝나면 이어서
+test('QA421 멀리 있는 NPC는 혼잣말하지 않고, 대화 중에는 끼어들지 않는다', () => {
+  const { ctx, shown, advance, npc } = bubbleContext();
+  ctx.sayAmb(npc('far', 20), '먼 곳'); assert.equal(shown.length, 0);
   ctx.ACTOR_SESSION = { target: {} };
-  ctx.sayAmb(npc('c'), '아주 늦은 혼잣말');
-  advance(10000); ctx.ACTOR_SESSION = null; advance(1000);
-  assert.equal(shown.length, 3);                 // 9초 넘게 밀린 말은 버림
+  ctx.sayBAmb(npc('b'), '대화 중 혼잣말');
+  advance(4000); assert.equal(shown.length, 0);
+  ctx.ACTOR_SESSION = null; advance(480);
+  assert.equal(shown.length, 1);
 });
 
 function frontContext(over = {}) {

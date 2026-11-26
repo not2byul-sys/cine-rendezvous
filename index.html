@@ -6695,7 +6695,12 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 </script>
 <script id="qa406-dice">/* QA406 · QA410 · QA412: 첫 입장 — 둥둥 떠서 도는 캐릭터, 이름표는 머리 위(실제 위치). 「닉네임 다시 뽑기」·「캐릭터 다시 뽑기」·「이대로 입장」. 화면은 아이템 획득 화면(qa338v)과 같은 스타일 */
 (function(){
- const css=document.createElement('style');css.textContent=`#qa338v.rw{display:block;--rh:224px}/* QA423: 카드도 아이템과 같은 224px 영역(간격 동일) */
+ const css=document.createElement('style');css.textContent=`#qa338v.rw{display:block;--rh:224px}#qa338v.rwc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#qa338v.rw.rwc .tt,#qa338v.rw.rwc .in,#qa338v.rw.rwc .zb{position:static;transform:none;height:auto;left:auto;right:auto;top:auto;bottom:auto}
+#qa338v.rw.rwc .in{max-width:min(88vw,432px)}#qa338v.rw.rwc .in img{max-height:min(66dvh,calc(100dvh - 220px));max-width:100%}
+#qa338v.rw.rwc .in .flip,#qa338v.rw.rwc .in .fi{max-height:none}
+#qa338v.rw .flip{cursor:pointer}
+/* QA425: 카드는 원래 크기, 제목·버튼과 위아래 20px */
 #qa338v.rw .in{position:absolute;left:20px;right:20px;top:50%;height:var(--rh);max-width:none;transform:translateY(-50%);display:flex;align-items:center;justify-content:center}
 #qa338v.rw .in img{max-height:var(--rh);max-width:100%;width:auto;height:auto}
 #qa338v.rw .in .flip,#qa338v.rw .in .fi{max-height:var(--rh);display:flex;align-items:center;justify-content:center}
@@ -6706,6 +6711,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 /* QA422: 아이템·카드 획득 화면 = 피그마 445:5309 규칙 */
 #qa338v.qa406.q422{display:block;padding:0;background:#290f14}
 #qa338v.qa406.q422 .blk{position:absolute;left:50%;width:min(402px,100%);transform:translateX(-50%);height:426px;top:max(16px,calc((100dvh - 86px - 426px) * .631))}
+#qa338v.qa406.q422 .ey{position:absolute;left:0;right:0;top:-30px;text-align:center;font:500 13px/20px Pretendard,'Noto Sans KR',sans-serif;color:#b8a5a9;letter-spacing:.02em}/* QA425: 보조 텍스트 */
 #qa338v.qa406.q422 .tt{position:absolute;left:0;right:0;top:-4px;height:32px;margin:0;padding:0;text-align:center;font:600 25px/32px Pretendard,'Noto Sans KR',sans-serif;color:#fff;letter-spacing:0}
 #qa338v.qa406.q422 .nm{position:absolute;left:50%;top:62px;transform:translateX(-50%);height:31px;min-height:0;padding:0 18px;box-sizing:border-box;border-radius:999px;background:#ededec;-webkit-backdrop-filter:none;backdrop-filter:none;color:#2a141c;font:500 17px/31px Pretendard,'Noto Sans KR',sans-serif;white-space:nowrap;z-index:2}
 #qa338v.qa406.q422 .stage{position:absolute;left:50%;top:73px;width:220px;height:288px;transform:translateX(-50%);max-height:none;aspect-ratio:auto}
@@ -6734,7 +6740,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 window.qa422Free=async n=>{const ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),1500);try{const r=await (await fetch('/api/save?name='+encodeURIComponent(n),{signal:ctl.signal})).json();if(!r||!r.ok)return n;const T=new Set((r.taken||[]).map(x=>String(x).toLowerCase())),lo=x=>x.normalize('NFC').trim().toLowerCase();if(!T.has(lo(n)))return n;const base=[...n].length+2>14?[...n].slice(0,11).join('')+'…':n;for(const L of 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'){const v=base+' '+L;if(!T.has(lo(v)))return v}return n}catch(e){return n}finally{clearTimeout(tm)}};
 window.qa406Dice=function(nm,done){let busy=false,spin=.7,av=null,seed=nm,top=2;const w=document.createElement('div');w.id='qa338v';w.className='qa406 q422';w.setAttribute('role','dialog');w.setAttribute('aria-label','입장 캐릭터 확인');
   /* QA422: 목업(첫 입장 캐릭터 선택) 그대로 — 제목·이름표·캐릭터·안내·다시 보기는 한 덩어리, 이대로 입장은 아래 고정 */
-  w.innerHTML='<div class="blk"><b class="tt">이대로 입장할까요?</b><span class="nm" aria-live="polite"></span><div class="stage"></div><p>모습이 마음에 들면 나중에 바꿀 수도 있어요.</p><div class="zb"><button type="button" class="rc">'+DICE+'다시 뽑기</button></div></div><div class="zb"><button type="button" class="pri go">이대로 입장</button></div>';
+  w.innerHTML='<div class="blk"><small class="ey">나의 캐릭터</small><b class="tt">이대로 입장할까요?</b><span class="nm" aria-live="polite"></span><div class="stage"></div><p>모습이 마음에 들면 나중에 바꿀 수도 있어요.</p><div class="zb"><button type="button" class="rc">'+DICE+'다시 뽑기</button></div></div><div class="zb"><button type="button" class="pri go">이대로 입장</button></div>';
   ['pointerdown','pointerup','touchstart','touchend','wheel','click'].forEach(t=>w.addEventListener(t,e=>e.stopPropagation()));document.body.appendChild(w);
   const st=w.querySelector('.stage'),nmEl=w.querySelector('.nm'),bc=w.querySelector('.rc'),bg=w.querySelector('.go');
   const Wd=st.clientWidth||240,Hd=st.clientHeight||320,r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio||1));r.setSize(Wd,Hd,false);try{r.outputEncoding=R.outputEncoding}catch(e){}st.prepend(r.domElement);
@@ -6756,11 +6762,11 @@ window.qa406Dice=function(nm,done){let busy=false,spin=.7,av=null,seed=nm,top=2;
  const cut=u=>typeof u==='string'&&/qa95_assets\/snack\/[a-z_]+\.webp$/.test(u)&&!/_c\.webp$/.test(u)?u.replace(/\.webp$/,'_c.webp'):u;/* 배경을 걷어 낸 이미지 */
  let V=null;const close=()=>{if(V){V.remove();V=null}};
  /* o={img|html, card, photo, title, cap, back:{nm,text}, modal, btns:[[글자,함수,강조]]} */
- function view(o){close();const btns=(o.btns||[['닫기']]).slice();if(o.back)btns.unshift(['뒷면 보기','flip']);const cls=o.card?'cd':o.photo?'ph':'';
+ function view(o){close();const btns=(o.btns||[['닫기']]).slice();if(o.back&&!o.rw)btns.unshift(['뒷면 보기','flip'])/* QA425: 획득 화면은 버튼 없이 눌러서 뒤집기 */;const cls=o.card?'cd':o.photo?'ph':'';
   const im=o.img?`<img class="${cls}" alt="" src="${o.img}">`:'',body=o.html||(o.back?`<div class="flip"><div class="fi">${im}<div class="bk"><b>${esc(o.back.item?(o.back.nm||'')+' 이야기':o.back.nm?o.back.nm+'의 한마디':'한마디')}</b><span>${esc(o.back.text)}</span>${(()=>{const f=!o.back.item&&o.back.nm&&window.qa408Fit?qa408Fit(o.back.nm):'';return f?`<small class="fit"><em>오늘의 차림</em>${esc(f)}</small>`:''})()}</div></div></div>`:im);
   const w=document.createElement('div');w.id='qa338v';if(o.rw)w.className='rw'+(o.card?' rwc':'');w.innerHTML=(o.title?`<b class="tt">${esc(o.title)}</b>`:'')+`<div class="in">${body}</div>`+(o.cap?`<p>${esc(o.cap)}</p>`:'')+'<div class="zb">'+btns.map((b,i)=>`<button type="button" data-i="${i}"${b[2]?' class="pri"':''}>${b[0]}</button>`).join('')+'</div>';
   const stop=e=>e.stopPropagation();['pointerdown','pointerup','touchstart','touchend','wheel'].forEach(t=>w.addEventListener(t,stop));
-  const flip=()=>{const f=w.querySelector('.flip');if(!f)return;const on=f.classList.toggle('on'),t=w.querySelector('.zb button[data-i="0"]');if(t)t.textContent=on?'앞면 보기':'뒷면 보기'};
+  const flip=()=>{const f=w.querySelector('.flip');if(!f)return;const on=f.classList.toggle('on'),t=btns[0]&&btns[0][1]==='flip'&&w.querySelector('.zb button[data-i="0"]');if(t)t.textContent=on?'앞면 보기':'뒷면 보기'};
   w.addEventListener('click',e=>{e.stopPropagation();if(e.target.closest('.flip')){flip();return}const b=e.target.closest('.zb button');if(!b){if(e.target===w&&!o.modal)close();return}const fn=btns[+b.dataset.i][1];if(fn==='flip'){flip();return}close();if(fn)fn()});
   document.body.appendChild(w);V=w;return w}
  const ask=(msg,label,fn)=>view({html:`<div class="tx">${esc(msg)}</div>`,modal:1,btns:[['취소'],[label,fn,1]]});

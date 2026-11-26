@@ -67,22 +67,20 @@ function tagContext() {
   return ctx;
 }
 
-test('이름표: 카메라 기본 거리(배율 1.15)에서 알약 높이 28px · 글자 11px', () => {
+test('이름표: 카메라 기본 거리(배율 1.15)에서 알약 높이 26px(QA388: 위아래 1px씩 줄임) · 글자 11px', () => {
   const ctx = tagContext(), t = ctx.nameTag('다정한 나무', false), [w, h] = t.userData.px;
-  assert(Math.abs(h * 1.15 - 28) < 0.01, String(h * 1.15));
+  assert(Math.abs(h * 1.15 - 26) < 0.01, String(h * 1.15));
   assert(Math.abs(ctx.NAMETAG.fs * ctx.NAMETAG.k * 1.15 - 11) < 0.01);
-  /* 글자 좌우 여백 11 · 10.7(산사 실측 11 · 10.8) */
+  /* 글자 좌우 여백 9 · 8.7(QA388: 2px씩 줄임) */
   const im = t.material.map.image, textW = 6 * 30;
-  assert.equal(im.width, textW + 33 + 32); assert.equal(ctx.drawn.find(d => d[0] === 'name')[2], 33);
+  assert.equal(im.width, textW + 27 + 26); assert.equal(ctx.drawn.find(d => d[0] === 'name')[2], 27);
   assert.equal(t.material.sizeAttenuation, false, '화면에서 같은 크기로 보이는 방식 그대로');
 });
 
-test('내 이름표: 「나」 원은 지름 19px, 왼쪽 5.7 · 글자와 6.7 간격', () => {
+test('내 이름표: 「나」 표시 없음(QA388)', () => {
   const ctx = tagContext(); ctx.nameTag('하나', true);
-  const arc = ctx.drawn.find(d => d[0] === 'arc'), name = ctx.drawn.find(d => d[0] === 'name'), s = 3;
-  assert.equal(arc[3] * 2 / s, 19); assert(Math.abs((arc[1] - arc[3]) / s - 5.7) < 0.1); assert(Math.abs((name[2] - (arc[1] + arc[3])) / s - 6.7) < 0.1);
+  assert(!ctx.drawn.find(d => d[0] === 'arc'));
 });
-
 test('다른 라벨(자판기 등)은 예전 모양 그대로: 높이 글자+20, 좌우 여백 14', () => {
   const ctx = tagContext(), t = ctx.tag('COFFEE', '#fff', '#000', 26, .6, true), im = t.material.map.image;
   assert.equal(im.height, 46); assert.equal(im.width, 6 * 30 + 28); assert.equal(ctx.drawn.find(d => d[0] === 'name')[2], 14);

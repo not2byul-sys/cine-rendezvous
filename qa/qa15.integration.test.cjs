@@ -11,10 +11,12 @@ test('QA15 front glass window area is 1.30x (each side x sqrt(1.3)) and the wall
   assert(!source.includes('wseg(-LW,-4.4,0,8.8,LD,MU2,.3)'));
   assert.ok(Math.abs(Math.sqrt(1.3) ** 2 - 1.3) < 1e-12);
 });
-test('QA15/QA418 snow falls in 3 depth layers (far small slow, near big bokeh) and stays outdoors', () => {
-  assert(source.includes('const SNOWL = ['));
-  assert(source.includes('{n: 900, size: .13, op: .8, z0: LD + 4, z1: LD + 13.4'));
-  assert(source.includes('{n: 60, size: .7, op: .45, z0: LD + .55, z1: LD + 1.6'));
+test('QA15 snow particles grow by 20% (1050 -> 1260) and stay outdoors', () => {
+  assert(source.includes('const snowCount = 1260;'));
+  // QA69 entrance snowfall: every flake stays between the door (LD+.9) and the opposite facade (LD+14.05), with its own fall speed, sway and wind drift
+  assert(source.includes("x: snowRandom() * 80 - 40, z: LD + .9 + snowRandom() * 12.5,"));
+  assert(source.includes('speed: .48 + snowRandom() * .62, sway: .06 + snowRandom() * .19,'));
+  assert(source.includes('drift: .55 + snowRandom() * .9, flutter: .08 + snowRandom() * .16'));
   assert(source.includes('if (snow.visible) updateEntranceSnow(dt, t);'));
 });
 test('QA15 every lobby ceiling light except the chandelier is flush-mounted (no rod)', () => {

@@ -2,7 +2,9 @@
    KV: SETTINGS(없으면 REVIEWS) 를 함께 쓴다. 키는 'u:<아이디>'. 비밀번호는 해시만 보관. */
 const json = (o, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
 const kvOf = env => env.SETTINGS || env.REVIEWS || null;
-const ID = /^[a-z0-9_]{4,16}$/, PIN = /^\d{4}$/;
+/* QA422: 아이디 = 닉네임(한글 영화 제목 등). 앞뒤 공백 정리·소문자 */
+const ID = /^[\p{L}\p{N} _:.,'!?·&\-\/()…]{1,16}$/u, PIN = /^\d{4}$/;
+const norm = v => String(v || '').normalize('NFC').trim().replace(/\s+/g, ' ').toLowerCase();
 const MAX = 8e6, TRIES = 5, LOCK = 10 * 60 * 1000;
 const hash = async (id, pin) => { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('cine:' + id + ':' + pin)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); };
 
@@ -10,7 +12,7 @@ export async function onRequestPost({ request, env }) {
   const kv = kvOf(env);
   if (!kv) return json({ ok: false, error: 'storage_unbound' }, 503);
   let b; try { b = await request.json(); } catch { return json({ ok: false, error: 'bad_json' }, 400); }
-  const id = String((b && b.id) || '').toLowerCase(), pin = String((b && b.pin) || ''), op = b && b.op;
+  const id = norm(b && b.id), pin = String((b && b.pin) || ''), op = b && b.op;
   if (!ID.test(id) || !PIN.test(pin)) return json({ ok: false, error: 'bad_input' }, 400);
   const key = 'u:' + id, now = Date.now(), h = await hash(id, pin);
   let r = null; try { r = await kv.get(key, 'json'); } catch { r = null; }
@@ -30,4 +32,15 @@ export async function onRequestPost({ request, env }) {
     return json({ ok: true, t: now });
   }
   return json({ ok: false, error: 'bad_op' }, 400);
+}
+
+/* QA422: 이미 등록된 닉네임 확인 — GET /api/save?name=<닉네임> → 같은 이름으로 시작하는 등록 아이디 목록(최대 50) */
+export async function onRequestGet({ request, env }) {
+  const kv = kvOf(env);
+  if (!kv) return json({ ok: false, error: 'storage_unbound' }, 503);
+  const name = norm(new URL(request.url).searchParams.get('name'));
+  if (!name || !ID.test(name)) return json({ ok: false, error: 'bad_input' }, 400);
+  let keys = [];
+  try { keys = (await kv.list({ prefix: 'u:' + name, limit: 50 })).keys.map(k => k.name.slice(2)); } catch { keys = []; }
+  return json({ ok: true, taken: keys });
 }

@@ -77,9 +77,9 @@ test('이름표: 카메라 기본 거리(배율 1.15)에서 알약 높이 27px �
   assert.equal(t.material.sizeAttenuation, false, '화면에서 같은 크기로 보이는 방식 그대로');
 });
 
-test('내 이름표: 「나」 표시 없음(QA388)', () => {
+test('QA422 내 이름표: 다른 캐릭터와 같은 색 + 앞에 「나」 라벨', () => {
   const ctx = tagContext(); ctx.nameTag('하나', true);
-  assert(!ctx.drawn.find(d => d[0] === 'arc'));
+  assert(ctx.drawn.find(d => d[0] === 'arc'));
 });
 test('다른 라벨(자판기 등)은 예전 모양 그대로: 높이 글자+20, 좌우 여백 14', () => {
   const ctx = tagContext(), t = ctx.tag('COFFEE', '#fff', '#000', 26, .6, true), im = t.material.map.image;

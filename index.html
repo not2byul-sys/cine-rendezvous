@@ -6701,6 +6701,7 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 #qa338v.rw.rwc .in .flip,#qa338v.rw.rwc .in .fi{max-height:none}
 #qa338v.rw .flip{cursor:pointer}
 /* QA425: 카드는 원래 크기, 제목·버튼과 위아래 20px */
+html body #qa338v.qa372.qa425 .zb button{flex:1 1 0!important;width:auto!important;min-width:0!important;max-width:none!important;padding:0 10px!important;white-space:nowrap}#qa338v.qa372.qa425 .fm p{margin-bottom:0}
 #qa338v.rw .in{position:absolute;left:20px;right:20px;top:50%;height:var(--rh);max-width:none;transform:translateY(-50%);display:flex;align-items:center;justify-content:center}
 #qa338v.rw .in img{max-height:var(--rh);max-width:100%;width:auto;height:auto}
 #qa338v.rw .in .flip,#qa338v.rw .in .fi{max-height:var(--rh);display:flex;align-items:center;justify-content:center}
@@ -6844,14 +6845,16 @@ window.qa406Dice=function(nm,done){let busy=false,spin=.7,av=null,seed=nm,top=2;
    if(mode==='new'){localStorage.setItem('aic.acct',JSON.stringify({id,pin}));last='';const r=await push('create');if(!r||!r.ok){const e=r&&r.error;if(e==='taken'||e==='locked'||e==='bad_input'){localStorage.removeItem('aic.acct');b.disabled=false;toast(ERR[e]);return}/* 서버에 닿지 않아도 가방은 열어 줌 */localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수집이 열렸어요 · 지금은 이 브라우저에만 저장돼요');try{hudUpd()}catch(x){}return}localStorage.setItem('aic.saveAsked','1');QA338.close();toast('가방과 수집이 열렸어요');try{hudUpd()}catch(x){}}
    else{const r=await post({op:'load',id,pin});if(!r.ok){b.disabled=false;toast(ERR[r.error]||'불러오지 못했어요');return}Object.entries(r.data||{}).forEach(([k,v])=>{if(KEYS.includes(k))try{localStorage.setItem(k,v)}catch(e){}});if(r.data&&r.data.held)try{localStorage.setItem('aic.heldRestore',r.data.held)}catch(e){}localStorage.setItem('aic.acct',JSON.stringify({id,pin}));localStorage.setItem('aic.saveAsked','1');location.reload()}},true);
   setTimeout(()=>{const i=w.querySelector('#qa341id');if(i&&matchMedia('(pointer:fine)').matches)i.focus()/* QA372: 모바일은 키보드가 바로 뜨지 않게 */},50)}
- window.QA341={form,acct,push};A.qa341new=()=>form('new');A.qa341load=()=>form('load');
+ /* QA425: 처음 무언가를 보관할 때 — 가입 창 대신 먼저 묻기(사라져도 괜찮아요 · 등록하고 보관하기) */
+ function keepAsk(){const w=QA338.view({title:'이대로 보관할까요?',modal:1,html:'<div class="fm"><p>아직 가방이 없어서, 이 기기에서 기록을 지우거나\n다른 기기로 들어오면 보관한 것이 사라질 수 있어요.</p></div>',btns:[['사라져도 괜찮아요',()=>{localStorage.setItem('aic.saveAsked','1')}],['등록하고 보관하기',()=>form('new'),1]]});try{w.classList.add('qa372','qa425');const c=document.createElement('div');c.className='qa372c';[...w.children].forEach(x=>c.appendChild(x));w.appendChild(c)}catch(e){}}
+ window.QA341={form,acct,push,keepAsk};A.qa341new=()=>form('new');A.qa341load=()=>form('load');
  /* 이어받은 손·가방 간식 */
  const rest=()=>{const h=localStorage.getItem('aic.heldRestore');if(!h||typeof holdAdd!=='function'||!me)return;localStorage.removeItem('aic.heldRestore');try{const L=JSON.parse(h);if(!HELD.length&&L.length){holdAdd(L.map(x=>x.k));L.forEach((x,i)=>{if(HELD[i]&&x.left!=null)HELD[i].left=x.left});QA115_OFF=true;refreshMe()}}catch(e){}};
  /* QA347: 첫 입장 티켓의 '이어하기' 버튼은 뺌(불러오기 창 A.qa341load 는 남겨 둠) */
  setInterval(()=>{if(typeof me==='undefined'||!me)return;rest();
   const a=acct(),bag=document.getElementById('qa270');
   /* 처음 무언가를 간직했을 때 한 번만 묻는다 */
-  if(!a&&!localStorage.getItem('aic.saveAsked')&&!document.getElementById('qa338v')&&!document.getElementById('qa270')&&!document.getElementById('qa336v')&&(J('aic.cards',[]).length||J('aic.keeps',[]).length||Object.keys(J('aic.wraps',{})).length||(window.QA342&&QA342.count()>0)))form('new');
+  if(!a&&!localStorage.getItem('aic.saveAsked')&&!document.getElementById('qa338v')&&!document.getElementById('qa270')&&!document.getElementById('qa336v')&&(J('aic.cards',[]).length||J('aic.keeps',[]).length||Object.keys(J('aic.wraps',{})).length||(window.QA342&&QA342.count()>0)))keepAsk();
  },2500);
  setInterval(()=>{push('save')},20000);addEventListener('pagehide',()=>{const a=acct();if(!a||sigOf()===last)return;/* 바뀐 게 없으면 보내지 않음 */try{navigator.sendBeacon('/api/save',new Blob([JSON.stringify({op:'save',id:a.id,pin:a.pin,data:snap()})],{type:'application/json'}))}catch(e){}});
  /* 먹는 중: 남은 분이 바뀌면 액션바도 갱신 */

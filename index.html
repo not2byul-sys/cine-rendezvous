@@ -3233,11 +3233,12 @@ function hudUpd(){let h='';const zc=me?curZone(me):'L0',inH=zc&&zc[0]==='H',sp=m
  h=h.replace(/>([^<>]+)</g,(m,t)=>'>'+t.replace(EMO,'')+'<');h=h.replace(/<button([^>]*)data-a="([a-z]+)"([^>]*)>([^<]*)<\/button>/g,(m,a,k,b,t)=>`<button${a}data-a="${k}"${b}>${k==='sitnear'?'':tbIco(k)}<span>${t}</span></button>`);if(CMODE==='live'&&performance.now()-CTIP<15000)h=h.replace('<span>처음부터 보기</span>','<span>처음부터 보기</span><span class="tip">처음부터 볼 수 있어요</span>');const hc=!!h;if(inH){const pl_=!!curSp||!!window.QA234SEQ;const st_=!!(me&&me.userData.seat&&me.userData.seat.kind==='cine')/* QA371: B안 — 앉기 전엔 좌석표, 앉은 뒤엔 영화 보기 */;h+=[['bag','가방',tbIco('bag')],/* QA225: 티켓은 가방 안으로 */st_?null:['qa371map','좌석표',lucide('sitnear',16)],st_?[pl_?'qa219stop':'qa219play',pl_?'관람 중단':'영화 보기'/* QA367 · QA370: B안 이름 */,pl_?lucide('cpause',16):lucide('reel',16)]:null,(HELD.some(x=>!isFlower(x.k))?['qa219eat','간식',lucide('popcorn',16)]:['qa230buy','간식',lucide('popcorn',16)])/* QA367: 간식 하나로 — 있으면 고르기, 없으면 구매 *//* QA231: 간식이 없으면 간식구매 */].filter(Boolean).map((x,i)=>`<button class="fx${i===0&&hc?' sep':''}" data-a="${x[0]}">${x[2]}<span>${x[1]}</span></button>`).join('')/* QA219: 상영관 퀵바 — 티켓·가방·영화관람(상영 중 관람중단)·간식먹기·로비로 나가기 */}else if(!cine)h+=['bag:가방','book:수첩','tt:상영작','avatar:캐릭터','camshot:카메라'/* QA40 · QA338 *//* QA225: 티켓은 가방 안으로 */].map((x,i)=>{const[k,t]=x.split(':');return`<button class="fx${i===0&&hc?' sep':''}" data-a="${k}">${QA378I(k)}<span>${t}</span></button>`}).join('');
 
  /* QA75: 퀵바의 '대화' 메뉴 삭제 */
- if(zc==='P')h+=`<button class="fx" data-a="qa199out" aria-label="아지트로 나가기">${lucide('hallDoor')}<span>아지트로 나가기</span></button>`/* QA199: 영사실에서 바로 나가기 */;
- if(inH||zc==='B'){
+ /* QA384: 영사실 '아지트로 나가기'는 퀵바 밖(위치 칩 옆)으로 */
+ if(inH){/* QA384: 아지트 '로비로 나가기'는 퀵바 밖으로 */
    h+=`<button class="fx" data-a="exithall" data-k="${zc[1]}" aria-label="로비로 나가기">${lucide('hallDoor')}<span>${inH?'나가기':'로비로 나가기'}</span></button>`/* QA227: 상영관에선 '나가기' */.replace('data-a="exithall"',zc==='B'?'data-a="goup"':'data-a="exithall"');
  }
- const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none';CinemaAudio.updateButton()}
+ const el=$('act');if(h!==hudLast){el.innerHTML=h;hudLast=h}HUD.style.display='none';CinemaAudio.updateButton();qa384Exit(zc)}
+function qa384Exit(zc){/* QA384: 아지트(B)·영사실(P) 나가기 버튼 — 위치 칩 오른쪽 */let b=document.getElementById('qa384x');const t=zc==='B'?['goup','로비로 나가기']:zc==='P'?['qa199out','아지트로 나가기']:null;if(!t){if(b)b.hidden=true;return}if(!b){b=document.createElement('button');b.id='qa384x';b.type='button';document.body.appendChild(b)}if(b.dataset.a!==t[0]){b.dataset.a=t[0];b.setAttribute('aria-label',t[1]);b.innerHTML=lucide('hallDoor',16)+'<span>'+t[1]+'</span>'}b.hidden=false}
 function toLobby(){const u=me.userData;u.path=[];u.spot=null;u.after=null;me.position.set(0,0,17.3);u.lvl=0;me.rotation.y=Math.PI;camYaw=camYawS=Math.PI;snapCam=true;closePanel()}
 function exitHall(k){if(!me)return;closePanel();const e=EXIT[k];walkTo(me,e.x,e.z+(k===1?1.6:.8),k===1?'L0':'L1')}
 /* QA88→QA96: 손에는 1개만, 나머지는 가방 */let QA88_N=0,QA115_OFF=false;function refreshMe(){const n=HELD.length,was=Math.max(0,QA88_N-1),now=Math.max(0,n-1);if(n>QA88_N||!n)QA115_OFF=false;if(now>was&&!(window.QA342&&QA342.locked()))toast(`나머지 ${now-was}개는 가방에 넣었어요`);QA88_N=n;if(me)setCarry(me,QA115_OFF?[]:HELD.slice(0,1))/* QA115: 다 먹으면 손은 빈손, 나머지는 가방에 그대로 *//* QA96: 손에는 1개만, 나머지는 가방 */;hudUpd()}
@@ -5663,7 +5664,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
  window.qa255Spot=(sp,o)=>{if(curZone(me)!==sp.zone||sp.zone[0]==='H')return false;const it=LAYI.find(i=>i.spots.some(e=>e.s===sp)),k=it&&BY[it.id];if(!k)return false;let tp=topOf(o);{const gs=it.objs.map(e=>e.o).filter(x=>x.isGroup&&x.parent===S);if(gs.length&&!gs.includes(tp))tp=gs.sort((a,b)=>Math.hypot(a.position.x-sp.x,a.position.z-sp.z)-Math.hypot(b.position.x-sp.x,b.position.z-sp.z))[0]}/* QA278: 카드 사진은 앉는 의자 */QA255.sel={k,sp,top:tp,it,d0:Math.hypot(me.position.x-tp.position.x,me.position.z-tp.position.z)};hudUpd();return true};
  window.qa353Front=w=>{const dx=me.position.x-w.x,dz=me.position.z-w.z,l=Math.hypot(dx,dz)||1,r=Math.min(1.1,l);return {x:w.x+dx/l*r,z:w.z+dz/l*r}};/* QA353: 물건 쪽으로 1.1m 앞 */
  window.qa255Pick=(d,o)=>{const w=d.top.getWorldPosition(new THREE.Vector3()),f=qa353Front(w);approachObject({pt:{x:f.x,z:f.z,zone:curZone(me)},fn:()=>{QA255.sel={k:d.k,sp:null,top:d.top,it:d.it,d0:Math.hypot(me.position.x-w.x,me.position.z-w.z)};hudUpd()}},d.top)};/* QA338: 누르면 그 앞까지 감 */
- const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h='<button type="button" data-a="qa255info">'+(P[s_.k]&&(P[s_.k].kind||P[s_.k].name)?esc(P[s_.k].kind||P[s_.k].name)+' ':'')+'살펴보기</button>'/* QA338 · QA353 · QA364: 제품명 대신 종류(소파·의자·화분) */;if(!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;cb.hidden=false}}}catch(e){}return r};
+ const _h=hudUpd;hudUpd=function(){const r=_h.apply(this,arguments);try{const cb=$('ctxbar'),s_=QA255.sel;if(cb&&s_){if(Math.hypot(me.position.x-s_.top.position.x,me.position.z-s_.top.position.z)>Math.max(s_.d0||0,4)+3){QA255.sel=null}else{const h='<button type="button" data-a="qa255info">'+(P[s_.k]&&(P[s_.k].kind||P[s_.k].name)?esc(P[s_.k].kind||P[s_.k].name)+' ':'')+'살펴보기</button>'/* QA338 · QA353 · QA364: 제품명 대신 종류(소파·의자·화분) */;let own=false;try{own=!!(P[s_.k]&&qa255Cards.list().some(x=>x.n===P[s_.k].name))}catch(e){}/* QA384: 이미 얻은 아이템은 살펴보기 없음 */if(!own&&!cb.innerHTML.includes('qa255info'))cb.innerHTML=h+cb.innerHTML,cb._h=null;if(!own||cb.innerHTML.trim())cb.hidden=false}}}catch(e){}return r};
  A.qa255sit=()=>{const s_=QA255.sel;QA255.sel=null;if(s_&&s_.sp)goSpot(s_.sp);hudUpd()};
  /* 아이템 3D 컷(투명 배경) */let PR=null;function shot(top){if(!PR){PR=new THREE.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});PR.setPixelRatio(1)}PR.setSize(480,502,false);
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xffffff,0x8a7a6a,1.0));const dl=new THREE.DirectionalLight(0xffffff,.6);dl.position.set(2,3,4);sc.add(dl);
@@ -7097,6 +7098,37 @@ html body:not(.inhall) #ctxbar button{height:44px!important;min-height:0!importa
 #qa373ch button{all:unset;box-sizing:border-box;height:44px;width:100%;padding:0 12px;border-radius:6px;font:400 13px/17px 'Noto Sans KR',sans-serif;color:#fff;cursor:pointer}
 #qa373ch button.cur{background:#2f2829;color:rgba(255,255,255,.92)}
 #qa373ch button:not(.cur):hover{background:#292929}
+</style>
+<style id="qa384-css">/* QA384: HUD 공통 — 퀵바 규격은 로비 기준으로 로비·상영관·아지트·영사실 모두 같음(메뉴 내용만 다름), 퀵바와 액션 버튼은 12px 아래로(둘 간격 유지),
+ 색은 QA373 이전 HUD 색(반투명 + 얇은 테두리 + 블러)으로 되돌려 상단 메뉴·액션 버튼까지 공통 토큰으로 */
+html:root body{--q3t:16px;--q3s:16px;--q3b:calc(env(safe-area-inset-bottom,0px) + 12px);
+ --hud-c-bg:rgba(28,20,22,.72);--hud-c-bd:1px solid rgba(255,255,255,.12);--hud-c-blur:blur(12px) saturate(1.2);--hud-c-sh:0 10px 30px -10px rgba(0,0,0,.6);--hud-c-fg:rgba(250,245,240,.92);--hud-c-hv:rgba(255,255,255,.08);--hud-c-on:rgba(255,255,255,.14)}
+@media (min-width:700px){html:root body{--q3t:24px;--q3s:24px;--q3b:8px}}
+/* 공통 표면: 퀵바·상단 메뉴·액션 버튼 */
+html body .bar #act[id],html body #chip[id],html body #mpbar>button[id],html body.inhall #ctitle[id],html body.inhall #hb #qa133snd[id],html body.inhall #hb #qa133full[id],html body.inhall #hb #qa157vol[id],html body #ctxbar button[class],html body #ctxbar button:not([class]),html body #actorMenu button,html body #qa373ch,html body:not(.inhall) #hint[id],#qa384x{background:var(--hud-c-bg)!important;border:var(--hud-c-bd)!important;box-shadow:var(--hud-c-sh)!important;backdrop-filter:var(--hud-c-blur)!important;-webkit-backdrop-filter:var(--hud-c-blur)!important}
+@media (min-width:700px){html body.inhall #hb #qa133snd[id]{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}
+/* 퀵바(모든 공간): 로비 규격 */
+html body .bar[class]{bottom:var(--q3b)!important;padding:0!important}
+html body .bar #act[id]{flex:none!important;width:auto!important;max-width:none!important;height:auto!important;padding:3px!important/* 테두리 1px 포함 4px → 344×68 유지 */;gap:4px!important;border-radius:16px!important;margin:0 auto!important;zoom:1!important}
+html body .bar #act[id]>button{flex:none!important;width:64px!important;min-width:0!important;max-width:none!important;height:60px!important;padding:0!important;margin:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;border-radius:12px!important;background:transparent!important;border:0!important;box-shadow:none!important;color:var(--hud-c-fg)!important}
+html body .bar #act[id]>button::before{display:none}
+html body .bar #act[id]>button svg{display:block!important;width:16px!important;height:16px!important;margin:0!important;flex:none}
+html body .bar #act[id]>button span{font:400 12px/20px 'Noto Sans KR',sans-serif!important;color:var(--hud-c-fg)!important;margin:0!important;letter-spacing:0!important}
+html body .bar #act[id]>button:hover{background:var(--hud-c-hv)!important}
+html body .bar #act[id]>button:active,html body .bar #act[id]>button.qa373on{background:var(--hud-c-on)!important}
+html body .bar #act[id]>button.qa373on span{color:var(--hud-c-fg)!important}
+/* 상단 메뉴 글자·아이콘 색 */
+html body #chip[id] #chtx,html body #chip[id] #cnt,html body #mpbar>button[id],html body.inhall #cyt,html body.inhall #ctitle #qa-yt-label,html body.inhall #hb #qa133snd[id],html body.inhall #hb #qa133full[id]{color:var(--hud-c-fg)!important}
+html body #chip[id] svg{stroke:var(--hud-c-fg)!important}
+html body #qa373ch button.cur{background:var(--hud-c-on)!important;color:var(--hud-c-fg)!important}html body #qa373ch button:not(.cur):hover{background:var(--hud-c-hv)!important}
+/* 액션 버튼: 테두리 있던 캐릭터 메뉴도 상황별 버튼과 같은 위치·모양 */
+html body #ctxbar[id],html body #actorMenu[id]{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:calc(var(--q3b) + 84px + var(--qa-keyboard-offset,0px))!important;transform:translateX(-50%)!important;gap:8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;zoom:1!important}
+html body #ctxbar[id] button,html body #actorMenu[id] button{height:44px!important;min-height:0!important;padding:0 16px!important;border-radius:100px!important;color:#fff!important;font:500 14px/1 'Noto Sans KR',sans-serif!important;white-space:nowrap}
+html body #ctxbar[id] button:hover,html body #actorMenu[id] button:hover{background:rgba(48,36,38,.82)!important}
+/* 아지트·영사실 나가기: 퀵바 밖, 위치 칩 오른쪽 */
+#qa384x{all:unset;position:fixed;z-index:30;top:var(--q3t);left:calc(var(--q3s) + 108px);height:44px;box-sizing:border-box;padding:0 14px 0 12px;border-radius:100px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--hud-c-fg);font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap}
+#qa384x[hidden]{display:none}#qa384x svg{width:16px;height:16px;flex:none}#qa384x:hover{background:rgba(48,36,38,.82)!important}
+body.qa367idle #qa384x{opacity:0;pointer-events:none}
 </style>
 <div id="qa373ch" hidden role="listbox" aria-label="채널 선택"></div>
 <script id="qa373-hud">/* QA373: 로비 HUD 보조 — 채널 선택 드롭다운(피그마 06), 열린 창의 퀵바 버튼 Active 표시(피그마 05) */

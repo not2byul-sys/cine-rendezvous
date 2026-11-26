@@ -7135,13 +7135,14 @@ html body #chip[id] #chtx,html body #chip[id] #cnt,html body #mpbar>button[id],h
 html body #chip[id] svg{stroke:var(--hud-c-fg)!important}
 html body #qa373ch button.cur{background:var(--hud-c-on)!important;color:var(--hud-c-fg)!important}html body #qa373ch button:not(.cur):hover{background:var(--hud-c-hv)!important}
 /* 액션 버튼: 테두리 있던 캐릭터 메뉴도 상황별 버튼과 같은 위치·모양 */
-html body #ctxbar[id],html body #actorMenu[id]{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:calc(var(--q3b) + 84px + var(--qa-keyboard-offset,0px))!important;transform:translateX(-50%)!important;gap:8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;zoom:1!important}
+html body #ctxbar[id],html body #actorMenu[id]{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:calc(var(--q3b) + 84px + var(--qa-keyboard-offset,0px))!important;transform:translateX(-50%)!important;gap:8px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;zoom:1!important;overflow:visible!important/* QA391: 버튼 그림자가 네모로 잘리지 않게 */}
 html body #ctxbar[id] button,html body #actorMenu[id] button{height:44px!important;min-height:0!important;padding:0 16px!important;border-radius:100px!important;color:#fff!important;font:500 14px/1 'Noto Sans KR',sans-serif!important;white-space:nowrap}
 html body #ctxbar[id] button:hover,html body #actorMenu[id] button:hover{background:rgba(48,36,38,.82)!important}
 /* 아지트·영사실 나가기: 퀵바 밖, 위치 칩 오른쪽 */
 #qa384x{all:unset;position:fixed;z-index:30;top:var(--q3t);left:calc(var(--q3s) + 108px);height:44px;box-sizing:border-box;padding:0 14px 0 12px;border-radius:100px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--hud-c-fg);font:500 13px/1 'Noto Sans KR',sans-serif;white-space:nowrap}
 #qa384x[hidden]{display:none}#qa384x svg{width:16px;height:16px;flex:none}#qa384x:hover{background:rgba(48,36,38,.82)!important}
 body.qa367idle #qa384x{opacity:0;pointer-events:none}
+html body:has(#actorMenu:not([hidden]) button) #hint[id]{display:none!important}/* QA391: 캐릭터 액션 버튼이 뜨면 이동 안내는 숨김(같은 자리) */
 </style>
 <div id="qa373ch" hidden role="listbox" aria-label="채널 선택"></div>
 <script id="qa373-hud">/* QA373: 로비 HUD 보조 — 채널 선택 드롭다운(피그마 06), 열린 창의 퀵바 버튼 Active 표시(피그마 05) */

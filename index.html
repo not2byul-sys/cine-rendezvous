@@ -2543,7 +2543,7 @@ function upd(c,dt,t){const u=c.userData,n=c.children[0];if(u.sitAnim){sitStep(c,
  if(u.b&&(u.bt-=dt)<0){c.remove(u.b);u.b=null}
  if(u.npc&&!u.giftEating&&!u.treeCeremony){npcWander(c,dt,t);/* 정적인 NPC: 자리에 앉아 있다가 유저가 다가오면 일어나 비켜주고, 멀어지면 다시 앉음 */
   const d=me&&me.userData.lvl===u.lvl?Math.hypot(me.position.x-c.position.x,me.position.z-c.position.z):99;
-  if(u.seat){if(d<2.3){standUp(c,true);u.stood=0;if(me)c.rotation.y=Math.atan2(me.position.x-c.position.x,me.position.z-c.position.z);if(Math.random()<.5)say(c,['아, 앉으세요!','안녕하세요 😊','편히 쉬세요'][Math.random()*3|0])}
+  if(u.seat){if(d<2.3){standUp(c,true);u.stood=0;if(me)c.rotation.y=Math.atan2(me.position.x-c.position.x,me.position.z-c.position.z);if(Math.random()<.5)say(c,['안녕하세요 😊','편히 쉬세요'][Math.random()*2|0])/* QA394: '아, 앉으세요!' 대사 삭제(자리 비켜주기는 그대로) */}
    else if((u.talk=(u.talk||20+Math.random()*30)-dt)<0){u.talk=25+Math.random()*40;if(Math.random()<.25/* QA302: 혼잣말 빈도 절반 */){(typeof sayAmb==='function'?sayAmb:say)(c,npcTalkLine(c))/* QA245 */}}}
   else{u.stood=(u.stood||0)+dt;if(me&&d<4)c.rotation.y+=(Math.atan2(me.position.x-c.position.x,me.position.z-c.position.z)-c.rotation.y)*0;
    if(!(u.path&&u.path.length)&&!u.roamActive&&!u.marcusExplore&&u.stood>3&&d>4.5){if(u.post){c.rotation.y=u.post[2]}else{let sp=u.home&&!u.home.taken?u.home:null;if(sp)sit(c,sp)}}}}}

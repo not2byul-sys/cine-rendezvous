@@ -946,14 +946,18 @@ const DURS=store.get('aic.durs')||{},SCHEDK='aic.sched';
 function applySched(){const sv=store.get(SCHEDK);CFG.HALLS.forEach(h=>{if(!h._def)h._def={films:h.films.map(f=>({...f})),anchor:h.anchor,gap:CFG.GAP};const x=sv&&sv[h.id];if(x&&x.films&&x.films.length){h.films=x.films.map(f=>({...f}));h.anchor=x.anchor||undefined}else{h.films=h._def.films.map(f=>({...f}));h.anchor=h._def.anchor}
   h.films.forEach(f=>{if(f.auto&&DURS[f.id])f.dur=DURS[f.id]})});CFG.GAP=sv&&sv.gap!=null?sv.gap:CFG.HALLS[0]._def.gap}
 applySched();
-const ROWS='ABCDEFGH'/* QA135: 48석(8줄×3+3) — 스크린과 거리·좌석 간격 넓힘 */;
-const SEATS_PER_SIDE=4/* QA230: 양쪽 4석씩(64석) */, NSR=SEATS_PER_SIDE*2, NSEAT=ROWS.length*NSR;
+/* QA386: 휴대폰(짧은 변 ≤600 · 터치)은 상영관 좌석을 좁고 길게(3+3석 × 10줄 = 60석) — 세로 화면에 객석 전체가 들어오게. PC·태블릿은 4+4 × 8줄 그대로 */const QA386M=(()=>{try{return Math.min(screen.width,screen.height)<=600&&matchMedia('(pointer:coarse)').matches}catch(e){return false}})();
+const ROWS='ABCDEFGH'+((typeof QA386M!=='undefined'&&QA386M)?'IJ':'')/* QA135: 48석(8줄×3+3) — 스크린과 거리·좌석 간격 넓힘 */;
+const SEATS_PER_SIDE=(typeof QA386M!=='undefined'&&QA386M)?3:4/* QA230: 양쪽 4석씩(64석) · QA386: 휴대폰 3석씩 */, NSR=SEATS_PER_SIDE*2, NSEAT=ROWS.length*NSR;
 const seatLabel=i=>ROWS[Math.floor(i/NSR)]+pad(i%NSR+1);
 function hallSeatX(column){
  const right=column>=SEATS_PER_SIDE;
  const fromAisle=right?column-SEATS_PER_SIDE:SEATS_PER_SIDE-1-column;
- return (right?1:-1)*(1.3+fromAisle*1.45);
+ return (right?1:-1)*(1.3+fromAisle*((typeof QA386M!=='undefined'&&QA386M)?1.2:1.45));
 }
+/* QA386: 기준(PC) 좌석 ↔ 이 기기 좌석 번호 변환 — 멀티 접속자 위치는 기준 좌석 좌표로 주고받음 */
+const QA386C={R:8,S:4,x:fa=>1.3+fa*1.45,z:r=>-14.2+r*1.872};
+function qa386Map(idx,toCanon){const sR=toCanon?ROWS.length:8,sS=toCanon?SEATS_PER_SIDE:4,tR=toCanon?8:ROWS.length,tS=toCanon?4:SEATS_PER_SIDE,sN=sS*2,tN=tS*2,r=Math.floor(idx/sN),c=idx%sN,right=c>=sS,fa=right?c-sS:sS-1-c,r2=Math.round(r*(tR-1)/(sR-1)),fa2=Math.round(fa*(tS-1)/(sS-1));return r2*tN+(right?tS+fa2:tS-1-fa2)}
 const API={
  tickets(){const t=nowS(),d0=dayStart(),a=(store.get('aic.tickets')||[]).filter(x=>(x.end>t||x.punched||x.punchX!=null)/* QA284: 펀칭한 티켓은 그날 하루 가방에 남김 */&&(x.start||0)>=d0&&x.end<=d0+86400+60);store.set('aic.tickets',a);return a},
  othersTaken(){return false},
@@ -1030,7 +1034,7 @@ function zoneOf(x,z,l){if(l===0&&Math.abs(x-PCX)<PW-.1&&Math.abs(z-PCZ)<PD-.1)re
  if(l===0)return(Math.abs(x)<LW-.2&&z>=0&&z<LD)?'L0':null;return(z>=LB-.2&&Math.abs(x)<LW-.2&&(z<BF+.05||(Math.abs(x)<ST.x2-.15&&z<BW+.05)))?'L1':null}
 const ZB={L0:[-LW+.6,LW-.6,.3,LD-.6],L1:[-LW+.5,LW-.5,LB+.35,BF-.25],H1:[HCX[1]-HX+.4,HCX[1]+HX-.4,-15.3,-.3],H2:[HCX[2]-HX+.4,HCX[2]+HX-.4,-15.3,-.3],B:[BCX-CBW+.5,BCX+CBW-.5,BCZ-CBD+.5,BCZ+CBD-.5],P:[PCX-PW+.45,PCX+PW-.45,PCZ-PD+1.75,PCZ+PD-.45]};
 const ZL={L0:0,H1:0,L1:1,H2:1,B:0,P:0};
-const HRZ=.32/* QA228: 상영관 바닥을 좌석 높이로 올림(단 없이 바닥 자체가 높아짐) */,SZ0=-14.2/* QA284: 줄 간격을 넓히면서 앞줄을 0.2m 스크린 쪽으로 */,SP=1.872/* QA284: 앞뒤 줄 간격 20% 더 넓힘 *//* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-1.3/* QA153: 스크린 12.6→13.6m */,SCH=SCW*9/16,SCY=1.9+SCW*9/32/* QA148·153: 스크린 아래끝 무대 위 1.9m — 이름표와 안 겹치고 천장 안에 들어오게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
+const HRZ=.32/* QA228: 상영관 바닥을 좌석 높이로 올림(단 없이 바닥 자체가 높아짐) */,SZ0=-14.2/* QA284: 줄 간격을 넓히면서 앞줄을 0.2m 스크린 쪽으로 */,SP=QA386M?1.2:1.872/* QA284: 앞뒤 줄 간격 20% 더 넓힘 · QA386: 휴대폰 10줄은 1.2 *//* QA135: 첫 줄을 스크린에서 1.6m 더 멀리, 줄 간격 1.12→1.3 */,SCW=2*HX-1.3/* QA153: 스크린 12.6→13.6m */,SCH=SCW*9/16,SCY=1.9+SCW*9/32/* QA148·153: 스크린 아래끝 무대 위 1.9m — 이름표와 안 겹치고 천장 안에 들어오게 */,SCZ=-17.55,SEAT_Z=i=>SZ0+i*SP,HSC=.9;
 const WAL=0x6a3c1f,WAL2=0x7d4a28,MU=0xd69b35,MU2=0xe2b04c,ORG=0xdd6a2a,TEAL=0x3f8a86,CREAM=0xefe4cc,VEL1=0x7a1424,VEL2=0x58101c;
 /* ===== 실사 재질: 마호가니 나무결 · 회반죽 벽 · 대리석 · 카펫 · 벨벳 ===== */
 const MARB=0xe5dccb,CARP1=0x6d8273,CARP2=0x768a7b,VELG=0x5d8a86,MET=0x5e1620,PLC=0xeadfcc;
@@ -3675,7 +3679,7 @@ const Multiplayer=(()=>{
  function dispose(id){const p=peers.get(id);if(!p)return;S.remove(p.avatar);if(p.hit){const i=AVATAR_HITS.indexOf(p.hit);if(i>=0)AVATAR_HITS.splice(i,1)}if(typeof LSAVE!=='undefined'&&LSAVE){for(let i=LSAVE.length-1;i>=0;i--)if(LSAVE[i][0]===p.avatar)LSAVE.splice(i,1)}peers.delete(id)}
  function upsert(data){if(!data||!data.id||data.id===myId)return;const id=String(data.id);let p=peers.get(id);if(!p){const name=String(data.name||'관객').slice(0,14);const a=mk(name,0,{...qaUserLook(name),me:0});a.userData.remote=1;a.userData.peerId=id;a.userData.avatarId=qaUserLook(name).avatarId;const hit=AVATAR_HITS.find(h=>h.userData.giftAvatar===a);/* Keep remote avatar hit area for tapping, approaching, and gifting UI. */p={avatar:a,hit,target:new THREE.Vector3(),r:0,zone:'L0'};peers.set(id,p);if(typeof qa40Announce==='function')qa40Announce()}
  const x=+data.x,y=+data.y,z=+data.z,r=+data.r;
- if(![x,y,z,r].every(Number.isFinite))return;p.target.set(x,y,z);p.r=r;p.zone=String(data.zone||'L0');p.avatar.userData.lvl=p.zone==='L1'||p.zone==='H2'?1:0;
+ if(![x,y,z,r].every(Number.isFinite))return;p.target.set(x,y,z);p.r=r;p.zone=String(data.zone||'L0');if(typeof QA386M!=='undefined'&&QA386M&&p.zone[0]==='H'){/* QA386: 기준 좌석에 앉은 접속자는 이 기기 좌석으로 */const hid=+p.zone[1],cx=HCX[hid],H=HALLN[hid],rr=Math.round((z+14.2)/1.872),ax=Math.abs(x-cx),fa=Math.round((ax-1.3)/1.45);if(H&&rr>=0&&rr<8&&fa>=0&&fa<4&&Math.abs(z-QA386C.z(rr))<.35&&Math.abs(ax-QA386C.x(fa))<.35){const ci=rr*8+(x>cx?4+fa:3-fa),sp=H.seats[qa386Map(ci,false)];if(sp)p.target.set(sp.x,y,sp.z)}}p.avatar.userData.lvl=p.zone==='L1'||p.zone==='H2'?1:0;
  if(!p.init){p.avatar.position.copy(p.target);p.avatar.rotation.y=p.r;p.init=true}
  }
  function connect(){const url=endpoint();if(!url||!me||closing)return;if(socket&&(socket.readyState===0||socket.readyState===1))return;
@@ -3691,7 +3695,7 @@ const Multiplayer=(()=>{
  socket.onclose=()=>{socket=null;myId=null;for(const id of [...peers.keys()])dispose(id);if(!closing&&me){const delay=Math.min(15000,1000*Math.pow(2,Math.min(retry++,4)));setTimeout(()=>{if(!closing&&me)connect()},delay)}};
 
  }
- function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
+ function sendMove(force=false){if(!me||socket?.readyState!==1)return;const t=performance.now(),p=me.position,state={x:p.x,y:p.y,z:p.z,r:me.rotation.y,zone:curZone(me)};{const sp=me.userData.seat;if(typeof QA386M!=='undefined'&&QA386M&&sp&&sp.kind==='cine'){/* QA386: 휴대폰 좌석은 기준 좌석 좌표로 보냄 */const ci=qa386Map(sp.idx,true),cs=ci%8,right=cs>=4,fa=right?cs-4:3-cs;state.x=HCX[sp.hall]+(right?1:-1)*QA386C.x(fa);state.z=QA386C.z(Math.floor(ci/8))}}if(!force){if(t-lastSend<350)return;const v=lastState;const changed=!v||Math.hypot(state.x-v.x,state.y-v.y,state.z-v.z)>.035||Math.abs(Math.atan2(Math.sin(state.r-v.r),Math.cos(state.r-v.r)))>.025||state.zone!==v.zone;if(!changed&&t-lastSend<15000)return;}lastState=state;lastSend=t;socket.send(JSON.stringify({t:'move',...state}))}
  /* QA15: 실제 접속 유저 간 선물 — 공개 채팅 통로로 제안(@@g) → 받는 쪽이 손에 넣고 확인(@@a) → 확인을 받은 뒤에만 보낸 사람 물건 차감 */
  const GIFT_TAG='@@',pendingGifts=new Map();
  function giftToPeer(peerId,key,onDone){if(!socket||socket.readyState!==1||!myId){onDone(false,'offline');return}const nonce=Math.random().toString(36).slice(2,8);const text=GIFT_TAG+'g|'+peerId+'|'+key+'|'+nonce;
@@ -5713,10 +5717,10 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
 /* QA173: 관람 시점 — 카메라는 수평(기울지 않음)으로 두고 렌즈만 아래로 옮겨(시프트) 스크린을 화면 위쪽에 크게, 그 아래 객석이 맨 뒷줄까지 보이게. 사다리꼴 왜곡 없음 */
 (function(){let S_=0,ST=0;const v=new THREE.Vector3();
  qa127Cam=function(H,hv,cp,lk){hv=v.set(H.cx,H.base+1.2,-4.1)/* QA224: 시점 기준은 예전 맨 뒷줄 위치로 고정 *//* QA219: 자리와 상관없이 늘 같은 상영 뷰(맨 뒷줄 기준), 상영 전·중·후 시점 동일 */;
-  const a=C.aspect,port=a<1,fw=port?.94:.64,topT=port?.8:.9,yc=H.base+(port?4.2:3.2),top=H.base+SCY+SCH/2,back=-4.1,head=H.base+1.15;
+  const a=C.aspect,port=a<1,fw=port?.94:.64,topT=port?.8:.9,yc=H.base+(port?(QA386M?12:4.2):3.2),top=H.base+SCY+SCH/2,back=-4.1,head=H.base+1.15;
   let zc=port?Math.max(6,hv.z+2):Math.max(4,hv.z+2),t=0,sh=0;
-  for(let k=0;k<40;k++){t=SCW/(2*(zc-SCZ)*fw*a);if(t>1.1){zc+=1;continue}sh=topT-(top-yc)/((zc-SCZ)*t);const nb=(head-yc)/((zc-back)*t)+sh,nm=(hv.y-.4-yc)/((zc-hv.z)*t)+sh;const lim=port?-.62:-.8/* 퀵바에 가리지 않게 */;if(nb>=lim&&nm>=lim)break;zc+=.5}
-  cp.set(H.cx,yc,zc);lk.set(H.cx,yc,zc-10);ST=sh;FOVT=2*Math.atan(t)*180/Math.PI;window.QA173ON=performance.now();
+  for(let k=0;k<40;k++){t=SCW/(2*(zc-SCZ)*fw*a);if(t>1.1){zc+=1;continue}sh=topT-(top-yc)/((zc-SCZ)*t);const nb=(head-yc)/((zc-back)*t)+sh,nm=(hv.y-.4-yc)/((zc-hv.z)*t)+sh;const lim=port?-.62:-.8/* 퀵바에 가리지 않게 */;if(port&&QA386M&&(hallSeatX(NSR-1)+.62)/((zc-(SEAT_Z(ROWS.length-1)+.45))*t*a)>.97){zc+=.5;continue}/* QA386: 휴대폰 세로 — 객석 양 끝까지 화면 안에 */if(nb>=lim&&nm>=lim)break;zc+=.5}
+  if(port&&QA386M){/* QA386: 휴대폰 세로 — 높은 시점(12m)에서 맨 뒷줄 바닥을 퀵바 바로 위에 맞춰 객석 뒤 빈 바닥이 거의 안 보이게(남는 위쪽은 어두운 천장) */const ybot=H.base+HRZ,zb=SEAT_Z(ROWS.length-1)+.55;sh=-.8-(ybot-yc)/((zc-zb)*t)/* 퀵바 위까지 */;const topN=(top-yc)/((zc-SCZ)*t)+sh;if(topN>.96)sh-=topN-.96}cp.set(H.cx,yc,zc);lk.set(H.cx,yc,zc-10);ST=sh;FOVT=2*Math.atan(t)*180/Math.PI;window.QA173ON=performance.now();
   window.__fzP=(window.__fzP||new THREE.Vector3()).copy(C.position);window.__fzL=(window.__fzL||new THREE.Vector3()).copy(look)};
  (function shift(){requestAnimationFrame(shift);if(window.QA231LEAVE){window.QA231LEAVE=0;S_=0;if(C.view&&C.view.enabled)C.clearViewOffset();return}const on=performance.now()-(window.QA173ON||0)<300,tgt=on?ST:0;if(window.QA219SNAP&&on){S_=tgt;window.QA219SNAP--}/* QA219: 상영관 들어오면 바로 같은 화면 */S_+=(tgt-S_)*.06;if(Math.abs(S_)<.002&&!on){if(C.view&&C.view.enabled){C.clearViewOffset()}S_=0;return}const W=innerWidth,Hh=innerHeight;C.setViewOffset(W,Hh,0,S_*Hh/2,W,Hh)})();
 })();
@@ -7040,6 +7044,7 @@ html body.inhall #qa127map .x{all:unset;position:absolute!important;right:3.5px;
 html body.inhall #qa127map .x::before{content:'';width:17.6px;height:17.6px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/contain no-repeat}
 html body.inhall #qa127map .scr{display:block!important;width:180.2px;height:1.56px!important;margin:.85px 0 0 14px!important;border-radius:1px!important;background:#b8a5a9!important}
 html body.inhall #qa127map .g{display:grid!important;grid-template-columns:repeat(4,22.917px) 6.25px repeat(4,22.917px)!important;grid-auto-rows:22.917px!important;gap:.521px 1.042px!important;margin:16.15px 0 0 5.73px!important}
+body.qa386m #qa127map .g{grid-template-columns:repeat(3,22.917px) 6.25px repeat(3,22.917px)!important;grid-auto-rows:18.4px!important;margin:12px auto 0!important;width:max-content}/* QA386: 휴대폰 3+3 × 10줄 */
 html body.inhall #qa127map .g button{all:unset;box-sizing:border-box!important;place-self:center;width:15.625px!important;height:13.542px!important;margin:0!important;border-radius:2.6px!important;background:#66575b!important;border:.52px solid #8c7a7d!important;box-shadow:none!important;cursor:pointer}
 html body.inhall #qa127map .g button.tk{background:#382a2d!important;border-color:transparent!important;cursor:default}
 html body.inhall #qa127map .g button.me{background:#f3e4c4!important;border-color:#f3e4c4!important}
@@ -7106,6 +7111,7 @@ html body:not(.inhall) #ctxbar button{height:44px!important;min-height:0!importa
 #qa373ch button.cur{background:#2f2829;color:rgba(255,255,255,.92)}
 #qa373ch button:not(.cur):hover{background:#292929}
 </style>
+<script>try{if(QA386M)document.body.classList.add('qa386m')}catch(e){}/* QA386 */</script>
 <style id="qa384-css">/* QA384: HUD 공통 — 퀵바 규격은 로비 기준으로 로비·상영관·아지트·영사실 모두 같음(메뉴 내용만 다름), 퀵바와 액션 버튼은 12px 아래로(둘 간격 유지),
  색은 QA373 이전 HUD 색(반투명 + 얇은 테두리 + 블러)으로 되돌려 상단 메뉴·액션 버튼까지 공통 토큰으로 */
 html:root body{--q3t:16px;--q3s:16px;--q3b:calc(env(safe-area-inset-bottom,0px) + 12px);

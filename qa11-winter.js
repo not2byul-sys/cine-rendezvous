@@ -48,6 +48,6 @@ function qa11WinterStreet(){
 
 window.NYOVR=Object.assign({},window.NYOVR||{},{code:71,cloud:90});
 /* A soft round flake avoids the default square points against the windows. */
-{const cv=document.createElement('canvas');cv.width=cv.height=32;const c=cv.getContext('2d'),g=c.createRadialGradient(16,16,2,16,16,15);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.5,'rgba(255,255,255,.85)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,32,32);snow.material.map=new THREE.CanvasTexture(cv);snow.material.alphaTest=.04;snow.material.size=.2;snow.material.needsUpdate=true}
+if(snow.material)/* QA418: 눈은 index.html의 3겹 보케 눈이 담당 */{const cv=document.createElement('canvas');cv.width=cv.height=32;const c=cv.getContext('2d'),g=c.createRadialGradient(16,16,2,16,16,15);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.5,'rgba(255,255,255,.85)');g.addColorStop(1,'rgba(255,255,255,0)');c.fillStyle=g;c.fillRect(0,0,32,32);snow.material.map=new THREE.CanvasTexture(cv);snow.material.alphaTest=.04;snow.material.size=.2;snow.material.needsUpdate=true}
 qa11ChristmasDisplay();qa11WinterStreet();BGM.sched=qa11CarolSchedule;BGM.bell=qa11CarolBell;drawSky();
 document.documentElement.dataset.cinemaReady='qa11-winter-layout-20261112';

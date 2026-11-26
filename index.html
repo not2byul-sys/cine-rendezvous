@@ -1235,64 +1235,62 @@ for(let i=0;i<RN;i++){const street=i<1100,height=street?12:28;rainHeights[i]=hei
 rg.setAttribute('position',new THREE.BufferAttribute(rp,3));
 const rain=new THREE.LineSegments(rg,new THREE.LineBasicMaterial({color:0xc8dcff,transparent:true,opacity:.55,depthWrite:false}));rain.renderOrder=3;rain.visible=false;rain.frustumCulled=false;S.add(rain);
 // Entrance snowfall. Keep all centres between the door and the opposite facade.
-const snowCount = 1260;
-const snowGeometry = new THREE.BufferGeometry();
-const snowPositions = new Float32Array(snowCount * 3);
-const snowFlakes = [];
+/* QA418: 눈 — 레퍼런스처럼 깊이감 있게 3겹(먼 곳 작은 점 · 중간 · 가까운 큰 보케 눈), 가까울수록 크고 빠르고 흐릿하게, 바람 흔들림은 작게 */
 const snowRandom = rng(1221);
-for (let i = 0; i < snowCount; i++) {
-  const low = i < 900;
-  const height = low ? 10 : 27;
-  snowFlakes.push({
-    x: snowRandom() * 80 - 40, z: LD + .9 + snowRandom() * 12.5,
-    y: snowRandom() * height, height, phase: snowRandom() * Math.PI * 2,
-    speed: .48 + snowRandom() * .62, sway: .06 + snowRandom() * .19,
-    frequency: .65 + snowRandom() * .65,
-    // QA69: each flake catches the wind a little differently and flutters as it falls
-    drift: .55 + snowRandom() * .9, flutter: .08 + snowRandom() * .16
-  });
-}
-const snowAttribute = new THREE.BufferAttribute(snowPositions, 3);
-snowGeometry.setAttribute('position', snowAttribute);
 const flakeCanvas = document.createElement('canvas');
-flakeCanvas.width = flakeCanvas.height = 32;
+flakeCanvas.width = flakeCanvas.height = 64;
 const flakeContext = flakeCanvas.getContext('2d');
-const flakeGradient = flakeContext.createRadialGradient(16, 16, 0, 16, 16, 16);
-flakeGradient.addColorStop(0, '#fff');
-flakeGradient.addColorStop(.43, 'rgba(255,255,255,.88)');
-flakeGradient.addColorStop(1, 'rgba(255,255,255,0)');
+const flakeGradient = flakeContext.createRadialGradient(32, 32, 0, 32, 32, 32);
+flakeGradient.addColorStop(0, 'rgba(255,255,255,1)');
+flakeGradient.addColorStop(.16, 'rgba(255,255,255,.95)');
+flakeGradient.addColorStop(.34, 'rgba(240,244,255,.5)');
+flakeGradient.addColorStop(.62, 'rgba(230,236,255,.16)');
+flakeGradient.addColorStop(1, 'rgba(230,236,255,0)');
 flakeContext.fillStyle = flakeGradient;
-flakeContext.fillRect(0, 0, 32, 32);
-const snow = new THREE.Points(snowGeometry, new THREE.PointsMaterial({
-  map: new THREE.CanvasTexture(flakeCanvas), size: .14, transparent: true,
-  opacity: .88, depthTest: true, depthWrite: false, alphaTest: .025
-}));
-// The opposite facade is itself transparent and writes depth.
-snow.renderOrder = 3;
-snow.frustumCulled = false;
+flakeContext.fillRect(0, 0, 64, 64);
+const flakeTex = new THREE.CanvasTexture(flakeCanvas);
+const SNOWL = [
+  // far: small, slow, dense
+  {n: 900, size: .13, op: .8, z0: LD + 4, z1: LD + 13.4, h: 22, v0: .32, v1: .55, sway: .05},
+  // mid
+  {n: 360, size: .26, op: .85, z0: LD + 1.6, z1: LD + 5, h: 12, v0: .55, v1: .85, sway: .08},
+  // near bokeh: few, big, faster, softer
+  {n: 60, size: .7, op: .45, z0: LD + .55, z1: LD + 1.6, h: 9, v0: .95, v1: 1.35, sway: .1}
+];
+const snow = new THREE.Group();
 snow.visible = false;
 S.add(snow);
+SNOWL.forEach(L => {
+  L.f = [];
+  L.pos = new Float32Array(L.n * 3);
+  for (let i = 0; i < L.n; i++) L.f.push({x: snowRandom() * 80 - 40, z: L.z0 + snowRandom() * (L.z1 - L.z0), y: snowRandom() * L.h, phase: snowRandom() * Math.PI * 2, speed: L.v0 + snowRandom() * (L.v1 - L.v0), freq: .35 + snowRandom() * .4, drift: .6 + snowRandom() * .8});
+  const g = new THREE.BufferGeometry();
+  L.attr = new THREE.BufferAttribute(L.pos, 3);
+  g.setAttribute('position', L.attr);
+  const pts = new THREE.Points(g, new THREE.PointsMaterial({map: flakeTex, size: L.size, transparent: true, opacity: L.op, depthTest: true, depthWrite: false, alphaTest: .01}));
+  // The opposite facade is itself transparent and writes depth.
+  pts.renderOrder = 3;
+  pts.frustumCulled = false;
+  snow.add(pts);
+});
 
 function updateEntranceSnow(dt, t) {
-  // slow breeze with an occasional soft gust
-  const breeze = .05 + .06 * Math.sin(t * .24) + .035 * Math.sin(t * .71 + 1.3);
-  for (let i = 0; i < snowCount; i++) {
-    const f = snowFlakes[i];
-    const phase0 = t * f.frequency + f.phase;
-    f.y -= f.speed * (1 + f.flutter * Math.sin(1.7 * phase0)) * dt;
-    if (f.y < 0) {
-      f.y += f.height;
-      f.x = snowRandom() * 80 - 40;
+  // very gentle breeze (reference: almost straight down, slight drift)
+  const breeze = .02 + .025 * Math.sin(t * .2);
+  SNOWL.forEach(L => {
+    for (let i = 0; i < L.n; i++) {
+      const f = L.f[i];
+      f.y -= f.speed * dt;
+      if (f.y < 0) { f.y += L.h; f.x = snowRandom() * 80 - 40; }
+      f.x += breeze * f.drift * dt;
+      if (f.x > 40) f.x -= 80;
+      const ph = t * f.freq + f.phase;
+      L.pos[3*i] = f.x + L.sway * Math.sin(ph);
+      L.pos[3*i+1] = f.y;
+      L.pos[3*i+2] = f.z;
     }
-    f.x += breeze * f.drift * dt;
-    if (f.x > 40) f.x -= 80;
-    if (f.x < -40) f.x += 80;
-    const phase = t * f.frequency + f.phase;
-    snowPositions[3*i] = f.x + f.sway * Math.sin(phase);
-    snowPositions[3*i+1] = f.y;
-    snowPositions[3*i+2] = f.z + .13 * Math.cos(.7 * phase);
-  }
-  snowAttribute.needsUpdate = true;
+    L.attr.needsUpdate = true;
+  });
 }
 window.__wx=(dt,t)=>{const k=wxInfo().kind;rain.visible=k==='rain'||k==='thunder';snow.visible=k==='snow';
  if(rain.visible){const a=rg.attributes.position.array;for(let i=0;i<RN;i++){const j=i*6;const length=i<1100?.42:.65;let y=a[j+1]-(i<1100?18:26)*dt;if(y<0)y+=rainHeights[i];a[j+1]=y;a[j+4]=y+length}rg.attributes.position.needsUpdate=true}
@@ -6003,12 +6001,12 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
  window.QA234PICK=pick})();
 /* QA244: 첫 입장 때 퀵바 '캐릭터' 위에 검정 말풍선 안내(한 번만) */
 (function(){const K='aic.tipAvatar';let seen=false;try{seen=!!localStorage.getItem(K)}catch(e){}if(seen)return;
- const st=document.createElement('style');st.textContent="html body:has(#qa244tip.on) #hint{display:none!important}#qa244tip{position:fixed;z-index:40;transform:translate(-50%,-100%);height:40px;box-sizing:border-box;padding:0 12px;display:flex;align-items:center;border-radius:12px;background:var(--hud-c-bg);border:var(--hud-c-bd);box-shadow:var(--hud-c-sh);-webkit-backdrop-filter:var(--hud-c-blur);backdrop-filter:var(--hud-c-blur);color:#fff;font:400 13px/20px 'Noto Sans KR',sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .35s}#qa244tip.on{opacity:1}"/* QA417: 지시알림(#hint)과 같은 모양 */;document.head.appendChild(st);
+ const st=document.createElement('style');st.textContent="html body:has(#qa244tip.on) #hint{display:none!important}#qa244tip{position:fixed;z-index:40;transform:translate(-50%,-100%);height:40px;box-sizing:border-box;padding:0 12px;display:flex;align-items:center;border-radius:12px;background:var(--hud-c-bg);border:var(--hud-c-bd);box-shadow:var(--hud-c-sh);-webkit-backdrop-filter:var(--hud-c-blur);backdrop-filter:var(--hud-c-blur);color:#fff;font:400 13px/20px 'Noto Sans KR',sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .35s}#qa244tip::after{content:'';position:absolute;top:100%;left:calc(50% + var(--ax,0px));width:14px;height:7px;transform:translateX(-50%);background:rgba(46,26,32,.5);clip-path:polygon(0 0,100% 0,50% 100%)}#qa244tip.on{opacity:1}"/* QA418: 캐릭터 버튼을 가리키는 꼬리 · QA417: 지시알림(#hint)과 같은 모양 */;document.head.appendChild(st);
  let el=null,t0=0;const btn=()=>[...document.querySelectorAll('#act button[data-a="avatar"]')].find(b=>b.offsetParent);
  const close=()=>{if(el){el.classList.remove('on');const e_=el;setTimeout(()=>e_.remove(),400);el=null}};
  (function loop(){if(seen&&!el)return;requestAnimationFrame(loop);const b=btn();
   if(!el){if(!b||!me||(document.getElementById('join')&&!document.getElementById('join').hidden))return;{const h=document.getElementById('hint');if(h&&h.getBoundingClientRect().width>0&&getComputedStyle(h).display!=='none'&&+getComputedStyle(h).opacity>.05&&h.textContent.trim())return}/* QA417: 지시알림이 떠 있는 동안은 기다렸다가 따로 */seen=true;try{localStorage.setItem(K,'1')}catch(e){}el=document.createElement('div');el.id='qa244tip';el.textContent='의상과 닉네임을 바꿀 수 있어요';document.body.appendChild(el);t0=performance.now();requestAnimationFrame(()=>el&&el.classList.add('on'));b.addEventListener('click',close,{once:true})}
-  if(!b||performance.now()-t0>10000){close();return}const r=b.getBoundingClientRect(),bar=document.getElementById('act'),bt=bar?bar.getBoundingClientRect().top:r.top;{/* QA343: 화면 밖으로 나가지 않게 */const w=el.offsetWidth,cx=r.left+r.width/2,x=Math.max(8+w/2,Math.min(innerWidth-8-w/2,cx));el.style.left=x+'px';el.style.setProperty('--ax',(cx-x)+'px')}el.style.top=(bt-8)+'px'})()})();
+  if(!b||performance.now()-t0>10000){close();return}const r=b.getBoundingClientRect(),bar=document.getElementById('act'),bt=bar?bar.getBoundingClientRect().top:r.top;{/* QA343: 화면 밖으로 나가지 않게 */const w=el.offsetWidth,cx=r.left+r.width/2,x=Math.max(8+w/2,Math.min(innerWidth-8-w/2,cx));el.style.left=x+'px';el.style.setProperty('--ax',(cx-x)+'px')}el.style.top=(bt-12)+'px'})()})();
 /* QA245: 앉아 있거나 자리에 고정된 NPC도 가끔 혼잣말 — 내가 가까이 있을 때만 */
 (function(){setInterval(()=>{try{if(!me||document.hidden)return;const z=curZone(me);if(z[0]==='H'&&curSp)return;const c_=NPCS.filter(c=>c.visible&&c.userData.static&&!c.userData.buff&&!c.userData.b&&curZone(c)===z&&Math.hypot(c.position.x-me.position.x,c.position.z-me.position.z)<9);if(!c_.length||Math.random()<.35)return;const c=c_[Math.random()*c_.length|0];(typeof sayAmb==='function'?sayAmb:say)(c,npcTalkLine(c))}catch(e){}},18000/* QA302: 빈도 절반 */)})();
 /* QA234: 이름표 옆에 먹고 있는 간식 이모지 */
@@ -6673,24 +6671,23 @@ body.qa338cam #hb,body.qa338cam #chip,body.qa338cam #mpbar,body.qa338cam div.bar
 @keyframes qa410s{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.82);opacity:.55}}
 #qa338v.qa406 .nm{position:absolute;left:50%;top:0;transform:translate(-50%,-100%);white-space:nowrap;min-height:27px;padding:0 14px;border-radius:999px;background:rgba(243,228,196,.95);color:#2a141c;font:500 15px/27px Pretendard,'Noto Sans KR',sans-serif;pointer-events:none}
 #qa338v.qa406 .nm.flip{animation:qa412f .45s ease}@keyframes qa412f{0%{transform:translate(-50%,-100%) rotateX(0)}50%{transform:translate(-50%,-100%) rotateX(90deg)}100%{transform:translate(-50%,-100%) rotateX(0)}}
-#qa338v.qa406 .zb{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:calc(100vw - 24px);max-width:480px}/* QA413: 다시 뽑기는 자리 그대로 좌우 12px, 채우지 않음 */#qa338v.qa406 .zb button.go{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);height:52px;line-height:52px;max-width:480px;margin:0 auto;font-size:16px;justify-content:center}/* QA413: 이대로 입장 = 하단 CTA */
+#qa338v.qa406 .zb{display:grid;grid-template-columns:1fr;gap:8px;width:calc(100vw - 24px);max-width:480px}/* QA413: 다시 뽑기는 자리 그대로 좌우 12px, 채우지 않음 */#qa338v.qa406 .zb button.go{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);height:52px;line-height:52px;max-width:480px;margin:0 auto;font-size:16px;justify-content:center}/* QA413: 이대로 입장 = 하단 CTA */
 #qa338v.qa406 .zb button{display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}#qa338v.qa406 .zb svg{width:20px;height:20px;flex:none;transition:transform .7s cubic-bezier(.3,.7,.3,1)}#qa338v.qa406 .zb button:disabled{opacity:.55;cursor:default}`;document.head.appendChild(css);
  /* 45도로 놓인 입체 주사위(윗면 1 · 왼면 2 · 오른면 3) */
  const DICE='<svg viewBox="0 0 24 24" aria-hidden="true"><g stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"><path d="M12 2.5 20.5 7 12 11.5 3.5 7Z" fill="currentColor" fill-opacity=".14"/><path d="M3.5 7 12 11.5V21.5L3.5 17Z" fill="currentColor" fill-opacity=".34"/><path d="M20.5 7V17L12 21.5V11.5Z" fill="currentColor" fill-opacity=".06"/></g><g fill="currentColor"><ellipse cx="12" cy="7" rx="1.5" ry=".85"/><ellipse cx="5.9" cy="10.6" rx=".8" ry="1.15" fill="#211317"/><ellipse cx="9.6" cy="17.4" rx=".8" ry="1.15" fill="#211317"/><ellipse cx="18.4" cy="10.3" rx=".8" ry="1.15"/><ellipse cx="16.25" cy="14.25" rx=".8" ry="1.15"/><ellipse cx="14.1" cy="18.2" rx=".8" ry="1.15"/></g></svg>';
  const pick=prev=>{let n;do{n=RAND_FILMS[Math.random()*RAND_FILMS.length|0]}while(n===prev&&RAND_FILMS.length>1);return n};
  const drop=(sc,g)=>{if(!g)return;sc.remove(g);try{g.traverse(o=>{if(o.geometry)o.geometry.dispose();const m=o.material;if(m&&m.userData&&m.userData.print&&m.map)m.map.dispose()})}catch(e){}};
  window.qa406Dice=function(nm,done){let busy=false,spin=.7,av=null,seed=nm,top=2;const w=document.createElement('div');w.id='qa338v';w.className='qa406';w.setAttribute('role','dialog');w.setAttribute('aria-label','입장 캐릭터 확인');
-  w.innerHTML='<b class="tt">이대로 입장할까요?</b><div class="in"><div class="stage"><span class="nm" aria-live="polite"></span></div></div><p>모습과 이름은 캐릭터 메뉴에서 언제든 바꿀 수 있어요.</p><div class="zb"><button type="button" class="rn">'+DICE+'닉네임 다시 뽑기</button><button type="button" class="rc">'+DICE+'캐릭터 다시 뽑기</button><button type="button" class="pri go">이대로 입장</button></div>';
+  w.innerHTML='<b class="tt">이대로 입장할까요?</b><div class="in"><div class="stage"><span class="nm" aria-live="polite"></span></div></div><p>모습과 이름은 캐릭터 메뉴에서 언제든 바꿀 수 있어요.</p><div class="zb"><button type="button" class="rc">'+DICE+'다시 뽑기</button><button type="button" class="pri go">이대로 입장</button></div>';
   ['pointerdown','pointerup','touchstart','touchend','wheel','click'].forEach(t=>w.addEventListener(t,e=>e.stopPropagation()));document.body.appendChild(w);
-  const st=w.querySelector('.stage'),nmEl=w.querySelector('.nm'),bn=w.querySelector('.rn'),bc=w.querySelector('.rc'),bg=w.querySelector('.go');
+  const st=w.querySelector('.stage'),nmEl=w.querySelector('.nm'),bc=w.querySelector('.rc'),bg=w.querySelector('.go');
   const Wd=st.clientWidth||240,Hd=st.clientHeight||320,r=new THREE.WebGLRenderer({antialias:true,alpha:true});r.setPixelRatio(Math.min(2,devicePixelRatio||1));r.setSize(Wd,Hd,false);try{r.outputEncoding=R.outputEncoding}catch(e){}st.prepend(r.domElement);
   const sc=new THREE.Scene();sc.add(new THREE.HemisphereLight(0xfff4e0,0x7a5a48,.62));const dl=new THREE.DirectionalLight(0xffffff,.4);dl.position.set(1.5,3,4);sc.add(dl);const cam=new THREE.PerspectiveCamera(24,Wd/Hd,.1,40),V=new THREE.Vector3();
   const put=sd=>{drop(sc,av);av=mk('',0,Object.assign({},qaUserLook(sd),{me:0,notag:1,parent:sc}));try{clayObject(av)}catch(e){}const b=new THREE.Box3().setFromObject(av),h=b.max.y-b.min.y,cy=(b.max.y+b.min.y)/2+.12/* 머리 위 이름표 자리 */,d=(h/2*1.42)/Math.tan(cam.fov*Math.PI/360);top=b.max.y;cam.position.set(0,cy+.1,d);cam.lookAt(0,cy,0)};
   put(seed);nmEl.textContent=nm;r.domElement.classList.add('on');let last=performance.now(),raf=0,ang=0;
-  const loop=t=>{raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;ang+=spin*dt;let y=0;if(av){av.rotation.y=ang;y=Math.sin(t/1000*1.9)*.07+.03;av.position.y=y/* 둥둥 */}r.render(sc,cam);V.set(0,top+y+.04,0).project(cam);nmEl.style.top=((1-V.y)/2*Hd)+'px'/* 이름표는 머리 꼭대기 바로 위 */};raf=requestAnimationFrame(loop);
-  const lock=on=>{busy=on;bn.disabled=bc.disabled=bg.disabled=on};const turn=(b,k)=>{const s_=b.querySelector('svg');b._r=(b._r||0)+k;s_.style.transform=`rotate(${b._r}deg)`};
-  bn.onclick=()=>{if(busy)return;lock(true);turn(bn,360);const n=pick(nm);nmEl.classList.remove('flip');void nmEl.offsetWidth;nmEl.classList.add('flip');setTimeout(()=>{nm=n;nmEl.textContent=n},220);setTimeout(()=>lock(false),460)};
-  bc.onclick=()=>{if(busy)return;lock(true);turn(bc,360);spin=14;const sd=pick(seed);setTimeout(()=>{seed=sd;put(sd)},380);setTimeout(()=>{spin=.7;lock(false)},760)};
+  const loop=t=>{raf=requestAnimationFrame(loop);const dt=Math.min(.05,(t-last)/1000);last=t;ang+=spin*dt;let y=0;if(av){av.rotation.y=ang;y=Math.sin(t/1000*1.9)*.07+.03;av.position.y=y/* 둥둥 */}r.render(sc,cam);V.set(0,top+y+.04,0).project(cam);nmEl.style.top=((1-V.y)/2*Hd-4)+'px'/* 이름표는 머리 꼭대기 위 4px(QA418) */};raf=requestAnimationFrame(loop);
+  const lock=on=>{busy=on;bc.disabled=bg.disabled=on};const turn=(b,k)=>{const s_=b.querySelector('svg');b._r=(b._r||0)+k;s_.style.transform=`rotate(${b._r}deg)`};
+  bc.onclick=()=>{if(busy)return;lock(true);turn(bc,360);spin=14;const sd=pick(seed),n=pick(nm)/* QA418: 이름과 캐릭터를 함께 */;nmEl.classList.remove('flip');void nmEl.offsetWidth;nmEl.classList.add('flip');setTimeout(()=>{nm=n;nmEl.textContent=n},220);setTimeout(()=>{seed=sd;put(sd)},380);setTimeout(()=>{spin=.7;lock(false)},760)};
   const end=()=>{cancelAnimationFrame(raf);drop(sc,av);try{r.dispose();r.forceContextLoss()}catch(e){}w.remove()};
   bg.onclick=()=>{if(busy)return;end();done(nm,seed)};
   w.addEventListener('keydown',e=>{if(e.key==='Enter'&&!busy&&e.target===bg){e.preventDefault();bg.click()}});bg.focus()};

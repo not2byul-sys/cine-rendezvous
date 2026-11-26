@@ -7,6 +7,10 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   const base = merge(defaults, baseline);
   if (!characters.some(c=>c.id===base.character)) base.character=characters[0].id;
   let draft=merge(base,initial), active='character', busy=false, selectedPart='top';
+  /* QA422: 스타일 의상을 입은 캐릭터를 캐릭터 목록에 섞음 — {id, base, style}. 고르면 base 캐릭터 + 그 스타일 */
+  const sameStyle=(a={},b={})=>['top','bottom','muffler'].every(k=>(a[k]||(k==='muffler'?'off':'none'))===(b[k]||(k==='muffler'?'off':'none')));
+  const pickChar=d=>(characters.find(c=>c.base&&c.base===d.character&&sameStyle(c.style,d.style))||characters.find(c=>!c.base&&c.id===d.character)||{}).id||d.character;
+  let selChar=pickChar(draft);
   const previous=document.activeElement;
   const host=document.createElement('div');
   const root=host.attachShadow({mode:'open'});
@@ -34,18 +38,20 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
     previewHost.replaceChildren();
     if(c){const img=new Image();img.src=c.image;img.alt=c.label;previewHost.append(img);}
   }
+  let lastPk='';
   function update(){
     q('.save').disabled=busy || !draft.nickname.trim() || draft.nickname.length>14;
     q('.nm-view').textContent=draft.nickname;
     for(const n of panel.querySelectorAll('[data-value]')){
-      const value=n.dataset.group==='character'?draft.character:draft[n.dataset.kind][n.dataset.group];
+      const value=n.dataset.group==='character'?selChar:draft[n.dataset.kind][n.dataset.group];
       n.setAttribute('aria-pressed',String(n.dataset.value===value));
     }
     setSelectedPart(selectedPart);
-    preview();
+    /* QA422: 닉네임 입력만으로는 미리보기를 다시 그리지 않음(타이핑할 때 색이 바뀌던 문제) */
+    const pk=JSON.stringify({...draft,nickname:0});if(pk!==lastPk){lastPk=pk;preview();}
   }
   function option(grid,group,value,label,kind,imageUrl){
-    const n=button('',()=>{if(kind){draft[kind][group]=value;if(kind==='items'){/* QA161: 카드에 보이는 아이템 색 그대로 */if(itemColors[value])draft.colors[group]=itemColors[value];else if(value==='default')draft.colors[group]=null;if(selectableParts.includes(group))setSelectedPart(group);}}else draft.character=value;update();});
+    const n=button('',()=>{if(!kind&&group==='character'){const c=characters.find(x=>x.id===value)||{};draft.character=c.base||value;if(c.base||styles===null)draft.style={top:'none',bottom:'none',muffler:'off',...(c.style||{})};selChar=value;update();return}if(kind){draft[kind][group]=value;if(kind==='items'){/* QA161: 카드에 보이는 아이템 색 그대로 */if(itemColors[value])draft.colors[group]=itemColors[value];else if(value==='default')draft.colors[group]=null;if(selectableParts.includes(group))setSelectedPart(group);}}else draft.character=value;update();});
     Object.assign(n.dataset,{group,value,kind:kind||''});
     n.setAttribute('aria-label',label);
     if(kind==='colors'){n.className='swatch';n.style.setProperty('--chip',value);n.title=value;}
@@ -132,7 +138,7 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
   nmIn.oninput=()=>{nmOk.disabled=!nmIn.value.trim();};
   q('.nm-edit').onclick=()=>{nmIn.value=draft.nickname;nmOk.disabled=!nmIn.value.trim();nm.showModal();nmIn.focus();nmIn.select();};
   nm.onclose=()=>{if(nm.returnValue==='ok'&&nmIn.value.trim()){draft.nickname=nmIn.value.trim();input.value=draft.nickname;update();}nm.returnValue='';q('.nm-edit').focus();};
-  q('.reset').onclick=()=>{draft=structuredClone(base);input.value=draft.nickname;update();};
+  q('.reset').onclick=()=>{draft=structuredClone(base);selChar=pickChar(draft);input.value=draft.nickname;update();};
   q('.close').onclick=()=>dialog.close();
   dialog.oncancel=e=>{if(busy)e.preventDefault();};
   dialog.onclose=()=>{try{disposePreview?.(previewHost);}finally{host.remove();previous?.focus();}};

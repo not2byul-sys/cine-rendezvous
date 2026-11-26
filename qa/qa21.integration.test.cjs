@@ -98,7 +98,7 @@ test('QA86 ticket issue walks into the hall with a notice, club board says not r
  const buy=source.slice(source.indexOf('buy:async d=>{const s=SC[d.s]'),source.indexOf(' fl:d=>PANELS._sel(d.i),'));assert(buy.includes('await punchHere(r.ok);API.punch(r.ok.id);'));assert(buy.includes("toast(`${s.hall.name}으로 입장합니다`)"));assert(buy.includes("walkTo(me,HCX[hid],-1.7,'H'+hid,{after:qa142View})"));assert(!buy.includes('me.position.set('));
  assert(source.includes("const fresh=QA86_JUST===tk.id;"));
  assert(source.includes("hitbox(X+x-.05,1.95,Z-1.6,.3,1.75,2.95,{fn:()=>toast('준비 중입니다'),pt:{x:X+x-1.2,z:Z-1.6,zone:'B'}})"));
- assert(source.includes("function qa78Bubble(c,s){if(!s.userData.px){s.position.y=2.6+s.scale.y/2;"));});
+ assert(source.includes("function qa78Bubble(c,s){")&&source.includes("if(!s.userData.px){let base=")/* QA409: 월드 크기 말풍선 유지 · 높이는 이름표/머리 기준 */);});
 test('QA87 a punched ticket still routes around lobby furniture to the hall gate first',()=>{assert(source.includes("if(c===me&&HZ[tz]&&curZone(c)!==tz&&hasPass(HZ[tz])&&!opt.viaGate){const g_=GATE[HZ[tz]];if(curZone(c)===g_.zone&&Math.hypot(c.position.x-g_.x,c.position.z-g_.z)>1.5){const o2=Object.assign({},opt,{viaGate:1});return walkTo(c,g_.x,g_.z,g_.zone,{after:()=>walkTo(c,x,z,zone,o2)})}}"));});
 test('QA88 hands hold two, the rest go to the bag; context discard opens the bag and drops in place; trash can still walks there',()=>{
  assert(source.includes("if(me)setCarry(me,QA115_OFF?[]:HELD.slice(0,1))/* QA115"));assert(source.includes("toast(`나머지 ${now-was}개는 가방에 넣었어요`)"));

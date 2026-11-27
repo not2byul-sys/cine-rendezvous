@@ -1663,7 +1663,7 @@ const CHARINFO={'에밀 감독':'누벨바그 영화를 찍는 감독 에밀이�
  '파트리샤':'〈네 멋대로 해라〉(1960)의 파트리샤예요. 파리 샹젤리제에서 「뉴욕 헤럴드 트리뷴」을 팔던 미국 유학생이죠.',
  '앙투안 두아넬':'〈400번의 구타〉(1959)의 앙투안이에요. 학교도 집도 버거웠던 파리 소년. 마지막에 바다까지 달려갔죠.'};
 Object.assign(CHARINFO,{'뤼시앵':'소르본에서 철학을 공부해요. 밤마다 이 아지트에서 영화와 삶의 의미를 붙들고 씨름하죠.','엘로디':'사진을 공부하다 잠시 쉬고 있어요. 무엇을 찍어야 할지 몰라서, 요즘은 영화만 봐요.','카미유':'연극 무대에 서는 배우예요. 다음 달에 첫 영화 촬영을 앞두고 있어서 조금 떨려요.','필리프':'작은 영화 잡지에 평론을 써요. 좋은 영화는 극장 밖에서 한 번 더 시작된다고 믿어요.'})/* QA385 */;
-/* 모든 아바타 크기 배율 */var AVS=.92/* QA365: 공간·가구 대비 작아 보여 .8→.92(15%) */;/* QA435: 상영관 밖(로비·2층·아지트) 사람만 키움 — 상영관 좌석 비율은 그대로 */var QA435C=1.2/* 2배 → 1.2배(가구가 따로 손대지 않아도 맞는 크기) */,QA435V=1.1/* 걷는 속도 */,QA435CAM=1.12/* 카메라 거리 */;
+/* 모든 아바타 크기 배율 */var AVS=.92/* QA365: 공간·가구 대비 작아 보여 .8→.92(15%) */;/* QA435: 상영관 밖(로비·2층·아지트) 사람만 키움 — 상영관 좌석 비율은 그대로 */var QA435C=1/* QA441: 사람은 원래 크기로 되돌림(가구 1.2배는 유지) */,QA435V=1/* 걷는 속도 */,QA435CAM=1/* 카메라 거리 */;
 /* Reduce overhead illumination on avatar materials only. */
 function softenAvatarOverhead(root){return/* QA257: 캐릭터 머리 위 조명 줄이기 제거 */;const copies=new Map();const convert=material=>{if(!material||(!material.isMeshPhongMaterial&&!material.isMeshLambertMaterial))return material;if(copies.has(material))return copies.get(material);const m=material.clone();m.onBeforeCompile=shader=>{let lights=THREE.ShaderChunk.lights_fragment_begin;
  lights=lights.replace(/(get(?:Directional|Point|Spot)LightInfo\([^;]+;)/g,'$1\n directLight.color *= ( inverseTransformDirection( directLight.direction, viewMatrix ).y > 0.25 ? 0.9 : 1.0 );');

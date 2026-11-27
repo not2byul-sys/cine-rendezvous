@@ -1,5 +1,5 @@
 {
- "rev": "2026-11-27T08:10:00.000Z",
+ "rev": "2026-11-24T04:02:35.000Z",
  "force": [
   "aic.lobbyPalette",
   "aic.lobbyLighting"
@@ -114,8 +114,8 @@
    "YTK21v_oEgk": 197
   },
   "aic.lobbyPalette": {
-   "floorCream": "#FAF5EE",
-   "floorPink": "#EDD9C9",
+   "floorCream": "#E1DBD1",
+   "floorPink": "#D2BDA3",
    "wallWood": "#865A32",
    "wallDark": "#563115",
    "carpetA": "#956A43",

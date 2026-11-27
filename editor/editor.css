@@ -183,3 +183,9 @@ nav [data-tab=color] { display:revert; }
  .preview label input { text-align:center; color:var(--fg); font-size:15px; }
  .preview label small { text-align:center; }
 }
+
+/* QA453: 부위별 색 초기화 칩 */
+.color-chip.reset { display:flex; align-items:center; justify-content:center; color:#f3e4c4; }
+.color-chip.reset::before { background:transparent; border:1px dashed #f3e4c480; box-sizing:border-box; }
+.color-chip.reset svg { position:relative; }
+.color-chip.reset[aria-pressed] { border:0; }

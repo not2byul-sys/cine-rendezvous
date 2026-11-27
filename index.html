@@ -1102,7 +1102,7 @@ function vel(x0,x1,y0,y1,z){const w=x1-x0,n=Math.max(3,Math.round(w/.14));for(le
 function velZ(z0,z1,y0,y1,x){const w=z1-z0,n=Math.max(3,Math.round(w/.14)),s=x<0?1:-1;for(let i=0;i<n;i++){const o=i%2;B(.08,y1-y0,w/n+.012,o?VEL1:VEL2,x+s*(o?.05:-.01),(y0+y1)/2,z0+(i+.5)*w/n)}}
 /* QA55: 로비 인테리어 재질 설정 — 아래 팔레트 값이 텍스처·재질 생성에 그대로 연결됨 */
 /* QA73·74: 로비 팔레트 13색(피그마 90:1362 기반, QA76에서 사용자 지정 값으로 교체). 관리자에서 저장한 값(aic.lobbyPalette)이 있으면 그 값으로 시작 */
-const LP_DEF=Object.freeze({floorCream:"#F7F4E3",floorPink:"#B2C6CD",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음). QA326: 크림 타일은 노란 기를 뺀 아이보리(예전 #E2DCC1) */
+const LP_DEF=Object.freeze({floorCream:"#FAF5EE",floorPink:"#EDD9C9",wallWood:"#865A32",wallDark:"#563115",carpetA:"#E7BFC2",carpetB:"#CCA4A6",railing:"#37110B",railingBase:"#170702",goldTrim:"#DEB967",sidePanel:"#643817",counterTop:"#784B21",counterBody:"#602415",glass:"#A6BDB0"});/* QA76: 사용자 지정 13색(바닥 줄눈 없음). QA326: 크림 타일은 노란 기를 뺀 아이보리(예전 #E2DCC1) */
 const LP_HEX=/^#[0-9a-f]{6}$/i,LP_clean=o=>{const r={};Object.keys(LP_DEF).forEach(k=>{const v=o&&o[k];r[k]=typeof v==='string'&&LP_HEX.test(v)?v.toUpperCase():LP_DEF[k]});return r};
 const LP_CUR=LP_clean(store.get('aic.lobbyPalette'));
 const LOBBY_PALETTE={
@@ -1141,7 +1141,7 @@ wsegX(LB,LD,0,4.3,LW,MU2);wsegX(LB,LD,4.3,8.8,LW,MU2);B(.1,.2,LD,FRAME,LW-.24,.1
 /* 앞벽 */
 {/* QA81: 창이 벽 전체 폭이라 앞벽은 창 위쪽만 남음 */const fh=5.6*Math.sqrt(1.3);wseg(-LW,LW,fh,8.8,LD,MU2,.3)}
 /* 천장: 머스터드 평천장 + 크라운 몰딩 + 메달리온 */
-{const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0x666666,emissive:0xbac1cd,emissiveMap:PLAS});cm.material.userData.keep=1;LP_MATS.push(cm.material)/* QA56: 크림색 천장 → QA326: 노란 기 없는 아이보리(조명분 .56→.40, 발색을 푸른 쪽으로 보정) */}const CRN=0xe9dfd0;TM[CRN]=new THREE.MeshLambertMaterial({color:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.45),emissive:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.58)});TM[CRN].userData.keep=1;LP_MATS.push(TM[CRN]);B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
+{const CY=8.8;{const cm=B(2*LW+.8,.3,LD-LB+.8,0xd9aa52,0,CY+.15,(LD+LB)/2);cm.material=new THREE.MeshLambertMaterial({map:PLAS,color:0x707070,emissive:0xd3d0c8/* QA439: 천장 더 맑고 밝게(회색 기를 덜고 따뜻한 흰색 쪽으로) */,emissiveMap:PLAS});cm.material.userData.keep=1;LP_MATS.push(cm.material)/* QA56: 크림색 천장 → QA326: 노란 기 없는 아이보리(조명분 .56→.40, 발색을 푸른 쪽으로 보정) */}const CRN=0xe9dfd0;TM[CRN]=new THREE.MeshLambertMaterial({color:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.45),emissive:new THREE.Color(LOBBY_PALETTE.ceilingTrim.color).multiplyScalar(.58)});TM[CRN].userData.keep=1;LP_MATS.push(TM[CRN]);B(2*LW,.3,.36,CRN,0,CY-.15,LB+.25);B(2*LW,.3,.36,CRN,0,CY-.15,LD-.25);B(.36,.3,LD-LB,CRN,-LW+.25,CY-.15,(LD+LB)/2);B(.36,.3,LD-LB,CRN,LW-.25,CY-.15,(LD+LB)/2);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LB+.45);B(2*LW,.08,.08,0xd8ccb4,0,CY-.36,LD-.45);
  [LB+3,5.2,10.2].forEach(z=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(.7,.7,.06,24),TM[CRN]/* QA326: 천장 몰딩과 같은 재질 — 조명만 받는 재질이라 아이보리 천장에서 갈색 원반처럼 보였음 */);m.position.set(0,CY-.03,z);S.add(m)})}
 const glassM=new THREE.MeshPhongMaterial({color:0xdde8ea,transparent:true,opacity:.14,depthWrite:false,shininess:90,specular:0xffffff});
 /* QA73: 정문 유리만 따로(매표소·진열장 유리는 그대로) */const LP_GLASS=glassM.clone();LP_MATS.push(LP_GLASS);
@@ -5029,7 +5029,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 (function(){const T=h=>new THREE.Color(h);
  window.qa437Pal=function(mode){try{
   if(mode==='floor'){LP_apply({floorCream:'#F7F4E3',floorPink:'#B2C6CD'});return}
-  if(mode==='terra'){/* 참고 사진: 크림·테라코타 체크 바닥 + 따뜻한 크림 천장 */LP_apply({floorCream:'#FAF5EE',floorPink:'#EDD9C9'/* 세 번 연하게 · 아이보리도 연하게 */});S.traverse(o=>{const m=o.material;if(o.isMesh&&m&&m.emissive&&m.emissive.getHex()===0xbac1cd){m.emissive.set(0xd9c7a6);m.color.set(0x6a6258)}});return}
+  if(mode==='terra'){/* 참고 사진: 크림·테라코타 체크 바닥 + 따뜻한 크림 천장 */LP_apply({floorCream:'#FAF5EE',floorPink:'#EDD9C9'});return}/* QA439: 이 색이 기본이 됨 */
   LP_apply({floorCream:'#F7F4E3',floorPink:'#B2C6CD',wallWood:'#F2E6CF',wallDark:'#5A3A22',carpetA:'#EDD1CD',carpetB:'#E3B9B3',railing:'#8B2C31',railingBase:'#4a1418',goldTrim:'#CDAF4E',sidePanel:'#ADAC54',counterTop:'#F9DA80',counterBody:'#CF422D',glass:'#B2C6CD'});
   const seen=new Set(),hsl={};S.traverse(o=>{if(!o.isMesh||!o.material)return;if(Math.abs(o.getWorldPosition(new THREE.Vector3()).x)>60)return;/* 로비만 */let a=o;while(a){if(a.userData&&a.userData.legs)return;a=a.parent}(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(seen.has(m)||!m.color||m.map||m.transparent||(m.userData&&(m.userData.keep||m.userData.lp||m.userData.flat)))return;seen.add(m);m.color.getHSL(hsl);const h=hsl.h,sa=hsl.s,l=hsl.l;let c=null;
     if((h<.035||h>.9)&&sa>.35&&l<.4)c=l<.2?'#8B2C31':'#CF422D';/* 버건디 → 토마토 레드(짙은 건 버건디 유지) */

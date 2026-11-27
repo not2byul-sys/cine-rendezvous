@@ -115,13 +115,13 @@ test('설정 파일: 같은 판을 이미 받은 브라우저는 다시 덮어�
 });
 
 test('올려 둔 설정: 크림 타일은 아이보리, 밝기 95% — 두 항목만 고쳐 올린 판', () => {
-  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#F7F4E3');
+  assert.equal(config.data['aic.lobbyPalette'].floorCream, '#FAF5EE');
   assert.deepEqual(config.data['aic.lobbyLighting'], { b: 95, k: 4200 });
   assert.deepEqual(config.force, ['aic.lobbyPalette', 'aic.lobbyLighting']);
-  assert.equal(config.rev, '2026-11-27T07:20:00.000Z');
+  assert.equal(config.rev, '2026-11-27T08:10:00.000Z');
   /* 그 밖의 관리자 입력값은 그대로 */
   assert.deepEqual(Object.keys(config.data), ['aic.clubfilmRevision', 'aic.layout', 'aic.posters', 'aic.filmInfo', 'aic.durs', 'aic.lobbyPalette', 'aic.lobbyLighting']);
-  assert.equal(config.data['aic.lobbyPalette'].floorPink, '#B2C6CD'); assert.equal(config.data['aic.lobbyPalette'].wallWood, '#865A32');
+  assert.equal(config.data['aic.lobbyPalette'].floorPink, '#EDD9C9'); assert.equal(config.data['aic.lobbyPalette'].wallWood, '#865A32');
 });
 
 test('조명: 전체 밝기는 110→100%, 등불(점광원)은 지금보다 10% 밝게', () => {

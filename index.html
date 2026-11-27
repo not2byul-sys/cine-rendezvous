@@ -5029,7 +5029,7 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
 (function(){const T=h=>new THREE.Color(h);
  window.qa437Pal=function(mode){try{
   if(mode==='floor'){LP_apply({floorCream:'#F7F4E3',floorPink:'#B2C6CD'});return}
-  if(mode==='terra'){/* 참고 사진: 크림·테라코타 체크 바닥 + 따뜻한 크림 천장 */LP_apply({floorCream:'#F4EBDC',floorPink:'#E5C6B5'/* 절반씩 두 번 연하게 */});S.traverse(o=>{const m=o.material;if(o.isMesh&&m&&m.emissive&&m.emissive.getHex()===0xbac1cd){m.emissive.set(0xd9c7a6);m.color.set(0x6a6258)}});return}
+  if(mode==='terra'){/* 참고 사진: 크림·테라코타 체크 바닥 + 따뜻한 크림 천장 */LP_apply({floorCream:'#FAF5EE',floorPink:'#EDD9C9'/* 세 번 연하게 · 아이보리도 연하게 */});S.traverse(o=>{const m=o.material;if(o.isMesh&&m&&m.emissive&&m.emissive.getHex()===0xbac1cd){m.emissive.set(0xd9c7a6);m.color.set(0x6a6258)}});return}
   LP_apply({floorCream:'#F7F4E3',floorPink:'#B2C6CD',wallWood:'#F2E6CF',wallDark:'#5A3A22',carpetA:'#EDD1CD',carpetB:'#E3B9B3',railing:'#8B2C31',railingBase:'#4a1418',goldTrim:'#CDAF4E',sidePanel:'#ADAC54',counterTop:'#F9DA80',counterBody:'#CF422D',glass:'#B2C6CD'});
   const seen=new Set(),hsl={};S.traverse(o=>{if(!o.isMesh||!o.material)return;if(Math.abs(o.getWorldPosition(new THREE.Vector3()).x)>60)return;/* 로비만 */let a=o;while(a){if(a.userData&&a.userData.legs)return;a=a.parent}(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(seen.has(m)||!m.color||m.map||m.transparent||(m.userData&&(m.userData.keep||m.userData.lp||m.userData.flat)))return;seen.add(m);m.color.getHSL(hsl);const h=hsl.h,sa=hsl.s,l=hsl.l;let c=null;
     if((h<.035||h>.9)&&sa>.35&&l<.4)c=l<.2?'#8B2C31':'#CF422D';/* 버건디 → 토마토 레드(짙은 건 버건디 유지) */

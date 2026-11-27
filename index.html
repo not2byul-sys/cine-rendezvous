@@ -5024,6 +5024,21 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  if(typeof openCine==='function'&&typeof closeCine==='function'){const oo=openCine,oc=closeCine;window.openCine=function(){const r=oo.apply(this,arguments);window.qa44Land(true);return r};window.closeCine=function(){const r=oc.apply(this,arguments);window.qa44Land(false);return r}}
 })();
 </script>
+<script id="qa437-retro-palette">/* QA437(테스트): 레트로 미드센추리 팔레트 — 주소에 ?pal=retro 를 붙였을 때만 로비에 입힘(운영 기본 화면은 그대로) */
+(function(){const T=h=>new THREE.Color(h);
+ window.qa437Pal=function(){try{
+  LP_apply({floorCream:'#F7F4E3',floorPink:'#B2C6CD',wallWood:'#F2E6CF',wallDark:'#5A3A22',carpetA:'#EDD1CD',carpetB:'#E3B9B3',railing:'#8B2C31',railingBase:'#4a1418',goldTrim:'#CDAF4E',sidePanel:'#ADAC54',counterTop:'#F9DA80',counterBody:'#CF422D',glass:'#B2C6CD'});
+  const seen=new Set(),hsl={};S.traverse(o=>{if(!o.isMesh||!o.material)return;if(Math.abs(o.getWorldPosition(new THREE.Vector3()).x)>60)return;/* 로비만 */let a=o;while(a){if(a.userData&&a.userData.legs)return;a=a.parent}(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>{if(seen.has(m)||!m.color||m.map||m.transparent||(m.userData&&(m.userData.keep||m.userData.lp||m.userData.flat)))return;seen.add(m);m.color.getHSL(hsl);const h=hsl.h,sa=hsl.s,l=hsl.l;let c=null;
+    if((h<.035||h>.9)&&sa>.35&&l<.4)c=l<.2?'#8B2C31':'#CF422D';/* 버건디 → 토마토 레드(짙은 건 버건디 유지) */
+    else if(h>=.035&&h<.11&&sa>.3&&l<.3)c=l<.14?'#52270C':'#7a4a26';/* 짙은 갈색 → 초콜릿·밝은 호두 */
+    else if(h>=.035&&h<.11&&sa>.3&&l<.55)c='#BF6734';/* 갈색·주황 → 번트 오렌지 */
+    else if(h>=.11&&h<.17&&sa>.35&&l<.62)c='#CDAF4E';/* 금·머스터드 */
+    else if(h>=.2&&h<.46&&sa>.15&&l<.5)c='#ADAC54';/* 짙은 초록 → 올리브 */
+    else if(h>=.46&&h<.7&&sa>.15)c=l<.45?'#5381A9':'#92BBD7';/* 청록·파랑 → 더스티 블루 */
+    else if(h>.8&&h<.99&&sa>.3&&l>=.4)c='#FFA5A6';/* 분홍 */
+    if(c){m.color.copy(T(c));if(m.emissive&&(m.emissive.r+m.emissive.g+m.emissive.b)>.05)m.emissive.copy(T(c)).multiplyScalar(.25)}})})}catch(e){console.warn('qa437',e)}};
+ if(/[?&]pal=retro/.test(location.search)){let n=0;const t=setInterval(()=>{if(typeof me!=='undefined'&&me&&typeof LP_apply==='function'){clearInterval(t);setTimeout(qa437Pal,600)}else if(++n>200)clearInterval(t)},200)}})();
+</script>
 <script id="qa435-people-scale">/* QA435: 걷기 루프를 타지 않는 사람(앉은 NPC·직원·고정 인물)도 상영관 밖이면 2배 */
 (function(){function tick(){try{if(typeof QA435C==='undefined'||typeof zoneOf!=='function')return;S.children.forEach(c=>{const u=c.userData;if(!u||!u.legs||u.base==null||u.qa262pv)return;const zz=zoneOf(c.position.x,c.position.z,u.lvl||0),inH=!!(zz&&zz[0]==='H');if(inH&&!u.q435)return;const k=(inH?HSC:.82*QA435C)*AVS*u.base;u.q435=!inH;if(Math.abs(c.scale.x-k)>.001)c.scale.setScalar(k)})}catch(e){}}setInterval(tick,250);setTimeout(tick,300)})();
 </script>

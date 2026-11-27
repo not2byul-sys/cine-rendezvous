@@ -82,6 +82,12 @@ export async function openAvatarEditor({initial={}, baseline={}, characters=samp
       b.setAttribute('aria-pressed',String(b.dataset.part===key));
     }
   }
+  {/* QA453: 부위별(상의·하의·모자…) 색 초기화 칩 — 지금 고른 부위만 처음 색으로 */
+    const rc=button('',()=>{draft.colors[selectedPart]=base.colors[selectedPart];setSelectedPart(selectedPart);update();});
+    rc.className='color-chip reset';rc.title='처음 색으로';rc.setAttribute('aria-label','이 부위 색 초기화');
+    rc.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/></svg>';
+    colorChips.append(rc);
+  }
   for(const hex of palette){
     const chip=button('',()=>{draft.colors[selectedPart]=hex;setSelectedPart(selectedPart);update();});
     chip.className='color-chip';chip.dataset.hex=hex.toUpperCase();

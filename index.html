@@ -7355,7 +7355,7 @@ html body:has(#actorMenu:not([hidden]) button) #hint[id]{display:none!important}
 <script id="qa375-reg">/* QA375: 등록 전이면 가방·수첩 창 아래에 작은 '등록하기' 링크 */
 (()=>{const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};
  setInterval(()=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const has=d.querySelector('.qa375r');if(reg()){has&&has.remove();return}if(has)return;
-  const p=document.createElement('p');p.className='qa375r';p.innerHTML='등록하지 않으면 보관한 것이 사라질 수 있어요.<button type="button">등록하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>';p.querySelector('button').onclick=()=>{try{QA341.form('new')}catch(e){}};const hd=d.querySelector('header>div');(hd||d).appendChild(p)},500)})();
+  const p=document.createElement('p');p.className='qa375r';p.innerHTML='아직 등록 전이라 보관한 것이 사라질 수 있어요.<button type="button">등록하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>';p.querySelector('button').onclick=()=>{try{QA341.form('new')}catch(e){}};const hd=d.querySelector('header>div');(hd||d).appendChild(p)},500)})();
 </script>
 <style id="qa429-shut">html body.qa429shut button[data-a="bag"][aria-disabled="true"],html body.qa429shut button[data-a="book"][aria-disabled="true"]{opacity:.38!important}</style>
 <script id="qa429-shut-js">/* QA429: 가방·수집은 '어떻게 보관할까요?'를 확인한 뒤에 생김 — 그 전엔 퀵바에서 흐리게 */

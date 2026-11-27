@@ -1317,7 +1317,7 @@ function plant(x,z,y=0,s=1){B(.6*s,.5*s,.6*s,0xb06a2c,x,y+.25*s,z);for(let i=0;i
 function addSpot(sp,mesh){if(sp.kind!=='cine'){mesh.updateWorldMatrix(true,false);const box=new THREE.Box3().setFromObject(mesh);sp.seatHeight=box.max.y-(sp.y||0);const fx=Math.sin(sp.rot),fz=Math.cos(sp.rot);sp.seatFront=Math.max(...[box.min.x,box.max.x].flatMap(x=>[box.min.z,box.max.z].map(z=>(x-sp.x)*fx+(z-sp.z)*fz)))}SPOTS.push(sp);mesh.userData.spot=sp;spotMeshes.push(mesh)}
 /* 배치 편집용: 옮길 수 있는 아이템 = 만들어진 순서 구간(오브젝트·앉는 자리·클릭 영역) 묶음 */
 const LAYI=[];const layBeg=()=>[S.children.length,SPOTS.length,INTER.length];
-function layEnd(m,id,name,lvl,opt){opt=opt===1?{wall:'x'}:(opt||{});try{lobbyShrinkItem(m,id,lvl)}catch(e){}const objs=S.children.slice(m[0]).map(o=>({o,p:o.position.clone(),q:o.quaternion.clone()}));const spots=SPOTS.slice(m[1]).map(q=>({s:q,x:q.x,z:q.z,r:q.rot,y:q.y||0,zn:q.zone}));
+function layEnd(m,id,name,lvl,opt){opt=opt===1?{wall:'x'}:(opt||{});try{lobbyShrinkItem(m,id,lvl)}catch(e){}try{qa435Grow(m,id)}catch(e){}const objs=S.children.slice(m[0]).map(o=>({o,p:o.position.clone(),q:o.quaternion.clone()}));const spots=SPOTS.slice(m[1]).map(q=>({s:q,x:q.x,z:q.z,r:q.rot,y:q.y||0,zn:q.zone}));
  const pts=INTER.slice(m[2]).map(h=>h.userData.act&&h.userData.act.pt).filter(Boolean).map(pt=>({pt,x:pt.x,z:pt.z,zn:pt.zone}));const bb=new THREE.Box3();objs.forEach(e=>{if(!e.o.isSprite&&!e.o.isLight)bb.expandByObject(e.o)});const c=bb.getCenter(new THREE.Vector3());
  const it={id,name,lvl,lvl0:lvl,dl:0,wall:opt.wall,lo:opt.lo,hi:opt.hi,ceil:opt.ceil,noDup:opt.noDup||objs.some(e=>e.o.userData.legs),noDel:opt.noDel,objs,spots,pts,cx:opt.px!=null?opt.px:c.x,cz:opt.pz!=null?opt.pz:c.z,py:c.y,dx:0,dz:0,dr:0,del:false};objs.forEach(e=>e.o.userData._lay=it);LAYI.push(it);return it}
 function spw(){const it=LAYI.find(i=>i.id==='spawn');return it?{x:it.cx+it.dx,z:it.cz+it.dz,r:Math.PI+it.dr}:{x:0,z:17.3,r:Math.PI}}
@@ -1341,6 +1341,7 @@ const shMark=()=>[S.children.length,SPOTS.length,INTER.length];
 function shTo(m,dx,dz){for(let i=m[0];i<S.children.length;i++){const o=S.children[i];o.position.x+=dx;o.position.z+=dz}for(let i=m[1];i<SPOTS.length;i++){SPOTS[i].x+=dx;SPOTS[i].z+=dz}for(let i=m[2];i<INTER.length;i++){const a=INTER[i].userData.act;if(a&&a.pt){a.pt.x+=dx;a.pt.z+=dz}}}
 /* QA245: 마크 이후 생성된 물체를 (ax,ay,az) 기준으로 k배 — 위치·크기·앉는 자리(높이 포함)·걷기 지점. 사람(아바타)은 크기는 그대로 자리만 옮김 */function shScale(m,k,ax,ay,az){const P=(x,a)=>a+(x-a)*k;for(let i=m[0];i<S.children.length;i++){const o=S.children[i];o.position.x=P(o.position.x,ax);o.position.z=P(o.position.z,az);o.position.y=P(o.position.y,ay);const u=o.userData||{};if(u.legs){if(u.floorOffset!=null)u.floorOffset*=k;const h=u.home;if(h&&!SPOTS.includes(h)){h.x=P(h.x,ax);h.z=P(h.z,az);h.y=P(h.y||0,ay);if(h.seatHeight!=null)h.seatHeight*=k;if(h.seatFront!=null)h.seatFront*=k}}else o.scale.multiplyScalar(k)}
  for(let i=m[1];i<SPOTS.length;i++){const sp=SPOTS[i];sp.x=P(sp.x,ax);sp.z=P(sp.z,az);if(sp.y)sp.y=P(sp.y,ay);if(sp.seatHeight!=null)sp.seatHeight*=k;if(sp.seatFront!=null)sp.seatFront*=k}for(let i=m[2];i<INTER.length;i++){const a=INTER[i].userData.act;if(a&&a.pt){a.pt.x=P(a.pt.x,ax);a.pt.z=P(a.pt.z,az)}}}
+/* QA435: 사람 2배에 맞춰 작은 소품만 키움(벽 쪽 기준, 앉는 높이 포함) */const QA435UP={phonetbl:1.5,vend_coffee:1.5,coffee2:1.35,popcart:1.45,qa102arch:1.75,plant0:1.25,plant1:1.25,plant2:1.25,plant3:1.25,plant4:1.25,plant5:1.25,donatebox:1.35,donatebox1:1.35,donatebox2:1.25,'side-1':1.3,side1:1.3,'ticket-side-table':1.3,'lobby-table-2':1.3,cafe0:1.2,'leather-sofa':1.55,'leather-sofa-2':1.55,trash0:1.5,trashClubDoorRight:1.5};function qa435Grow(m,id){const k=QA435UP[id];if(!k)return;const bb=new THREE.Box3();for(let i=m[0];i<S.children.length;i++){const o=S.children[i];if(!o.isSprite&&!o.isLight&&!(o.userData&&o.userData.legs))bb.expandByObject(o)}if(bb.isEmpty())return;const c=bb.getCenter(new THREE.Vector3());let ax=c.x,az=c.z;if(bb.max.x>LW-.6)ax=bb.max.x;else if(bb.min.x<-LW+.6)ax=bb.min.x;if(bb.max.z>LD-.6)az=bb.max.z;else if(bb.min.z<BF+.6)az=bb.min.z;shScale(m,k,ax,Math.max(0,bb.min.y),az)}
 const LOBBY_K=.9282/* QA245: 로비 아이템·매표소·매점 15% 작게 → QA259: 5% 키움(.85×1.05) → QA260: 4% 더(×1.04) */,LOBBY_KD=new Set();function lobbyShrinkItem(m,id,lvl){if(lvl!==0||id==='spawn')return;const bb=new THREE.Box3();for(let i=m[0];i<S.children.length;i++){const o=S.children[i];if(!o.isSprite&&!o.isLight&&!(o.userData&&o.userData.legs))bb.expandByObject(o)}if(bb.isEmpty())return;const c=bb.getCenter(new THREE.Vector3());if(Math.abs(c.x)>LW+1||c.z<BF-1||c.z>LD+1||bb.min.y>3.5)return;
  let ax=c.x,az=c.z;if(bb.max.x>LW-.6)ax=bb.max.x;else if(bb.min.x<-LW+.6)ax=bb.min.x;if(bb.max.z>LD-.6)az=bb.max.z;else if(bb.min.z<BF+.6)az=bb.min.z/* 벽에 붙은 것은 벽 쪽을 기준으로 */;shScale(m,LOBBY_K,ax,Math.max(0,bb.min.y),az);LOBBY_KD.add(id)}
 function hitbox(x,y,z,w,h,d,act){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshBasicMaterial({visible:false}));m.position.set(x,y,z);m.userData.act=act;S.add(m);INTER.push(m);return m}
@@ -1662,7 +1663,7 @@ const CHARINFO={'에밀 감독':'누벨바그 영화를 찍는 감독 에밀이�
  '파트리샤':'〈네 멋대로 해라〉(1960)의 파트리샤예요. 파리 샹젤리제에서 「뉴욕 헤럴드 트리뷴」을 팔던 미국 유학생이죠.',
  '앙투안 두아넬':'〈400번의 구타〉(1959)의 앙투안이에요. 학교도 집도 버거웠던 파리 소년. 마지막에 바다까지 달려갔죠.'};
 Object.assign(CHARINFO,{'뤼시앵':'소르본에서 철학을 공부해요. 밤마다 이 아지트에서 영화와 삶의 의미를 붙들고 씨름하죠.','엘로디':'사진을 공부하다 잠시 쉬고 있어요. 무엇을 찍어야 할지 몰라서, 요즘은 영화만 봐요.','카미유':'연극 무대에 서는 배우예요. 다음 달에 첫 영화 촬영을 앞두고 있어서 조금 떨려요.','필리프':'작은 영화 잡지에 평론을 써요. 좋은 영화는 극장 밖에서 한 번 더 시작된다고 믿어요.'})/* QA385 */;
-/* 모든 아바타 크기 배율 */var AVS=.92/* QA365: 공간·가구 대비 작아 보여 .8→.92(15%) */;
+/* 모든 아바타 크기 배율 */var AVS=.92/* QA365: 공간·가구 대비 작아 보여 .8→.92(15%) */;/* QA435: 상영관 밖(로비·2층·아지트) 사람만 2배 — 상영관 좌석 비율은 그대로 */var QA435C=2,QA435V=1.45/* 걷는 속도 */,QA435CAM=1.6/* 카메라 거리 */;
 /* Reduce overhead illumination on avatar materials only. */
 function softenAvatarOverhead(root){return/* QA257: 캐릭터 머리 위 조명 줄이기 제거 */;const copies=new Map();const convert=material=>{if(!material||(!material.isMeshPhongMaterial&&!material.isMeshLambertMaterial))return material;if(copies.has(material))return copies.get(material);const m=material.clone();m.onBeforeCompile=shader=>{let lights=THREE.ShaderChunk.lights_fragment_begin;
  lights=lights.replace(/(get(?:Directional|Point|Spot)LightInfo\([^;]+;)/g,'$1\n directLight.color *= ( inverseTransformDirection( directLight.direction, viewMatrix ).y > 0.25 ? 0.9 : 1.0 );');
@@ -2596,10 +2597,10 @@ function walkPose(c,t,dt=.016){const u=c.userData;u.walkBlend=Math.min(1,(u.walk
  c.children[0].position.y=0;if(u.legs){const sw=Math.sin(t*6)*.45*u.walkBlend;
  u.legs[0].rotation.x=sw;u.legs[1].rotation.x=-sw;
  if(u.arms){u.arms[0].rotation.x=-sw*.7;u.arms[1].rotation.x=sw*.7}}}
-function upd(c,dt,t){const u=c.userData,n=c.children[0];if(u.sitAnim){sitStep(c,dt);return}if(u.interactionPause){if(!u.seat&&!u.giftEating)idlePose(c,dt);return}clearNpcFromBoard(c);if(c===me&&u.pendingSeat){const sp=u.pendingSeat;if(sp.taken&&sp.taken!==c||curZone(c)!==sp.zone){u.pendingSeat=null}else if(Math.hypot(c.position.x-sp.x,c.position.z-sp.z)<=(u.path.length?.3:1.8)/* QA70: 걷는 중에는 멀리서 끌려가 앉지 않음 — 길이 막혀 멈췄을 때만 근처에서 앉음 */){u.pendingSeat=null;u.after=null;NEARSP=null;sit(c,sp);hudUpd()}else if(!u.path.length)u.pendingSeat=null}if(u.npc&&!u.counterStaff&&u.lvl===0&&c.position.x< -5.55&&c.position.z>9.1&&c.position.z<13.3){c.position.x=-4.6;u.path=[];u.spot=null;u.after=null;u.roamHome=c.position.clone()}{const zz=zoneOf(c.position.x,c.position.z,u.lvl),k=(zz&&zz[0]==='H'?HSC:.82)*AVS*(u.base||1);if(Math.abs(c.scale.x-k)>.001)c.scale.setScalar(k)}
+function upd(c,dt,t){const u=c.userData,n=c.children[0];if(u.sitAnim){sitStep(c,dt);return}if(u.interactionPause){if(!u.seat&&!u.giftEating)idlePose(c,dt);return}clearNpcFromBoard(c);if(c===me&&u.pendingSeat){const sp=u.pendingSeat;if(sp.taken&&sp.taken!==c||curZone(c)!==sp.zone){u.pendingSeat=null}else if(Math.hypot(c.position.x-sp.x,c.position.z-sp.z)<=(u.path.length?.3:1.8)/* QA70: 걷는 중에는 멀리서 끌려가 앉지 않음 — 길이 막혀 멈췄을 때만 근처에서 앉음 */){u.pendingSeat=null;u.after=null;NEARSP=null;sit(c,sp);hudUpd()}else if(!u.path.length)u.pendingSeat=null}if(u.npc&&!u.counterStaff&&u.lvl===0&&c.position.x< -5.55&&c.position.z>9.1&&c.position.z<13.3){c.position.x=-4.6;u.path=[];u.spot=null;u.after=null;u.roamHome=c.position.clone()}{const zz=zoneOf(c.position.x,c.position.z,u.lvl),k=(zz&&zz[0]==='H'?HSC:.82*QA435C)*AVS*(u.base||1);u.q435=!(zz&&zz[0]==='H');if(Math.abs(c.scale.x-k)>.001)c.scale.setScalar(k)}
  if(u.path&&u.path.length){const w=u.path[0],dx=w.x-c.position.x,dz=w.z-c.position.z,d=Math.hypot(dx,dz);
   if(d<.12){const wp=u.path.shift();if(wp.tp){c.position.x=wp.tp.x;c.position.z=wp.tp.z;u.lvl=wp.tp.lvl;if(c===me)alignSpaceCamera(c)}if(!u.path.length){u.navRequest=null;if(u.spot){const sp=u.spot;u.spot=null;sit(c,sp)}else if(u.after){const f=u.after;u.after=null;f()}}}
-  else{const desired=(u.roamActive?.65:SPEED)*Math.min(1,Math.max(.22,d/1.15));
+  else{const desired=(u.roamActive?.65:SPEED)*(u.q435?QA435V:1)*Math.min(1,Math.max(.22,d/1.15));
    u.walkVel=(u.walkVel||0)+(desired-(u.walkVel||0))*Math.min(1,Math.max(0,dt)*8);
    const step=Math.min(d,Math.max(.12,u.walkVel)*dt),px=c.position.x,pz=c.position.z;
    move(c,px+dx/d*step,pz+dz/d*step);const traveled=Math.hypot(c.position.x-px,c.position.z-pz);
@@ -3783,7 +3784,7 @@ const Multiplayer=(()=>{
  function sendLook(id){if(!id||!socket||socket.readyState!==1||!myId)return;try{socket.send(JSON.stringify({t:'chat',text:GIFT_TAG+'k|*|'+id}))}catch{}}
  if(typeof window!=='undefined'){window.qa40MpRename=rename;window.qa40MpSendLook=sendLook}
  function start(name){nick=String(name||'관객').slice(0,14);closing=false;makeUI();if(!endpoint())returnconnect()}
- function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;p.avatar.scale.setScalar((p.zone[0]==='H'?HSC:.82)*AVS*.9);if(!same||p.avatar.userData.interactionPause)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
+ function tick(dt){if(!me)return;sendMove();const zone=curZone(me);for(const p of peers.values()){const same=p.zone===zone;p.avatar.visible=same;p.avatar.scale.setScalar((p.zone[0]==='H'?HSC:.82*QA435C)*AVS*.9);if(!same||p.avatar.userData.interactionPause)continue;p.avatar.position.lerp(p.target,Math.min(1,dt*12));let d=Math.atan2(Math.sin(p.r-p.avatar.rotation.y),Math.cos(p.r-p.avatar.rotation.y));p.avatar.rotation.y+=d*Math.min(1,dt*12)}}
  addEventListener('pagehide',()=>{closing=true;try{socket?.close(1000,'leaving')}catch{}});
  function openChat(target=null){makeUI();els.talkTarget=target;els.talkToken++;els.reply.textContent='';els.input.placeholder=target&&!target.userData.remote?'말을 걸어보세요':'입력하세요';els.chat.classList.add('open');try{els.input.focus({preventScroll:true})}catch{els.input.focus()}}
  return {start,tick,openChat};
@@ -3825,10 +3826,10 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    if(Math.abs(yawV)>.01){camYaw+=yawV*dt;yawV*=Math.pow(.006,dt)}else yawV=0;
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
-   const D=inH?(s?10.5:clampN(camDist*.85,3.2,11))/* QA19: 레퍼런스처럼 아바타 바로 뒤 낮은 시점 */:(s&&s.kind!=='cine'?3.7:camDist),PP=inH?Math.max(.06,camPitch-.06):(s&&s.kind!=='cine'?.4:camPitch);
+   const D=inH?(s?10.5:clampN(camDist*.85,3.2,11))/* QA19: 레퍼런스처럼 아바타 바로 뒤 낮은 시점 */:(s&&s.kind!=='cine'?3.7:camDist)*QA435CAM/* QA435 */,PP=inH?Math.max(.06,camPitch-.06):(s&&s.kind!=='cine'?.4:camPitch);
    {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
-   const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+(s&&s.kind!=='cine'?.62:1.0);let tt=1;
+   const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+(s&&s.kind!=='cine'?.62:1.0)*(inH?1:QA435C)/* QA435 */;let tt=1;
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,-.35)/* QA216: 뒷벽 밖으로 안 나가게 */}
@@ -3848,10 +3849,10 @@ function qa127Cam(H,hv,cp,lk){const L=new THREE.Vector3(H.cx,H.base+SCY,SCZ),P0=
    if(Math.abs(yawV)>.01){camYaw+=yawV*dt;yawV*=Math.pow(.006,dt)}else yawV=0;
     /* QA06: walking preserves the user-controlled camera heading. */
    camPitch+=(camPitchT-camPitch)*Math.min(1,dt*10);
-   const D=camDist,PP=inH?Math.max(.06,camPitch-.06):camPitch;
+   const D=camDist*(inH?1:QA435CAM)/* QA435 */,PP=inH?Math.max(.06,camPitch-.06):camPitch;
    {const ny_=qa320Yaw(camYawS,camYaw,dt,camDrag||Math.abs(yawV)>=.01||!!(K.q||K.e));camYawS=snapCam?camYaw:ny_}
    let fx=Math.sin(camYawS),fz=Math.cos(camYawS);const cq=Math.cos(PP),sq=Math.sin(PP),hz=inH?HALLN[+zn[1]]:null;
-   const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+1.0;let tt=1;
+   const ox=-fx*D*cq,oz=-fz*D*cq,oy=D*sq,hy=p.y+1.0*(inH?1:QA435C)/* QA435 */;let tt=1;
    /* 유저 중심 궤도(각도 고정). 카메라는 항상 실내에 머묾: 벽에 닿는 방향에서만 같은 시선을 따라 당겨짐(회전에 따라 연속적으로 변해 튀지 않음) */
    const lim=(v,o,lo,hi)=>{if(o>0&&v+o>hi)tt=Math.min(tt,(hi-v)/o);if(o<0&&v+o<lo)tt=Math.min(tt,(lo-v)/o)};
    if(hz){lim(p.x,ox,hz.cx-HX+.6,hz.cx+HX-.6);lim(p.z,oz,-17,-.35)/* QA216: 뒷벽 밖으로 안 나가게 */}
@@ -5022,6 +5023,9 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  addEventListener('resize',()=>{if(R.syn||!R.on)return;const r=real();if(r.w>r.h)window.qa44Land(false);else{size();fire()}});
  if(typeof openCine==='function'&&typeof closeCine==='function'){const oo=openCine,oc=closeCine;window.openCine=function(){const r=oo.apply(this,arguments);window.qa44Land(true);return r};window.closeCine=function(){const r=oc.apply(this,arguments);window.qa44Land(false);return r}}
 })();
+</script>
+<script id="qa435-people-scale">/* QA435: 걷기 루프를 타지 않는 사람(앉은 NPC·직원·고정 인물)도 상영관 밖이면 2배 */
+(function(){function tick(){try{if(typeof QA435C==='undefined'||typeof zoneOf!=='function')return;S.children.forEach(c=>{const u=c.userData;if(!u||!u.legs||u.base==null||u.qa262pv)return;const zz=zoneOf(c.position.x,c.position.z,u.lvl||0),inH=!!(zz&&zz[0]==='H');if(inH&&!u.q435)return;const k=(inH?HSC:.82*QA435C)*AVS*u.base;u.q435=!inH;if(Math.abs(c.scale.x-k)>.001)c.scale.setScalar(k)})}catch(e){}}setInterval(tick,250);setTimeout(tick,300)})();
 </script>
 <script id="qa109-seated-tag">/* QA109: 앉으면 이름표를 머리 바로 위로(서 있을 때 머리와 이름표 간격을 그대로 유지) */
 (function(){const V=new THREE.Vector3();function tick(){try{S.traverse(o=>{if(o.name!=='avatar-tag')return;const av=o.parent,u=av&&av.userData;if(!u||!u.head)return;if(u.tagY0==null)u.tagY0=o.position.y;if(u.seat){u.head.getWorldPosition(V);av.worldToLocal(V);const y=u.headTop!=null?V.y+(u.headTop-1.6)+.02:Math.min(u.tagY0,V.y+.48)/* QA123: 앉으면 머리 바로 위 · QA409: 모자 높이까지 */;if(Math.abs(o.position.y-y)>.01)o.position.y=y}else if(o.position.y!==u.tagY0)o.position.y=u.tagY0})}catch(e){}}setInterval(tick,400);setTimeout(tick,1500)})();

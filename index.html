@@ -5025,6 +5025,9 @@ function qa39ClubLoading(){try{if(typeof CLV!=='undefined'&&CLV&&CLV.readyState>
  if(typeof openCine==='function'&&typeof closeCine==='function'){const oo=openCine,oc=closeCine;window.openCine=function(){const r=oo.apply(this,arguments);window.qa44Land(true);return r};window.closeCine=function(){const r=oc.apply(this,arguments);window.qa44Land(false);return r}}
 })();
 </script>
+<script id="qa440-clear">/* QA440: 화면 전체(공간·소품·사람)를 약간 더 맑게 — 3D 화면에만 살짝 밝기·채도 보정(UI·모달은 그대로) */
+(function(){try{if(typeof R!=='undefined'&&R.domElement)R.domElement.style.filter='brightness(1.04) saturate(1.08) contrast(1.02)'}catch(e){}})();
+</script>
 <script id="qa437-retro-palette">/* QA437(테스트): 레트로 미드센추리 팔레트 — 주소에 ?pal=retro 를 붙였을 때만 로비에 입힘(운영 기본 화면은 그대로) */
 (function(){const T=h=>new THREE.Color(h);
  window.qa437Pal=function(mode){try{

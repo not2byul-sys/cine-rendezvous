@@ -2659,7 +2659,7 @@ const NPC_MOOD=['오늘 상영작, 기대돼요.','파리의 겨울엔 역시 �
 const NPC_STAFF=['어서 오세요, 씨네 랑데뷰입니다.','상영 시작 전에 미리 자리 잡으세요.','오늘도 만석이면 좋겠네요.','필요한 게 있으면 언제든 말씀하세요.','상영관 안에서는 조용히 부탁드려요.','이 극장은 1979년부터 그대로예요.','좋은 저녁 되세요.'];
 const NPCLN={};function npcLines(name){if(NPCLN[name])return NPCLN[name];let info='';try{info=CHARINFO[name]||''}catch(e){}const fm=(info.match(/[《〈]([^》〉]+)[》〉]/)||[])[1]||'',out=[];
  info.split(/(?<=[.!?요다])\s+/).map(t=>t.trim()).filter(t=>t.length>4&&t.length<=48).slice(0,3).forEach(t=>out.push(t));
- if(name==='마들렌 할머니')out.push('영화 볼 땐 에스키모 아이스크림이죠.','미국 극장들은 영화 볼 때 팝콘을 먹는다던데, 여긴 그런 게 없네요.')/* QA308 → QA463: 팝콘은 바다 건너 이야기 */;
+ if(name==='마들렌 할머니')out.push('영화 볼 땐 에스키모 아이스크림이죠.','미국에선 영화 보면서 옥수수 튀긴 걸 먹는다지요? 파리에선 막간에 아이스크림 하나면 족하답니다.')/* QA308 → QA463: 팝콘은 바다 건너 이야기 */;
  const staff=/영사기사|직원|우브뢰즈|자닌|모지|퍼재컬리|올드 톰|^맥스$/.test(name);if(staff)NPC_STAFF.forEach(t=>out.push(t));
  if(fm){out.push(`《${fm}》 이야기라면 밤새도 할 수 있어요.`,`《${fm}》, 다들 보셨어요?`)}
  let h=0;for(const ch of name)h=(h*31+ch.charCodeAt(0))>>>0;for(let k=0;out.length<10&&k<NPC_MOOD.length*2;k++){const t=NPC_MOOD[(h+k*5)%NPC_MOOD.length];if(!out.includes(t))out.push(t)}

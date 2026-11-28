@@ -39,3 +39,17 @@ test('nickname length: new ids are 14 chars max (matches the entry screen); old 
   kv.m.set('u:'+'나'.repeat(16),JSON.stringify({h:await legacyHash('나'.repeat(16),'5555'),d:{k:1},t:1,f:0}));
   assert.deepStrictEqual((await call(mod,env,{op:'load',id:'나'.repeat(16),pin:'5555'})).j.data,{k:1});
 });
+test('QA475 adding PIN_PEPPER later does not lock out existing accounts; they are re-hashed and the legacy hash is dropped',async()=>{
+  const mod=await load(),kv=mkKV();
+  await call(mod,{SETTINGS:kv},{op:'create',id:'late',pin:'2468',data:{v:1}});
+  kv.m.set('u:old2',JSON.stringify({h:await legacyHash('old2','1357'),d:{o:1},t:1,f:0}));
+  const env={SETTINGS:kv,PIN_PEPPER:'added-later'};
+  assert.strictEqual((await call(mod,env,{op:'load',id:'late',pin:'0000'})).s,401);
+  assert.deepStrictEqual((await call(mod,env,{op:'load',id:'late',pin:'2468'})).j.data,{v:1});
+  const R=JSON.parse(kv.m.get('u:late'));assert.strictEqual(R.h,undefined,'legacy hash dropped once a pepper exists');
+  assert.deepStrictEqual((await call(mod,env,{op:'load',id:'late',pin:'2468'})).j.data,{v:1},'works again with the peppered hash');
+  assert.strictEqual((await call(mod,{SETTINGS:kv},{op:'load',id:'late',pin:'2468'})).s,401,'now really depends on the pepper');
+  assert.deepStrictEqual((await call(mod,env,{op:'load',id:'old2',pin:'1357'})).j.data,{o:1},'unsalted account upgrades straight to peppered');
+  assert.strictEqual(JSON.parse(kv.m.get('u:old2')).h,undefined);
+  assert.strictEqual((await call(mod,env,{op:'save',id:'late',pin:'2468',data:{v:2}})).j.ok,true);assert.deepStrictEqual((await call(mod,env,{op:'load',id:'late',pin:'2468'})).j.data,{v:2});
+});

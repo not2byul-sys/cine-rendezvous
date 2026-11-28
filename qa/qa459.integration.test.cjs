@@ -19,4 +19,5 @@ test('QA462 the usherette is 안내원 자닌 on her tag, order panel and lines'
   assert(!/우브뢰즈(가|한테|에게) /.test(source.replace(/\/\*[\s\S]*?\*\//g,'')),'no player-facing line still says 우브뢰즈');});
 test('QA463 popcorn is only talked about as an American habit',()=>{
   assert(!source.includes('옥수수를 튀겨 극장에서'));assert(!source.includes('팝콘이 극장 간식이 된'));
-  for(const t of ['미국에선 영화 보면서 옥수수 튀긴 걸 먹는다지요? 파리에선 막간에 아이스크림 하나면 족하답니다.','미국에선 팝콘을 먹으면서 영화를 본다더라고요','파리는 분위기가 영 다르죠.','여기가 영화관인지 매점인지 모르겠어요.','파리 극장에선 통하지 않을 얘기예요.'])assert(source.includes(t),t);});
+  for(const t of ['극장에서 옥수수를 튀겨 먹는다니, 미국 사람들은 참 별나지요.','미국에선 팝콘을 먹으면서 영화를 본다더라고요','파리는 분위기가 영 다르죠.','여기가 영화관인지 매점인지 모르겠어요.','파리 극장에선 통하지 않을 얘기예요.'])assert(source.includes(t),t);});
+test('QA465 old popcorn lines are gone',()=>{assert(!source.includes('갓 튀긴 팝콘 냄새'));assert(!source.includes('어디서 팝콘 냄새가'));assert(source.includes('QA465: 팝콘 냄새 반응 대사 삭제'));});

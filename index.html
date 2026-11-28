@@ -6489,7 +6489,7 @@ html body #qa276gate .qa134 input:focus{border-color:rgba(246,231,204,.45)}
 </script>
 <script id="qa287-snack">/* QA287: 간식 사진과 포장지를 실제 디자인 이미지로 교체(매점 메뉴·가방·수첩 미감 수집) */
 (function(){const B='qa95_assets/snack/',K=['glacier','rivoli','bebert','fruitc','lemon']/* QA458: 팝콘 삭제 */;
- const P={},G={};K.forEach(k=>{P[k]=B+k+'.webp';G[k]=B+k+'_pkg.webp'});
+ const P={},G={};K.forEach(k=>{P[k]=B+k+'_c.webp';G[k]=B+k+'_pkg_c.webp'})/* QA467: 배경 없는 그림으로 통일 */;
  window.QA287SNACK=P;window.QA287PKG=G;
  /* 미리 받아 두면 매점을 열 때 바로 보임 */setTimeout(()=>K.forEach(k=>{[P[k],G[k]].forEach(u=>{const i=new Image();i.src=u})}),4000);
 })();

@@ -2659,7 +2659,7 @@ const NPC_MOOD=['오늘 상영작, 기대돼요.','파리의 겨울엔 역시 �
 const NPC_STAFF=['어서 오세요, 씨네 랑데뷰입니다.','상영 시작 전에 미리 자리 잡으세요.','오늘도 만석이면 좋겠네요.','필요한 게 있으면 언제든 말씀하세요.','상영관 안에서는 조용히 부탁드려요.','이 극장은 1979년부터 그대로예요.','좋은 저녁 되세요.'];
 const NPCLN={};function npcLines(name){if(NPCLN[name])return NPCLN[name];let info='';try{info=CHARINFO[name]||''}catch(e){}const fm=(info.match(/[《〈]([^》〉]+)[》〉]/)||[])[1]||'',out=[];
  info.split(/(?<=[.!?요다])\s+/).map(t=>t.trim()).filter(t=>t.length>4&&t.length<=48).slice(0,3).forEach(t=>out.push(t));
- if(name==='마들렌 할머니')out.push('영화 볼 땐 에스키모 아이스크림이죠.','미국에선 영화 보면서 옥수수 튀긴 걸 먹는다지요? 파리에선 막간에 아이스크림 하나면 족하답니다.')/* QA308 → QA463: 팝콘은 바다 건너 이야기 */;
+ if(name==='마들렌 할머니')out.push('영화 볼 땐 에스키모 아이스크림이죠.','극장에서 옥수수를 튀겨 먹는다니, 미국 사람들은 참 별나지요.')/* QA308 → QA463: 팝콘은 바다 건너 이야기 */;
  const staff=/영사기사|직원|우브뢰즈|자닌|모지|퍼재컬리|올드 톰|^맥스$/.test(name);if(staff)NPC_STAFF.forEach(t=>out.push(t));
  if(fm){out.push(`《${fm}》 이야기라면 밤새도 할 수 있어요.`,`《${fm}》, 다들 보셨어요?`)}
  let h=0;for(const ch of name)h=(h*31+ch.charCodeAt(0))>>>0;for(let k=0;out.length<10&&k<NPC_MOOD.length*2;k++){const t=NPC_MOOD[(h+k*5)%NPC_MOOD.length];if(!out.includes(t))out.push(t)}
@@ -3411,7 +3411,7 @@ function npcReplyText(target,message){const name=target.userData.displayName,tex
  if(/고마|감사|잘\s*가|안녕히|다음에/.test(text))answer='좋은 영화와 함께 즐거운 시간 보내세요. 또 이야기해요.';
  else if(/비밀|클럽|초대/.test(text))answer='알프레도 할아버지의 영화 퀴즈를 풀면 비밀 클럽 초대장을 받을 수 있어요.';
  else if(/꽃|장미|소녀/.test(text))answer='꽃 파는 소녀에게 장미를 사서 마음을 전해 보세요. 비밀 이야기도 들을 수 있답니다.';
- else if(/선물|팝콘|간식/.test(text))answer='작은 선물도 반갑지요.';
+ else if(/선물|간식/.test(text))answer='작은 선물도 반갑지요.';
  else if(/누구|이름|소개/.test(text))answer=intro||'저는 이 영화관에서 손님들을 만나고 있어요. 반가워요.';
  else if(/안녕|반가|hello|bonjour/.test(text))answer='반가워요! 오늘은 어떤 영화를 보러 오셨어요?';
  else if(/영화|추천|좋아|감독/.test(text))answer=intro||'고전영화 한 편은 어떠세요? 스크린 앞에서 천천히 이야기를 만나보세요.';
@@ -5267,12 +5267,11 @@ body.cfull #qa127map{display:none!important}
  window.QA127_MAP={paint,swap}})();
 </script>
 <script id="qa132-quick">
-/* QA132: ① 다른 층 바닥을 누르면 계단으로 걸어가는 동안 카메라가 아바타 뒤를 따라감 ② 팝콘을 먹으면 주변 사람들이 냄새에 반응 */
+/* QA132: 다른 층 바닥을 누르면 계단으로 걸어가는 동안 카메라가 아바타 뒤를 따라감 */
 (function(){const W=v=>Math.atan2(Math.sin(v),Math.cos(v));const _walk=walkTo;
  walkTo=function(c,x,z,zone,opt){const r=_walk.apply(this,arguments);try{if(c===me&&zone&&/^L[01]$/.test(zone)&&+zone[1]!==(me.userData.lvl|0))me.userData.qa132F=1}catch(e){}return r};
  let lt=performance.now();(function tick(){requestAnimationFrame(tick);const t=performance.now(),dt=Math.min(.1,(t-lt)/1000);lt=t;const u=me&&me.userData;if(!u||!u.qa132F)return;if(!u.path||!u.path.length||u.seat){u.qa132F=0;return}camYaw+=W(me.rotation.y-camYaw)*Math.min(1,dt*2.6);yawV=0})();
- const LINES=['음, 갓 튀긴 팝콘 냄새!','어디서 팝콘 냄새가 나는데요?','고소하다… 나도 하나 살까','팝콘 냄새 좋네요'];
- const _eat=startEat;startEat=function(i){const before=EAT;const r=_eat.apply(this,arguments);try{if(!before&&EAT&&EAT.it&&/^pop/.test(EAT.it.k)){const z=curZone(me),near=NPCS.filter(n=>n.visible!==false&&curZone(n)===z&&n.position.distanceTo(me.position)<4.5).sort((a,b)=>a.position.distanceTo(me.position)-b.position.distanceTo(me.position)).slice(0,2);near.forEach((n,k)=>setTimeout(()=>{try{say(n,LINES[(Math.random()*LINES.length)|0])}catch(e){}},700+k*1300))}}catch(e){}return r}})();
+ /* QA465: 팝콘 냄새 반응 대사 삭제 */})();
 </script>
 <style id="qa133-cine">
 #qa133snd,#qa133full{display:none}

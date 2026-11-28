@@ -7,10 +7,10 @@ test('QA19 world cup trophy sits on the left bar cart without its pedestal',()=>
   assert(source.includes('QA19: 좌측 바 카트(탁자) 위에 올림'));assert(source.includes('const px=X-CBW+.7,pz=Z+CBD-1.5'))/* QA303: 안쪽 구석으로 */;});
 test('QA19 NPC actions render as a pill row above the bottom nav',()=>{
   assert(!source.includes("bt('actorTalk'"));assert(source.includes("bt('actorGift','giftmenu','선물하기')"));assert(source.includes('#actorMenu{position:fixed;z-index:38;left:50%'));});
-test('QA19 every NPC gift line reacts in character and then hints at the club or rainbow popcorn',()=>{
+test('QA19 every NPC gift line reacts in character and then hints at the club',()=>{
   const st=source.indexOf('const QA18_GIFT={'),body=source.slice(st,source.indexOf('};',st));
   const rows=[...body.matchAll(/'([^']+)':\['([^']*)','([^']*)','([^']*)','(hop|bow)'\]/g)];assert(rows.length>=50);
-  rows.forEach(r=>assert(/클럽|무지개 팝콘/.test(r[3]),r[1]));});
+  rows.forEach(r=>assert(/클럽/.test(r[3]),r[1]));});
 test('QA19 mobile camera is game-style and taps show a destination mark',()=>{
   assert(source.includes('QA19: 일반 모바일 게임식'));assert(source.includes('qa19TapMark(h.point,ud.zone)'));assert(source.includes('eatTick(dt,t);qa19TapTick(dt);'));});
 test('QA19 avatar floor shadow is hidden',()=>{assert(source.includes('sh.visible=false/* QA19'));});

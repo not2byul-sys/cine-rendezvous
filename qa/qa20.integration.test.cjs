@@ -11,7 +11,7 @@ test('QA20 situational buttons leave the quick bar and live in the context bar',
   for(const k of["'sit',","'ctxother','다른 자리 앉기'","'sitnear','앉기'","'ctxbooth','매표소 가기'","'ctxside'","'oget','간식받기'"])assert(ctx.includes(k),k);
   assert(!ctx.includes("'tt','상영작'"),'QA260: 액션 바에 상영작 없음');});
 test('QA20 objects ask first with a named action and a look-around chip',()=>{
-  for(const k of["ctx:'영화 월드컵'","ctx:'트리 점등'","ctx:'레코드 고르기'","ctx:'책장 열기'","ctx:'자판기 이용'","ctx:'팝콘 받기'","ctx:'상영 안내 보기'"])assert(source.includes(k),k);
+  for(const k of["ctx:'영화 월드컵'","ctx:'트리 점등'","ctx:'레코드 고르기'","ctx:'책장 열기'","ctx:'자판기 이용'","ctx:'상영 안내 보기'"])assert(source.includes(k),k);
   assert(source.includes("if(ud.act.ctx){qa20Obj(ud.act,o,az);return}"));});
 test('QA20 avatar chips add hint, wave, clap, follow and flower purchase; no block/report',()=>{
   for(const k of["'actorChat','','더 들려주세요'","'actorPhoto','','같이 사진찍기'","'actorWave','','손 흔들기'","'actorClap','','박수'","'actorFollow','','따라가기'","'꽃 사기'"])assert(source.includes(k),k);

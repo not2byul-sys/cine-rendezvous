@@ -3578,7 +3578,7 @@ function opanel(v){$('pn').dataset.k=v;const pb=document.querySelector('#pn .pbo
  const STAFF_INTRO={
   vendor:{title:'꽃 파는 소녀',speech:'저는 1931년 영화 《시티 라이트》의 꽃 파는 소녀예요. 사람들에게 장미를 선물하세요. 꽃을 사시면 좋은 정보를 드릴게요.'},
   shop:{title:'미스 모지 · 매점 주문',speech:'어서 오세요! 저는 매점 직원 미스 모지예요. 영화를 즐기실 간식을 골라 주세요.'},
-  cafe:{title:'카페 직원 · 주문',speech:'봉주르! 카페에 오신 걸 환영해요. 영화 한 편의 여운과 함께 따뜻한 음료를 즐겨 보세요.'},
+  cafe:{title:'카페 주문',speech:'봉주르! 카페에 오신 걸 환영해요. 영화 한 편의 여운과 함께 따뜻한 음료를 즐겨 보세요.'},
   ouv:{title:'안내원 자닌 · 간식',speech:'봉수아! 상영 전에 간식 하나 어떠세요? 아이스크림 바, 캐러멜, 초콜릿이 있어요.'},
   cbcafe:null,
   cbwine:null,
@@ -5291,19 +5291,19 @@ body.cfull #qa127map{display:none!important}
 <script id="qa127-seatmap">
 /* QA127: 상영관 좌석표 — 입장부터 좌측 하단. 빈자리를 누르면 그 자리로(앉아 있으면 상영을 끊지 않고 바로 옮김) */
 (function(){const el=document.createElement('div');el.id='qa127map';el.hidden=true;el.className='min';el.innerHTML='<div class="hd"><button class="open" type="button" aria-label="좌석표 보기">좌석표 보기</button><button class="x" type="button" aria-label="좌석표 닫기">✕</button></div><i class="scr"></i><div class="g"></div>';el.querySelector('.open').onclick=()=>el.classList.remove('min');el.querySelector('.x').onclick=()=>el.classList.add('min');document.body.appendChild(el);const g=el.querySelector('.g'),MOB=matchMedia('(max-width:699px)');let hall=0,btn=[];
- const build=h=>{hall=h;el.classList.add('min')/* QA371: B안 — 처음엔 닫힘, 퀵바 '좌석표'로 열기 *//* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 · QA327: 모바일은 접힌 버튼으로 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.dataset.i=i;b.title=seatLabel(i);g.appendChild(b);btn.push(b)}};
+ const build=h=>{hall=h;el.classList.add('min')/* QA371: B안 — 처음엔 닫힘, 퀵바 '좌석표'로 열기 *//* QA156: 상영관에 처음 들어가면 좌석표 펼친 상태 · QA327: 모바일은 접힌 버튼으로 */;g.innerHTML='';btn=[];for(let i=0;i<NSEAT;i++){const c=i%NSR;if(c===SEATS_PER_SIDE){const sp_=document.createElement('span');g.appendChild(sp_)}const b=document.createElement('button');b.type='button';b.dataset.i=i;b.title=seatLabel(i);b.setAttribute('aria-label',seatLabel(i)+' 좌석');g.appendChild(b);btn.push(b)}};
  const swap=sp=>{const u=me.userData,old=u.seat;if(old===sp)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}
   window.__qa130ok=0;
   if(old&&old.kind==='cine'&&old.hall===sp.hall){toast(seatLabel(HALLN[sp.hall].seats.indexOf(sp))+' 좌석으로 이동합니다')/* QA176: 확인창 없이 알림만 띄우고 바로 이동 */;old.taken=null;sp.taken=me;u.seat=sp;me.position.set(sp.x,sp.y,sp.z);me.rotation.y=sp.rot;if(curSp===old)curSp=sp;try{paintSeats()}catch(e){}paint();return}
   pickSeat(sp.hall,sp)};
  const stop=e=>e.stopPropagation();['pointerdown','pointerup','mousedown','mouseup','touchstart','touchend','click'].forEach(t=>el.addEventListener(t,stop));
- el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(sp)swap(sp)});
- const paint=()=>{const z=me?curZone(me):'';const h=z&&z[0]==='H'?+z.slice(1):0;if(!h){el.hidden=true;return}if(h!==hall)build(h);el.hidden=false;const S_=HALLN[h].seats,ms=me.userData.seat||me.userData.pendingSeat||null;S_.forEach((sp,i)=>{const b=btn[i];if(!b)return;const m=sp===ms||sp.taken===me,t=!m&&!!sp.taken;b.classList.toggle('me',m);b.classList.toggle('tk',t)})};
+ el.addEventListener('click',e=>{const b=e.target.closest('.g button');if(!b||!hall)return;const sp=HALLN[hall].seats[+b.dataset.i];if(!sp)return;/* QA474: 누르면 바로 가지 않고 먼저 확인 */const u=me.userData;if(sp===u.seat||sp===u.pendingSeat)return;if(sp.taken&&sp.taken!==me){toast('이미 누가 앉아 있어요');return}ask(sp)});
+ const paint=()=>{const z=me?curZone(me):'';const h=z&&z[0]==='H'?+z.slice(1):0;if(!h){el.hidden=true;return}if(h!==hall)build(h);el.hidden=false;const S_=HALLN[h].seats,ms=me.userData.seat||me.userData.pendingSeat||null;S_.forEach((sp,i)=>{const b=btn[i];if(!b)return;const m=sp===ms||sp.taken===me,t=!m&&!!sp.taken;b.classList.toggle('me',m);b.classList.toggle('tk',t);const lb=seatLabel(i)+' 좌석'+(m?' · 내 자리':t?' · 다른 관객이 앉은 자리':' · 빈자리');if(b.getAttribute('aria-label')!==lb)b.setAttribute('aria-label',lb)})};
  let wasPlay=false;setInterval(()=>{try{paint();const st_=me&&me.userData.seat,pl=!!(st_&&st_.kind==='cine'&&(window.QA234SEQ||(typeof curSc!=='undefined'&&curSc&&!CINE_DONE)));if(pl&&!wasPlay)el.classList.add('min')/* QA269: 영화가 시작되면 좌석표는 접어서 버튼으로 */;wasPlay=pl}catch(e){}},350);/* QA130: 앉아 있을 때 다른 자리를 누르면 확인창 — 영상은 잠시 멈추고, 닫으면 이어서(멈춘 시간만큼 상영 시각도 미룸) */
  let pend=null,pausedAt=0,watchT=0;
  const pause=()=>{pausedAt=nowS();try{if(yt&&yt.pauseVideo)yt.pauseVideo()}catch(e){}try{vf.pause()}catch(e){}};
  const resume=()=>{if(!pausedAt)return;const d=nowS()-pausedAt;pausedAt=0;try{const o=curSp&&ODS[curSp.hall];if(o&&d>0){o.start+=d;if(o.end!=null)o.end+=d}}catch(e){}try{if(curSc&&yt&&yt.playVideo)yt.playVideo()}catch(e){}try{if(curSc&&vf.src)vf.play().catch(()=>{})}catch(e){}};
- const ask=sp=>{pend=sp;pause();el.classList.add('min')/* 시트와 겹치지 않게 좌석표 접기 */;const L=seatLabel(HALLN[sp.hall].seats.indexOf(sp));const no=()=>{pend=null;resume()};if(window.QA134)QA134.sheet(`${L} 자리로 옮길까요?`,[{t:'아니요',fn:no},{t:'옮기기',pri:1,fn:()=>A.qa130yes()}],no);};
+ const ask=sp=>{pend=sp;pause();el.classList.add('min')/* 시트와 겹치지 않게 좌석표 접기 */;const L=seatLabel(HALLN[sp.hall].seats.indexOf(sp));const no=()=>{pend=null;resume()};const seated=!!(me.userData.seat&&me.userData.seat.kind==='cine');if(window.QA134)QA134.sheet(seated?`${L} 자리로 옮길까요?`:`${L} 자리에 앉을까요?`,[{t:'아니요',fn:no},{t:seated?'옮기기':'앉기',pri:1,fn:()=>A.qa130yes()}],no);else A.qa130yes()};
  A.qa130yes=()=>{const sp=pend;pend=null;clearInterval(watchT);if(sp){window.__qa130ok=1;swap(sp)}resume()};
  A.qa130no=()=>{pend=null;clearInterval(watchT);closePanel();resume()};
  window.QA127_MAP={paint,swap}})();
@@ -6054,7 +6054,7 @@ body:not(.cineseat):has(#ctxbar:not([hidden])) #qa127map{bottom:calc(env(safe-ar
 })();
 /* QA421: 일시정지 — 영상만 멈추고 자리·화면은 그대로. 이어보기는 멈춘 곳부터(상영 시간표도 멈춘 만큼 뒤로) */
 (function(){const _st=A.qa219stop,_pl=A.qa219play,_cs=A.cstand,_sy=window.syncCine;
- const vid=on=>{try{if(curSc&&curSc.film&&curSc.film.src){on?vf.play().catch(()=>{}):vf.pause()}else if(typeof yt!=='undefined'&&yt){on?yt.playVideo():yt.pauseVideo()}}catch(e){}};
+ const vid=on=>{/* QA474: 상영 전 영상(뉴스릴 등)도 함께 멈춤·이어 재생 */try{document.querySelectorAll('#qa110pre video').forEach(v=>{on?v.play().catch(()=>{}):v.pause()})}catch(e){}try{if(curSc&&curSc.film&&curSc.film.src){on?vf.play().catch(()=>{}):vf.pause()}else if(typeof yt!=='undefined'&&yt){on?yt.playVideo():yt.pauseVideo()}}catch(e){}};
  A.qa219stop=(...a)=>{if(curSp&&curSc&&!CINE_DONE&&!window.QA234SEQ){if(!window.QA421P){window.QA421P={t:nowS()};vid(false)}hudUpd();return}return _st(...a)};
  A.qa219play=(...a)=>{const P=window.QA421P;if(P&&curSp){window.QA421P=null;const dp=Math.max(0,nowS()-P.t);[ODS[curSp.hall],curSc].forEach(o=>{if(o&&!o.__qa421){o.__qa421=1;o.start+=dp;o.end+=dp;setTimeout(()=>{delete o.__qa421},0)}});vid(true);hudUpd();return}return _pl(...a)};
  A.cstand=(...a)=>{window.QA421P=null;return _cs(...a)};
@@ -7415,7 +7415,7 @@ html body:has(#actorMenu:not([hidden]) button) #hint[id]{display:none!important}
 <style id="qa375-css">html body #qa270 .dlg header p.qa375r{flex:none;margin:6px 0 0;padding:0;text-align:left;font:400 13px/1.5 'Noto Sans KR',sans-serif;color:#f3e4c4;opacity:1}#qa270 .qa375r button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:2px;margin-left:8px;color:#f3e4c4;font-weight:600;white-space:nowrap}#qa270 .qa375r button svg{width:14px;height:14px}/* QA429: 제목 아래 크림색 안내 + 텍스트 버튼(쉐브론) */</style>
 <script id="qa375-reg">/* QA375: 등록 전이면 가방·수첩 창 아래에 작은 '등록하기' 링크 */
 (()=>{const reg=()=>{try{return !!JSON.parse(localStorage.getItem('aic.acct')||'null')}catch(e){return false}};
- setInterval(()=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const has=d.querySelector('.qa375r');if(reg()){has&&has.remove();return}if(has)return;
+ setInterval(()=>{const d=document.querySelector('#qa270 .dlg');if(!d)return;const has=d.querySelector('.qa375r');/* QA474: 등록 안내 띠(문구·등록하기·닫기)는 모두 숨김 */if(has)has.remove();return;
   const p=document.createElement('p');p.className='qa375r';p.innerHTML='아직 등록 전이라 보관한 것이 사라질 수 있어요.<button type="button">등록하기<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>';p.querySelector('button').onclick=()=>{try{QA341.form('new')}catch(e){}};const hd=d.querySelector('header>div');(hd||d).appendChild(p)},500)})();
 </script>
 <style id="qa429-shut">/* QA449: 잠금 안내의 버튼 3개는 작게 */html body #qa338v:has(.qa449) .zb{gap:8px!important}html body #qa338v:has(.qa449) .zb button{font-size:13px!important;height:34px!important;min-height:0!important;padding:0 14px!important;line-height:1!important}html body.qa429shut button[data-a="bag"][aria-disabled="true"],html body.qa429shut button[data-a="book"][aria-disabled="true"]{opacity:.38!important}</style>

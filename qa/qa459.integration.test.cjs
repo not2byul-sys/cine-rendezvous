@@ -5,7 +5,7 @@ test('QA459 projection room has Sherlock, not Robert, and Sherlock no longer rot
   assert(source.includes("n!=='셜록 영사기사'/* QA459"));assert(!source.includes("'앨런','셜록 영사기사']"));
   assert(source.includes("'영사기사 로베르':'영사기사'"),'card numbers stay fixed');});
 test('QA459 staff cards show their film',()=>{
-  const m=source.match(/const QA459FILM=(\{[^}]+\})/);assert(m[1].includes("'우브뢰즈':'전진 트래블링'"));assert(m);const F=eval('('+m[1]+')');
+  const m=source.match(/const QA459FILM=(\{[^}]+\})/);assert(m[1].includes("'자닌':'전진 트래블링'"));assert(m);const F=eval('('+m[1]+')');
   assert.strictEqual(F['미시즈 퍼재컬리'],'지상에서 가장 작은 쇼');assert.strictEqual(F['올드 톰'],'지상에서 가장 작은 쇼');
   assert.strictEqual(F['미스 모지'],'마지막 영화관');assert.strictEqual(F['셜록 영사기사'],'셜록 주니어');
   assert(source.includes("fm=QA459FILM[name]||"));assert(source.includes("fm=QA459FILM[x.n]||"));
@@ -13,3 +13,7 @@ test('QA459 staff cards show their film',()=>{
 test('QA460 card back no longer shows the outfit line',()=>{
   assert(!source.includes('<em>오늘의 차림</em>'));assert(source.includes('QA460: 카드 뒷면의 「오늘의 차림」 줄을 뺌'));
   assert(source.includes('const QA408TALK='),'fashion talk stays in dialogue');});
+test('QA462 the usherette is 안내원 자닌 on her tag, order panel and lines',()=>{
+  assert(source.includes("nameTag('안내원 자닌',false)"));assert(source.includes("ouv:{title:'안내원 자닌 · 간식'"));
+  assert(source.includes("VEN={ouv:{name:'안내원 자닌'"));assert(source.includes("'자닌':'우브뢰즈'"));
+  assert(!/우브뢰즈(가|한테|에게) /.test(source.replace(/\/\*[\s\S]*?\*\//g,'')),'no player-facing line still says 우브뢰즈');});

@@ -25,3 +25,6 @@ test('QA466 the ice cream bar is called 에스키모 노르',()=>{assert(source.
 test('QA467 snack illustrations use the cut-out files only',()=>{
   assert(source.includes("P[k]=B+k+'_c.webp';G[k]=B+k+'_pkg_c.webp'"));
   for(const k of ['glacier','rivoli','bebert','fruitc','lemon']){const d=path.join(__dirname,'..','qa95_assets','snack');assert(fs.existsSync(path.join(d,k+'_c.webp')));assert(fs.existsSync(path.join(d,k+'_pkg_c.webp')));assert(!fs.existsSync(path.join(d,k+'.webp')));assert(!fs.existsSync(path.join(d,k+'_pkg.webp')));}});
+test('QA468 limited-edition and flat wrappers are gone',()=>{
+  assert(!source.includes('RARE=.12'));assert(!source.includes('한정판 포장지를'));assert(!source.includes("' · 한정판'"));assert(!source.includes('✦'));assert(!source.includes('LIMITÉE'));assert(!source.includes('MAISON FONDÉE EN 1931'));
+  assert(source.includes("const id=k+':0',o=get()"));assert(source.includes("o[k+':0']=(o[k+':0']||0)+(o[id]||0)"));});

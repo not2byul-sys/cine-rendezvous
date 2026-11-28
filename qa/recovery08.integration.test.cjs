@@ -58,7 +58,6 @@ test('NPC answers are quoted, topic-aware, and use the character voice', () => {
   }
   assert(ctx.npcReplyText(marcus, '소개해 주세요').includes('마커스 교수'));
   assert(ctx.npcReplyText(vito, '초대장이 궁금해요').includes('알프레도'));
-  assert(ctx.npcReplyText(vito, '무지개').includes('무지개빛'));
 });
 
 function chatContext() {

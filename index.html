@@ -4916,6 +4916,9 @@ const hex6=n=>n.toString(16).padStart(6,'0');
 const QA66={items:{gl:['none','round','sun','square'],hat:['none','beret','flatcap','fedora','cloche','bowler'],bag:['none','crossbody','shoulder','rattan'],shoes:['loafer','ballet','sneaker','ankle','knee','maryjane']},legacy:{gl:{'0':'none','1':'round','2':'sun'},hat:{flat:'flatcap',cap:'flatcap'},bag:{cross:'crossbody'},shoes:{}},open:false,P:null};
 /* 'auto~닉네임'은 그 닉네임으로 정해진 기본 캐릭터를 고정한 것(닉네임을 바꿔도 모습 유지) */
 try{LOOK10.forEach(l=>{l.o=qa381Auto(l.id,l.o)/* QA381 */;qa358Lift(l.o)})}catch(e){}/* QA358 */
+/* QA469: 기준 몸통 — 어떤 옷을 입혀도 비교의 기준이 되는 '옷 없는 몸'. mk()의 같은 몸 비율(BODYK)을 그대로 쓰고, 옷 부위를 모두 한 가지 점토색으로 통일(무늬·모자·안경·가방 없음). 외형 옵션 o를 주면 그 위에 덮어씀 */
+const QA469CLAY=0xd8cbb8;function qa469BaseOpts(o){return Object.assign({coat:QA469CLAY,pants:QA469CLAY,legs:QA469CLAY,shoe:QA469CLAY,hair:0xb9ab97,hs:'short',open:0,nobtn:1,notag:1,mannequin:1},o||{})}
+function qaBaseBody(parent,o){const g=mk('',0,Object.assign(qa469BaseOpts(o),parent?{parent}:{}));try{g.userData.baseBody=1}catch(e){}return g}
 function qa66Base(id,name){const L=LOOK10.find(l=>l.id===id);let seed=name||(me&&me.userData.displayName)||'관객';if(!L&&String(id).startsWith('auto~'))try{seed=decodeURIComponent(String(id).slice(5))||seed}catch(e){}return JSON.parse(JSON.stringify(L?L.o:qaUserLook(seed)))}
 /* 캐릭터 원래 모습의 악세서리를 편집기 ID로 */
 function qa66Nat(o){return {gl:o.sung?'sun':o.gsq?'square':(o.glasses!=null&&o.glasses!==false)?'round':'none',hat:!o.hat?'none':({beret:'beret',flat:'flatcap',cap:'flatcap',fedora:'fedora',cloche:'cloche',bowler:'bowler'})[o.hat]||'other',bag:!o.bag?'none':({cross:'crossbody',shoulder:'shoulder',rattan:'rattan'})[o.bag]||'other',shoes:o.shoeStyle||'default'}}

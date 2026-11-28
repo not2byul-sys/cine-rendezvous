@@ -12,7 +12,7 @@ const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')
 /* 예전 해시(솔트 없음) — 기존 계정 확인용 */
 const hashOld = async (id, pin) => hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode('cine:' + id + ':' + pin)));
 /* QA471: 사용자별 솔트 + (있으면) 서버 비밀값 PIN_PEPPER 로 HMAC. 저장소만 유출돼도 미리 계산한 표로는 못 푼다 */
-const hashNew = async (id, pin, salt, env) => { const k = await crypto.subtle.importKey('raw', new TextEncoder().encode('cine2:' + ((env && env.PIN_PEPPER) || '')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return hex(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(salt + ':' + id + ':' + pin))); };
+const hashNew = async (id, pin, salt, pepper) => { const k = await crypto.subtle.importKey('raw', new TextEncoder().encode('cine2:' + (pepper || '')), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']); return hex(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(salt + ':' + id + ':' + pin))); };
 const newSalt = () => hex(crypto.getRandomValues(new Uint8Array(16)));
 /* 한 번 배포해 본 뒤 이전 버전으로 되돌려도 로그인되도록, 예전 해시(h)를 한동안 같이 보관한다. 안정화 후 false 로 바꾸면 예전 해시를 지운다 */
 const KEEP_LEGACY = true;
@@ -29,9 +29,14 @@ export async function onRequestPost({ request, env }) {
   if (r && r.lock && r.lock > now) return json({ ok: false, error: 'locked' }, 429);
   /* 확인: 솔트가 있으면 새 해시, 없으면(예전 계정) 예전 해시. 맞으면 아래 저장 때 새 방식으로 올려 둔다 */
   const salt = (r && r.s) || newSalt();
-  const h2 = await hashNew(id, pin, salt, env);
-  const okPin = !r || (r.s ? r.h2 === h2 : r.h === (await hashOld(id, pin)));
-  const hOld = KEEP_LEGACY ? await hashOld(id, pin) : undefined;
+  /* QA475: 서버 비밀값(PIN_PEPPER)을 나중에 넣어도 기존 계정이 잠기지 않게 — 비밀값 없이 만든 해시도 받아 주고, 맞으면 지금 비밀값으로 다시 저장한다.
+     비밀값이 있으면 예전 해시(h)는 더 보관하지 않는다(남겨 두면 비밀값의 보호가 무의미) */
+  const pepper = (env && env.PIN_PEPPER) || '';
+  const h2 = await hashNew(id, pin, salt, pepper);
+  const viaPlain = !!(r && r.s && pepper && r.h2 !== h2 && r.h2 === (await hashNew(id, pin, salt, '')));
+  const okPin = !r || (r.s ? (r.h2 === h2 || viaPlain) : r.h === (await hashOld(id, pin)));
+  const keepOld = KEEP_LEGACY && !pepper;
+  const hOld = keepOld ? await hashOld(id, pin) : undefined;
   const h = h2;
   if (r && !okPin) {
     r.f = (r.f || 0) + 1; if (r.f >= TRIES) { r.f = 0; r.lock = now + LOCK; }
@@ -40,7 +45,7 @@ export async function onRequestPost({ request, env }) {
   }
   if (op === 'load') {
     if (!r) return json({ ok: false, error: 'none' }, 404);
-    if (!r.s) { try { await kv.put(key, JSON.stringify({ ...r, s: salt, h2, h: KEEP_LEGACY ? r.h : undefined, f: 0 })); } catch { /* 올리기 실패해도 불러오기는 성공 */ } }
+    if (!r.s || viaPlain || (!keepOld && r.h)) { try { await kv.put(key, JSON.stringify({ ...r, s: salt, h2, h: keepOld ? r.h : undefined, f: 0 })); } catch { /* 올리기 실패해도 불러오기는 성공 */ } }
     return json({ ok: true, data: r.d || {}, t: r.t || 0 });
   }
   if (op === 'create' || op === 'save') {

@@ -17,3 +17,6 @@ test('QA462 the usherette is 안내원 자닌 on her tag, order panel and lines'
   assert(source.includes("nameTag('안내원 자닌',false)"));assert(source.includes("ouv:{title:'안내원 자닌 · 간식'"));
   assert(source.includes("VEN={ouv:{name:'안내원 자닌'"));assert(source.includes("'자닌':'우브뢰즈'"));
   assert(!/우브뢰즈(가|한테|에게) /.test(source.replace(/\/\*[\s\S]*?\*\//g,'')),'no player-facing line still says 우브뢰즈');});
+test('QA463 popcorn is only talked about as an American habit',()=>{
+  assert(!source.includes('옥수수를 튀겨 극장에서'));assert(!source.includes('팝콘이 극장 간식이 된'));
+  for(const t of ['미국 극장들은 영화 볼 때 팝콘을 먹는다던데, 여긴 그런 게 없네요.','미국에선 팝콘을 먹으면서 영화를 본다더라고요','파리는 분위기가 영 다르죠.','여기가 영화관인지 매점인지 모르겠어요.','파리 극장에선 통하지 않을 얘기예요.'])assert(source.includes(t),t);});

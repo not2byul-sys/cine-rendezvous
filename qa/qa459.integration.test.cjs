@@ -5,7 +5,7 @@ test('QA459 projection room has Sherlock, not Robert, and Sherlock no longer rot
   assert(source.includes("n!=='셜록 영사기사'/* QA459"));assert(!source.includes("'앨런','셜록 영사기사']"));
   assert(source.includes("'영사기사 로베르':'영사기사'"),'card numbers stay fixed');});
 test('QA459 staff cards show their film',()=>{
-  const m=source.match(/const QA459FILM=(\{[^}]+\})/);assert(m);const F=eval('('+m[1]+')');
+  const m=source.match(/const QA459FILM=(\{[^}]+\})/);assert(m[1].includes("'우브뢰즈':'전진 트래블링'"));assert(m);const F=eval('('+m[1]+')');
   assert.strictEqual(F['미시즈 퍼재컬리'],'지상에서 가장 작은 쇼');assert.strictEqual(F['올드 톰'],'지상에서 가장 작은 쇼');
   assert.strictEqual(F['미스 모지'],'마지막 영화관');assert.strictEqual(F['셜록 영사기사'],'셜록 주니어');
   assert(source.includes("fm=QA459FILM[name]||"));assert(source.includes("fm=QA459FILM[x.n]||"));

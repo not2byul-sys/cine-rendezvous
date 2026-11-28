@@ -75,6 +75,6 @@ test('concession signage contains only current snacks while the separate club ca
   const shop = part('/* 03 REFRESHMENTS:', 'const stM=');
   assert(shop.includes("c.fillText('BUVETTE'"));
   for (const obsolete of ["['COLA'", "['SODA'", "['COFFEE'", "c.fillText('COFFEE'", 'Popcorn+Soda', '커피 머신: 드립']) assert(!shop.includes(obsolete), obsolete);
-  assert(source.includes("cafe:['allonge','cake','croi']"));
+  assert(source.includes("cafe:['allonge','diabolo','chocchaud','liegeois','madel','cake','croi']"));
   assert(source.includes("FLOORT=diamondT(31,'#b0a79c','#7c7069'"));
 });

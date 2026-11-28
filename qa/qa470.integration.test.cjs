@@ -3,7 +3,7 @@ const source=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
 test('QA470 lobby café: counter, staff, menu panel and seats are built',()=>{
   assert(source.includes("const _mCafe=shMark();"));assert(source.includes("VSTAFF.cafe=stC"));
   assert(source.includes("fn:()=>openPanel('cafe')"));assert(source.includes("PANELS.cafe=()=>opanel('cafe')"));
-  assert(source.includes("cafe:['espresso','creme','cake','croi']"));
+  assert(source.includes("cafe:['espresso','creme','vinchaud','eclair','millef','macaron','cake','croi']"));
   assert(source.includes("cafe:{name:'☕ 카페',pt:{x:5.0,z:9.2,zone:'L0'}}"));
   assert(source.includes("'cafe-table-'+i"),'two café tables are movable layout items');});
 test('QA470 shop moved +0.9 toward the door, vending machine removed, sofa moved upstairs',()=>{
